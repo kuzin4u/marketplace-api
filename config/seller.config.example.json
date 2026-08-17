@@ -1,0 +1,44 @@
+{
+  "_comment": "Seller config — задача 0.3. Этот файл загружается из API (GET /api/v1/config/{slug}). Витрина рендерит UI из этих параметров вместо hardcoded значений.",
+
+  "seller_id": "PTR-12345",
+  "slug": "massamadre",
+
+  "brand": {
+    "name": "Масса Матере",
+    "tagline": "Хлеб на настоящей закваске · SeMaVi",
+    "logo": "https://massamadre.ru/assets/logo.png",
+    "cover": "https://massamadre.ru/assets/cover.jpg",
+    "accent": "#8B4513",
+    "description": "Семейная пекарня. Тартин, ржаной, бородинский — ручная работа, 24-часовая ферментация. Доставка по Москве."
+  },
+
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "bot_username": "Sourdough_Bakery_Bot",
+      "bot_url": "https://t.me/Sourdough_Bakery_Bot"
+    },
+    "website": {
+      "enabled": true,
+      "url": "https://massamadre.ru",
+      "custom_domain": "massamadre.ru"
+    },
+    "vk": {
+      "enabled": true,
+      "group_url": "https://vk.com/massamadre"
+    },
+    "max": {
+      "enabled": false
+    },
+    "instagram": {
+      "enabled": true,
+      "username": "kuzinamamavik",
+      "url": "https://instagram.com/kuzinamamavik"
+    }
+  },
+
+  "seller_group": 1,
+  "seller_rating": 4.8,
+  "region": "MSK"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "marketplace-api",
+  "version": "0.1.0",
+  "description": "Распределённый маркетплейс НСВР — API (Спринт 0)",
+  "main": "api/server.js",
+  "scripts": {
+    "start": "node api/server.js",
+    "dev": "node --watch api/server.js",
+    "db:create": "psql $DATABASE_URL -f schema/01_schema.sql",
+    "db:seed": "psql $DATABASE_URL -f seed/02_seed_massamadre.sql",
+    "db:reset": "npm run db:create && npm run db:seed",
+    "validate": "python3 validate.py"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "pg": "^8.11.0",
+    "cors": "^2.8.5"
+  }
+}

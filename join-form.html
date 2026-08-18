@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Подключиться к Системе</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--bg:#f8fafc;--card:#fff;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--ac:#1e40af;--ac-l:#dbeafe;--ac-bg:#eff6ff;--grn:#16a34a;--grn-l:#dcfce7;--orn:#d97706;--orn-l:#fef3c7;--red:#dc2626;--red-l:#fee2e2;--brd:#e2e8f0;--sans:'Inter',-apple-system,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--tx);min-height:100vh;display:flex;align-items:center;justify-content:center}
+.page{max-width:480px;width:100%;padding:24px 20px}
+
+/* Logo */
+.logo{text-align:center;margin-bottom:28px}
+.logo .mark{font-size:36px;margin-bottom:8px}
+.logo h1{font-size:22px;font-weight:800;letter-spacing:-.4px}
+.logo p{font-size:13px;color:var(--tx2);margin-top:4px}
+
+/* Form card */
+.fc{background:var(--card);border:1.5px solid var(--brd);border-radius:16px;padding:28px;margin-bottom:14px}
+.fc h2{font-size:17px;font-weight:700;margin-bottom:4px}
+.fc .sub{font-size:12px;color:var(--tx2);margin-bottom:20px;line-height:1.5}
+
+/* Fields */
+.f{margin-bottom:16px;position:relative}
+.f label{display:block;font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px}
+.f input{width:100%;padding:12px 14px;border:1.5px solid var(--brd);border-radius:10px;font:400 15px/1.4 var(--sans);background:var(--bg);outline:none;transition:.2s}
+.f input:focus{border-color:var(--ac);background:var(--card)}
+.f input.valid{border-color:var(--grn)}
+.f input.invalid{border-color:var(--red)}
+.f .hint{font-size:11px;color:var(--tx3);margin-top:4px}
+.f .error{font-size:11px;color:var(--red);margin-top:4px;display:none}
+.f .ok{font-size:11px;color:var(--grn);margin-top:4px;display:none}
+
+/* FNS result card */
+.fns-result{background:var(--grn-l);border:1.5px solid var(--grn);border-radius:10px;padding:12px 14px;margin-top:8px;font-size:12px;color:#166534;line-height:1.6;display:none}
+.fns-result b{font-weight:700}
+.fns-result .fns-icon{font-size:18px;margin-right:6px}
+
+/* Loading */
+.fns-loading{display:none;align-items:center;gap:8px;margin-top:6px;font-size:12px;color:var(--ac)}
+.spinner{width:14px;height:14px;border:2px solid var(--ac-l);border-top-color:var(--ac);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* OTP */
+.otp-row{display:flex;gap:6px;justify-content:center;margin:12px 0}
+.otp-digit{width:44px;height:52px;border:1.5px solid var(--brd);border-radius:10px;text-align:center;font:700 20px/1 var(--sans);background:var(--bg);outline:none;transition:.2s}
+.otp-digit:focus{border-color:var(--ac);background:var(--card)}
+.otp-sent{font-size:12px;color:var(--grn);text-align:center;margin-bottom:8px}
+.otp-resend{font-size:11px;color:var(--ac);text-align:center;cursor:pointer;text-decoration:underline}
+
+/* Group selector */
+.groups{display:flex;flex-direction:column;gap:6px;margin:12px 0}
+.group-opt{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--brd);border-radius:10px;cursor:pointer;transition:.15s}
+.group-opt:hover{border-color:var(--ac)}
+.group-opt.on{border-color:var(--ac);background:var(--ac-bg)}
+.group-opt .g-icon{font-size:22px;flex-shrink:0}
+.group-opt .g-name{font-size:13px;font-weight:600}
+.group-opt .g-desc{font-size:11px;color:var(--tx3)}
+
+/* Checkbox */
+.chk{display:flex;align-items:flex-start;gap:10px;margin:14px 0;font-size:12px;color:var(--tx2);line-height:1.5}
+.chk input{margin-top:2px;accent-color:var(--ac)}
+.chk a{color:var(--ac)}
+
+/* Button */
+.btn{width:100%;padding:14px;border-radius:10px;border:none;font:700 15px/1 var(--sans);cursor:pointer;transition:.15s;text-align:center}
+.btn-p{background:var(--ac);color:#fff}.btn-p:hover{background:#1d4ed8}
+.btn-s{background:var(--bg);color:var(--tx2);border:1.5px solid var(--brd)}.btn-s:hover{background:var(--card)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Steps indicator */
+.steps{display:flex;gap:4px;margin-bottom:20px}
+.step-dot{flex:1;height:4px;border-radius:2px;background:var(--brd);transition:.3s}
+.step-dot.done{background:var(--grn)}.step-dot.active{background:var(--ac)}
+
+/* Phase labels */
+.phase-label{text-align:center;font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.phase-label .time{color:var(--grn);margin-left:6px}
+
+/* Transition to wizard */
+.transition{text-align:center;padding:40px 20px}
+.transition .big{font-size:56px;margin-bottom:16px}
+.transition h2{font-size:20px;font-weight:800;margin-bottom:8px}
+.transition p{font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:20px}
+.transition .details{text-align:left;background:var(--bg);border-radius:10px;padding:14px;font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:20px}
+.transition .details b{color:var(--tx)}
+
+@media(max-width:480px){.page{padding:16px}.fc{padding:20px}.otp-digit{width:38px;height:46px;font-size:18px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="logo">
+  <div class="mark">🔍</div>
+  <h1>Подключиться к Системе</h1>
+  <p>Магазин за 25 минут · 0₽ · Без отдельного договора</p>
+</div>
+
+<div class="steps" id="steps"></div>
+<div id="app"></div>
+
+</div>
+
+<script>
+// ============ STATE ============
+var state = {
+  step: 0,  // 0: INN, 1: OTP, 2: group, 3: transition→wizard
+  inn: '',
+  phone: '',
+  otp: ['','','','','',''],
+  fns: null,  // result from FNS API
+  group: null, // 1, 2, 3
+  accepted: false,
+  timer: 0
+};
+
+// ============ FNS API SIMULATION (задача 2.2) ============
+// В продакшене: fetch('https://api-fns.ru/api/egr?req={inn}&key={key}')
+var FNS_DB = {
+  '770712345678': { name:'ИП Семёнов С.В. (Масса Матере)', type:'IP', ogrn:'321774600012345', address:'г. Москва, ул. Пекарная, д. 15', status:'active' },
+  '770700001111': { name:'ООО «3PL-Сервис»', type:'OOO', ogrn:'1177746012345', address:'г. Москва, ул. Складская, д. 8', status:'active' },
+  '501234567890': { name:'КФХ Кузнецов А.П.', type:'IP', ogrn:'322500100045678', address:'МО, Дмитровский р-н, д. Поле', status:'active' },
+  '780112345678': { name:'ИП Сергеева Н.А.', type:'IP', ogrn:'323784600098765', address:'г. Санкт-Петербург, Невский пр., 42', status:'active' }
+};
+
+async function checkFNS(inn) {
+  // Simulate API delay
+  await new Promise(r => setTimeout(r, 800));
+
+  // Try known INNs
+  if (FNS_DB[inn]) return { ok: true, ...FNS_DB[inn] };
+
+  // Validate format
+  if (inn.length === 12) {
+    // ИП / ФЛ — generate plausible response
+    return { ok: true, name: 'ИП (наименование по ИНН)', type: 'IP', ogrn: '3' + inn.substr(0,11), address: 'г. Москва', status: 'active' };
+  }
+  if (inn.length === 10) {
+    return { ok: true, name: 'ООО (наименование по ИНН)', type: 'OOO', ogrn: '1' + inn + '00', address: 'г. Москва', status: 'active' };
+  }
+
+  return { ok: false, error: 'ИНН не найден' };
+}
+
+// ============ RENDER ============
+function render() {
+  // Steps
+  var sh = '';
+  for (var i = 0; i < 4; i++) {
+    sh += '<div class="step-dot '+(i<state.step?'done':(i===state.step?'active':''))+'"></div>';
+  }
+  document.getElementById('steps').innerHTML = sh;
+
+  var el = document.getElementById('app');
+  switch(state.step) {
+    case 0: renderINN(el); break;
+    case 1: renderOTP(el); break;
+    case 2: renderGroup(el); break;
+    case 3: renderTransition(el); break;
+  }
+}
+
+// ──── Шаг 0: ИНН ────
+function renderINN(el) {
+  el.innerHTML = `
+    <div class="phase-label">Фаза 1: Идентификация<span class="time">~3 мин</span></div>
+    <div class="fc">
+      <h2>Ваш ИНН</h2>
+      <div class="sub">Введите ИНН — подтянем данные из ФНС автоматически</div>
+
+      <div class="f">
+        <label>ИНН (10 или 12 цифр)</label>
+        <input type="text" id="f-inn" value="${state.inn}" placeholder="770712345678" maxlength="12" inputmode="numeric" autofocus />
+        <div class="fns-loading" id="fns-loading"><div class="spinner"></div> Проверяем в ФНС...</div>
+        <div class="error" id="fns-error"></div>
+      </div>
+
+      <div class="fns-result" id="fns-result"></div>
+
+      <div class="f" id="phone-field" style="${state.fns ? '' : 'display:none'}">
+        <label>Телефон</label>
+        <input type="tel" id="f-phone" value="${state.phone}" placeholder="+7 900 123-45-67" />
+        <div class="hint">Отправим SMS с кодом подтверждения</div>
+      </div>
+
+      <div id="accept-area" style="${state.fns ? '' : 'display:none'}">
+        <div class="chk">
+          <input type="checkbox" id="chk-accept" ${state.accepted?'checked':''} />
+          <div>Принимаю <a href="#" onclick="alert('→ Открываются Правила системы ред. 2')">Правила системы</a> и условия <a href="#" onclick="alert('→ Текст публичной оферты')">договора присоединения</a>. Согласен на обработку персональных данных.</div>
+        </div>
+
+        <button class="btn btn-p" id="btn-next" onclick="sendOTP()" ${state.accepted?'':'disabled'}>Отправить код →</button>
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:11px;color:var(--tx3);margin-top:12px">
+      Попробуйте тестовые ИНН: 770712345678 · 501234567890 · 780112345678
+    </div>
+  `;
+
+  // INN input handler
+  document.getElementById('f-inn').addEventListener('input', function(e) {
+    state.inn = e.target.value.replace(/\D/g,'');
+    e.target.value = state.inn;
+    state.fns = null;
+    document.getElementById('fns-result').style.display = 'none';
+    document.getElementById('phone-field').style.display = 'none';
+    document.getElementById('accept-area').style.display = 'none';
+
+    if (state.inn.length === 10 || state.inn.length === 12) {
+      lookupFNS();
+    }
+  });
+
+  // Checkbox handler
+  var chk = document.getElementById('chk-accept');
+  if (chk) {
+    chk.addEventListener('change', function() {
+      state.accepted = this.checked;
+      document.getElementById('btn-next').disabled = !this.checked;
+    });
+  }
+
+  // Phone handler
+  var phone = document.getElementById('f-phone');
+  if (phone) {
+    phone.addEventListener('input', function(e) { state.phone = e.target.value; });
+  }
+}
+
+async function lookupFNS() {
+  var loading = document.getElementById('fns-loading');
+  var result = document.getElementById('fns-result');
+  var error = document.getElementById('fns-error');
+  var input = document.getElementById('f-inn');
+
+  loading.style.display = 'flex';
+  result.style.display = 'none';
+  error.style.display = 'none';
+
+  var data = await checkFNS(state.inn);
+
+  loading.style.display = 'none';
+
+  if (data.ok) {
+    state.fns = data;
+    input.classList.add('valid');
+    input.classList.remove('invalid');
+
+    var typeLabels = {IP:'ИП',OOO:'ООО',FL:'Физ. лицо'};
+    result.innerHTML = '<span class="fns-icon">✅</span> <b>' + data.name + '</b><br>' +
+      'Тип: ' + (typeLabels[data.type]||data.type) + ' · ОГРН: ' + data.ogrn + '<br>' +
+      'Адрес: ' + data.address;
+    result.style.display = 'block';
+
+    document.getElementById('phone-field').style.display = '';
+    document.getElementById('accept-area').style.display = '';
+
+    // Focus phone
+    setTimeout(function(){ document.getElementById('f-phone').focus(); }, 100);
+  } else {
+    input.classList.add('invalid');
+    input.classList.remove('valid');
+    error.textContent = data.error || 'ИНН не найден в ФНС';
+    error.style.display = 'block';
+  }
+}
+
+// ──── Шаг 1: SMS OTP ────
+function sendOTP() {
+  if (!state.phone) { alert('Введите телефон'); return; }
+  if (!state.accepted) { alert('Примите условия'); return; }
+  state.step = 1;
+  state.timer = 60;
+  render();
+  startTimer();
+}
+
+function renderOTP(el) {
+  el.innerHTML = `
+    <div class="phase-label">Фаза 1: Идентификация<span class="time">~3 мин</span></div>
+    <div class="fc">
+      <h2>Код из SMS</h2>
+      <div class="sub">Отправили на ${state.phone}</div>
+
+      <div class="otp-sent">📱 SMS отправлено</div>
+
+      <div class="otp-row">
+        <input class="otp-digit" maxlength="1" inputmode="numeric" data-idx="0" autofocus />
+        <input class="otp-digit" maxlength="1" inputmode="numeric" data-idx="1" />
+        <input class="otp-digit" maxlength="1" inputmode="numeric" data-idx="2" />
+        <input class="otp-digit" maxlength="1" inputmode="numeric" data-idx="3" />
+        <input class="otp-digit" maxlength="1" inputmode="numeric" data-idx="4" />
+        <input class="otp-digit" maxlength="1" inputmode="numeric" data-idx="5" />
+      </div>
+
+      <div class="otp-resend" id="otp-timer">Отправить повторно через ${state.timer} сек</div>
+
+      <div style="margin-top:16px">
+        <button class="btn btn-s" onclick="state.step=0;render()">← Изменить телефон</button>
+      </div>
+
+      <div style="margin-top:12px;font-size:11px;color:var(--tx3);text-align:center">Для теста: введите 1 2 3 4 5 6</div>
+    </div>
+  `;
+
+  // OTP input handlers
+  document.querySelectorAll('.otp-digit').forEach(function(inp) {
+    inp.addEventListener('input', function(e) {
+      var idx = parseInt(this.dataset.idx);
+      state.otp[idx] = this.value;
+      if (this.value && idx < 5) {
+        document.querySelector('[data-idx="'+(idx+1)+'"]').focus();
+      }
+      // Check if all filled
+      if (state.otp.every(function(d){return d;})) {
+        verifyOTP();
+      }
+    });
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace' && !this.value) {
+        var idx = parseInt(this.dataset.idx);
+        if (idx > 0) document.querySelector('[data-idx="'+(idx-1)+'"]').focus();
+      }
+    });
+  });
+}
+
+function startTimer() {
+  var interval = setInterval(function() {
+    state.timer--;
+    var el = document.getElementById('otp-timer');
+    if (el) {
+      if (state.timer > 0) {
+        el.textContent = 'Отправить повторно через ' + state.timer + ' сек';
+      } else {
+        el.innerHTML = '<span onclick="state.timer=60;startTimer()" style="cursor:pointer;color:var(--ac)">Отправить повторно</span>';
+        clearInterval(interval);
+      }
+    } else {
+      clearInterval(interval);
+    }
+  }, 1000);
+}
+
+function verifyOTP() {
+  var code = state.otp.join('');
+  if (code === '123456') {
+    // OTP verified
+    state.step = 2;
+    render();
+  } else {
+    alert('Неверный код. Для теста: 123456');
+    state.otp = ['','','','','',''];
+    render();
+  }
+}
+
+// ──── Шаг 2: Группа ────
+function renderGroup(el) {
+  el.innerHTML = `
+    <div class="phase-label">Фаза 1: Идентификация<span class="time">почти готово</span></div>
+    <div class="fc">
+      <h2>Откуда вы?</h2>
+      <div class="sub">Это поможет настроить магазин под ваши задачи</div>
+
+      <div class="groups">
+        <div class="group-opt ${state.group===1?'on':''}" onclick="state.group=1;render()">
+          <div class="g-icon">🏪</div>
+          <div>
+            <div class="g-name">У меня есть интернет-магазин</div>
+            <div class="g-desc">Свой сайт, клиентская база, каталог товаров</div>
+          </div>
+        </div>
+
+        <div class="group-opt ${state.group===2?'on':''}" onclick="state.group=2;render()">
+          <div class="g-icon">📦</div>
+          <div>
+            <div class="g-name">Ухожу с Ozon / Wildberries</div>
+            <div class="g-desc">Есть каталог на маркетплейсе, хочу свой магазин</div>
+          </div>
+        </div>
+
+        <div class="group-opt ${state.group===3?'on':''}" onclick="state.group=3;render()">
+          <div class="g-icon">🌱</div>
+          <div>
+            <div class="g-name">Начинаю с нуля</div>
+            <div class="g-desc">Есть товар, но нет онлайн-магазина</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-p" onclick="completePhase1()" ${state.group?'':'disabled'}>Создать магазин →</button>
+    </div>
+  `;
+}
+
+// ──── Шаг 3: Переход к wizard ────
+function completePhase1() {
+  state.step = 3;
+  render();
+}
+
+function renderTransition(el) {
+  var groupNames = {1:'Неорганизованные',2:'Разочаровавшиеся',3:'Новые'};
+  var groupBoost = {1:'нет',2:'+30% на 90 дней',3:'+10% на 30 дней'};
+  var typeLabels = {IP:'ИП',OOO:'ООО',FL:'Физ. лицо'};
+  var fns = state.fns;
+
+  // Extract brand name from FNS name
+  var brandName = fns.name;
+  // Clean up: remove ИП/ООО prefix
+  brandName = brandName.replace(/^ИП\s+/i, '').replace(/^ООО\s+«?/i, '').replace(/»?\s*$/,'');
+  // If it's a person name (Семёнов С.В.), use the business part if available
+  var parenMatch = brandName.match(/\(([^)]+)\)/);
+  if (parenMatch) brandName = parenMatch[1];
+
+  el.innerHTML = `
+    <div class="fc transition">
+      <div class="big">✅</div>
+      <h2>Фаза 1 пройдена!</h2>
+      <p>KYC подтверждён. Договор акцептован. Участник в реестре.<br>Переходим к созданию магазина.</p>
+
+      <div class="details">
+        <div><b>ИНН:</b> ${state.inn}</div>
+        <div><b>Наименование:</b> ${fns.name}</div>
+        <div><b>Тип:</b> ${typeLabels[fns.type] || fns.type}</div>
+        <div><b>Адрес:</b> ${fns.address}</div>
+        <div><b>Телефон:</b> ${state.phone} ✓</div>
+        <div><b>Группа:</b> ${state.group} — «${groupNames[state.group]}»</div>
+        <div><b>Priority boost:</b> ${groupBoost[state.group]}</div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--brd)">
+          <div><b>Договор:</b> click-wrap акцепт ✓ (PDF → email)</div>
+          <div><b>KYC Level:</b> 1 (ИНН + телефон)</div>
+          <div><b>Статус:</b> <span style="color:var(--grn);font-weight:600">ACTIVE</span></div>
+        </div>
+      </div>
+
+      <button class="btn btn-p" onclick="goToWizard()">Перейти к настройке магазина →</button>
+      <div style="margin-top:8px;font-size:11px;color:var(--tx3)">Фаза 2: магазин + товары (~15 мин)</div>
+    </div>
+  `;
+}
+
+var API = 'https://marketplace-api-ujfh.onrender.com/api/v1';
+
+async function goToWizard() {
+  var fns = state.fns;
+  var brandName = fns.name.replace(/^ИП\s+/i,'').replace(/^ООО\s+«?/i,'').replace(/»?\s*$/,'');
+  var parenMatch = brandName.match(/\(([^)]+)\)/);
+  if (parenMatch) brandName = parenMatch[1];
+
+  // Create participant in Registry
+  try {
+    var res = await fetch(API + '/participants', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        inn: state.inn,
+        name: fns.name,
+        legal_type: fns.type,
+        role: 'SELLER',
+        seller_group: state.group,
+        region: 'MSK',
+        contact_phone: state.phone
+      })
+    });
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Ошибка регистрации');
+
+    console.log('Participant created:', data);
+
+    // Redirect to wizard with params
+    var params = new URLSearchParams({
+      seller_id: data.id,
+      name: brandName,
+      group: state.group,
+      type: fns.type,
+      phone: state.phone
+    });
+    window.location.href = 'wizard-create-shop.html?' + params.toString();
+
+  } catch(err) {
+    alert('Ошибка: ' + err.message);
+  }
+}
+
+// ============ INIT ============
+render();
+</script>
+</body>
+</html>

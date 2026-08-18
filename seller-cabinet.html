@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Личный кабинет селлера</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root {
+  --bg:#f8fafc;--card:#fff;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;
+  --ac:#1e40af;--ac-l:#dbeafe;--grn:#16a34a;--grn-l:#dcfce7;
+  --orn:#d97706;--orn-l:#fef3c7;--red:#dc2626;--red-l:#fee2e2;
+  --brd:#e2e8f0;--sans:'Inter',-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--tx);font-size:13px}
+
+/* Shell */
+.shell{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--card);border-right:1px solid var(--brd);padding:20px 0;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.main{flex:1;padding:24px;min-width:0}
+
+/* Sidebar */
+.sb-brand{padding:0 16px 16px;border-bottom:1px solid var(--brd);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.sb-logo{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0}
+.sb-name{font-size:14px;font-weight:700}
+.sb-tag{font-size:10px;color:var(--tx3)}
+
+.sb-nav{list-style:none}
+.sb-nav li{margin-bottom:2px}
+.sb-nav a{display:flex;align-items:center;gap:10px;padding:9px 16px;color:var(--tx2);text-decoration:none;font-size:13px;font-weight:500;border-radius:0;transition:.15s;cursor:pointer}
+.sb-nav a:hover{background:var(--bg);color:var(--tx)}
+.sb-nav a.on{background:var(--ac-l);color:var(--ac);font-weight:600}
+.sb-nav .icon{font-size:16px;width:20px;text-align:center}
+.sb-nav .badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--red);color:#fff}
+
+.sb-footer{padding:16px;border-top:1px solid var(--brd);margin-top:auto;position:absolute;bottom:0;width:220px}
+.sb-footer a{font-size:11px;color:var(--tx3);text-decoration:none;display:block;padding:4px 0}
+.sb-footer a:hover{color:var(--ac)}
+
+/* Header */
+.pg-hdr{margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.pg-hdr h1{font-size:20px;font-weight:800;letter-spacing:-.3px}
+.pg-hdr .actions{display:flex;gap:8px}
+
+/* Stat cards */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:16px}
+.stat-card .label{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+.stat-card .value{font-size:24px;font-weight:800}
+.stat-card .delta{font-size:11px;margin-top:2px}
+.delta-up{color:var(--grn)}.delta-down{color:var(--red)}
+
+/* Table */
+.tbl-card{background:var(--card);border:1px solid var(--brd);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.tbl-card .tbl-hdr{padding:14px 16px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between}
+.tbl-card .tbl-hdr h3{font-size:14px;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th{padding:8px 12px;text-align:left;font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--brd);background:var(--bg)}
+td{padding:10px 12px;border-bottom:1px solid var(--brd);font-size:13px;color:var(--tx2);vertical-align:middle}
+tr:hover{background:var(--bg)}
+.status{font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;display:inline-block}
+.st-pending{background:var(--orn-l);color:var(--orn)}
+.st-active{background:var(--grn-l);color:var(--grn)}
+.st-completed{background:var(--ac-l);color:var(--ac)}
+.st-cancelled{background:var(--red-l);color:var(--red)}
+.st-shipping{background:#ede9fe;color:#7c3aed}
+
+/* Product row */
+.prod-row{display:flex;align-items:center;gap:10px}
+.prod-thumb{width:36px;height:36px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.prod-info .p-title{font-size:13px;font-weight:600;color:var(--tx)}
+.prod-info .p-meta{font-size:11px;color:var(--tx3)}
+
+/* Source type badge */
+.src-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase}
+.src-mig{background:var(--grn-l);color:var(--grn)}
+.src-net{background:var(--ac-l);color:var(--ac)}
+
+/* Btn */
+.btn{padding:8px 16px;border-radius:8px;border:none;font:600 12px/1 var(--sans);cursor:pointer;transition:.15s}
+.btn-p{background:var(--ac);color:#fff}.btn-p:hover{background:#1d4ed8}
+.btn-s{background:var(--bg);color:var(--tx2);border:1px solid var(--brd)}.btn-s:hover{background:var(--card)}
+.btn-sm{padding:5px 10px;font-size:11px}
+
+/* Sections */
+.section{display:none}.section.active{display:block}
+
+/* Settings */
+.setting-group{background:var(--card);border:1px solid var(--brd);border-radius:12px;padding:18px;margin-bottom:12px}
+.setting-group h4{font-size:13px;font-weight:600;margin-bottom:10px}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd)}
+.setting-row:last-child{border-bottom:none}
+.setting-row .s-label{font-size:13px;color:var(--tx2)}
+.setting-row .s-value{font-size:13px;font-weight:600}
+
+@media(max-width:768px){
+  .sidebar{display:none}.main{padding:16px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo" id="sb-logo">М</div>
+      <div>
+        <div class="sb-name" id="sb-name">Масса Матере</div>
+        <div class="sb-tag">Личный кабинет</div>
+      </div>
+    </div>
+    <ul class="sb-nav" id="sb-nav">
+      <li><a class="on" onclick="showSection('dashboard')"><span class="icon">📊</span> Обзор</a></li>
+      <li><a onclick="showSection('orders')"><span class="icon">📦</span> Заказы <span class="badge" id="badge-orders">3</span></a></li>
+      <li><a onclick="showSection('products')"><span class="icon">🏷</span> Товары</a></li>
+      <li><a onclick="showSection('customers')"><span class="icon">👥</span> Покупатели</a></li>
+      <li><a onclick="showSection('analytics')"><span class="icon">📈</span> Аналитика</a></li>
+      <li><a onclick="showSection('operators')"><span class="icon">🔗</span> Операторы</a></li>
+      <li><a onclick="showSection('settings')"><span class="icon">⚙️</span> Настройки</a></li>
+    </ul>
+    <div class="sb-footer">
+      <a href="#">📱 @massamadre_shop_bot</a>
+      <a href="#">🌐 нсвр.рф/shop/massamadre</a>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- ===== ОБЗОР ===== -->
+    <div class="section active" id="sec-dashboard">
+      <div class="pg-hdr">
+        <h1>Обзор</h1>
+        <div class="actions"><button class="btn btn-p" onclick="showSection('products')">+ Добавить товар</button></div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="label">Заказов сегодня</div>
+          <div class="value">3</div>
+          <div class="delta delta-up">↑ 2 вчера</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Выручка (месяц)</div>
+          <div class="value">48 700 ₽</div>
+          <div class="delta delta-up">↑ 12% vs прошлый</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Товаров</div>
+          <div class="value">4</div>
+          <div class="delta" style="color:var(--tx3)">все активны</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Покупателей</div>
+          <div class="value">23</div>
+          <div class="delta"><span class="src-badge src-mig">20 migrated</span> <span class="src-badge src-net">3 network</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Рейтинг магазина</div>
+          <div class="value">⭐ 4.8</div>
+          <div class="delta" style="color:var(--tx3)">89 отзывов</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Позиция в каталоге</div>
+          <div class="value">#3</div>
+          <div class="delta" style="color:var(--tx3)">по запросу «хлеб»</div>
+        </div>
+      </div>
+
+      <div class="tbl-card">
+        <div class="tbl-hdr"><h3>Последние заказы</h3><button class="btn btn-s btn-sm" onclick="showSection('orders')">Все →</button></div>
+        <table>
+          <thead><tr><th>Заказ</th><th>Покупатель</th><th>Сумма</th><th>Источник</th><th>Статус</th></tr></thead>
+          <tbody>
+            <tr><td><b>ORD-78433</b></td><td>Мария</td><td>1 770 ₽</td><td><span class="src-badge src-mig">migrated</span></td><td><span class="status st-pending">Новый</span></td></tr>
+            <tr><td><b>ORD-78432</b></td><td>Дмитрий</td><td>830 ₽</td><td><span class="src-badge src-mig">migrated</span></td><td><span class="status st-shipping">Доставка</span></td></tr>
+            <tr><td><b>ORD-78431</b></td><td>Анна</td><td>1 420 ₽</td><td><span class="src-badge src-net">network</span></td><td><span class="status st-completed">Завершён</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== ЗАКАЗЫ ===== -->
+    <div class="section" id="sec-orders">
+      <div class="pg-hdr"><h1>Заказы</h1></div>
+
+      <div class="tbl-card">
+        <div class="tbl-hdr"><h3>Все заказы (47)</h3></div>
+        <table>
+          <thead><tr><th>Заказ</th><th>Дата</th><th>Покупатель</th><th>Товары</th><th>Сумма</th><th>Источник</th><th>Статус</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>ORD-78433</b></td><td>14.08</td><td>Мария</td><td>Тартин ×2, Сырный ×1</td><td>1 770 ₽</td><td><span class="src-badge src-mig">mig</span></td><td><span class="status st-pending">Новый</span></td><td><button class="btn btn-p btn-sm">В сборку →</button></td></tr>
+            <tr><td><b>ORD-78432</b></td><td>14.08</td><td>Дмитрий</td><td>Заварной ×1, Бородинский ×1</td><td>830 ₽</td><td><span class="src-badge src-mig">mig</span></td><td><span class="status st-shipping">Доставка</span></td><td><button class="btn btn-s btn-sm">Трек</button></td></tr>
+            <tr><td><b>ORD-78431</b></td><td>13.08</td><td>Анна</td><td>Тартин ×2</td><td>900 ₽</td><td><span class="src-badge src-net">net</span></td><td><span class="status st-completed">Завершён</span></td><td><button class="btn btn-s btn-sm">Клиринг</button></td></tr>
+            <tr><td><b>ORD-78430</b></td><td>13.08</td><td>Дмитрий</td><td>Сырный ×2</td><td>1 040 ₽</td><td><span class="src-badge src-mig">mig</span></td><td><span class="status st-completed">Завершён</span></td><td><button class="btn btn-s btn-sm">Клиринг</button></td></tr>
+            <tr><td><b>ORD-78429</b></td><td>12.08</td><td>Покупатель</td><td>Бородинский ×3</td><td>1 050 ₽</td><td><span class="src-badge src-net">net</span></td><td><span class="status st-cancelled">Отменён</span></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== ТОВАРЫ ===== -->
+    <div class="section" id="sec-products">
+      <div class="pg-hdr"><h1>Товары</h1><div class="actions"><button class="btn btn-p" onclick="alert('→ Открывается sku-crud.html')">+ Добавить товар</button></div></div>
+
+      <div class="tbl-card">
+        <div class="tbl-hdr"><h3>Каталог (4 товара)</h3></div>
+        <table>
+          <thead><tr><th>Товар</th><th>Цена</th><th>Остаток</th><th>Заказов</th><th>Рейтинг</th><th>В каталоге</th><th>Статус</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="prod-row"><div class="prod-thumb">🍞</div><div class="prod-info"><div class="p-title">Тартин на закваске</div><div class="p-meta">SKU-001 · 800г</div></div></div></td>
+              <td><b>450 ₽</b></td><td>12 шт</td><td>156</td><td>⭐ 4.9</td><td>✅ да</td><td><span class="status st-active">Активен</span></td>
+              <td><button class="btn btn-s btn-sm">✏️</button></td>
+            </tr>
+            <tr>
+              <td><div class="prod-row"><div class="prod-thumb">🍞</div><div class="prod-info"><div class="p-title">Заварной ржаной</div><div class="p-meta">SKU-002 · 700г</div></div></div></td>
+              <td><b>380 ₽</b></td><td>8 шт</td><td>98</td><td>⭐ 4.7</td><td>✅ да</td><td><span class="status st-active">Активен</span></td>
+              <td><button class="btn btn-s btn-sm">✏️</button></td>
+            </tr>
+            <tr>
+              <td><div class="prod-row"><div class="prod-thumb">🧀</div><div class="prod-info"><div class="p-title">Тартин сырный</div><div class="p-meta">SKU-003 · 850г</div></div></div></td>
+              <td><b>520 ₽</b></td><td>6 шт</td><td>67</td><td>⭐ 4.8</td><td>✅ да</td><td><span class="status st-active">Активен</span></td>
+              <td><button class="btn btn-s btn-sm">✏️</button></td>
+            </tr>
+            <tr>
+              <td><div class="prod-row"><div class="prod-thumb">🍞</div><div class="prod-info"><div class="p-title">Бородинский классический</div><div class="p-meta">SKU-004 · 600г</div></div></div></td>
+              <td><b>350 ₽</b></td><td>15 шт</td><td>42</td><td>⭐ 4.6</td><td>✅ да</td><td><span class="status st-active">Активен</span></td>
+              <td><button class="btn btn-s btn-sm">✏️</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== ПОКУПАТЕЛИ ===== -->
+    <div class="section" id="sec-customers">
+      <div class="pg-hdr"><h1>Покупатели</h1></div>
+
+      <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="label">Всего</div><div class="value">23</div></div>
+        <div class="stat-card"><div class="label">Мигрировавшие (ст. 10.2)</div><div class="value" style="color:var(--grn)">20</div><div class="delta" style="color:var(--tx3)">ваша база, защищена</div></div>
+        <div class="stat-card"><div class="label">Из каталога (ст. 10.1)</div><div class="value" style="color:var(--ac)">3</div><div class="delta" style="color:var(--tx3)">сетевой приток</div></div>
+      </div>
+
+      <div class="tbl-card">
+        <div class="tbl-hdr"><h3>Покупатели</h3></div>
+        <table>
+          <thead><tr><th>Имя</th><th>Источник</th><th>Заказов</th><th>Сумма</th><th>Последний</th></tr></thead>
+          <tbody>
+            <tr><td>Анна</td><td><span class="src-badge src-mig">migrated</span></td><td>12</td><td>8 400 ₽</td><td>14.08.2026</td></tr>
+            <tr><td>Дмитрий</td><td><span class="src-badge src-mig">migrated</span></td><td>5</td><td>3 200 ₽</td><td>14.08.2026</td></tr>
+            <tr><td>Мария</td><td><span class="src-badge src-mig">migrated</span></td><td>3</td><td>1 950 ₽</td><td>14.08.2026</td></tr>
+            <tr><td>Новый покупатель</td><td><span class="src-badge src-net">network</span></td><td>1</td><td>450 ₽</td><td>13.08.2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== АНАЛИТИКА ===== -->
+    <div class="section" id="sec-analytics">
+      <div class="pg-hdr"><h1>Аналитика</h1></div>
+
+      <div class="stats">
+        <div class="stat-card"><div class="label">GMV (месяц)</div><div class="value">48 700 ₽</div></div>
+        <div class="stat-card"><div class="label">Вы получили</div><div class="value" style="color:var(--grn)">38 200 ₽</div><div class="delta" style="color:var(--tx3)">78% от GMV</div></div>
+        <div class="stat-card"><div class="label">Фулфилмент</div><div class="value">7 800 ₽</div><div class="delta" style="color:var(--tx3)">16% от GMV</div></div>
+        <div class="stat-card"><div class="label">Логистика</div><div class="value">2 450 ₽</div><div class="delta" style="color:var(--tx3)">5% от GMV</div></div>
+        <div class="stat-card"><div class="label">Организатор</div><div class="value">97 ₽</div><div class="delta" style="color:var(--tx3)">0.2% от GMV</div></div>
+        <div class="stat-card"><div class="label">Позиция «хлеб»</div><div class="value">#3</div><div class="delta" style="color:var(--tx3)">из 12 товаров</div></div>
+      </div>
+
+      <div class="tbl-card">
+        <div class="tbl-hdr"><h3>Позиция в каталоге (ст. 11.7)</h3></div>
+        <table>
+          <thead><tr><th>Товар</th><th>Запрос</th><th>Позиция</th><th>Качество</th><th>Продажи</th><th>Свежесть</th><th>Boost</th></tr></thead>
+          <tbody>
+            <tr><td><b>Тартин на закваске</b></td><td>«хлеб»</td><td><b>#3</b> из 12</td><td>96%</td><td>58%</td><td>92%</td><td>— (гр.1)</td></tr>
+            <tr><td><b>Заварной ржаной</b></td><td>«ржаной хлеб»</td><td><b>#1</b> из 5</td><td>94%</td><td>72%</td><td>88%</td><td>— (гр.1)</td></tr>
+            <tr><td><b>Тартин сырный</b></td><td>«хлеб с сыром»</td><td><b>#2</b> из 3</td><td>91%</td><td>45%</td><td>95%</td><td>— (гр.1)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== ОПЕРАТОРЫ (ст. 3.3.1) ===== -->
+    <div class="section" id="sec-operators">
+      <div class="pg-hdr"><h1>Мои операторы</h1></div>
+
+      <div class="setting-group">
+        <h4>📦 Фулфилмент</h4>
+        <div class="setting-row"><span class="s-label">Оператор</span><span class="s-value">3PL-Сервис</span></div>
+        <div class="setting-row"><span class="s-label">Сборка заказа</span><span class="s-value">200 ₽ / ед.</span></div>
+        <div class="setting-row"><span class="s-label">Хранение</span><span class="s-value">50 ₽ / палл / день</span></div>
+        <div class="setting-row"><span class="s-label">SLA сборки</span><span class="s-value">24 часа</span></div>
+        <div style="margin-top:10px"><button class="btn btn-s btn-sm">Сменить оператора ▾</button></div>
+      </div>
+
+      <div class="setting-group">
+        <h4>🚚 Доставка</h4>
+        <div class="setting-row"><span class="s-label">Оператор</span><span class="s-value">Курьер-Экспресс</span></div>
+        <div class="setting-row"><span class="s-label">Зона 1 (город)</span><span class="s-value">350 ₽</span></div>
+        <div class="setting-row"><span class="s-label">Зона 2 (пригород)</span><span class="s-value">500 ₽</span></div>
+        <div class="setting-row"><span class="s-label">SLA доставки</span><span class="s-value">24 часа</span></div>
+        <div style="margin-top:10px"><button class="btn btn-s btn-sm">Сменить оператора ▾</button></div>
+      </div>
+
+      <div class="setting-group">
+        <h4>⚖️ Организатор (ст. 6.3)</h4>
+        <div class="setting-row"><span class="s-label">Комиссия за расчёты</span><span class="s-value">0.2%</span></div>
+        <div class="setting-row"><span class="s-label">Статус</span><span class="s-value" style="color:var(--grn)">Подключён</span></div>
+      </div>
+    </div>
+
+    <!-- ===== НАСТРОЙКИ ===== -->
+    <div class="section" id="sec-settings">
+      <div class="pg-hdr"><h1>Настройки магазина</h1></div>
+
+      <div class="setting-group">
+        <h4>Бренд</h4>
+        <div class="setting-row"><span class="s-label">Название</span><span class="s-value">Масса Матере</span></div>
+        <div class="setting-row"><span class="s-label">URL</span><span class="s-value">нсвр.рф/shop/massamadre</span></div>
+        <div class="setting-row"><span class="s-label">Свой домен</span><span class="s-value">massamadre.ru</span></div>
+        <div class="setting-row"><span class="s-label">Цвет</span><span class="s-value"><span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:#8B4513;vertical-align:-2px"></span> #8B4513</span></div>
+        <div style="margin-top:10px"><button class="btn btn-s btn-sm">Редактировать бренд</button></div>
+      </div>
+
+      <div class="setting-group">
+        <h4>Каналы</h4>
+        <div class="setting-row"><span class="s-label">📱 Telegram</span><span class="s-value" style="color:var(--grn)">✓ @massamadre_shop_bot</span></div>
+        <div class="setting-row"><span class="s-label">🌐 Сайт</span><span class="s-value" style="color:var(--grn)">✓ massamadre.ru</span></div>
+        <div class="setting-row"><span class="s-label">💬 VK</span><span class="s-value" style="color:var(--grn)">✓ подключён</span></div>
+        <div class="setting-row"><span class="s-label">📧 Макс</span><span class="s-value" style="color:var(--tx3)">— не подключён</span></div>
+        <div class="setting-row"><span class="s-label">📷 Instagram</span><span class="s-value" style="color:var(--grn)">✓ @kuzinamamavik</span></div>
+      </div>
+
+      <div class="setting-group">
+        <h4>Юридическая информация</h4>
+        <div class="setting-row"><span class="s-label">ИНН</span><span class="s-value">770712345678</span></div>
+        <div class="setting-row"><span class="s-label">Тип</span><span class="s-value">ИП</span></div>
+        <div class="setting-row"><span class="s-label">Договор</span><span class="s-value" style="color:var(--grn)">✓ подписан 01.07.2027</span></div>
+        <div class="setting-row"><span class="s-label">Группа</span><span class="s-value">1 — «Неорганизованные»</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active')});
+  document.getElementById('sec-'+name).classList.add('active');
+  document.querySelectorAll('.sb-nav a').forEach(function(a){a.classList.remove('on')});
+  event.target.closest('a').classList.add('on');
+}
+
+// В продакшене: seller_id из JWT, данные из API
+// GET /api/v1/seller/{seller_id}/stats
+// GET /api/v1/seller/{seller_id}/products
+// GET /api/v1/orders?seller_id={seller_id}
+</script>
+</body>
+</html>

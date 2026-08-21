@@ -14,7 +14,7 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(express.json());
-require('./channels-api')(app, { db, dbOne });
+
 // ============ DATABASE ============
 
 const pool = new Pool({
@@ -42,7 +42,7 @@ async function dbOne(sql, params = []) {
 function genId(prefix) {
   return `${prefix}-${crypto.randomBytes(4).toString('hex')}`;
 }
-
+require('./channels-api')(app, { db, dbOne });
 // ============================================================
 // PUBLIC API (покупатель, без auth для browsing)
 // ============================================================

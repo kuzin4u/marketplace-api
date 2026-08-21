@@ -43,6 +43,8 @@ function genId(prefix) {
   return `${prefix}-${crypto.randomBytes(4).toString('hex')}`;
 }
 require('./channels-api')(app, { db, dbOne });
+require('./channels-api')(app, { db, dbOne });
+require('./customers-api')(app, { db, dbOne, genId });   // ← новая строка
 // ============================================================
 // PUBLIC API (покупатель, без auth для browsing)
 // ============================================================

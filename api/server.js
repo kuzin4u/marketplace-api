@@ -14,7 +14,7 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+require('./channels-api')(app, { db, dbOne });
 // ============ DATABASE ============
 
 const pool = new Pool({

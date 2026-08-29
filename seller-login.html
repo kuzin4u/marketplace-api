@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вход в кабинет продавца</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --sys:#2E5B3A;--danger:#A62B2B;--accent:#1D5FBF;--r:8px;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,sans-serif;font-size:15px;line-height:1.55;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.card{background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);max-width:400px;width:100%;padding:30px 28px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+h1{font-family:'IBM Plex Serif',Georgia,serif;font-size:23px;margin:6px 0 4px;letter-spacing:-.01em}
+.sub{color:var(--ink2);font-size:13.5px;margin:0 0 22px}
+label{display:block;font-size:12.5px;font-weight:600;color:var(--ink2);margin:14px 0 5px}
+input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;font-size:15px;font-family:inherit;background:var(--paper);transition:border-color .15s}
+input:focus{outline:none;border-color:var(--accent)}
+.btn{width:100%;margin-top:20px;padding:11px;border:none;border-radius:6px;background:var(--sys);color:#fff;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:opacity .15s}
+.btn:hover{opacity:.92}.btn:disabled{opacity:.55;cursor:default}
+.msg{margin-top:16px;padding:10px 13px;border-radius:6px;font-size:13.4px;display:none}
+.msg.err{display:block;background:rgba(166,43,43,.07);border:1px solid rgba(166,43,43,.25);color:var(--danger)}
+.msg.ok{display:block;background:rgba(46,91,58,.07);border:1px solid rgba(46,91,58,.25);color:var(--sys)}
+.who{margin-top:6px;font-size:13px;color:var(--ink2)}
+.links{margin-top:18px;display:none;gap:10px;flex-direction:column}
+.links.on{display:flex}
+.links a{display:block;padding:11px 14px;border:1px solid var(--line);border-radius:6px;text-decoration:none;color:var(--ink);font-weight:600;font-size:14px;transition:border-color .15s,background .15s}
+.links a:hover{border-color:var(--sys);background:rgba(46,91,58,.03)}
+.links a .d{display:block;font-weight:400;font-size:12px;color:var(--ink3);margin-top:2px}
+.foot{margin-top:20px;font-size:11.5px;color:var(--ink3);text-align:center}
+.logout{margin-top:14px;text-align:center}
+.logout a{color:var(--ink3);font-size:12.5px;cursor:pointer;text-decoration:underline}
+.demo{margin-top:16px;font-size:11.5px;color:var(--ink3);border-top:1px dashed var(--line);padding-top:12px}
+.demo code{background:#EEF1EC;padding:1px 5px;border-radius:3px;font-size:11px}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+<div class="card">
+  <div class="eyebrow">ПТК · кабинет продавца</div>
+  <h1 id="ttl">Вход</h1>
+  <p class="sub" id="sub">Войдите, чтобы управлять магазином и товарами.</p>
+
+  <div id="loginForm">
+    <label for="login">Логин</label>
+    <input type="text" id="login" autocomplete="username" placeholder="ваш логин">
+    <label for="password">Пароль</label>
+    <input type="password" id="password" autocomplete="current-password" placeholder="••••••••">
+    <button class="btn" id="submit">Войти</button>
+  </div>
+
+  <div class="msg" id="msg"></div>
+
+  <div class="who" id="who"></div>
+  <div class="links" id="links">
+    <a href="shop-form.html">Создать магазин<span class="d">бренд, адрес, регион — Shop Form</span></a>
+    <a href="sku-crud.html">Товары магазина<span class="d">импорт и правка — SKU-CRUD</span></a>
+  </div>
+  <div class="logout" id="logoutBox" style="display:none"><a id="logout">Выйти</a></div>
+
+  <div class="demo" id="demo">
+    Тестовый продавец из живого L3: логин можно задать через <code>/auth/register</code> для <span class="mono">PTR-948a2938</span>. Без боевого <code>JWT_SECRET</code> на сервере вход работает на дефолтном ключе — только для проверки.
+  </div>
+  <div class="foot">Национальная Служба Взаиморасчётов · ПТК</div>
+</div>
+
+<script>
+const API = window.API_BASE;
+const $=id=>document.getElementById(id);
+const TOKEN_KEY='seller_token', SELLER_KEY='seller_id';
+
+function showMsg(text,kind){const m=$('msg');m.textContent=text;m.className='msg '+kind;}
+function clearMsg(){$('msg').className='msg';}
+
+// уже вошли? (токен в localStorage) — показать вошедшего и ссылки
+function reflectSession(){
+  const t=localStorage.getItem(TOKEN_KEY), sid=localStorage.getItem(SELLER_KEY);
+  if(t && sid){
+    $('ttl').textContent='Вы вошли';
+    $('sub').style.display='none';
+    $('loginForm').style.display='none';
+    $('demo').style.display='none';
+    $('who').textContent='Продавец: '+sid;
+    $('links').classList.add('on');
+    $('logoutBox').style.display='block';
+    // делаем токен доступным формам и в этой вкладке
+    window.SELLER_TOKEN=t;
+    return true;
+  }
+  return false;
+}
+
+async function login(){
+  clearMsg();
+  const login=$('login').value.trim(), password=$('password').value;
+  if(!login||!password){showMsg('Введите логин и пароль','err');return;}
+  $('submit').disabled=true;$('submit').textContent='Входим…';
+  try{
+    let ctrl,tid;
+    try{ctrl=new AbortController();tid=setTimeout(()=>ctrl.abort(),8000);}catch(_){ctrl=null;}
+    const r=await fetch(`${API}/api/v1/auth/login`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({login,password}),
+      ...(ctrl?{signal:ctrl.signal}:{})
+    });
+    if(tid)clearTimeout(tid);
+    if(r.status===401){showMsg('Неверный логин или пароль','err');return;}
+    if(!r.ok){showMsg('Сервер ответил '+r.status+'. Попробуйте позже.','err');return;}
+    const data=await r.json();
+    if(!data.token){showMsg('Токен не получен — проверьте сервер','err');return;}
+    // кладём токен в сессию — отсюда его берут shop-form и sku-crud
+    localStorage.setItem(TOKEN_KEY,data.token);
+    localStorage.setItem(SELLER_KEY,data.seller_id||'');
+    window.SELLER_TOKEN=data.token;
+    reflectSession();
+  }catch(e){
+    showMsg('Не удалось соединиться с сервером. Проверьте сеть.','err');
+  }finally{
+    $('submit').disabled=false;$('submit').textContent='Войти';
+  }
+}
+
+$('submit').onclick=login;
+$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+$('login').addEventListener('keydown',e=>{if(e.key==='Enter')$('password').focus();});
+$('logout').onclick=()=>{
+  localStorage.removeItem(TOKEN_KEY);localStorage.removeItem(SELLER_KEY);
+  delete window.SELLER_TOKEN;location.reload();
+};
+
+reflectSession();
+</script>
+<div style="max-width:1080px;margin:16px auto;padding:10px 16px;border-left:3px solid #1D5FBF;background:#EAF1FB;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">🧭 Вход в поток продавца (первый экран ЛК): <a href="ui-stage-map.html" style="color:#1D5FBF;font-weight:600">карта UI-этапа</a></div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Этот документ сведён с двадцатью другими в <a href="33-ui-vitrina-opisanie.html" style="font-weight:600;">интегрированное описание слоя UI и витрины</a>; выведенные величины — в <a href="34-ui-vitrina-parametry.html" style="font-weight:600;">наборе параметров U</a>.</div>
+</body>
+</html>

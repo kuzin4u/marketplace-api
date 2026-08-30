@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Витрина магазина</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --accent:#8B4513;--sys:#2E5B3A;--danger:#A62B2B;--r:10px;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,sans-serif;font-size:15px;line-height:1.5}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+/* ШАПКА БРЕНДА */
+.cover{height:150px;background:linear-gradient(135deg,var(--accent),#5a2d0c);position:relative}
+.brand-wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+.brand{display:flex;gap:18px;align-items:flex-end;margin-top:-46px;position:relative;padding-bottom:14px}
+.logo{width:92px;height:92px;border-radius:18px;background:var(--paper2);border:3px solid var(--paper2);box-shadow:0 2px 8px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:40px;flex:none;overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:cover}
+.brand-txt{padding-bottom:4px}
+.brand-txt h1{font-family:'IBM Plex Serif',Georgia,serif;font-size:26px;margin:0 0 2px;letter-spacing:-.01em}
+.brand-txt .tag{color:var(--ink2);font-size:14px}
+.brand-meta{margin-left:auto;padding-bottom:6px;text-align:right;font-size:12.5px;color:var(--ink3)}
+.rating{color:var(--accent);font-weight:600}
+.desc{max-width:1080px;margin:0 auto;padding:4px 24px 0;color:var(--ink2);font-size:14px}
+/* ПАНЕЛЬ */
+.bar{max-width:1080px;margin:18px auto 0;padding:0 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.bar .count{font-size:13px;color:var(--ink3)}
+.bar select{margin-left:auto;padding:7px 11px;border:1px solid var(--line);border-radius:6px;font-family:inherit;font-size:13.5px;background:var(--paper2)}
+/* СЕТКА ТОВАРОВ */
+.grid{max-width:1080px;margin:16px auto 60px;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.prod{background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .15s,transform .15s}
+.prod:hover{box-shadow:0 4px 14px rgba(0,0,0,.07);transform:translateY(-2px)}
+.prod .img{height:150px;background:#F0EEE9;display:flex;align-items:center;justify-content:center;font-size:44px}
+.prod .img img{width:100%;height:100%;object-fit:cover}
+.prod .body{padding:12px 14px;display:flex;flex-direction:column;gap:5px;flex:1}
+.prod .cat{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em}
+.prod .name{font-weight:600;font-size:15px;line-height:1.3}
+.prod .dsc{font-size:12.5px;color:var(--ink2);flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prod .foot{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.prod .price{font-weight:700;font-size:17px}
+.prod .stock{font-size:11.5px;color:var(--sys)}
+.prod .stock.out{color:var(--danger)}
+.prod .buy{margin-top:8px;padding:9px;border:none;border-radius:6px;background:var(--sys);color:#fff;font-weight:600;font-size:13.5px;font-family:inherit;cursor:pointer;transition:opacity .15s}
+.prod .buy:hover{opacity:.9}
+.prod .buy:disabled{background:#B9BEB6;cursor:default}
+/* СОСТОЯНИЯ */
+.state{max-width:640px;margin:70px auto;padding:0 24px;text-align:center;color:var(--ink3)}
+.state h2{font-family:'IBM Plex Serif',Georgia,serif;color:var(--ink);font-size:20px;margin:0 0 8px}
+.spin{width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.skeleton .img{background:linear-gradient(90deg,#EEE 25%,#F5F5F5 50%,#EEE 75%);background-size:200% 100%;animation:sk 1.2s infinite}
+@keyframes sk{to{background-position:-200% 0}}
+.footer{max-width:1080px;margin:0 auto;padding:20px 24px 40px;border-top:1px solid var(--line);font-size:12px;color:var(--ink3);text-align:center}
+/* КОРЗИНА */
+.cart-fab{position:fixed;bottom:24px;right:24px;width:60px;height:60px;border-radius:50%;background:var(--sys);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:50;transition:transform .15s}
+.cart-fab:hover{transform:scale(1.06)}
+.fab-badge{position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;font-size:12px;font-weight:700;min-width:22px;height:22px;border-radius:11px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.cart-panel{position:fixed;top:0;right:-400px;width:360px;max-width:90vw;height:100vh;background:var(--paper2);box-shadow:-4px 0 24px rgba(0,0,0,.12);z-index:60;transition:right .25s;display:flex;flex-direction:column}
+.cart-panel.on{right:0}
+.cart-head{padding:18px 20px;font-family:'IBM Plex Serif',Georgia,serif;font-size:19px;font-weight:600;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.cart-close{cursor:pointer;color:var(--ink3);font-size:16px}
+.cart-close:hover{color:var(--ink)}
+.cart-items{flex:1;overflow-y:auto;padding:12px 20px}
+.ci{padding:11px 0;border-bottom:1px solid var(--line)}
+.ci-t{font-weight:600;font-size:14px}.ci-q{color:var(--ink3);font-weight:400;margin-left:6px}
+.ci-r{display:flex;justify-content:space-between;align-items:center;margin-top:3px;font-size:13.5px}
+.ci-x{border:none;background:none;color:var(--ink3);cursor:pointer;font-size:13px}
+.ci-x:hover{color:var(--danger)}
+.cart-foot{padding:16px 20px;border-top:1px solid var(--line)}
+.cart-total{display:flex;justify-content:space-between;font-weight:700;font-size:17px;margin-bottom:12px}
+.cart-checkout{width:100%;padding:12px;border:none;border-radius:7px;background:var(--sys);color:#fff;font-weight:600;font-size:15px;font-family:inherit;cursor:pointer;transition:opacity .15s}
+.cart-checkout:hover{opacity:.92}.cart-checkout:disabled{opacity:.55}
+.cart-note{font-size:11.5px;color:var(--ink3);margin:10px 0 0;text-align:center;line-height:1.4}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:55;display:none}
+.cart-panel.on ~ .modal-bg,.modal-bg.on{display:block}
+/* МОДАЛКА ЧЕКАУТА */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:70;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.on{display:flex}
+.modal-card{background:var(--paper2);border-radius:12px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;padding:22px 24px}
+.modal-head{font-family:'IBM Plex Serif',Georgia,serif;font-size:20px;font-weight:600;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.co-items{margin-bottom:8px}
+.co-row{display:flex;justify-content:space-between;font-size:14px;padding:5px 0;color:var(--ink2)}
+.co-total-row{font-weight:700;font-size:16px;color:var(--ink);border-top:1px solid var(--line);margin-top:4px;padding-top:10px}
+.modal label{display:block;font-size:12.5px;font-weight:600;color:var(--ink2);margin:12px 0 4px}
+.modal input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;font-size:15px;font-family:inherit;background:var(--paper)}
+.modal input:focus{outline:none;border-color:var(--sys)}
+#coSubmit{margin-top:18px}
+.co-result{text-align:center}
+.co-check{width:52px;height:52px;border-radius:50%;background:var(--sys);color:#fff;font-size:28px;display:flex;align-items:center;justify-content:center;margin:6px auto 12px}
+.co-result h3{font-family:'IBM Plex Serif',Georgia,serif;margin:0 0 6px}
+.escrow-flow{text-align:left;margin:18px 0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.ef-step{padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink3)}
+.ef-step:last-child{border-bottom:none}
+.ef-step b{display:block;color:var(--ink3)}
+.ef-step span{font-size:12px}
+.ef-step.done{background:rgba(46,91,58,.05)}.ef-step.done b{color:var(--sys)}
+.ef-step.active{background:rgba(139,69,19,.06)}.ef-step.active b{color:var(--accent)}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:8px;font-size:13.5px;opacity:0;transition:all .25s;z-index:80;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+
+<div id="app">
+  <div class="state" id="loading"><div class="spin"></div>Загружаем витрину…</div>
+</div>
+
+<script>
+const API = window.API_BASE;
+const $=id=>document.getElementById(id);
+
+// slug магазина: из ?shop=slug, либо из пути /s/:slug, либо дефолт для демо
+function getSlug(){
+  const q=new URLSearchParams(location.search).get('shop');
+  if(q) return q;
+  const m=location.pathname.match(/\/s\/([\w-]+)/);
+  if(m) return m[1];
+  return 'test-qa-1';    // демо-магазин из живого L3
+}
+const SLUG=getSlug();
+
+const EMOJI={'CAT-BREAD':'🍞','CAT-PASTRY':'🍰','CAT-FOOD':'🛒','CAT-CRAFT':'🎨','CAT-DAIRY':'🥛','CAT-HOME':'🏠','CAT-FARM':'🌾'};
+const fmtPrice=r=>new Intl.NumberFormat('ru-RU').format(r)+' ₽';
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function timeout(ms){ try{const c=new AbortController();setTimeout(()=>c.abort(),ms);return c.signal;}catch(_){return undefined;} }
+
+async function getJSON(path){
+  const r=await fetch(`${API}${path}`,{signal:timeout(8000)});
+  if(!r.ok){ const e=new Error('http'); e.status=r.status; throw e; }
+  return r.json();
+}
+
+let state={config:null,products:[],sort:'popular',cart:[]};
+
+// ── КОРЗИНА ──
+function cartCount(){ return state.cart.reduce((s,i)=>s+i.qty,0); }
+function cartTotal(){ return state.cart.reduce((s,i)=>s+i.price*i.qty,0); }
+function findProduct(id){ return state.products.find(p=>p.id===id); }
+
+async function load(){
+  try{
+    // бренд и товары параллельно
+    const [config,prod]=await Promise.all([
+      getJSON(`/api/v1/config/${SLUG}`),
+      getJSON(`/api/v1/shop/${SLUG}/products?sort=${state.sort}`)
+    ]);
+    state.config=config; state.products=prod.products||[];
+    render(prod.total||state.products.length);
+  }catch(e){
+    if(e.status===404) renderState('Магазин не найден','Проверьте адрес витрины. Возможно, магазин ещё не создан.');
+    else renderState('Не удалось загрузить','Сервер недоступен или произошла ошибка. Попробуйте обновить страницу.');
+  }
+}
+
+async function reloadProducts(){
+  const grid=$('grid'); if(grid) grid.style.opacity='.5';
+  try{
+    const prod=await getJSON(`/api/v1/shop/${SLUG}/products?sort=${state.sort}`);
+    state.products=prod.products||[];
+    render(prod.total||state.products.length);
+  }catch(_){ if(grid) grid.style.opacity='1'; }
+}
+
+function renderState(title,text){
+  $('app').innerHTML=`<div class="state"><h2>${esc(title)}</h2><p>${esc(text)}</p></div>`;
+}
+
+function render(total){
+  const c=state.config, b=c.brand||{};
+  const accent=b.accent||'#8B4513';
+  const logo=b.logo?`<img src="${esc(b.logo)}" alt="">`:'🥖';
+  const rating=c.seller_rating?`<div class="rating">★ ${Number(c.seller_rating).toFixed(1)}</div>`:'';
+  const prods=state.products;
+
+  $('app').innerHTML=`
+    <div class="cover" style="background:linear-gradient(135deg,${esc(accent)},#00000055)"></div>
+    <div class="brand-wrap"><div class="brand">
+      <div class="logo">${logo}</div>
+      <div class="brand-txt">
+        <h1>${esc(b.name||SLUG)}</h1>
+        ${b.tagline?`<div class="tag">${esc(b.tagline)}</div>`:''}
+      </div>
+      <div class="brand-meta">${rating}<div>магазин Системы</div></div>
+    </div></div>
+    ${b.description?`<p class="desc">${esc(b.description)}</p>`:''}
+    <div class="bar">
+      <span class="count">${total} ${plural(total,'товар','товара','товаров')}</span>
+      <select id="sort">
+        <option value="popular">Сначала популярные</option>
+        <option value="cheap">Сначала дешёвые</option>
+        <option value="expensive">Сначала дорогие</option>
+        <option value="new">Сначала новые</option>
+      </select>
+    </div>
+    <div class="grid" id="grid">
+      ${prods.length?prods.map(card).join(''):''}
+    </div>
+    ${prods.length?'':`<div class="state"><h2>Пока пусто</h2><p>В этом магазине ещё нет товаров в продаже.</p></div>`}
+    <div class="footer">Живая витрина (читает API) · Национальная Служба Взаиморасчётов<span class="badge">🟢 в Системе</span><br><br>Связанные: <a href="docs/29-vitrina-dvukhurovnevaya-spec-synced.html">спецификация ст.9</a> · <a href="docs/31-vitrina-mockup-synced.html">макет</a> · <a href="docs/34-vitrina-prototype-live-synced.html">прототип</a> · <a href="docs/32-katalog-formation-ranking-synced.html">ранжирование ст.11</a> · <a href="docs/vitrina-creation-components.html">как рождается витрина</a> · <a href="docs/api-routes-seller.html">маршруты API</a> · <a href="docs/ui-stage-map.html">карта UI-этапа</a></div>
+  `;
+  const sel=$('sort'); if(sel){ sel.value=state.sort; sel.onchange=()=>{ state.sort=sel.value; reloadProducts(); }; }
+}
+
+function card(p){
+  const emoji=EMOJI[p.category_id]||'📦';
+  const img=p.images&&p.images[0]?`<img src="${esc(p.images[0])}" alt="">`:emoji;
+  const inStock=(p.stock==null)||p.stock>0;
+  return `
+    <div class="prod">
+      <div class="img">${img}</div>
+      <div class="body">
+        ${p.category_name?`<div class="cat">${esc(p.category_name)}</div>`:''}
+        <div class="name">${esc(p.title)}</div>
+        ${p.description?`<div class="dsc">${esc(p.description)}</div>`:''}
+        <div class="foot">
+          <span class="price">${fmtPrice(p.price)}</span>
+          <span class="stock ${inStock?'':'out'}">${inStock?'в наличии':'нет в наличии'}</span>
+        </div>
+        <button class="buy" data-buy="${esc(p.id)}" ${inStock?'':'disabled'} onclick="addToCart('${esc(p.id)}')">${inStock?'В корзину':'Нет в наличии'}</button>
+      </div>
+    </div>`;
+}
+
+function plural(n,one,few,many){
+  n=Math.abs(n)%100; const n1=n%10;
+  if(n>10&&n<20)return many; if(n1>1&&n1<5)return few; if(n1===1)return one; return many;
+}
+
+// добавление: резервируем сток на сервере (POST /cart/add), затем в локальную корзину
+async function addToCart(id){
+  const p=findProduct(id); if(!p) return;
+  const btn=document.querySelector(`[data-buy="${id}"]`);
+  if(btn){ btn.disabled=true; btn.textContent='Резервируем…'; }
+  try{
+    const r=await fetch(`${API}/api/v1/cart/add`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sku_id:id,qty:1,entry_point:'SHOP'}),signal:timeout(8000)
+    });
+    if(r.status===409){ const d=await r.json().catch(()=>({}));
+      toast(`Недостаточно на складе${d.available!=null?` (доступно ${d.available})`:''}`); return; }
+    if(!r.ok){ toast('Не удалось добавить — попробуйте ещё раз'); return; }
+    const existing=state.cart.find(i=>i.id===id);
+    if(existing) existing.qty++;
+    else state.cart.push({id,title:p.title,price:p.price,qty:1});
+    renderCart(); toast('Добавлено в корзину');
+  }catch(_){ toast('Сервер недоступен'); }
+  finally{ if(btn){ btn.disabled=false; btn.textContent='В корзину'; } }
+}
+
+function removeFromCart(id){
+  state.cart=state.cart.filter(i=>i.id!==id);
+  renderCart();
+  if(!state.cart.length){ const m=$('cartPanel'); if(m)m.classList.remove('on'); }
+}
+
+// ── ВИДЖЕТ КОРЗИНЫ ──
+function renderCart(){
+  const fab=$('cartFab'); if(fab){ $('cartFabCount').textContent=cartCount(); fab.style.display=cartCount()?'flex':'none'; }
+  const list=$('cartItems');
+  if(list){
+    list.innerHTML=state.cart.map(i=>`
+      <div class="ci">
+        <div class="ci-t">${esc(i.title)}<span class="ci-q">×${i.qty}</span></div>
+        <div class="ci-r"><span>${fmtPrice(i.price*i.qty)}</span>
+          <button class="ci-x" onclick="removeFromCart('${esc(i.id)}')" title="Убрать">✕</button></div>
+      </div>`).join('');
+    $('cartSum').textContent=fmtPrice(cartTotal());
+  }
+}
+function openCart(){ renderCart(); $('cartPanel').classList.add('on'); }
+function closeCart(){ $('cartPanel').classList.remove('on'); }
+
+// ── ОФОРМЛЕНИЕ: создаём заказ (эскроу-холд) ──
+function openCheckout(){
+  if(!state.cart.length) return;
+  closeCart();
+  $('coItems').innerHTML=state.cart.map(i=>`<div class="co-row"><span>${esc(i.title)} ×${i.qty}</span><span>${fmtPrice(i.price*i.qty)}</span></div>`).join('');
+  $('coTotal').textContent=fmtPrice(cartTotal());
+  $('coResult').style.display='none';
+  $('coForm').style.display='block';
+  $('checkout').classList.add('on');
+}
+function closeCheckout(){ $('checkout').classList.remove('on'); }
+
+async function submitOrder(){
+  const name=$('coName').value.trim(), phone=$('coPhone').value.trim(), addr=$('coAddr').value.trim();
+  if(!name||!phone||!addr){ toast('Заполните имя, телефон и адрес'); return; }
+  const btn=$('coSubmit'); btn.disabled=true; btn.textContent='Оформляем…';
+  try{
+    const body={
+      customer_id: 'CUST-'+phone.replace(/\D/g,'').slice(-10),
+      items: state.cart.map(i=>({sku_id:i.id, qty:i.qty})),
+      entry_point: 'SHOP',
+      shipping_address: { name, phone, address: addr }
+    };
+    const r=await fetch(`${API}/api/v1/orders`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:timeout(10000)});
+    if(!r.ok){ const d=await r.json().catch(()=>({})); toast('Не удалось оформить: '+(d.error||r.status)); return; }
+    const order=await r.json();
+    $('coForm').style.display='none';
+    $('coResult').style.display='block';
+    $('coOrderId').textContent=order.id||order.order_id||'—';
+    $('coOrderSum').textContent=fmtPrice(order.total_amount||cartTotal());
+    state.cart=[]; renderCart();
+  }catch(_){ toast('Сервер недоступен, заказ не создан'); }
+  finally{ btn.disabled=false; btn.textContent='Оформить заказ'; }
+}
+
+let toastTimer;
+function toast(m){ let t=$('toast'); if(!t){ t=document.createElement('div'); t.id='toast'; t.className='toast'; document.body.appendChild(t); }
+  t.textContent=m; t.classList.add('on'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('on'),2400); }
+
+load();
+</script>
+<!-- КНОПКА КОРЗИНЫ -->
+<div id="cartFab" class="cart-fab" style="display:none" onclick="openCart()">
+  🛒 <span id="cartFabCount" class="fab-badge">0</span>
+</div>
+
+<!-- ПАНЕЛЬ КОРЗИНЫ -->
+<div id="cartPanel" class="cart-panel">
+  <div class="cart-head">Корзина <span class="cart-close" onclick="closeCart()">✕</span></div>
+  <div id="cartItems" class="cart-items"></div>
+  <div class="cart-foot">
+    <div class="cart-total"><span>Итого</span><span id="cartSum">0 ₽</span></div>
+    <button class="cart-checkout" onclick="openCheckout()">Оформить заказ</button>
+    <p class="cart-note">Оплата удерживается в эскроу Системы до получения заказа</p>
+  </div>
+</div>
+<div id="cartBg" class="modal-bg" onclick="closeCart()"></div>
+
+<!-- ОФОРМЛЕНИЕ -->
+<div id="checkout" class="modal">
+  <div class="modal-card">
+    <div class="modal-head">Оформление заказа <span class="cart-close" onclick="closeCheckout()">✕</span></div>
+    <div id="coForm">
+      <div id="coItems" class="co-items"></div>
+      <div class="co-row co-total-row"><span>К оплате</span><span id="coTotal">0 ₽</span></div>
+      <label>Имя получателя</label><input id="coName" type="text" placeholder="Как к вам обращаться">
+      <label>Телефон</label><input id="coPhone" type="tel" placeholder="+7 900 000-00-00">
+      <label>Адрес доставки</label><input id="coAddr" type="text" placeholder="Город, улица, дом, квартира">
+      <button id="coSubmit" class="cart-checkout" onclick="submitOrder()">Оформить заказ</button>
+      <p class="cart-note">Нажимая «Оформить», вы создаёте заказ. Деньги попадут в эскроу и раскроются продавцу только после подтверждения получения.</p>
+    </div>
+    <div id="coResult" style="display:none" class="co-result">
+      <div class="co-check">✓</div>
+      <h3>Заказ создан</h3>
+      <p>Номер: <span id="coOrderId" class="mono"></span><br>Сумма: <span id="coOrderSum"></span></p>
+      <div class="escrow-flow">
+        <div class="ef-step done"><b>1. Заказ</b><span>создан, статус PENDING</span></div>
+        <div class="ef-step active"><b>2. Эскроу</b><span>деньги удерживаются Системой</span></div>
+        <div class="ef-step"><b>3. Выдача</b><span>продавец собирает и отправляет</span></div>
+        <div class="ef-step"><b>4. Раскрытие</b><span>после получения — выплата продавцу</span></div>
+      </div>
+      <button class="cart-checkout" onclick="closeCheckout()">Готово</button>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1080px;margin:16px auto;padding:10px 16px;border-left:3px solid #1D5FBF;background:#EAF1FB;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">🗺 Общая картина сайта (два типа магазина, общий каталог, общий расчёт): <a href="docs/site-overview.html" style="color:#1D5FBF;font-weight:600">как это выглядит на сайте</a></div>
+<div style="max-width:960px;margin:16px auto;padding:10px 16px;border-left:3px solid #2E5B3A;background:#EEF3EF;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">🔄 Сквозной прогон: <a href="docs/e2e-walkthrough-map.html" style="color:#2E5B3A;font-weight:600">карта шагов E2E (магазин→сделка)</a></div>
+</body>
+</html>

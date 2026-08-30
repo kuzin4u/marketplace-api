@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Волна 0 — Пилот «Распределённый маркетплейс» / Масса Матере</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --paper-line:#E4DECC;
+    --ink:#1D1B17;
+    --ink-soft:#5B5548;
+    --ledger:#233A52;
+    --ledger-soft:#3E5670;
+    --copper:#B07A34;
+    --copper-soft:#E7D4B0;
+    --good:#3D6A4B;
+    --bad:#A34A2E;
+    --card:#FCFAF4;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      repeating-linear-gradient(180deg, transparent, transparent 35px, var(--paper-line) 35px, var(--paper-line) 36px),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    padding:0 0 80px;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 32px;}
+
+  /* HEADER */
+  header{
+    padding:56px 0 28px;
+    border-bottom:2px solid var(--ink);
+    margin-bottom:36px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ledger);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow .stamp{
+    border:1.5px solid var(--copper);
+    color:var(--copper);
+    padding:2px 8px;
+    border-radius:3px;
+    font-weight:600;
+  }
+  h1{
+    font-family:'PT Serif',serif;
+    font-weight:700;
+    font-size:40px;
+    line-height:1.15;
+    margin:14px 0 10px;
+    letter-spacing:-.01em;
+  }
+  h1 em{font-style:italic;color:var(--ledger);}
+  .lede{
+    font-size:15.5px;
+    color:var(--ink-soft);
+    max-width:640px;
+    line-height:1.55;
+  }
+  .meta-row{
+    display:flex;
+    gap:28px;
+    margin-top:22px;
+    flex-wrap:wrap;
+  }
+  .meta-item{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);}
+  .meta-item b{color:var(--ink);display:block;font-size:13px;margin-top:2px;}
+  .meta-item input{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    border:none;
+    border-bottom:1px dashed var(--copper);
+    background:transparent;
+    color:var(--ink);
+    width:90px;
+    padding:2px 0;
+  }
+  .meta-item input:focus{outline:none;border-bottom-style:solid;}
+
+  /* SIGNATURE: CLEARING TIMELINE */
+  .ledger-strip{
+    margin:0 0 48px;
+    background:var(--ledger);
+    border-radius:6px;
+    padding:26px 28px 22px;
+    position:relative;
+    overflow:hidden;
+  }
+  .ledger-strip::before{
+    content:"";
+    position:absolute;top:0;left:0;right:0;height:100%;
+    background:repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,.04) 79px, rgba(255,255,255,.04) 80px);
+    pointer-events:none;
+  }
+  .ledger-strip h2{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--copper-soft);
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    margin:0 0 22px;
+  }
+  .track{display:flex;align-items:center;position:relative;}
+  .node{flex:1;position:relative;text-align:center;}
+  .node .dot{
+    width:14px;height:14px;border-radius:50%;
+    background:var(--paper);border:3px solid var(--copper);
+    margin:0 auto 10px;position:relative;z-index:2;
+  }
+  .node .line{
+    position:absolute;top:6px;left:50%;width:100%;height:2px;
+    background:var(--ledger-soft);z-index:1;
+  }
+  .node:last-child .line{display:none;}
+  .node .label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;color:var(--copper-soft);
+    text-transform:uppercase;letter-spacing:.05em;
+    margin-bottom:4px;
+  }
+  .node .stamp-time{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:14px;color:#fff;font-weight:600;
+  }
+  .node input{
+    width:56px;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:3px;color:#fff;
+    font-family:'IBM Plex Mono',monospace;font-size:13px;
+    text-align:center;padding:3px 2px;
+  }
+
+  /* SECTION */
+  .section-head{
+    display:flex;align-items:baseline;gap:14px;
+    margin:0 0 6px;
+  }
+  .section-num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;color:var(--copper);font-weight:600;
+  }
+  .section-head h2{
+    font-family:'PT Serif',serif;
+    font-size:24px;margin:0;font-weight:700;
+  }
+  .section-sub{
+    color:var(--ink-soft);font-size:14px;
+    max-width:600px;margin:0 0 18px;line-height:1.5;
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--paper-line);
+    border-left:4px solid var(--ledger);
+    border-radius:4px;
+    padding:24px 26px;
+    margin-bottom:52px;
+  }
+
+  .formula{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    background:#F1ECDD;
+    border:1px dashed var(--copper);
+    border-radius:4px;
+    padding:12px 16px;
+    color:var(--ledger);
+    margin:14px 0 20px;
+    overflow-x:auto;
+    white-space:pre;
+  }
+
+  .field-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:16px;
+    margin-bottom:20px;
+  }
+  .field{
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .field label{
+    font-size:12px;color:var(--ink-soft);
+    font-weight:500;
+  }
+  .field .input-row{
+    display:flex;align-items:baseline;gap:6px;
+    border-bottom:1.5px solid var(--ink);
+    padding-bottom:4px;
+  }
+  .field input{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:18px;font-weight:600;color:var(--ink);
+    border:none;background:transparent;width:100%;
+    padding:2px 0;
+  }
+  .field input:focus{outline:none;}
+  .field .unit{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);}
+
+  .result-row{
+    display:flex;gap:16px;flex-wrap:wrap;
+    border-top:1px solid var(--paper-line);
+    padding-top:18px;margin-top:4px;
+  }
+  .result{
+    background:#fff;
+    border:1px solid var(--paper-line);
+    border-radius:4px;
+    padding:14px 18px;
+    min-width:170px;flex:1;
+  }
+  .result .r-label{
+    font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--ink-soft);margin-bottom:6px;
+  }
+  .result .r-value{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:22px;font-weight:600;color:var(--ledger);
+  }
+  .result.good .r-value{color:var(--good);}
+  .result.bad .r-value{color:var(--bad);}
+  .result .r-note{font-size:11.5px;color:var(--ink-soft);margin-top:4px;}
+
+  /* PARTICIPANT SPLIT TABLE (Metric 2) */
+  .split-table{width:100%;border-collapse:collapse;margin-top:6px;font-size:13.5px;}
+  .split-table th{
+    text-align:left;font-family:'IBM Plex Mono',monospace;
+    font-size:11px;text-transform:uppercase;letter-spacing:.05em;
+    color:var(--ink-soft);padding:0 10px 8px 0;border-bottom:1.5px solid var(--ink);
+  }
+  .split-table td{padding:10px 10px 10px 0;border-bottom:1px solid var(--paper-line);}
+  .split-table input{
+    font-family:'IBM Plex Mono',monospace;font-size:14px;
+    border:none;border-bottom:1px dashed var(--copper);
+    background:transparent;width:90px;padding:3px 2px;
+  }
+  .split-bar-track{
+    height:8px;background:var(--paper-line);border-radius:4px;overflow:hidden;width:100%;
+  }
+  .split-bar-fill{height:100%;background:var(--ledger);}
+
+  /* verdict footer per card */
+  .verdict{
+    margin-top:18px;padding-top:14px;border-top:1px dashed var(--paper-line);
+    font-size:13.5px;color:var(--ink-soft);
+  }
+  .verdict b{color:var(--ink);}
+
+  /* NEXT STEPS */
+  .next{
+    background:var(--ink);color:var(--paper);
+    border-radius:6px;padding:30px 30px 26px;
+  }
+  .next h2{
+    font-family:'PT Serif',serif;font-size:22px;margin:0 0 6px;color:#fff;
+  }
+  .next p{color:#C9C4B4;font-size:14px;margin:0 0 18px;max-width:560px;line-height:1.5;}
+  .next ol{margin:0;padding-left:20px;color:#EDE8D9;font-size:14px;line-height:1.9;}
+  .next ol li b{color:var(--copper-soft);}
+
+  footer{
+    max-width:920px;margin:40px auto 0;padding:0 32px;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);
+    display:flex;justify-content:space-between;
+  }
+
+  @media (max-width:600px){
+    h1{font-size:30px;}
+    .track{flex-wrap:wrap;gap:18px;}
+    .node{flex:0 0 45%;}
+    .node .line{display:none;}
+  }
+</style>
+</head>
+<body>
+<div style="max-width:1000px;margin:0 auto 18px;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 2 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Документ стратегического слоя (обоснование бизнес-модели), на который опирается <b>Преамбула Правил системы (ред. 2)</b>. При расхождении норма — Правила.</div>
+  <div><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Преамбула — концепция</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 13 — вступление (пилот)</span></div>
+</div>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Волна 0 <span class="stamp">пилот, без внешних участников</span></div>
+    <h1>Доказательство модели<br><em>«Распределённый маркетплейс»</em> на Масса Матере</h1>
+    <p class="lede">Три измерения на живых данных бота massamadre.ru — до того, как звать первых внешних селлеров. Впишите ваши цифры из Sheets/аналитики — расчёты и вывод обновятся автоматически.</p>
+    <div class="meta-row">
+      <div class="meta-item">Период наблюдения<br><input type="text" id="periodField" value="6 недель"></div>
+      <div class="meta-item">Источник данных<br><b>Google Sheets · admin panel</b></div>
+      <div class="meta-item">Статус<br><b style="color:#B07A34">заполняется</b></div>
+    </div>
+  </header>
+
+  <!-- SIGNATURE ELEMENT: CLEARING TIMELINE -->
+  <div class="ledger-strip">
+    <h2>Цепочка расчёта одного заказа — журнал прохождения</h2>
+    <div class="track">
+      <div class="node">
+        <div class="line"></div>
+        <div class="dot"></div>
+        <div class="label">Заказ создан</div>
+        <div class="stamp-time">День 0 · <input type="text" value="00:00"></div>
+      </div>
+      <div class="node">
+        <div class="line"></div>
+        <div class="dot"></div>
+        <div class="label">Оплата подтверждена</div>
+        <div class="stamp-time">+<input type="text" value="12" style="width:34px"> мин</div>
+      </div>
+      <div class="node">
+        <div class="line"></div>
+        <div class="dot"></div>
+        <div class="label">Заказ закрыт</div>
+        <div class="stamp-time">+<input type="text" value="1.5" style="width:34px"> дн</div>
+      </div>
+      <div class="node">
+        <div class="dot"></div>
+        <div class="label">Расчёт сверен</div>
+        <div class="stamp-time">+<input type="text" value="2" style="width:34px"> дн</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- METRIC 1 -->
+  <div class="section-head"><span class="section-num">01</span><h2>Клиринг — время и точность расчёта</h2></div>
+  <p class="section-sub">Доказывает п.7 документа: организатор выполняет функции клиринга. Считаем время закрытия сделки и долю расхождений при сверке.</p>
+  <div class="card">
+    <div class="formula">Время_клиринга = Timestamp(закрыт) − Timestamp(создан)
+Доля_расхождений = Заказы_с_расхождением / Всего_заказов × 100%</div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>Всего заказов за период</label>
+        <div class="input-row"><input type="number" id="m1_total" value="140"><span class="unit">шт</span></div>
+      </div>
+      <div class="field">
+        <label>Суммарное время закрытия (среднее)</label>
+        <div class="input-row"><input type="number" id="m1_avgtime" value="38" step="0.1"><span class="unit">часов</span></div>
+      </div>
+      <div class="field">
+        <label>Заказы с расхождением суммы</label>
+        <div class="input-row"><input type="number" id="m1_mismatches" value="6"><span class="unit">шт</span></div>
+      </div>
+      <div class="field">
+        <label>Целевое время закрытия (baseline)</label>
+        <div class="input-row"><input type="number" id="m1_target" value="24" step="0.1"><span class="unit">часов</span></div>
+      </div>
+    </div>
+
+    <div class="result-row">
+      <div class="result" id="m1_res_time"><div class="r-label">Среднее время клиринга</div><div class="r-value">—</div><div class="r-note">факт за период</div></div>
+      <div class="result" id="m1_res_mismatch"><div class="r-label">Доля расхождений</div><div class="r-value">—</div><div class="r-note">от всех заказов</div></div>
+      <div class="result" id="m1_res_delta"><div class="r-label">Отклонение от цели</div><div class="r-value">—</div><div class="r-note">факт vs целевое время</div></div>
+    </div>
+    <div class="verdict" id="m1_verdict">Впишите цифры выше — вывод появится здесь.</div>
+  </div>
+
+  <!-- METRIC 2 -->
+  <div class="section-head"><span class="section-num">02</span><h2>Распределение маржи по вкладу</h2></div>
+  <p class="section-sub">Доказывает п.13–16: принцип сбалансированности. Тестируем на двух звеньях процесса — сборка заказа и доставка/самовывоз, распределяя маржу пропорционально скорости.</p>
+  <div class="card">
+    <div class="formula">Вклад_i = 1 / Среднее_время_i
+Доля_i = Вклад_i / Σ(Вклад_всех) × Доступная_маржа</div>
+
+    <div class="field">
+      <label style="margin-bottom:10px;display:block;">Доступная маржа за период</label>
+      <div class="input-row" style="max-width:220px;"><input type="number" id="m2_margin" value="48000"><span class="unit">₽</span></div>
+    </div>
+
+    <table class="split-table" style="margin-top:20px;">
+      <thead>
+        <tr><th>Звено</th><th>Среднее время</th><th>Вклад</th><th>Доля маржи</th><th></th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Сборка заказа</td>
+          <td><input type="number" id="m2_t1" value="25" step="0.1"> мин</td>
+          <td id="m2_v1">—</td>
+          <td id="m2_p1">—</td>
+          <td style="min-width:120px;"><div class="split-bar-track"><div class="split-bar-fill" id="m2_bar1" style="width:0%"></div></div></td>
+        </tr>
+        <tr>
+          <td>Доставка / самовывоз</td>
+          <td><input type="number" id="m2_t2" value="60" step="0.1"> мин</td>
+          <td id="m2_v2">—</td>
+          <td id="m2_p2">—</td>
+          <td style="min-width:120px;"><div class="split-bar-track"><div class="split-bar-fill" id="m2_bar2" style="width:0%"></div></div></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="verdict" id="m2_verdict">Впишите время — распределение пересчитается автоматически.</div>
+  </div>
+
+  <!-- METRIC 3 -->
+  <div class="section-head"><span class="section-num">03</span><h2>Экономика расчётного портала</h2></div>
+  <p class="section-sub">Доказывает п.8 и проверяет юнит-экономику организатора: покрывает ли тариф 0,1–0,2% реальные издержки расчётов при текущем объёме.</p>
+  <div class="card">
+    <div class="formula">Гипотетическая_комиссия = GMV × Тариф
+Текущие_издержки = (Часы_сверки × Ставка_часа) + Комиссия_платёжного_провайдера
+Покрытие = Гипотетическая_комиссия / Текущие_издержки × 100%</div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>GMV за период</label>
+        <div class="input-row"><input type="number" id="m3_gmv" value="620000"><span class="unit">₽</span></div>
+      </div>
+      <div class="field">
+        <label>Тариф расчётного портала</label>
+        <div class="input-row"><input type="number" id="m3_rate" value="0.15" step="0.01"><span class="unit">%</span></div>
+      </div>
+      <div class="field">
+        <label>Часы ручной сверки за период</label>
+        <div class="input-row"><input type="number" id="m3_hours" value="9" step="0.5"><span class="unit">ч</span></div>
+      </div>
+      <div class="field">
+        <label>Ставка часа (условная)</label>
+        <div class="input-row"><input type="number" id="m3_wage" value="1200"><span class="unit">₽/ч</span></div>
+      </div>
+      <div class="field">
+        <label>Комиссия платёжного провайдера</label>
+        <div class="input-row"><input type="number" id="m3_paycom" value="8500"><span class="unit">₽</span></div>
+      </div>
+    </div>
+
+    <div class="result-row">
+      <div class="result" id="m3_res_fee"><div class="r-label">Гипотетическая комиссия</div><div class="r-value">—</div><div class="r-note">по тарифу</div></div>
+      <div class="result" id="m3_res_cost"><div class="r-label">Текущие издержки расчётов</div><div class="r-value">—</div><div class="r-note">труд + провайдер</div></div>
+      <div class="result" id="m3_res_cover"><div class="r-label">Покрытие</div><div class="r-value">—</div><div class="r-note">комиссия / издержки</div></div>
+    </div>
+    <div class="verdict" id="m3_verdict">Впишите цифры выше — покрытие пересчитается.</div>
+  </div>
+
+  <!-- NEXT STEPS -->
+  <div class="next">
+    <h2>Мостик к Волне 1</h2>
+    <p>Когда все три метрики заполнены реальными цифрами за 4–6 недель, это уже не гипотеза, а кейс с числами, который можно показать первым внешним селлерам.</p>
+    <ol>
+      <li><b>Зафиксировать верхний лимит комиссии</b> расчётного портала — обязательно перед приглашением волны 1</li>
+      <li><b>Решить архитектурный вопрос:</b> клиринг работает поверх Stage 1 НСВР или строится параллельно</li>
+      <li><b>Сформулировать оффер волны 1</b> только вокруг клиринга/расчётов — без требования делиться клиентской базой</li>
+      <li><b>Подобрать 5–15 селлеров</b> через существующие связи (консалтинг, знакомые в одной товарной нише)</li>
+    </ol>
+  </div>
+
+</div>
+
+<footer>
+  <span>Волна 0 · Масса Матере (SeMaVi)</span> · <a href="system-layer-navigator.html" style="color:#1D5FBF">навигатор системного слоя</a>
+  <span id="footerDate"></span>
+</footer>
+
+<script>
+function fmt(n, digits=0){
+  if(isNaN(n)) return '—';
+  return n.toLocaleString('ru-RU', {minimumFractionDigits:digits, maximumFractionDigits:digits});
+}
+
+function recalc(){
+  // ---- Metric 1: Clearing ----
+  const total = parseFloat(document.getElementById('m1_total').value) || 0;
+  const avgTime = parseFloat(document.getElementById('m1_avgtime').value) || 0;
+  const mismatches = parseFloat(document.getElementById('m1_mismatches').value) || 0;
+  const target = parseFloat(document.getElementById('m1_target').value) || 0;
+
+  const mismatchPct = total > 0 ? (mismatches/total*100) : 0;
+  const delta = avgTime - target;
+
+  document.querySelector('#m1_res_time .r-value').textContent = fmt(avgTime,1) + ' ч';
+  document.querySelector('#m1_res_mismatch .r-value').textContent = fmt(mismatchPct,1) + '%';
+  const deltaEl = document.querySelector('#m1_res_delta .r-value');
+  deltaEl.textContent = (delta>=0?'+':'') + fmt(delta,1) + ' ч';
+
+  const m1_time_card = document.getElementById('m1_res_delta');
+  m1_time_card.classList.remove('good','bad');
+  m1_time_card.classList.add(delta<=0 ? 'good':'bad');
+
+  const mismatchCard = document.getElementById('m1_res_mismatch');
+  mismatchCard.classList.remove('good','bad');
+  mismatchCard.classList.add(mismatchPct<=5 ? 'good':'bad');
+
+  let m1verdict = `За период ${fmt(total,0)} заказов, среднее время клиринга — ${fmt(avgTime,1)} ч `;
+  m1verdict += delta<=0 ? `(быстрее целевого на ${fmt(Math.abs(delta),1)} ч — модель клиринга работает).` : `(медленнее целевого на ${fmt(delta,1)} ч — есть что улучшать до волны 1).`;
+  m1verdict += ` Расхождений — ${fmt(mismatchPct,1)}% от заказов.`;
+  document.getElementById('m1_verdict').innerHTML = m1verdict;
+
+  // ---- Metric 2: Margin split ----
+  const margin = parseFloat(document.getElementById('m2_margin').value) || 0;
+  const t1 = parseFloat(document.getElementById('m2_t1').value) || 0.0001;
+  const t2 = parseFloat(document.getElementById('m2_t2').value) || 0.0001;
+  const v1 = 1/t1, v2 = 1/t2;
+  const vsum = v1+v2;
+  const p1 = vsum>0 ? v1/vsum : 0;
+  const p2 = vsum>0 ? v2/vsum : 0;
+
+  document.getElementById('m2_v1').textContent = fmt(v1,4);
+  document.getElementById('m2_v2').textContent = fmt(v2,4);
+  document.getElementById('m2_p1').textContent = fmt(p1*100,1)+'% · '+fmt(p1*margin,0)+' ₽';
+  document.getElementById('m2_p2').textContent = fmt(p2*100,1)+'% · '+fmt(p2*margin,0)+' ₽';
+  document.getElementById('m2_bar1').style.width = (p1*100)+'%';
+  document.getElementById('m2_bar2').style.width = (p2*100)+'%';
+
+  document.getElementById('m2_verdict').innerHTML =
+    `При текущей скорости звеньев формула распределяет ${fmt(p1*100,1)}% маржи на сборку и ${fmt(p2*100,1)}% на доставку/самовывоз — пропорционально их вкладу в общее время сделки, а не поровну и не интуитивно.`;
+
+  // ---- Metric 3: Portal economics ----
+  const gmv = parseFloat(document.getElementById('m3_gmv').value) || 0;
+  const rate = parseFloat(document.getElementById('m3_rate').value) || 0;
+  const hours = parseFloat(document.getElementById('m3_hours').value) || 0;
+  const wage = parseFloat(document.getElementById('m3_wage').value) || 0;
+  const paycom = parseFloat(document.getElementById('m3_paycom').value) || 0;
+
+  const fee = gmv * (rate/100);
+  const cost = hours*wage + paycom;
+  const coverage = cost>0 ? (fee/cost*100) : 0;
+
+  document.querySelector('#m3_res_fee .r-value').textContent = fmt(fee,0) + ' ₽';
+  document.querySelector('#m3_res_cost .r-value').textContent = fmt(cost,0) + ' ₽';
+  document.querySelector('#m3_res_cover .r-value').textContent = fmt(coverage,0) + '%';
+
+  const coverCard = document.getElementById('m3_res_cover');
+  coverCard.classList.remove('good','bad');
+  coverCard.classList.add(coverage>=100 ? 'good':'bad');
+
+  let m3verdict = `При GMV ${fmt(gmv,0)} ₽ и тарифе ${fmt(rate,2)}% гипотетическая комиссия составит ${fmt(fee,0)} ₽ — `;
+  m3verdict += coverage>=100
+    ? `это покрывает ${fmt(coverage,0)}% текущих издержек расчётов. Тариф жизнеспособен уже на этом объёме.`
+    : `это покрывает лишь ${fmt(coverage,0)}% текущих издержек расчётов. Нужен либо больший GMV, либо пересмотр верхнего лимита тарифа перед волной 1.`;
+  document.getElementById('m3_verdict').innerHTML = m3verdict;
+}
+
+document.querySelectorAll('input[type="number"]').forEach(el => el.addEventListener('input', recalc));
+recalc();
+
+document.getElementById('footerDate').textContent = new Date().toLocaleDateString('ru-RU', {day:'2-digit',month:'long',year:'numeric'});
+</script>
+</body>
+</html>

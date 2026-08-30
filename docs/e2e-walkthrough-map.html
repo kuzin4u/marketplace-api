@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сквозной прогон E2E — магазин → сделка</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --ok:#0F7B4A;--live:#2E5B3A;--warn:#A62B2B;--wait:#8A5A12;--r:8px;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,sans-serif;font-size:15px;line-height:1.55}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px 80px}
+header.top{background:var(--paper2);border-bottom:1px solid var(--line)}
+.top-in{max-width:960px;margin:0 auto;padding:24px 24px 18px}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+h1{font-family:'IBM Plex Serif',Georgia,serif;font-size:clamp(22px,3vw,30px);margin:8px 0 6px;letter-spacing:-.02em}
+.sub{color:var(--ink2);max-width:82ch;margin:0}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin:14px 0 0;font-size:12.5px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.dot.ok{background:var(--ok)}.dot.live{background:var(--live)}.dot.wait{background:var(--wait)}.dot.warn{background:var(--warn)}
+.step{background:var(--paper2);border:1px solid var(--line);border-radius:12px;margin:16px 0;overflow:hidden}
+.step-head{display:flex;align-items:center;gap:13px;padding:14px 18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#FBFCFA,#fff)}
+.num{flex:none;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;font-weight:600;text-align:center;line-height:30px;font-size:14px}
+.step.done .num{background:var(--ok)}
+.step-head .t{font-weight:700;font-size:16px}
+.step-head .stat{margin-left:auto;font-size:11px;font-weight:700;padding:3px 11px;border-radius:99px}
+.stat.ok{background:#EAF3EC;color:var(--ok);border:1px solid #A9CDB4}
+.stat.live{background:#E5F3EA;color:var(--live);border:1px solid #A9CDB4}
+.stat.wait{background:#FBF1E2;color:var(--wait);border:1px solid #E0BC85}
+.stat.warn{background:#FBEAEA;color:var(--warn);border:1px solid #E3A9A9}
+.step-body{padding:14px 18px}
+.step-body p{margin:4px 0 10px}
+.row{display:flex;gap:10px;margin:8px 0;align-items:baseline}
+.row .k{flex:none;width:110px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);font-weight:600;padding-top:2px}
+.row .v{flex:1;font-size:13.5px}
+.ep{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:#EEF1EC;padding:2px 8px;border-radius:5px;display:inline-block}
+.tool{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--live);font-weight:600}
+.check{font-size:13px;color:var(--ink2);border-left:3px solid var(--ok);padding:4px 0 4px 12px;margin:6px 0}
+.stopline{border-top:2px dashed var(--warn);margin:26px 0 6px;position:relative}
+.stoplabel{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--paper);padding:0 14px;font-size:12px;font-weight:700;color:var(--warn);letter-spacing:.04em;text-transform:uppercase}
+.stopbox{border:1px solid #E3A9A9;border-left:3px solid var(--warn);background:#FDF6F6;border-radius:var(--r);padding:13px 16px;margin:8px 0;font-size:13.5px}
+.stopbox b{color:var(--warn)}
+h2{font-family:'IBM Plex Serif',Georgia,serif;font-size:19px;margin:30px 0 8px}
+.pick{border:1px solid var(--line);border-radius:var(--r);background:var(--paper2);padding:6px 0;margin:10px 0}
+.pick-row{display:flex;gap:12px;padding:10px 16px;align-items:baseline;border-bottom:1px solid var(--line)}
+.pick-row:last-child{border-bottom:none}
+.pick-row .lbl{flex:none;width:120px;font-weight:600;font-size:13.5px}
+.pick-row .d{flex:1;font-size:13px;color:var(--ink2)}
+footer{border-top:1px solid var(--line);margin-top:32px;padding-top:16px;font-size:12.5px;color:var(--ink3)}
+footer a{color:var(--live)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="eyebrow">ПТК · сквозной прогон Системы E2E</div>
+    <h1>Магазин → каталог → карточка → сделка</h1>
+    <p class="sub">Карта сквозного прогона на живом API (Render + Supabase). Показывает каждый шаг, реальный эндпоинт, чем проверяем и на каком шаге упираемся в отсутствие банка. Зелёное — уже работает вживую, жёлтое — ждёт банк, красное — стоп-точка.</p>
+    <div class="legend">
+      <span><span class="dot live"></span> проверено вживую</span>
+      <span><span class="dot ok"></span> готово к прогону</span>
+      <span><span class="dot wait"></span> ждёт банк</span>
+      <span><span class="dot warn"></span> стоп-точка</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- 1 -->
+<div class="step done">
+  <div class="step-head"><span class="num">1</span><span class="t">Вход продавца</span><span class="stat live">проверено L3</span></div>
+  <div class="step-body">
+    <p>Продавец входит в ЛК, получает токен со своим <span class="mono">seller_id</span>. Токен подставляется во все дальнейшие действия — подмена невозможна.</p>
+    <div class="row"><div class="k">Инструмент</div><div class="v"><span class="tool">seller-login.html</span> → форма логин/пароль</div></div>
+    <div class="row"><div class="k">Эндпоинт</div><div class="v"><span class="ep">POST /api/v1/auth/login</span> → JWT</div></div>
+    <div class="row"><div class="k">Проверка</div><div class="v"><div class="check">токен получен, внутри реальный seller_id</div></div></div>
+    <div class="row"><div class="k">Условие</div><div class="v">требует врезки <span class="mono">auth-seller.js</span> в server.js (написана, 15/15; если не врезана — можно временно взять seller_id из базы напрямую для прогона)</div></div>
+  </div>
+</div>
+
+<!-- 2 -->
+<div class="step done">
+  <div class="step-head"><span class="num">2</span><span class="t">Завести магазин</span><span class="stat live">проверено L3</span></div>
+  <div class="step-body">
+    <p>Продавец создаёт витрину: бренд, адрес, регион, каналы. Появляется запись <span class="mono">shops</span> с id вида <span class="mono">SHOP-slug</span>, авто-бот <span class="mono">@slug_shop_bot</span>, публичный адрес <span class="mono">/s/slug</span>.</p>
+    <div class="row"><div class="k">Инструмент</div><div class="v"><span class="tool">shop-form.html</span> → wizard 4 экрана</div></div>
+    <div class="row"><div class="k">Эндпоинт</div><div class="v"><span class="ep">POST /api/v1/shops</span></div></div>
+    <div class="row"><div class="k">Проверка</div><div class="v"><div class="check">сервер вернул shop_id, магазин читается через GET /shop/:slug</div></div></div>
+    <div class="row"><div class="k">Готовое</div><div class="v">на проде уже есть <span class="mono">SHOP-massamadre</span> — можно прогон на нём, не создавая новый</div></div>
+  </div>
+</div>
+
+<!-- 3 -->
+<div class="step done">
+  <div class="step-head"><span class="num">3</span><span class="t">Каталог + карточка товара</span><span class="stat live">проверено вживую</span></div>
+  <div class="step-body">
+    <p>Продавец заводит товары. С <span class="mono">visible_catalog=TRUE</span> товар попадает в каталог Системы, с <span class="mono">visible_shop=TRUE</span> — на витрину. Уровень сервиса берётся из конфигуратора (трек B).</p>
+    <div class="row"><div class="k">Инструмент</div><div class="v"><span class="tool">sku-crud.html</span> → Quick add / CSV</div></div>
+    <div class="row"><div class="k">Эндпоинты</div><div class="v"><span class="ep">POST /seller/:id/products</span> · <span class="ep">GET /catalog/categories</span> · <span class="ep">GET /catalog/search</span></div></div>
+    <div class="row"><div class="k">Проверка</div><div class="v"><div class="check">товар создан, виден в каталоге и на витрине; конфигуратор отдаёт его схему (SKU-005 зефир → ранг 2)</div></div></div>
+    <div class="row"><div class="k">Готовое</div><div class="v">6 боевых товаров: 4 хлеба + зефир + печенье, три схемы уже работают</div></div>
+  </div>
+</div>
+
+<!-- 4 -->
+<div class="step">
+  <div class="step-head"><span class="num">4</span><span class="t">Покупатель: витрина → корзина</span><span class="stat ok">готово к прогону</span></div>
+  <div class="step-body">
+    <p>Покупатель открывает витрину, кладёт товар в корзину. Сток резервируется атомарно (нельзя продать больше, чем есть).</p>
+    <div class="row"><div class="k">Инструмент</div><div class="v"><span class="tool">vitrina-live.html</span> → сетка карточек + корзина</div></div>
+    <div class="row"><div class="k">Эндпоинты</div><div class="v"><span class="ep">GET /shop/:slug/products</span> · <span class="ep">POST /cart/add</span> (409 при нехватке стока)</div></div>
+    <div class="row"><div class="k">Проверка</div><div class="v"><div class="check">товар в корзине, сток зарезервирован; повторный сверх остатка → 409</div></div></div>
+  </div>
+</div>
+
+<!-- 5 -->
+<div class="step">
+  <div class="step-head"><span class="num">5</span><span class="t">Оформление заказа</span><span class="stat ok">готово к прогону</span></div>
+  <div class="step-body">
+    <p>Покупатель оформляет: имя, телефон, адрес. Сервер считает сумму сам, создаёт заказ. По <span class="mono">entry_point</span> определяется источник: SHOP → MIGRATED, CATALOG/агент → NETWORK (эскроу).</p>
+    <div class="row"><div class="k">Эндпоинт</div><div class="v"><span class="ep">POST /api/v1/orders</span> — items[{sku_id,qty}], сумма считается СЕРВЕРОМ</div></div>
+    <div class="row"><div class="k">Результат</div><div class="v">заказ <span class="mono">ORD-…</span> создан со статусом <span class="mono">PENDING</span> = вход в эскроу-контур</div></div>
+    <div class="row"><div class="k">Проверка</div><div class="v"><div class="check">GET /orders/:id возвращает заказ PENDING с верной суммой и составом</div></div></div>
+  </div>
+</div>
+
+<!-- STOP -->
+<div class="stopline"><span class="stoplabel">⬇ здесь упираемся ⬇</span></div>
+<div class="stopbox">
+  <b>Стоп-точка: реальная оплата.</b> Заказ создан и <b>вошёл в эскроу (PENDING)</b> — это предельная точка, докуда Система доходит сегодня. Следующий шаг — списать деньги с карты покупателя (СБП/эквайринг) и удержать их в эскроу до выдачи. Этого <b>нет</b>: платёж требует банка-партнёра (требования R1-R14), которого пока нет. Это архитектурный предел, зафиксированный в модели (Трек A стартует на СБП, R1 = блокер полной ценности, не запуска).
+</div>
+
+<!-- 6 -->
+<div class="step">
+  <div class="step-head"><span class="num">6</span><span class="t">Оплата → удержание в эскроу</span><span class="stat wait">ждёт банк</span></div>
+  <div class="step-body">
+    <p>Покупатель платит (СБП/карта), деньги удерживаются на эскроу-счёте Расчётного Банка до подтверждения выдачи. Эскроу = authorization hold, растянутый до подтверждения.</p>
+    <div class="row"><div class="k">Нужно</div><div class="v">BankAdapter + Расчётный Банк (R1-R9 обязательные). Слой спроектирован (payment-platform-*), кода нет — ждёт партнёра</div></div>
+    <div class="row"><div class="k">Сейчас</div><div class="v">заказ висит в PENDING; можно вручную пометить как «оплачен» для прогона дальнейших шагов, но реального движения денег нет</div></div>
+  </div>
+</div>
+
+<!-- 7 -->
+<div class="step">
+  <div class="step-head"><span class="num">7</span><span class="t">Выдача → клиринг → выплата</span><span class="stat wait">ждёт банк</span></div>
+  <div class="step-body">
+    <p>Продавец передаёт товар, покупатель подтверждает. Эскроу раскрывается: клиринг делит сумму (take-rate Системы vs выплата продавцу), деньги уходят продавцу за вычетом доли.</p>
+    <div class="row"><div class="k">Логика</div><div class="v">clearing_splits в базе есть, сплит считается; но раскрытие эскроу и реальная выплата — через банк</div></div>
+    <div class="row"><div class="k">Визуализация</div><div class="v"><span class="tool">vitrina-live</span> уже рисует поток 4 шага (заказ→эскроу→выдача→раскрытие) — как это будет выглядеть</div></div>
+  </div>
+</div>
+
+<h2>Что реально прогоним сегодня</h2>
+<div class="pick">
+  <div class="pick-row"><div class="lbl" style="color:var(--live)">Шаги 1-5</div><div class="d">полностью, на живом API: вход → магазин → каталог → карточка → корзина → <b>заказ в эскроу (PENDING)</b>. Это и есть «провести сделку» в доступном сегодня смысле.</div></div>
+  <div class="pick-row"><div class="lbl" style="color:var(--wait)">Шаги 6-7</div><div class="d">показываем как визуализацию/схему (поток эскроу нарисован), но без реального движения денег — ждут банк.</div></div>
+</div>
+
+<h2>С чего начать прогон</h2>
+<div class="pick">
+  <div class="pick-row"><div class="lbl">Быстрый</div><div class="d">на готовом <span class="mono">SHOP-massamadre</span> — сразу шаги 4-5 (покупатель → корзина → заказ). Быстрее всего к «сделке».</div></div>
+  <div class="pick-row"><div class="lbl">Полный</div><div class="d">с шага 1 — новый тестовый магазин, весь путь селлера + покупателя.</div></div>
+</div>
+
+<footer>
+  Карта сквозного прогона E2E · часть пула. Связанные: <a href="../vitrina-live.html">живая витрина</a>, <a href="site-overview.html">обзор сайта</a>, <a href="massamadre-catalog-settlement.html">каталог и расчёты массамадре</a>, <a href="payment-platform-requirements.html">требования к банку R1-R14</a>, <a href="alpha-deploy-guide.html">размещение альфы</a>, <a href="ui-stage-map.html">карта UI-этапа</a>.
+</footer>
+</div>
+</body>
+</html>

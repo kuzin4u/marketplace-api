@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Архитектура ПТК · Распределённый маркетплейс</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+/* header */
+.hdr{padding:28px 0 20px;border-bottom:2px solid var(--ac);margin-bottom:20px}
+.hdr h1{font-size:20px;font-weight:700;color:var(--ac);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+/* tabs */
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:18px;overflow-x:auto;gap:0;-webkit-overflow-scrolling:touch}
+.tab{padding:7px 14px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.15s}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.sec{display:none}.sec.on{display:block}
+/* cards, tables, badges */
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}
+.c ul{padding-left:16px;margin:4px 0 6px}.c li{margin-bottom:3px}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:11px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:3px;vertical-align:middle}
+.b-n{background:var(--ac2);color:var(--ac)}.b-c{background:var(--wr2);color:var(--wr)}
+.b-k{background:var(--gn2);color:var(--gn)}.b-r{background:var(--rd2);color:var(--rd)}
+.st-ref{font-size:10px;color:var(--pr);background:var(--pr2);padding:1px 6px;border-radius:3px;font-weight:600;white-space:nowrap}
+/* callout */
+.co{padding:12px 16px;border-radius:6px;margin-bottom:10px;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.st{font-size:15px;font-weight:600;margin-bottom:12px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+/* grid */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+@media(max-width:700px){.g2{grid-template-columns:1fr}}
+.ab{border:1px solid var(--bd);border-radius:6px;padding:12px;background:var(--card)}
+.ab.hl{border-color:var(--ac);border-width:2px}
+.ab h4{font-size:12.5px;font-weight:600;margin-bottom:4px}
+/* layers */
+.ls{display:flex;flex-direction:column;gap:1px;margin:10px 0}
+.ly{display:flex;align-items:stretch;border-radius:5px;overflow:hidden;min-height:42px}
+.ly-l{width:170px;min-width:170px;padding:8px 12px;font-size:11px;font-weight:600;display:flex;align-items:center}
+.ly-c{flex:1;padding:8px 12px;font-size:11px;display:flex;align-items:center;flex-wrap:wrap;gap:3px}
+.ch{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10.5px;background:rgba(255,255,255,.5)}
+.ch-n{background:var(--ac2);font-weight:600}
+.ly-0 .ly-l{background:#042c53;color:#b5d4f4}.ly-0 .ly-c{background:#e6f1fb;color:#0c447c}
+.ly-1 .ly-l{background:#084a38;color:#9fe1cb}.ly-1 .ly-c{background:#e0f4ed;color:#04342c}
+.ly-2 .ly-l{background:#26215c;color:#cecbf6}.ly-2 .ly-c{background:#edecfe;color:#3c3489}
+.ly-3 .ly-l{background:#6e2e10;color:#f5c4b3}.ly-3 .ly-c{background:#faeae4;color:#4a1b0c}
+.ly-4 .ly-l{background:#3e3e3c;color:#d3d1c7}.ly-4 .ly-c{background:#f0efe8;color:#2c2c2a}
+/* fsm */
+.fsm{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0}
+.fs{padding:3px 8px;border-radius:3px;font-size:10.5px;font-weight:500}
+.fs-k{background:var(--gn2);color:var(--gn)}.fs-n{background:var(--ac2);color:var(--ac)}.fs-c{background:var(--wr2);color:var(--wr)}
+/* connector */
+.cn{display:flex;gap:6px;padding:5px 0;border-bottom:1px solid var(--bd);font-size:11.5px;align-items:baseline}
+.cn:last-child{border-bottom:none}
+/* risk */
+.rr{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd);align-items:flex-start}
+.rr:last-child{border-bottom:none}
+.ri{min-width:28px;height:18px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.ri-h{background:var(--rd2);color:var(--rd)}.ri-m{background:var(--wr2);color:var(--wr)}.ri-l{background:var(--gn2);color:var(--gn)}
+.rb{flex:1}.rb strong{font-size:11.5px;display:block;margin-bottom:1px}.rb span{font-size:11px;color:var(--t2)}
+/* print */
+@media print{.tabs{display:none}.sec{display:block!important;page-break-inside:avoid;margin-bottom:20px}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Архитектура ПТК НСВР<br>Корректировка под Распределённый Маркетплейс</h1>
+  <p>На основе: «Архитектура ПТК» v1.0 (июль 2026, 8 микросервисов, 12 разделов) + «Правила системы» ред. 2 (13 статей)</p>
+  <div class="meta">Версия 3.0 · Август 2026 · Каждое изменение привязано к статье Правил</div>
+<div style="max-width:1100px;margin:0 auto 18px;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 2 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Технический комплекс (ПТК) реализует нормы <b>Правил системы (ред. 2)</b>. Модули ПТК: Deal Engine (01), Escrow + Contract (02), Auth (03), Notification/Widget/Admin (04), Widget deep (05), Admin deep (06), Contract Builder deep (07), Web App + Arbitrage (08), <a href="09_clearing_engine_deep.html" style="color:#2a6cb6;font-weight:600;">Clearing Engine (09)</a>, <a href="10_registry_service_deep.html" style="color:#2a6cb6;font-weight:600;">Registry Service (10)</a>, <a href="11_marketplace_service_deep.html" style="color:#2a6cb6;font-weight:600;">Marketplace Service (11)</a>. Карта реализации: <a href="ptk-realization-map.html" style="color:#2a6cb6;font-weight:600;">Карта соответствия ПТК и Реализация</a>. Агентный слой: <a href="agentic-commerce-architecture.html" style="color:#2a6cb6;font-weight:600;">Архитектура агентной коммерции</a>.</div>
+  <div><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 2 — платёжные системы</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 3 — услуги/тарифы</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 6 — клиринг-сплит</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 9 — витрина</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 10 — база</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 11 — маршрутизация</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 12 — арбитраж</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 13 — вступление/выход</span></div>
+</div>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab on" data-t="s1">Сводка</div>
+  <div class="tab" data-t="s2">Слои и сервисы</div>
+  <div class="tab" data-t="s3">Deal Engine FSM</div>
+  <div class="tab" data-t="s4">Escrow + клиринг</div>
+  <div class="tab" data-t="s5">Registry + Auth</div>
+  <div class="tab" data-t="s6">Contract + витрина</div>
+  <div class="tab" data-t="s7">Каналы</div>
+  <div class="tab" data-t="s8">Инфра и бюджет</div>
+  <div class="tab" data-t="s9">Риски и roadmap</div>
+</div>
+
+<!-- ═══════════════ TAB 1: СВОДКА ═══════════════ -->
+<div class="sec on" id="s1">
+<div class="st">Сводка корректировок</div>
+
+<div class="co co-a"><b>Исходная точка.</b>ПТК НСВР — микросервисная платформа: 8 сервисов (Go / Python / Node.js), Kubernetes (Selectel MKS, ФСТЭК), PostgreSQL per-service, RabbitMQ, Vault. Рассчитана на двусторонний эскроу (party_a ↔ party_b). TAM 4,41 трлн ₽. Год 1: 8 023 сделки. v1.0 за 28 недель, бюджет 10,8 млн ₽.</div>
+
+<div class="co co-w"><b>Суть адаптации.</b>Правила системы ред. 2 вводят многосторонний расчёт по модели платёжных систем (ст. 2.2), клиринг-сплит (ст. 6), двухуровневую витрину (ст. 9) и реестр участников (ст. 4). Это требует 3 новых сервисов, модификации 5 существующих и сохранения 3 без изменений. Ядро НСВР (эскроу-счета, FSM, контракты ГК РФ, ЕСИА, KYC) — сохраняется полностью.</div>
+
+<table class="tb">
+<thead><tr><th style="width:14%">Сервис ПТК</th><th style="width:6%">Язык</th><th style="width:7%">Статус</th><th style="width:12%">Основание</th><th style="width:31%">Что меняется</th><th style="width:30%">Что сохраняется</th></tr></thead>
+<tbody>
+<tr><td><b>Deal Engine</b></td><td>Go</td><td><span class="b b-c">изменён</span></td><td><span class="st-ref">ст. 2.2</span> <span class="st-ref">ст. 6</span></td>
+<td>FSM 12→15 состояний (+FULFILLING, SHIPPING, CLEARING). Режим 6→7 (+SPLIT_CLEARING). PartyRef → participants[]. Новые события</td>
+<td>12 состояний, 6 режимов, 16 событий, модель Milestone, 13 REST endpoints, все таймауты</td></tr>
+
+<tr><td><b>Escrow Service</b></td><td>Go</td><td><span class="b b-c">изменён</span></td><td><span class="st-ref">ст. 6.2</span></td>
+<td>Новая операция splitRelease (N получателей). Reconciliation: сверка N выплат</td>
+<td>7 операций, BankAdapter (PSB/PIB/Mock), audit log, idempotency, retry/circuit-breaker, webhook HMAC</td></tr>
+
+<tr><td><b>Contract Builder</b></td><td>Python</td><td><span class="b b-c">изменён</span></td><td><span class="st-ref">ст. 2.1</span> <span class="st-ref">ст. 13</span></td>
+<td>+4 мастер-шаблона (присоединение, SLA, оферта, выход). +2 закрывающих (акт клиринга, акт оператора). +2 блока Jinja2</td>
+<td>Template Engine (12 блоков), 10 шаблонов, PDF (WeasyPrint), версионирование, ЭДО Диадок</td></tr>
+
+<tr><td><b>Auth Service</b></td><td>Node.js</td><td><span class="b b-c">изменён</span></td><td><span class="st-ref">ст. 1</span> <span class="st-ref">ст. 4</span></td>
+<td>RBAC 7→12 ролей (+SELLER, BUYER_MP, FULFILLMENT_OP, LOGISTICS_OP, ORGANIZER). API-key для операторов</td>
+<td>4 способа входа, 3 KYC-уровня, JWT, ФНС (ИНН/НПД/ЕГРЮЛ), ЕСИА, КЭП</td></tr>
+
+<tr><td><b>Arbitrage</b></td><td>Node.js</td><td><span class="b b-c">изменён</span></td><td><span class="st-ref">ст. 12.4</span></td>
+<td>Многосторонний спор: определение виновника (селлер / логистика / фулфилмент). +2 состояния FSM</td>
+<td>7 состояний, SLA-движок (Redis), Communication Hub, Evidence Store, 3 уровня эскалации</td></tr>
+
+<tr><td><b>Notification</b></td><td>Node.js</td><td><span class="b b-k">сохранён</span></td><td>—</td>
+<td>+6 типов событий (fulfillment.assigned, shipment.dispatched, delivery.confirmed, clearing.completed и др.)</td>
+<td>5 каналов, 4 приоритета, каскадная маршрутизация, dedup, WebSocket, 12 событий</td></tr>
+
+<tr><td><b>Widget Service</b></td><td>Node.js</td><td><span class="b b-k">сохранён</span></td><td>—</td>
+<td>Без изменений. Партнёры (Авито, Профи, FL, ЦИАН, Kwork) — канал C2C</td>
+<td>Loader.js 4KB, 5 экранов, Event Bridge, SDK, темизация</td></tr>
+
+<tr><td><b>Admin Panel</b></td><td>React</td><td><span class="b b-k">сохранён</span></td><td>—</td>
+<td>+3 модуля (реестр участников, мониторинг операторов, клиринг-отчёты)</td>
+<td>8 KPI, 6 графиков, модерация, Audit Log, Metabase, 5 ролей</td></tr>
+
+<tr><td colspan="6" style="background:var(--ac2);text-align:center;font-weight:600;color:var(--ac);font-size:12px;letter-spacing:.5px">НОВЫЕ СЕРВИСЫ</td></tr>
+
+<tr><td><b>Clearing Engine</b> <a href="09_clearing_engine_deep.html" style="color:#2a6cb6;font-size:10px;">[спецификация]</a></td><td>Go</td><td><span class="b b-n">новый</span></td><td><span class="st-ref">ст. 6.2</span> <span class="st-ref">ст. 3.5</span> <span class="st-ref">ст. 8</span></td>
+<td colspan="2">Расщепление платежа на N участников. Формула: объём × тариф реестра (ст. 3.5). Модель сбалансированности (ст. 8). SLA 1–3 дня (ст. 6.4). Audit log. Подписывается на deal.clearing → вызывает Escrow.splitRelease</td></tr>
+
+<tr><td><b>Registry Service</b> <a href="10_registry_service_deep.html" style="color:#2a6cb6;font-size:10px;">[спецификация]</a></td><td>Go</td><td><span class="b b-n">новый</span></td><td><span class="st-ref">ст. 4</span> <span class="st-ref">ст. 3.2</span> <span class="st-ref">ст. 13</span></td>
+<td colspan="2">Реестр участников (ст. 4.2): роли, регионы, тарифы (ст. 3.2), SLA, рейтинг. Правила выхода (ст. 13.5–13.7). Гейт готовности (ст. 13.2). API для Deal Engine (маршрутизация) и Clearing Engine (тарифы)</td></tr>
+
+<tr><td><b>Marketplace Service</b> <a href="11_marketplace_service_deep.html" style="color:#2a6cb6;font-size:10px;">[спецификация]</a></td><td>Node.js</td><td><span class="b b-n">новый</span></td><td><span class="st-ref">ст. 9</span> <span class="st-ref">ст. 10</span> <span class="st-ref">ст. 11</span></td>
+<td colspan="2">Двухуровневая витрина (ст. 9): магазин селлера + каталог Системы + SKU-атом. Клиентская база с разграничением (ст. 10). Маршрутизация покупателей с приоритетом (ст. 11). Корзина → Deal Engine</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ═══════════════ TAB 2: СЛОИ ═══════════════ -->
+<div class="sec" id="s2">
+<div class="st">Архитектура: 3 слоя → 3 слоя (расширены)</div>
+
+<div class="co co-g"><b>Принцип ПТК сохраняется:</b> database-per-service, ServiceAccount K8s, межсервисная коммуникация RabbitMQ (events) + REST (синхрон). Новые сервисы следуют тем же правилам.</div>
+
+<div class="c">
+<h3>Целевая архитектура 11 сервисов</h3>
+<div class="ls">
+  <div class="ly ly-3"><div class="ly-l">Клиентский слой</div><div class="ly-c">
+    <span class="ch">Веб-портал нсвр.рф</span><span class="ch">Моб. приложение</span><span class="ch">Виджет iframe</span><span class="ch">API партнёра</span><span class="ch">Telegram-бот</span>
+    <span class="ch ch-n">Магазин селлера ●</span><span class="ch ch-n">Каталог Системы ●</span><span class="ch ch-n">Кабинет оператора ●</span></div></div>
+  <div class="ly ly-4"><div class="ly-l">API Gateway</div><div class="ly-c">
+    <span class="ch">WAF + Rate Limit + JWT</span><span class="ch ch-n">API-key auth (операторы) ●</span><span class="ch ch-n">Роутинг по роли (ст. 1) ●</span></div></div>
+  <div class="ly ly-1"><div class="ly-l">Ядро: 11 сервисов</div><div class="ly-c">
+    <span class="ch">Deal Engine</span><span class="ch">Escrow Service</span><span class="ch">Contract Builder</span><span class="ch">Auth Service</span>
+    <span class="ch">Notification</span><span class="ch">Arbitrage</span><span class="ch">Widget Service</span><span class="ch">Admin Panel</span>
+    <span class="ch ch-n">Clearing Engine ●</span><span class="ch ch-n">Registry Service ●</span><span class="ch ch-n">Marketplace Service ●</span></div></div>
+  <div class="ly ly-0"><div class="ly-l">Данные</div><div class="ly-c">
+    <span class="ch">PostgreSQL ×11</span><span class="ch">Redis</span><span class="ch">S3 / MinIO</span><span class="ch">RabbitMQ</span><span class="ch">Vault</span></div></div>
+  <div class="ly ly-2"><div class="ly-l">Интеграции</div><div class="ly-c">
+    <span class="ch">Банк API (ПСБ/ПИБ)</span><span class="ch">ЕСИА</span><span class="ch">ФНС</span><span class="ch">1С / Диадок</span><span class="ch">SMS / Email</span>
+    <span class="ch ch-n">Фулфилмент API ●</span><span class="ch ch-n">Логистика API ●</span></div></div>
+</div>
+<p style="font-size:10px;color:var(--t3)">● новые компоненты</p>
+</div>
+
+<div class="c">
+<h3>Новые сервисы: спецификация</h3>
+<div class="g2">
+  <div class="ab hl">
+    <h4>Clearing Engine <span class="b b-n">Go</span> <span class="st-ref">ст. 6</span> <span class="st-ref">ст. 3.5</span> <span class="st-ref">ст. 8</span> <a href="09_clearing_engine_deep.html" style="color:#2a6cb6;font-size:11px;font-weight:600;">[полная спецификация →]</a></h4>
+    <ul>
+      <li><b>БД:</b> nsvr_clearing</li>
+      <li><b>Вход:</b> event deal.clearing из RabbitMQ</li>
+      <li><b>Расчёт:</b> объём заказа × тариф реестра (ст. 3.5) → доли по модели сбалансированности (ст. 8)</li>
+      <li><b>Выход:</b> Escrow Service.splitRelease</li>
+      <li><b>SLA:</b> 1–3 дня (ст. 6.4), таймер Redis ZADD</li>
+      <li><b>Нестандарт:</b> корректировка суммы до выпуска (ст. 3.6)</li>
+      <li><b>Audit:</b> append-only (deal_id, доли, суммы, timestamp)</li>
+    </ul>
+  </div>
+  <div class="ab hl">
+    <h4>Registry Service <span class="b b-n">Go</span> <span class="st-ref">ст. 4</span> <span class="st-ref">ст. 13</span> <a href="10_registry_service_deep.html" style="color:#2a6cb6;font-size:11px;font-weight:600;">[полная спецификация →]</a></h4>
+    <ul>
+      <li><b>БД:</b> nsvr_registry</li>
+      <li><b>Модель:</b> Participant {id, type (ст. 1), name, inn, regions[], tariffs{} (ст. 3.2), sla{}, rating, exit_rules (ст. 13.5), status}</li>
+      <li><b>Гейт:</b> ≥2 в каждой роли (ст. 13.2)</li>
+      <li><b>API:</b> CRUD участников, GET /tariffs, POST /rate</li>
+      <li><b>Потребители:</b> Deal Engine, Clearing Engine, Auth, Admin, Marketplace</li>
+    </ul>
+  </div>
+  <div class="ab hl">
+    <h4>Marketplace Service <span class="b b-n">Node.js</span> <span class="st-ref">ст. 9</span> <span class="st-ref">ст. 10</span> <span class="st-ref">ст. 11</span> <a href="11_marketplace_service_deep.html" style="color:#2a6cb6;font-size:11px;font-weight:600;">[полная спецификация →]</a></h4>1</span></h4>
+    <ul>
+      <li><b>БД:</b> nsvr_marketplace</li>
+      <li><b>Витрина:</b> SKU-атом (ст. 9.4), магазин селлера (ст. 9.2), каталог Системы (ст. 9.3)</li>
+      <li><b>Маршрутизация:</b> сетевой приток → по рейтингу/наличию/географии (ст. 11.1), приоритет гр.2 (ст. 11.2)</li>
+      <li><b>База:</b> разграничение мигрировавшая / сетевая (ст. 10.2–10.3)</li>
+      <li><b>Связь:</b> корзина → POST /deals (Deal Engine), type=MARKETPLACE_ORDER</li>
+    </ul>
+  </div>
+  <div class="ab">
+    <h4>Связка с выбором селлера <span class="st-ref">ст. 3.3</span></h4>
+    <ul>
+      <li>Селлер при настройке магазина выбирает участников инфраструктуры из реестра</li>
+      <li>Связка «селлер ↔ набор участников» хранится в Registry Service</li>
+      <li>Меняется при смене партнёра, не на каждый заказ</li>
+      <li>При оформлении заказа Deal Engine берёт связку из Registry → формирует participants[]</li>
+    </ul>
+  </div>
+  <div class="ab hl">
+    <h4>Agent Service <span class="b b-n">Node.js</span> <span class="st-ref">ст. 14–21</span> <a href="agentic-commerce-architecture.html" style="color:#2a6cb6;font-size:11px;font-weight:600;">[архитектура →]</a></h4>
+    <ul>
+      <li><b>БД:</b> market_bakeries, market_products (каталог рынка ⚪)</li>
+      <li><b>Два каталога:</b> 🟢 каталог Системы (skus) + ⚪ каталог рынка (market_products)</li>
+      <li><b>Агент покупателя:</b> нейтральный AI-ассистент, работает на покупателя</li>
+      <li><b>Агент селлера:</b> TG-бот / виджет, работает на селлера (MIGRATED)</li>
+      <li><b>AI-парсинг:</b> обновление каталога рынка через Claude API (cron, ежедневно)</li>
+      <li><b>Прокси:</b> /api/v1/agent/chat → Claude API (ключ на сервере)</li>
+      <li><b>source_type:</b> AGENT (= NETWORK для агента Системы)</li>
+    </ul>
+  </div>
+
+</div>
+</div>
+</div>
+
+<!-- ═══════════════ TAB 3: DEAL ENGINE ═══════════════ -->
+<div class="sec" id="s3">
+<div class="st">Deal Engine: FSM и режимы</div>
+
+<div class="co co-a"><b>Из ПТК:</b> Deal Engine — Go, nsvr_deals. FSM 12 состояний, 6 режимов, 16 событий. Все сервисы подписываются на его events. 13 REST endpoints.</div>
+
+<div class="c">
+<h3>FSM: 12 → 15 состояний <span class="st-ref">ст. 6</span> <span class="st-ref">ст. 2.2</span></h3>
+<p>Все 12 состояний сохранены. 3 новых активируются только для mode=SPLIT_CLEARING:</p>
+<div class="fsm">
+  <span class="fs fs-k">DRAFT</span><span class="fs fs-k">PENDING_SIGN</span><span class="fs fs-k">SIGNED</span><span class="fs fs-k">DEPOSITED</span><span class="fs fs-k">IN_PROGRESS</span>
+  <span class="fs fs-n">FULFILLING ●</span><span class="fs fs-n">SHIPPING ●</span>
+  <span class="fs fs-k">PENDING_ACCEPT</span><span class="fs fs-k">RELEASING</span>
+  <span class="fs fs-n">CLEARING ●</span>
+  <span class="fs fs-k">COMPLETED</span><span class="fs fs-k">DISPUTE</span><span class="fs fs-k">CANCELLED</span><span class="fs fs-k">REFUNDED</span><span class="fs fs-k">EXPIRED</span>
+</div>
+
+<table class="tb">
+<thead><tr><th>Состояние</th><th>Описание</th><th>Входящие</th><th>Исходящие</th><th>Правила</th></tr></thead>
+<tbody>
+<tr style="background:var(--ac2)"><td><b>FULFILLING</b></td><td>Заказ у фулфилмента. Сборка.</td><td>assign_fulfillment (из DEPOSITED)</td><td>fulfillment_ready → SHIPPING; dispute → DISPUTE</td><td><span class="st-ref">ст. 3.4</span></td></tr>
+<tr style="background:var(--ac2)"><td><b>SHIPPING</b></td><td>У курьера. Доставка.</td><td>ship (из FULFILLING)</td><td>deliver → PENDING_ACCEPT; dispute → DISPUTE</td><td><span class="st-ref">ст. 6.4</span></td></tr>
+<tr style="background:var(--ac2)"><td><b>CLEARING</b></td><td>Приёмка ОК. Расщепление.</td><td>accept (из PENDING_ACCEPT, вместо RELEASING)</td><td>clearing_completed → COMPLETED; fail → retry</td><td><span class="st-ref">ст. 6.2</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="c">
+<h3>Режим SPLIT_CLEARING <span class="st-ref">ст. 6.2</span> <span class="st-ref">ст. 2.2</span></h3>
+<p>7-й режим эскроу. Все 6 существующих (SIMPLE, MILESTONE, DEPOSIT, LOAN, GAP, FRAMEWORK) без изменений.</p>
+<table class="tb">
+<thead><tr><th>Параметр</th><th>SIMPLE (C2C)</th><th>SPLIT_CLEARING (Маркетплейс)</th></tr></thead>
+<tbody>
+<tr><td>Стороны</td><td>party_a, party_b</td><td>participants[] (buyer, seller, fulfillment, logistics, organizer)</td></tr>
+<tr><td>Платёж</td><td>Один получатель</td><td>N получателей (ст. 6.2)</td></tr>
+<tr><td>Расчёт долей</td><td>—</td><td>Объём × тариф реестра (ст. 3.5), модель сбалансированности (ст. 8)</td></tr>
+<tr><td>Flow</td><td>DEPOSITED → IN_PROGRESS → PENDING_ACCEPT → RELEASING → COMPLETED</td><td>DEPOSITED → FULFILLING → SHIPPING → PENDING_ACCEPT → CLEARING → COMPLETED</td></tr>
+<tr><td>Клиринг</td><td>release (1 получатель)</td><td>splitRelease (N получателей, 1–3 дня, ст. 6.4)</td></tr>
+<tr><td>Спор</td><td>Двусторонний</td><td>Многосторонний: арбитраж Организатора (ст. 12.4)</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="c">
+<h3>Модель данных: дельта</h3>
+<table class="tb">
+<thead><tr><th>Поле Deal</th><th>ПТК (было)</th><th>Маркетплейс (стало)</th><th>Правила</th></tr></thead>
+<tbody>
+<tr><td>Стороны</td><td>party_a, party_b (PartyRef)</td><td>participants[] (ParticipantRef[]). Для C2C — обратная совместимость через party_a/party_b</td><td><span class="st-ref">ст. 1</span></td></tr>
+<tr><td>type</td><td>10 типов</td><td>+1: MARKETPLACE_ORDER</td><td><span class="st-ref">ст. 9</span></td></tr>
+<tr><td>split_rules</td><td>—</td><td>JSON [{participant_id, type: FIXED|PERCENT, value}]. Заполняется из Registry</td><td><span class="st-ref">ст. 3.5</span> <span class="st-ref">ст. 8</span></td></tr>
+<tr><td>seller_infra_binding</td><td>—</td><td>FK → Registry (связка «селлер ↔ набор участников», ст. 3.3)</td><td><span class="st-ref">ст. 3.3</span></td></tr>
+<tr><td>source_type</td><td>—</td><td>MIGRATED | NETWORK (разграничение базы, ст. 10.2)</td><td><span class="st-ref">ст. 10</span></td></tr>
+</tbody>
+</table>
+<div class="co co-g" style="margin-top:8px"><b>Обратная совместимость.</b> Партнёры-площадки (Авито, Профи, FL, ЦИАН, Kwork) работают через SIMPLE/MILESTONE/DEPOSIT — эти режимы не затрагиваются. Widget Service не меняется. Новые состояния активируются только при mode=SPLIT_CLEARING.</div>
+</div>
+
+<div class="c">
+<h3>Sequence: заказ через маркетплейс</h3>
+<table class="tb">
+<thead><tr><th>#</th><th>Откуда</th><th>Куда</th><th>Действие</th><th>Правила</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Покупатель</td><td>Marketplace</td><td>Заказ через магазин селлера (ст. 9.2) или каталог Системы (ст. 9.3)</td><td><span class="st-ref">ст. 9</span></td></tr>
+<tr><td>2</td><td>Marketplace</td><td>Registry</td><td>Запрос связки «селлер ↔ участники» (ст. 3.3) и тарифов (ст. 3.2)</td><td><span class="st-ref">ст. 3</span></td></tr>
+<tr><td>3</td><td>Marketplace</td><td>Deal Engine</td><td>POST /deals: type=MARKETPLACE_ORDER, mode=SPLIT_CLEARING, participants[], split_rules[]</td><td><span class="st-ref">ст. 6.2</span></td></tr>
+<tr><td>4</td><td>Deal Engine</td><td>Contract Builder</td><td>Генерация: публичная оферта (ст. 2.4). DRAFT → PENDING_SIGN</td><td><span class="st-ref">ст. 2.4</span></td></tr>
+<tr><td>5</td><td>Покупатель</td><td>Escrow Service</td><td>Оплата полной суммы на эскроу. SIGNED → DEPOSITED</td><td><span class="st-ref">ст. 6.1</span></td></tr>
+<tr><td>6</td><td>Deal Engine</td><td>Фулфилмент API</td><td>Задание на сборку. DEPOSITED → FULFILLING</td><td><span class="st-ref">ст. 3.4</span></td></tr>
+<tr><td>7</td><td>Фулфилмент</td><td>Deal Engine</td><td>Webhook: готово. FULFILLING → SHIPPING</td><td></td></tr>
+<tr><td>8</td><td>Deal Engine</td><td>Логистика API</td><td>Задание на доставку. Трекинг</td><td></td></tr>
+<tr><td>9</td><td>Логистика</td><td>Deal Engine</td><td>Webhook: вручено. SHIPPING → PENDING_ACCEPT</td><td></td></tr>
+<tr><td>10</td><td>Покупатель / таймер</td><td>Deal Engine</td><td>Подтверждение (или авто-приёмка, ст. 6.4). PENDING_ACCEPT → CLEARING</td><td><span class="st-ref">ст. 6.4</span></td></tr>
+<tr><td>11</td><td>Deal Engine</td><td>Clearing Engine</td><td>Event deal.clearing → расчёт долей (объём × тариф, ст. 3.5)</td><td><span class="st-ref">ст. 3.5</span> <span class="st-ref">ст. 8</span></td></tr>
+<tr><td>12</td><td>Clearing</td><td>Escrow</td><td>splitRelease [{seller: X₽}, {fulfillment: Y₽}, {logistics: Z₽}, {organizer: 0,1–0,2%}]</td><td><span class="st-ref">ст. 6.2</span> <span class="st-ref">ст. 6.3</span></td></tr>
+<tr><td>13</td><td>Escrow</td><td>Банк API</td><td>N платёжных поручений → webhooks → audit</td><td><span class="st-ref">ст. 6.5</span></td></tr>
+<tr><td>14</td><td>Deal Engine</td><td>Contract Builder</td><td>Закрывающие: акт клиринга + акт оператора. CLEARING → COMPLETED</td><td></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ═══════════════ TAB 4: ESCROW + CLEARING ═══════════════ -->
+<div class="sec" id="s4">
+<div class="st">Escrow Service + Clearing Engine</div>
+
+<div class="co co-a"><b>Из ПТК:</b> Escrow Service — единственный с credentials банка. 7 операций. Адаптерная архитектура: BankAdapter interface → PSBAdapter / PIBAdapter / MockAdapter. Идемпотентность, audit log, reconciliation 02:00 МСК.</div>
+
+<div class="c">
+<h3>Операции Escrow Service: 7 → 8 <span class="st-ref">ст. 6.2</span></h3>
+<table class="tb">
+<thead><tr><th>Операция</th><th>Статус</th><th>Триггер</th><th>Банк-API</th><th>Идемпотентность</th></tr></thead>
+<tbody>
+<tr><td>createAccount</td><td><span class="b b-k">сохранена</span></td><td>SIGNED</td><td>POST /escrow/accounts</td><td>По deal_id</td></tr>
+<tr><td>deposit</td><td><span class="b b-k">сохранена</span></td><td>Плательщик</td><td>POST /escrow/{id}/deposit</td><td>По idempotency_key</td></tr>
+<tr><td>release</td><td><span class="b b-k">сохранена</span></td><td>ACCEPT</td><td>POST /escrow/{id}/release</td><td>По deal_id</td></tr>
+<tr><td>releasePartial</td><td><span class="b b-k">сохранена</span></td><td>Арбитраж</td><td>POST /escrow/{id}/release (amount)</td><td>По dispute_id</td></tr>
+<tr style="background:var(--ac2)"><td><b>splitRelease</b></td><td><span class="b b-n">новая</span></td><td>Clearing Engine</td><td>N × POST /escrow/{id}/release (per recipient)</td><td>По clearing_id + participant_id</td></tr>
+<tr><td>refund</td><td><span class="b b-k">сохранена</span></td><td>CANCEL / DISPUTE</td><td>POST /escrow/{id}/refund</td><td>По deal_id</td></tr>
+<tr><td>freeze</td><td><span class="b b-k">сохранена</span></td><td>DISPUTE</td><td>PATCH /escrow/{id}/freeze</td><td>Идемпотентна</td></tr>
+<tr><td>getBalance</td><td><span class="b b-k">сохранена</span></td><td>Read</td><td>GET /escrow/{id}/balance</td><td>Read-only</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="c">
+<h3>Clearing Engine: алгоритм <span class="st-ref">ст. 3.5</span> <span class="st-ref">ст. 6.2</span> <span class="st-ref">ст. 8</span></h3>
+<table class="tb">
+<thead><tr><th>#</th><th>Шаг</th><th>Источник данных</th><th>Правила</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Получить связку «селлер ↔ участники» и тарифы</td><td>Registry Service</td><td><span class="st-ref">ст. 3.2</span> <span class="st-ref">ст. 3.3</span></td></tr>
+<tr><td>2</td><td>Получить параметры заказа (кол-во, вес, зона)</td><td>Deal Engine (deal.participants, deal.items)</td><td><span class="st-ref">ст. 3.4</span></td></tr>
+<tr><td>3</td><td>Расчёт сумм: объём × тариф для каждого участника</td><td>Вычисление</td><td><span class="st-ref">ст. 3.5</span></td></tr>
+<tr><td>4</td><td>Проверка нестандартных корректировок (ст. 3.6)</td><td>Deal Engine (adjustments[])</td><td><span class="st-ref">ст. 3.6</span></td></tr>
+<tr><td>5</td><td>Доля Организатора = 0,1–0,2% от суммы (остаток)</td><td>Конфиг</td><td><span class="st-ref">ст. 6.3</span></td></tr>
+<tr><td>6</td><td>Валидация: ∑ долей = баланс эскроу</td><td>Escrow.getBalance</td><td><span class="st-ref">ст. 8</span></td></tr>
+<tr><td>7</td><td>splitRelease → Escrow Service</td><td>—</td><td><span class="st-ref">ст. 6.2</span></td></tr>
+<tr><td>8</td><td>Audit log (append-only)</td><td>nsvr_clearing</td><td><span class="st-ref">ст. 6.5</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="c">
+<h3>Расчётные банки и «Пирог» <span class="st-ref">ст. 7</span></h3>
+<table class="tb">
+<thead><tr><th>Статья дохода</th><th>Кому</th><th>Реализация в ПТК</th><th>Старт</th></tr></thead>
+<tbody>
+<tr><td>1 · Продажа товаров</td><td>100% селлерам</td><td>splitRelease: доля seller = цена товара − комиссии</td><td>Волна 0</td></tr>
+<tr><td>2 · Расчёты между участниками</td><td>100% Организатору</td><td>splitRelease: доля organizer = 0,1–0,2% (ст. 6.3)</td><td>Волна 0</td></tr>
+<tr><td>3 · Привлечённые средства</td><td>Организатор + Банк</td><td>Отдельный модуль Clearing Engine → финансовый отчёт</td><td>+6 мес</td></tr>
+<tr><td>4 · Кредитование</td><td>Организатор + Банк</td><td>Расширение режима LOAN (уже есть в Deal Engine)</td><td>+6 мес</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ═══════════════ TAB 5: REGISTRY + AUTH ═══════════════ -->
+<div class="sec" id="s5">
+<div class="st">Registry Service + Auth Service</div>
+
+<div class="c">
+<h3>Типы участников <span class="st-ref">ст. 1</span></h3>
+<table class="tb">
+<thead><tr><th>Тип (из Правил)</th><th>RBAC роль Auth Service</th><th>Статус</th><th>KYC</th><th>Способ входа</th></tr></thead>
+<tbody>
+<tr><td>Организатор</td><td>ORGANIZER</td><td><span class="b b-n">новая</span></td><td>—</td><td>VPN + 2FA + КЭП</td></tr>
+<tr><td>Селлер</td><td>SELLER</td><td><span class="b b-n">новая</span></td><td>L1+ (ИП/ООО)</td><td>SMS / ЕСИА / КЭП</td></tr>
+<tr><td>Фулфилмент/3PL</td><td>FULFILLMENT_OP</td><td><span class="b b-n">новая</span></td><td>L2 (ЮЛ)</td><td>API-key + КЭП</td></tr>
+<tr><td>Складской сервис</td><td>WAREHOUSE_OP</td><td><span class="b b-n">новая</span></td><td>L2 (ЮЛ)</td><td>API-key + КЭП</td></tr>
+<tr><td>Последняя миля</td><td>LOGISTICS_OP</td><td><span class="b b-n">новая</span></td><td>L2 (ЮЛ)</td><td>API-key + КЭП</td></tr>
+<tr><td>Магистраль</td><td>TRUNK_OP</td><td><span class="b b-n">новая</span></td><td>L2 (ЮЛ)</td><td>API-key + КЭП</td></tr>
+<tr><td>Расчётный банк</td><td>BANK_PARTNER</td><td><span class="b b-n">новая</span></td><td>—</td><td>mTLS + HMAC (как сейчас)</td></tr>
+<tr><td>Покупатель</td><td>BUYER_MP</td><td><span class="b b-n">новая</span></td><td>L0–L1</td><td>SMS / ЕСИА</td></tr>
+<tr><td colspan="5" style="font-size:11px;color:var(--t3)">Существующие 7 ролей ПТК (ADMIN, MODERATOR, SUPPORT, FINANCE, PARTNER_MGR, USER, GUEST) сохранены. USER = покупатель C2C (через портал/виджет).</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="c">
+<h3>Registry Service: модель данных <span class="st-ref">ст. 4.2</span> <span class="st-ref">ст. 3.2</span></h3>
+<table class="tb">
+<thead><tr><th>Поле</th><th>Тип</th><th>Назначение</th><th>Правила</th></tr></thead>
+<tbody>
+<tr><td>id</td><td>UUID</td><td>PK</td><td></td></tr>
+<tr><td>type</td><td>ENUM</td><td>Роль: SELLER, FULFILLMENT, LOGISTICS, WAREHOUSE, TRUNK, BANK</td><td><span class="st-ref">ст. 1</span></td></tr>
+<tr><td>name, inn, kpp</td><td>STRING</td><td>Юр. данные</td><td><span class="st-ref">ст. 4.3</span></td></tr>
+<tr><td>regions[]</td><td>JSONB</td><td>География покрытия</td><td><span class="st-ref">ст. 11.1</span></td></tr>
+<tr><td>tariffs{}</td><td>JSONB</td><td>Хранение ₽/ед/день, сборка ₽/заказ, доставка ₽/заказ по зонам</td><td><span class="st-ref">ст. 3.2</span></td></tr>
+<tr><td>sla{}</td><td>JSONB</td><td>Время сборки, доставки, обработки возврата</td><td><span class="st-ref">ст. 2.4</span></td></tr>
+<tr><td>rating</td><td>FLOAT</td><td>Метрика исполнения (формируется Системой)</td><td><span class="st-ref">ст. 4.3</span></td></tr>
+<tr><td>exit_rules</td><td>JSONB</td><td>Судьба базы, незакрытых сделок при выходе</td><td><span class="st-ref">ст. 13.5</span> <span class="st-ref">ст. 13.6</span></td></tr>
+<tr><td>infra_bindings[]</td><td>JSONB</td><td>Связки «селлер ↔ набор участников» (для type=SELLER)</td><td><span class="st-ref">ст. 3.3</span></td></tr>
+<tr><td>gate_status</td><td>ENUM</td><td>PENDING / ACTIVE / EXITING / EXITED</td><td><span class="st-ref">ст. 13.1</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="c">
+<h3>Что сохраняется в Auth Service полностью</h3>
+<div class="g2">
+  <div class="ab"><h4>4 способа входа</h4><ul><li>SMS OTP (6 цифр, TTL 5 мин, failover)</li><li>ЕСИА OAuth 2.0 + OIDC (scopes: fullname, inn, id_doc, organizations)</li><li>КЭП КриптоПро CSP 5.0 (локальная + облачная DSS)</li><li>Email + пароль + TOTP</li></ul></div>
+  <div class="ab"><h4>3 KYC + ФНС</h4><ul><li>L0 (телефон) → L1 (ИНН через ФНС) → L2 (ЕСИА/КЭП)</li><li>Progressive: повышение по требованию</li><li>ФНС API: ИНН (30д кеш), НПД (1ч), ЕГРЮЛ (24ч)</li><li>JWT RS256 (Vault)</li></ul></div>
+</div>
+</div>
+</div>
+
+<!-- ═══════════════ TAB 6: CONTRACT + ВИТРИНА ═══════════════ -->
+<div class="sec" id="s6">
+<div class="st">Contract Builder + витрина</div>
+
+<div class="c">
+<h3>Договорная модель <span class="st-ref">ст. 2</span></h3>
+<div class="co co-w" style="margin:8px 0"><b>Ключевое (ст. 2.1):</b> присоединение, а не сеть. Участник подписывает один договор с Организатором для своей роли. N договоров, а не N×N. Расчёты — по модели платёжных систем через процессинг Организатора (ст. 2.2).</div>
+<table class="tb">
+<thead><tr><th>Шаблон</th><th>Статус</th><th>Правила</th><th>Блоки Jinja2</th></tr></thead>
+<tbody>
+<tr><td colspan="4" style="font-size:11px;color:var(--t3)">Существующие 10 мастер-шаблонов (услуги, займ, аренда, купля-продажа, B2B подряд и др.) — все сохранены без изменений</td></tr>
+<tr style="background:var(--ac2)"><td><b>Договор присоединения к Правилам</b></td><td><span class="b b-n">новый</span></td><td><span class="st-ref">ст. 2.1</span> <span class="st-ref">ст. 2.4</span></td><td>header + subject + sla_terms + exit_rules + liability + dispute + signature</td></tr>
+<tr style="background:var(--ac2)"><td><b>SLA-приложение</b></td><td><span class="b b-n">новый</span></td><td><span class="st-ref">ст. 2.4</span></td><td>sla_terms (новый блок)</td></tr>
+<tr style="background:var(--ac2)"><td><b>Публичная оферта маркетплейса</b></td><td><span class="b b-n">новый</span></td><td><span class="st-ref">ст. 2.4</span></td><td>header + subject + price + escrow_split + acceptance</td></tr>
+<tr style="background:var(--ac2)"><td><b>Соглашение о выходе</b></td><td><span class="b b-n">новый</span></td><td><span class="st-ref">ст. 13.5</span> <span class="st-ref">ст. 13.6</span> <span class="st-ref">ст. 13.7</span></td><td>exit_rules (новый блок) + signature</td></tr>
+</tbody>
+</table>
+<p style="font-size:11px;color:var(--t3);margin-top:6px">Template Engine (Jinja2, 12→14 блоков), PDF Generator (WeasyPrint), версионирование, ЭДО Диадок — всё сохранено.</p>
+</div>
+
+<div class="c">
+<h3>Двухуровневая витрина <span class="st-ref">ст. 9</span></h3>
+<table class="tb">
+<thead><tr><th>Уровень</th><th>Что это</th><th>Данные</th><th>Правила</th></tr></thead>
+<tbody>
+<tr><td><b>Магазин селлера</b> (нижний)</td><td>Витрина под собственным брендом. 5 каналов (Telegram, сайт, VK, Макс, IG)</td><td>SKU-атомы этого селлера + бренд + дизайн</td><td><span class="st-ref">ст. 9.2</span></td></tr>
+<tr><td><b>Каталог Системы</b> (верхний)</td><td>Агрегация всех SKU, сетевой трафик зонтичного бренда</td><td>Все SKU всех селлеров, поиск, фильтры</td><td><span class="st-ref">ст. 9.3</span></td></tr>
+<tr><td><b>SKU-атом</b></td><td>Единая карточка товара. Видна одновременно в магазине и каталоге без дублирования</td><td>title, description, price, images[], category, stock, seller_id</td><td><span class="st-ref">ст. 9.4</span></td></tr>
+</tbody>
+</table>
+<p style="font-size:11.5px;color:var(--t2);margin-top:6px">Реализация: Marketplace Service хранит SKU. Магазин селлера = фильтр SKU по seller_id + брендинг. Каталог = агрегатор всех SKU + маршрутизация (ст. 11).</p>
+</div>
+
+<div class="c">
+<h3>Клиентская база: техническая реализация <span class="st-ref">ст. 10</span></h3>
+<table class="tb">
+<thead><tr><th>Тип базы</th><th>Поле в БД</th><th>Правило</th></tr></thead>
+<tbody>
+<tr><td>Мигрировавшая</td><td>buyer.source_type = MIGRATED, buyer.origin_seller_id = UUID</td><td>Привязана к селлеру (ст. 10.2). При выходе — сохраняется за ним (ст. 13.5)</td></tr>
+<tr><td>Сетевой приток</td><td>buyer.source_type = NETWORK</td><td>Достояние Системы (ст. 10.2). Маршрутизация — только из этой части (ст. 10.3)</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ═══════════════ TAB 7: КАНАЛЫ ═══════════════ -->
+<div class="sec" id="s7">
+<div class="st">Каналы доступа</div>
+
+<div class="c">
+<h3>Точки входа: 5 → 8</h3>
+<table class="tb">
+<thead><tr><th>Канал</th><th>Статус</th><th>Технология (из ПТК)</th><th>Роль в маркетплейсе</th></tr></thead>
+<tbody>
+<tr><td>Веб-портал нсвр.рф</td><td><span class="b b-k">сохранён</span></td><td>Next.js SSR, mobile-responsive</td><td>C2C-портал. Работает параллельно</td></tr>
+<tr><td>Моб. приложение</td><td><span class="b b-k">сохранён</span></td><td>React Native (post-MVP)</td><td>Без изменений</td></tr>
+<tr><td>Виджет iframe</td><td><span class="b b-k">сохранён</span></td><td>Loader.js 4KB + Preact 45KB</td><td>5 партнёров: Авито 15%, Профи 15%, FL 12%, ЦИАН 15%, Kwork 12%</td></tr>
+<tr><td>API партнёра</td><td><span class="b b-k">сохранён</span></td><td>REST + webhooks + JS SDK</td><td>Глубокая интеграция площадок</td></tr>
+<tr><td>Telegram-бот</td><td><span class="b b-c">расширен</span></td><td>Bot API</td><td>Уведомления + канал магазина селлера (ст. 9.2)</td></tr>
+<tr style="background:var(--ac2)"><td><b>Магазин селлера</b></td><td><span class="b b-n">новый</span></td><td>React / Static</td><td>5-канальный магазин (ст. 9.2). Кабинет Ozon-формат</td></tr>
+<tr style="background:var(--ac2)"><td><b>Каталог Системы</b></td><td><span class="b b-n">новый</span></td><td>React SSR</td><td>Агрегация SKU, сетевой трафик (ст. 9.3)</td></tr>
+<tr style="background:var(--ac2)"><td><b>Кабинет оператора</b></td><td><span class="b b-n">новый</span></td><td>React</td><td>Фулфилмент/логистика: задания, SLA, расчёты</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ═══════════════ TAB 8: ИНФРА ═══════════════ -->
+<div class="sec" id="s8">
+<div class="st">Инфраструктура и бюджет</div>
+
+<div class="co co-g"><b>Сохраняется полностью:</b> Selectel MKS (ФСТЭК), Calico, NGINX Ingress, cert-manager, Pod Security (restricted), Network Policies (deny-all + whitelist), TLS 1.3, AES-256-GCM, Vault, ФЗ-152 УЗ-3. CI/CD: GitLab/GitHub → Docker → Trivy → Helm → ArgoCD. Prometheus + Grafana + Loki + Alertmanager. DR: WAL streaming RPO 1 мин, PITR 14 дней, quorum queues.</div>
+
+<div class="c">
+<h3>Масштабирование K8s</h3>
+<table class="tb">
+<thead><tr><th>Параметр</th><th>ПТК</th><th>Маркетплейс</th><th>Дельта</th></tr></thead>
+<tbody>
+<tr><td>Worker nodes (prod)</td><td>3 × 4vCPU/16GB</td><td>4–5 nodes</td><td>+1–2</td></tr>
+<tr><td>Namespaces</td><td>6</td><td>7 (+nsvr-marketplace)</td><td>+1</td></tr>
+<tr><td>Pods</td><td>~28</td><td>~40</td><td>+12</td></tr>
+<tr><td>PostgreSQL</td><td>8 БД</td><td>11 БД</td><td>+3</td></tr>
+<tr><td>RabbitMQ очереди</td><td>Существующие</td><td>+3 (clearing, fulfillment, logistics)</td><td>+3</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="c">
+<h3>Бюджет: корректировка</h3>
+<table class="tb">
+<thead><tr><th>Позиция</th><th>ПТК (до v1.0)</th><th>Маркетплейс (до v1.1)</th></tr></thead>
+<tbody>
+<tr><td>ФОТ (7→9 мес., +2–3 чел.)</td><td>~10,2 млн ₽</td><td>~13,5 млн ₽</td></tr>
+<tr><td>Инфраструктура</td><td>~0,4 млн ₽</td><td>~0,6 млн ₽</td></tr>
+<tr><td>Лицензии, SaaS</td><td>~0,2 млн ₽</td><td>~0,2 млн ₽</td></tr>
+<tr style="font-weight:700"><td>ИТОГО</td><td>~10,8 млн ₽</td><td>~14,3 млн ₽</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- ═══════════════ TAB 9: РИСКИ + ROADMAP ═══════════════ -->
+<div class="sec" id="s9">
+<div class="st">Риски и дорожная карта</div>
+
+<div class="c">
+<h3>Матрица рисков</h3>
+<div class="rr"><div class="ri ri-h">R1</div><div class="rb"><strong>Банковский API эскроу — нет на рынке</strong><span>Из ПТК: критический путь W9–W13. Маркетплейс усиливает: splitRelease = N поручений. Митигация: адаптерная архитектура (смена банка = 1 файл). Запасной: аккредитив <span class="st-ref">ст. 13.2</span> (К3).</span></div></div>
+<div class="rr"><div class="ri ri-h">R2</div><div class="rb"><strong>Клиринг-сплит: partial failure</strong><span>Часть выплат прошла, часть нет. Митигация: idempotency per participant, retry exp. backoff, reconciliation 02:00 (расширенная). <span class="st-ref">ст. 6.5</span></span></div></div>
+<div class="rr"><div class="ri ri-h">R3</div><div class="rb"><strong>Фулфилмент-зависимость</strong><span>Митигация: гейт ≥2 в каждой роли <span class="st-ref">ст. 13.2</span> (К2). FulfillmentAdapter interface (по аналогии с BankAdapter).</span></div></div>
+<div class="rr"><div class="ri ri-m">R4</div><div class="rb"><strong>8→11 сервисов: рост сложности</strong><span>Оценка: +8–12 недель, +2–3 чел. к ПТК. Новые сервисы параллельно с Foundation. <span class="st-ref">ст. 5</span></span></div></div>
+<div class="rr"><div class="ri ri-m">R5</div><div class="rb"><strong>Многосторонние споры</strong><span>Определение виновника (товар / повреждение / задержка). Communication Hub + Evidence Store уже в ПТК. <span class="st-ref">ст. 12.4</span></span></div></div>
+<div class="rr"><div class="ri ri-l">R6</div><div class="rb"><strong>Обратная совместимость C2C</strong><span>Widget Service не меняется. Режимы SIMPLE/MILESTONE/DEPOSIT не затрагиваются. 5 партнёров сохраняют интеграции.</span></div></div>
+</div>
+
+<div class="c">
+<h3>Привязка к фазам ПТК</h3>
+<table class="tb">
+<thead><tr><th style="width:15%">Фаза</th><th style="width:12%">Период</th><th style="width:8%">Команда</th><th style="width:35%">Из ПТК</th><th style="width:30%">+ Маркетплейс</th></tr></thead>
+<tbody>
+<tr><td><b>Foundation</b></td><td>T+0 → T+8 нед.</td><td>4 чел.</td><td>Скелет 8 сервисов, mock, CI/CD</td><td>+ Скелет Clearing, Registry, Marketplace. + ParticipantRef[] в Deal Engine</td></tr>
+<tr><td><b>MVP</b></td><td>T+8 → T+16</td><td>6 чел.</td><td>Банк-API, C2C SIMPLE, пилот</td><td>+ SPLIT_CLEARING на mock. + Кабинет селлера. = Волна 0 (Масса Матере)</td></tr>
+<tr><td><b>v1.0</b></td><td>T+16 → T+28</td><td>8 чел.</td><td>C2C+C2B, MILESTONE, Авито, ЕСИА</td><td>+ Clearing на реальном банк-API. + Registry с операторами. = Волна −1</td></tr>
+<tr style="background:var(--ac2)"><td><b>v1.1 ●</b></td><td>T+28 → T+36</td><td>10 чел.</td><td colspan="2">Маркетплейс Волна 1: 5–15 селлеров, 3 региона, автоматический клиринг, двухуровневая витрина, кабинеты операторов</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="c">
+<h3>Коррективы К1–К6 → статьи Правил → компоненты ПТК</h3>
+<table class="tb">
+<thead><tr><th>Корректив</th><th>Статья Правил</th><th>Компонент ПТК</th><th>Фаза</th></tr></thead>
+<tbody>
+<tr><td><b>К1</b> «свобода выбора» = обещание Волны 2</td><td><span class="st-ref">ст. 13.3</span></td><td>Registry Service: gate_status, фильтр ≥2 в роли</td><td>v1.0</td></tr>
+<tr><td><b>К2</b> два фулфилмента с первого дня</td><td><span class="st-ref">ст. 13.2</span></td><td>Registry Service: гейт-проверка перед запуском Волны 1</td><td>v1.0</td></tr>
+<tr><td><b>К3</b> расчётный банк первым</td><td><span class="st-ref">ст. 6.1</span></td><td>Escrow Service: BankAdapter → реальный адаптер. Запасной: аккредитив</td><td>MVP</td></tr>
+<tr><td><b>К4</b> приоритет трафика гр.2 из сетевой базы</td><td><span class="st-ref">ст. 10.3</span> <span class="st-ref">ст. 11.2</span></td><td>Marketplace Service: source_type фильтр при маршрутизации</td><td>v1.1</td></tr>
+<tr><td><b>К5</b> правила выхода до запуска</td><td><span class="st-ref">ст. 13.5</span> <span class="st-ref">ст. 13.6</span> <span class="st-ref">ст. 13.7</span></td><td>Registry Service: exit_rules. Contract Builder: шаблон выхода</td><td>v1.0</td></tr>
+<tr><td><b>К6</b> пороговый ввод гр.3</td><td><span class="st-ref">ст. 13.4</span></td><td>Marketplace Service: buyer_count threshold → unlock SELLER type=NEW</td><td>v1.1</td></tr>
+</tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+<script>
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+document.querySelectorAll('.sec').forEach(x=>x.classList.remove('on'));
+t.classList.add('on');document.getElementById(t.dataset.t).classList.add('on')});
+</script>
+</body>
+</html>

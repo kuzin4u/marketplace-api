@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сервисы: модель ↔ скелет — сопоставление по форме реестра</title>
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --sys:#2E5B3A;--own:#B0791F;--money:#A62B2B;--up:#0F7B4A;--blue:#1D5FBF;--r:8px;
+  --sysbg:#E5F3EA;--ownbg:#FBF4E6;--bluebg:#EAF1FB;--redbg:#F7EAEA;--greybg:#EEF1EC;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:-.3px}
+.sub{color:var(--ink3);font-size:14px;margin-bottom:22px}
+h2{font-size:19px;margin:34px 0 6px;letter-spacing:-.2px}
+h3{font-size:15px;margin:18px 0 4px;color:var(--ink2)}
+.lead{color:var(--ink2);font-size:14.5px;margin:6px 0 16px;max-width:900px}
+a{color:var(--blue)}
+.mono{font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--greybg);padding:1px 5px;border-radius:4px}
+
+.st{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap}
+.s-full{background:var(--sysbg);color:var(--sys)}
+.s-part{background:var(--ownbg);color:var(--own)}
+.s-none{background:var(--redbg);color:var(--money)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin:12px 0 4px;font-size:12.5px;color:var(--ink2)}
+.legend .st{font-size:10.5px}
+
+table{width:100%;border-collapse:collapse;margin:12px 0 6px;font-size:12.7px}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+.scroll table{margin:0;min-width:920px;font-size:12px}
+.scroll th,.scroll td{padding:7px 8px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--ink3);font-weight:600;background:var(--paper2)}
+td.svc{font-weight:600;white-space:nowrap}
+tr:hover td{background:#FCFDFB}
+.grp td{background:var(--greybg);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2)}
+.subj{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700}
+.subj.deal{color:var(--money)} .subj.serv{color:var(--sys)} .subj.comm{color:var(--own)} .subj.none{color:var(--ink3)}
+
+.card{border:1px solid var(--line);border-radius:var(--r);background:var(--paper2);padding:14px 17px;margin:14px 0}
+.card.reg{border-left:3px solid var(--blue)}
+.card.reality{border-left:3px solid var(--up)}
+ul{margin:6px 0;padding-left:20px}
+li{font-size:13.3px;color:var(--ink2);margin:3px 0}
+.k{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--sys)}
+.field{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:20px;background:var(--bluebg);color:var(--blue);margin:1px 2px}
+
+.note{border-left:3px solid var(--own);background:var(--ownbg);padding:11px 15px;border-radius:0 var(--r) var(--r) 0;
+  margin:16px 0;font-size:13.5px;color:#5a4416}
+.note.sys{border-left-color:var(--sys);background:var(--sysbg);color:#1f4230}
+.note.blue{border-left-color:var(--blue);background:var(--bluebg);color:#1c3c68}
+.note.red{border-left-color:var(--money);background:var(--redbg);color:#6b2020}
+.note b{color:inherit}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Доведение Системы: сервисы — цель и план</h1>
+<div class="sub">Целевое и инструментальное руководство доведения Системы до рабочего состояния · сверка с эталоном <a href="service-registry.html">реестра сервисов</a></div>
+
+<p class="lead"><b>Роль этого документа.</b> <a href="service-registry.html">Реестр сервисов</a> — основной документ по сервисам,
+эталон «как должно быть»; он не меняется. Этот документ — <b>рабочий инструмент доведения</b>: он сверяет скелет с эталоном
+по форме сервиса, и от каждого пробела ведёт к <b>конкретному действию</b> — что именно доделать, чтобы Система заработала.
+Не «что описано» (это реестр) и не «что не так» вообще, а <b>что сделать следующим шагом</b>.</p>
+
+<p class="lead">Сверка идёт по форме сервиса из реестра (5 полей), с фокусом на поле <b>Предмет клиринга</b> — именно оно отделяет
+готовое от недоделанного. Уровни вовлечения — производная сводка в конце.</p>
+
+<!-- ФОРМА -->
+<div class="card reg">
+<h3 style="margin-top:0">Форма сервиса — ось сопоставления</h3>
+<p style="margin:4px 0;font-size:13.3px;color:var(--ink2)">Каждый сервис (старый и будущий) описан пятью полями. По ним и сверяем реализацию:</p>
+<div style="margin:6px 0">
+<span class="field">1 · Переключатель</span> <span class="field">2 · Тариф</span> <span class="field">3 · Предмет клиринга</span> <span class="field">4 · Точка в потоке</span> <span class="field">5 · Видимость</span>
+</div>
+<p style="margin:6px 0;font-size:12.8px;color:var(--ink3)">Предмет клиринга — ключевое поле для проверки денег:
+<span class="subj deal">СДЕЛКА</span> · <span class="subj serv">УСЛУГА</span> · <span class="subj comm">КОМИССИЯ</span> · новый вид.
+Пока сервис попадает в существующий предмет — правок ядра не нужно.</p>
+</div>
+
+<div class="legend">
+  <span><span class="st s-full">есть</span> реализовано в боевом API</span>
+  <span><span class="st s-part">частично</span> есть механизм, не полный</span>
+  <span><span class="st s-none">нет</span> в скелете отсутствует</span>
+</div>
+
+<!-- ГЛАВНАЯ ТАБЛИЦА ПО СЕРВИСАМ РЕЕСТРА -->
+<h2>Сервисы реестра против реализации</h2>
+<p class="lead">Все поля формы важны: сервис доведён, когда заполнены <b>все пять</b>, а не только предмет клиринга.
+Таблица несёт поля реестра (эталон) и добавляет колонку реализации по каждому сервису.</p>
+<div class="scroll">
+<table>
+<tr>
+  <th>Сервис</th>
+  <th>Переключатель</th><th>Тариф</th><th>Предмет клиринга</th><th>Точка в потоке</th><th>Видимость</th>
+  <th>Реализация</th>
+</tr>
+
+<tr class="grp"><td colspan="7">Витрина и продажа</td></tr>
+<tr>
+  <td class="svc">Витрина в Системе</td>
+  <td>Система | своя</td><td>в составе take-rate</td><td><span class="subj deal">СДЕЛКА</span></td><td>показ товара</td><td>настройка магазина</td>
+  <td><span class="st s-full">есть</span> <span class="mono">POST/GET /shop</span></td>
+</tr>
+<tr>
+  <td class="svc">Расчёт с покупателем</td>
+  <td>Система | свой | по заказу</td><td>take-rate %</td><td><span class="subj deal">СДЕЛКА</span></td><td>оплата</td><td>настройка / чекаут</td>
+  <td><span class="st s-part">частично</span> заказ в клиринг, но <b>take-rate % не удерживается</b></td>
+</tr>
+<tr>
+  <td class="svc">Эскроу-гарантия</td>
+  <td>вкл при расчёте Системы</td><td>в take-rate</td><td><span class="subj deal">СДЕЛКА</span></td><td>оплата→выдача</td><td>авто при расчёте Системы</td>
+  <td><span class="st s-part">частично</span> <span class="mono">PENDING</span> есть, раскрытия нет (банк)</td>
+</tr>
+
+<tr class="grp"><td colspan="7">Трафик и каталог</td></tr>
+<tr>
+  <td class="svc">Общий каталог</td>
+  <td>в Системе | только свой</td><td>—</td><td><span class="subj none">—</span></td><td>обнаружение товара</td><td>настройка магазина</td>
+  <td><span class="st s-full">есть</span> <span class="mono">/catalog/*</span>, visible_catalog</td>
+</tr>
+<tr>
+  <td class="svc">Агентный канал 🟢</td>
+  <td>вкл | выкл</td><td>—</td><td><span class="subj none">—</span></td><td>обнаружение товара</td><td>настройка магазина</td>
+  <td><span class="st s-part">частично</span> <span class="mono">/agent/chat</span> = прокси, без каталога</td>
+</tr>
+<tr>
+  <td class="svc">Referral (только трафик)</td>
+  <td>вкл | выкл</td><td>комиссия за покупателя</td><td><span class="subj comm">КОМИССИЯ</span></td><td>после выдачи</td><td>настройка магазина</td>
+  <td><span class="st s-none">нет</span> referral-fee в клиринге отсутствует</td>
+</tr>
+
+<tr class="grp"><td colspan="7">Fulfilment — открытый набор под-сервисов</td></tr>
+<tr>
+  <td class="svc">Хранение</td>
+  <td>Система | свой | —</td><td>за единицу/период</td><td><span class="subj serv">УСЛУГА</span></td><td>до заказа</td><td>настройка магазина</td>
+  <td><span class="st s-part">частично</span> общий тариф, отдельно не разведён</td>
+</tr>
+<tr>
+  <td class="svc">Приёмка / фасовка</td>
+  <td>Система | свой | —</td><td>за операцию</td><td><span class="subj serv">УСЛУГА</span></td><td>при поступлении</td><td>настройка магазина</td>
+  <td><span class="st s-part">частично</span> общий тариф</td>
+</tr>
+<tr>
+  <td class="svc">Упаковка</td>
+  <td>Система | свой | —</td><td>за заказ</td><td><span class="subj serv">УСЛУГА</span></td><td>при сборке</td><td>настройка магазина</td>
+  <td><span class="st s-part">частично</span> общий тариф</td>
+</tr>
+<tr>
+  <td class="svc">Доставка (последняя миля)</td>
+  <td>Система | свой | —</td><td>за доставку</td><td><span class="subj serv">УСЛУГА</span></td><td>после сборки</td><td>настройка / чекаут</td>
+  <td><span class="st s-full">есть</span> <span class="mono">infra_bindings</span> → LOGISTICS по зоне</td>
+</tr>
+<tr>
+  <td class="svc">ПВЗ / самовывоз</td>
+  <td>Система | свой | —</td><td>за выдачу</td><td><span class="subj serv">УСЛУГА</span></td><td>выдача</td><td>опция на чекауте</td>
+  <td><span class="st s-none">нет</span> отдельного сервиса выдачи нет</td>
+</tr>
+<tr>
+  <td class="svc">Возвраты</td>
+  <td>Система | свой | —</td><td>за обработку</td><td><span class="subj serv">УСЛУГА</span></td><td>после выдачи</td><td>авто при возврате</td>
+  <td><span class="st s-none">нет</span> обработки возврата в коде нет</td>
+</tr>
+
+<tr class="grp"><td colspan="7">Оформление и бренд</td></tr>
+<tr>
+  <td class="svc">White-label</td>
+  <td>бренд Системы | селлера</td><td>подписка / в тарифе</td><td><span class="subj deal">СДЕЛКА</span></td><td>показ товара</td><td>настройка магазина</td>
+  <td><span class="st s-none">нет</span> поля бренда есть, фасад-режима нет</td>
+</tr>
+</table>
+</div>
+<p class="lead" style="margin-top:8px;font-size:12.8px;color:var(--ink3)">Раздел fulfilment и весь реестр <b>открыты</b> — новые сервисы входят той же формой, поэтому строк со временем станет больше. Таблица широкая — прокрутите вбок, чтобы увидеть все поля формы.</p>
+
+<!-- ЧТО УМЕЕТ КЛИРИНГ -->
+<div class="card reality">
+<h3 style="margin-top:0">Что реально делит клиринг (calculateClearing)</h3>
+<ul>
+<li><b>FULFILLMENT</b> — по тарифу за единицу (<span class="subj serv">УСЛУГА</span>) ✓</li>
+<li><b>LOGISTICS</b> — по тарифу зоны доставки (<span class="subj serv">УСЛУГА</span>) ✓</li>
+<li><b>ORGANIZER</b> — 0.2% от суммы товаров (ст. 6.3) ✓</li>
+<li><b>SELLER</b> — остаток, 100% выручки минус операторы (ст. 7) ✓</li>
+</ul>
+<p style="margin:6px 0;font-size:13px;color:var(--ink2)">То есть реально клиринг закрывает предмет <span class="subj serv">УСЛУГА</span> целиком и берёт малый организаторский сбор.
+Предметы <span class="subj deal">СДЕЛКА</span> (take-rate) и <span class="subj comm">КОМИССИЯ</span> (referral) в клиринге пока не представлены.</p>
+</div>
+
+<div class="note red"><b>Главный разрыв — по полю «Предмет клиринга».</b> Скелет полностью держит предмет
+<span class="subj serv">УСЛУГА</span> (fulfilment, логистика — потому и построен вокруг него) и берёт сбор организатора.
+Но <span class="subj deal">СДЕЛКА</span> как take-rate с суммы и <span class="subj comm">КОМИССИЯ</span> как referral-fee —
+в клиринге отсутствуют. Именно это поле формы, а не «уровень», отделяет реализованное от нереализованного.</div>
+
+<!-- КЛЮЧЕВОЙ ВЫВОД ПРО РАСШИРЯЕМОСТЬ -->
+<div class="note sys"><b>Разрыв закрывается по форме, а не переписыванием ядра.</b> Реестр гарантирует: если новый сервис
+попадает в <b>существующий</b> предмет клиринга, ядро переписывать не нужно — сервис встаёт в конфигуратор, клиринг и кабинет
+одной записью формы. Наши пробелы ровно такие: <b>take-rate = предмет СДЕЛКА</b>, <b>referral-fee = предмет КОМИССИЯ</b> —
+оба предмета в модели уже определены. Значит достройка монетизации — это <b>новые записи в реестре и роли в клиринге</b>
+(наряду с ORGANIZER/SELLER/FULFILLMENT/LOGISTICS), а не слом архитектуры. Единственное, что потребовало бы правки ядра —
+совсем новый предмет клиринга, но его в нашем разрыве нет.</div>
+
+<!-- ПРОИЗВОДНАЯ СВОДКА ПО УРОВНЯМ -->
+<h2>Производная: что это значит для уровней вовлечения</h2>
+<p class="lead">Уровни <a href="service-tiers.html">линейки</a> — наборы сервисов выше. Раз мы знаем покрытие каждого сервиса,
+покрытие уровня выводится автоматически:</p>
+<table>
+<tr><th>Уровень</th><th>Из каких сервисов собран</th><th>Покрытие (следует из сервисов)</th></tr>
+<tr><td class="svc">3 · Витрина+расчёт свои, fulfilment наш</td><td>Доставка/Fulfilment (УСЛУГА)</td><td><span class="st s-full">есть</span> — ядро реализованного</td></tr>
+<tr><td class="svc">1 · Полный</td><td>Витрина+Расчёт+Эскроу+Fulfilment (СДЕЛКА)</td><td><span class="st s-part">частично</span> — нет take-rate сделки</td></tr>
+<tr><td class="svc">2 · Витрина своя</td><td>то же, витрина у селлера</td><td><span class="st s-part">частично</span> — тот же пробел take-rate</td></tr>
+<tr><td class="svc">4 · Только трафик</td><td>Referral (КОМИССИЯ)</td><td><span class="st s-none">нет</span> — referral-fee отсутствует</td></tr>
+<tr><td class="svc">5 · White-label</td><td>White-label (СДЕЛКА, фасад)</td><td><span class="st s-none">нет</span> — фасад-режим не реализован</td></tr>
+<tr><td class="svc">6 · Гибрид по заказу</td><td>выбор предмета клиринга на заказ</td><td><span class="st s-none">нет</span> — выбор на чекауте не реализован</td></tr>
+</table>
+<div class="note blue"><b>Вывод.</b> Реализована середина по предмету <span class="subj serv">УСЛУГА</span> (уровень 3 = Волна 0, Масса Мадре).
+Монетизация сделки (take-rate) и трафика (referral) — предметы СДЕЛКА и КОМИССИЯ, добавляются записями реестра = Волна 1.
+White-label и гибрид — далее. Порядок достройки диктует не «уровень», а какой предмет клиринга включаем следующим.</div>
+
+<!-- СЛЕДУЮЩЕЕ -->
+<h2>План доведения — что сделать, чтобы заработало</h2>
+<p class="lead">Инструментальная часть: каждый неполный сервис → конкретное действие. Порядок — по приоритету доведения,
+а он диктуется <b>предметом клиринга</b> (что включаем следующим), а не «уровнем».</p>
+<table>
+<tr><th>Сервис / пробел</th><th>Что сделать (по форме реестра)</th><th>Правка кода</th><th>Предмет клиринга</th><th>Волна</th></tr>
+<tr>
+  <td class="svc">Эскроу-гарантия<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">только PENDING</span></td>
+  <td>Добавить переходы статуса заказа PENDING→HELD→RELEASED; раскрытие эскроу по факту исполнения</td>
+  <td><span class="mono">POST /orders</span> статусы + новый маршрут раскрытия; часть — банк</td>
+  <td><span class="subj deal">СДЕЛКА</span></td>
+  <td>с банком (R1-R14)</td>
+</tr>
+<tr>
+  <td class="svc">Расчёт: take-rate<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">не удерживается</span></td>
+  <td>Запись в реестр: сервис «take-rate», тариф % от суммы, предмет СДЕЛКА, точка «оплата». Новая роль в клиринге PLATFORM/SYSTEM рядом с ORGANIZER</td>
+  <td><span class="mono">calculateClearing</span> — добавить split роли take-rate; тариф в participant_tariffs</td>
+  <td><span class="subj deal">СДЕЛКА</span></td>
+  <td>Волна 1</td>
+</tr>
+<tr>
+  <td class="svc">Referral (трафик)<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">нет</span></td>
+  <td>Запись в реестр: «referral», тариф комиссия за покупателя, предмет КОМИССИЯ, точка «после выдачи». Роль REFERRAL в клиринге</td>
+  <td><span class="mono">calculateClearing</span> — split REFERRAL когда source_type=NETWORK и привёл агент</td>
+  <td><span class="subj comm">КОМИССИЯ</span></td>
+  <td>Волна 1</td>
+</tr>
+<tr>
+  <td class="svc">Агентный канал<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">прокси к Anthropic</span></td>
+  <td>Связать <span class="mono">/agent/chat</span> с каталогом: агент ищет по <span class="mono">/catalog/search</span>, рекомендует товар, ставит source_type=NETWORK при переходе в заказ</td>
+  <td><span class="mono">/agent/chat</span> — вызов каталога + разметка приведённого заказа</td>
+  <td><span class="subj none">—</span> (запускает КОМИССИЮ)</td>
+  <td>Волна 1</td>
+</tr>
+<tr>
+  <td class="svc">Fulfilment под-сервисы<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">общий тариф</span></td>
+  <td>Развести Хранение/Приёмка/Упаковка/ПВЗ/Возвраты как отдельные записи реестра со своими тарифами (предмет УСЛУГА — уже поддержан)</td>
+  <td>participant_tariffs по типам услуг; <span class="mono">calculateClearing</span> уже умеет УСЛУГА</td>
+  <td><span class="subj serv">УСЛУГА</span></td>
+  <td>по спросу</td>
+</tr>
+<tr>
+  <td class="svc">White-label<br><span style="font-weight:400;font-size:11px;color:var(--ink3)">нет фасада</span></td>
+  <td>Режим «фасад под бренд»: свой домен селлера, скрытие Системы от покупателя. Запись в реестр, предмет СДЕЛКА (подписка/в тарифе)</td>
+  <td>роутинг по домену + флаг магазина; шаблон витрины без брендинга Системы</td>
+  <td><span class="subj deal">СДЕЛКА</span></td>
+  <td>далее</td>
+</tr>
+</table>
+
+<div class="note sys"><b>Как читать план.</b> Ни одна строка не требует слома ядра: всё это — <b>записи по форме реестра</b> плюс
+новые роли в <span class="mono">calculateClearing</span> рядом с существующими (FULFILLMENT/LOGISTICS/ORGANIZER/SELLER).
+Предметы клиринга СДЕЛКА / УСЛУГА / КОМИССИЯ уже определены — новый предмет не нужен. Это и есть «довести до рабочего
+состояния»: не переписать, а дозаполнить реестр и клиринг.</div>
+
+<div class="note blue"><b>Критический путь к рабочему состоянию.</b> Минимум для живого запуска с деньгами:
+(1) эскроу HELD→RELEASED — но это упирается в банк (R1-R14); (2) take-rate в клиринге — иначе Система не зарабатывает на сделке.
+Остальное (referral, агент, под-сервисы, white-label) наращивается по спросу. То есть <b>ближайший блокер — банк</b>,
+а ближайшая наша правка кода — <b>роль take-rate в calculateClearing</b>.</div>
+
+<h2>Что сопоставить дальше</h2>
+<p class="lead">Первая ось (сервисы селлера) пройдена. По той же схеме — остальные:</p>
+<ul>
+<li><b>Каталоги и выдача</b> — формула ранжирования (<a href="32-katalog-formation-ranking-synced.html">модель</a>) vs реальный <span class="mono">/catalog/search</span>.</li>
+<li><b>Полный клиринг</b> — предметы СДЕЛКА/КОМИССИЯ в <a href="massamadre-settlement-mechanisms.html">механизмах расчёта</a> vs роли в <span class="mono">calculateClearing</span>.</li>
+<li><b>Сторонние магазины (тип 2)</b> — <a href="external-shop-integration.html">интеграция внешнего</a> vs коннектор/зеркало <span class="mono">source=EXTERNAL</span>.</li>
+<li><b>Агентный слой</b> — <a href="agentic-commerce-architecture.html">5 ролей агентов</a> vs реальный <span class="mono">/agent/chat</span> (прокси к Anthropic).</li>
+</ul>
+
+<footer>
+Сопоставление модель↔скелет · сервисы по форме реестра · часть пула. Связанные:
+<a href="service-registry.html">реестр сервисов (база)</a>,
+<a href="service-tiers.html">линейка уровней</a>,
+<a href="system-layer-navigator.html">навигатор системного слоя</a>,
+<a href="ui-stage-map.html">карта UI-этапа</a>,
+<a href="massamadre-settlement-mechanisms.html">механизмы расчёта</a>,
+<a href="32-katalog-formation-ranking-synced.html">каталоги и ранжирование</a>,
+<a href="external-shop-integration.html">внешний магазин</a>,
+<a href="full-cycle-seller-to-buyer-red2.html">полный цикл</a>.
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Правила системы · ред. 3 · единый документ (преамбула, ст. 1–21)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E7EBF0;--paper-2:#F4F6F9;--ink:#0F1720;--ink-2:#42505F;
+  --rule:#A7B6C6;--rule-2:#C8D3DE;--escrow:#0B6E4F;--agent:#2740C8;--alarm:#9E241C;--amber:#8A6A12;
+  --shadow:0 1px 0 rgba(15,23,32,.06),0 12px 32px -22px rgba(15,23,32,.5);
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;--sans:"IBM Plex Sans",Arial,sans-serif;--serif:"IBM Plex Serif",Georgia,serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;
+  background-image:linear-gradient(rgba(167,182,198,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(167,182,198,.28) 1px,transparent 1px);background-size:32px 32px}
+.wrap{max-width:1020px;margin:0 auto;padding:0 20px 96px}
+header.masthead{padding:52px 0 24px;border-bottom:2px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,5vw,48px);line-height:1.07;letter-spacing:-.015em;margin:14px 0 10px}
+h1 .thin{color:var(--ink-2);font-weight:500}
+.dek{max-width:64ch;font-size:17px;color:var(--ink-2);margin:0}
+.sync{margin:20px 0 0;padding:12px 14px;background:var(--paper-2);border:1px solid var(--rule);border-left:3px solid var(--escrow);
+  font-family:var(--mono);font-size:12.5px;line-height:1.55;color:var(--ink-2)}
+.sync b{color:var(--ink);font-weight:600}
+.sync a{color:var(--agent)}
+nav.toc{position:sticky;top:0;z-index:40;background:rgba(231,235,240,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--rule);
+  margin:0 -20px 30px;padding:9px 20px;overflow-x:auto;white-space:nowrap}
+nav.toc a{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);text-decoration:none;margin-right:14px;border-bottom:1px solid transparent}
+nav.toc a:hover,nav.toc a:focus-visible{color:var(--ink);border-bottom-color:var(--agent);outline:none}
+h2{font-family:var(--serif);font-size:clamp(20px,2.8vw,27px);font-weight:600;margin:0 0 16px;letter-spacing:-.01em;border-bottom:1px solid var(--rule);padding-bottom:8px}
+h3{font-size:16.5px;font-weight:600;margin:22px 0 8px}
+p{margin:0 0 13px}
+section{margin:0 0 46px;scroll-margin-top:62px}
+.card{background:var(--paper-2);border:1px solid var(--rule);box-shadow:var(--shadow);padding:18px 20px}
+.grid{display:grid;gap:13px}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+.kv{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);margin-bottom:6px}
+small.note{display:block;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);margin-top:8px}
+code{font-family:var(--mono);font-size:12.5px;background:#fff;border:1px solid var(--rule-2);padding:1px 4px}
+a{color:var(--agent)}
+/* --- содержание --- */
+.contents{background:var(--paper-2);border:1px solid var(--rule);padding:18px 20px;box-shadow:var(--shadow)}
+.contents ol{margin:0;padding:0;list-style:none;columns:2;column-gap:28px}
+@media(max-width:700px){.contents ol{columns:1}}
+.contents li{font-size:14.5px;margin-bottom:5px;break-inside:avoid}
+.contents li .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);margin-right:7px}
+.contents li.new a{font-weight:600}
+.contents li.new .num{color:var(--agent)}
+/* --- статьи --- */
+article.art{background:#fff;border:1px solid var(--rule);border-left:3px solid var(--rule);margin-bottom:14px;box-shadow:var(--shadow);scroll-margin-top:62px}
+article.art.new{border-left-color:var(--agent)}
+article.art.esc{border-left-color:var(--escrow)}
+article.art > .h{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between;padding:14px 18px 10px;border-bottom:1px solid var(--rule-2)}
+article.art h4{font-family:var(--serif);font-size:18.5px;font-weight:600;margin:0;letter-spacing:-.01em}
+article.art .meta{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2)}
+article.art ol{margin:0;padding:13px 20px 15px;list-style:none}
+article.art ol li{display:grid;grid-template-columns:52px 1fr;gap:6px;margin-bottom:9px;font-size:15.2px}
+article.art ol li:last-child{margin-bottom:0}
+article.art ol li .n{font-family:var(--mono);font-size:13px;color:var(--agent);padding-top:2px}
+li.ins .t{background:#F1F4FF;border-left:2px solid var(--agent);padding:6px 9px;margin:-6px 0 0 0}
+li.ins .n{color:var(--agent);font-weight:600}
+.slot{margin:0;padding:12px 20px 14px;background:var(--paper-2);border-top:1px dashed var(--rule);font-size:14.5px;color:var(--ink-2)}
+.slot .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:5px}
+.slot ul{margin:6px 0 0;padding-left:20px}
+.slot li{margin-bottom:4px}
+.xref{margin:0;padding:11px 20px 14px;border-top:1px solid var(--rule-2);background:#fff;font-size:14.5px}
+.xref .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--escrow);display:block;margin-bottom:4px}
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--rule);padding:2px 7px;background:#fff;color:var(--ink-2);margin:0 4px 4px 0}
+.pill.ag{border-color:var(--agent);color:var(--agent)}
+.pill.esc{border-color:var(--escrow);color:var(--escrow)}
+.pill.am{border-color:var(--amber);color:var(--amber)}
+/* --- панель фильтра --- */
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 18px}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;background:#fff;border:1px solid var(--ink);color:var(--ink);padding:6px 10px}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn[aria-pressed="true"]{background:var(--agent);border-color:var(--agent);color:#fff}
+body.only-new article.art:not(.new){display:none}
+body.only-new .slot{display:none}
+table{width:100%;border-collapse:collapse;font-size:14.5px;background:var(--paper-2);border:1px solid var(--rule)}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--rule-2);vertical-align:top}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:#fff;border-bottom:1px solid var(--rule)}
+tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto}
+footer{border-top:2px solid var(--ink);padding-top:18px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+@media print{nav.toc,.filters{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">Пул документов Системы · ядро · единый документ · ред. 3 от 17.08.2026</div>
+  <h1>Правила системы<span class="thin"> ред. 3</span><br><span class="thin">преамбула п. 0.1–0.8 · статьи 1–21</span></h1>
+  <p class="dek">Единый документ: преамбула, все двадцать одна статья в одном тексте, перекрёстные ссылки пула сохранены и дополнены ссылками на документ «Агентная коммерция: архитектура агентного слоя» в каждой затронутой статье. Статьи 14–21 (агентный слой) включены полностью, двенадцать правок ред. 2 стоят внутри статей, а не отдельным списком.</p>
+  <div class="sync">
+    <b>Состояние сборки.</b> Текст статей 1–13 переносится из действующей ред. 2 дословно — в этой сборке их корпус отмечен как перенос (жёлтая метка), а всё новое ред. 3 стоит на своих местах в готовом виде. Загрузите файл ред. 2 — и корпус статей 1–13 встанет в этот же документ без изменения структуры и ссылок.<br>
+    <b>Что нового в ред. 3:</b> преамбула п. 0.8 · вставки в ст. 2.2, 3.2, 4, 6, 7.2, 8.5, 9, 10, 11.2, 12, 13 · новые статьи 14–21 (агентный слой) · ссылки на архитектуру агентного слоя в ст. 4, 6, 7, 8, 9, 10, 11, 12, 13 и в статьях 14–21.<br>
+    <b>Обоснование и реализация:</b> <a href="agentic-commerce-architecture.html">Агентная коммерция: архитектура агентного слоя</a> · <a href="pravila-agentic-articles-14-21.html">Статьи 14–21: нормативное дополнение (отдельный документ)</a> · <a href="retail-evolution-three-models.html">Эволюция ритейла: три модели</a> · <a href="infra-cost-copay-model.html">Затраты на инфраструктуру и co-payment</a> · <a href="participation-conditions-by-type.html">Условия присоединения по типам участников</a>.
+  </div>
+</header>
+
+<nav class="toc" aria-label="Содержание">
+  <a href="#preambula">Преамбула 0.1–0.8</a>
+  <a href="#st1">1–5</a>
+  <a href="#st6">6 Сделка</a>
+  <a href="#st7">7 Пирог</a>
+  <a href="#st8">8 Сбалансированность</a>
+  <a href="#st9">9 Витрина</a>
+  <a href="#st10">10 База</a>
+  <a href="#st11">11 Ранжирование</a>
+  <a href="#st12">12–13 Споры</a>
+  <a href="#st14">14 Агентный слой</a>
+  <a href="#st15">15 Мандаты</a>
+  <a href="#st16">16 Реестр агентов</a>
+  <a href="#st17">17 Оператор поверхности</a>
+  <a href="#st18">18 Первое касание</a>
+  <a href="#st19">19 Выдача</a>
+  <a href="#st20">20 Расчёты</a>
+  <a href="#st21">21 Споры агентных сделок</a>
+  <a href="#novoe">Что нового</a>
+</nav>
+
+<div class="filters">
+  <span class="kv" style="margin:0 4px 0 0">Показ</span>
+  <button class="btn" id="fAll" aria-pressed="true">весь документ</button>
+  <button class="btn" id="fNew" aria-pressed="false">только новое в ред. 3</button>
+  <span class="pill ag">новое</span><span class="pill am">перенос из ред. 2</span><span class="pill esc">ссылка на обоснование</span>
+</div>
+
+<!-- содержание -->
+<section id="soderzhanie">
+  <h2>Содержание</h2>
+  <div class="contents">
+    <ol>
+      <li><span class="num">0</span><a href="#preambula">Преамбула. Концептуальная основа бизнес-модели (п. 0.1–0.8)</a></li>
+      <li><span class="num">1</span><a href="#st1">Селлеры и участники Системы</a></li>
+      <li><span class="num">2</span><a href="#st2">Оферта покупателям, платёжные средства, права покупателя</a></li>
+      <li><span class="num">3</span><a href="#st3">Реестр участников и тарифы</a></li>
+      <li><span class="num">4</span><a href="#st4">Организатор: приёмка, каталоги, модерация, рейтинг</a></li>
+      <li><span class="num">5</span><a href="#st5">Статья 5 ред. 2</a></li>
+      <li><span class="num">6</span><a href="#st6">Цикл сделки и клиринг-сплит</a></li>
+      <li><span class="num">7</span><a href="#st7">Пирог: распределение доходов</a></li>
+      <li><span class="num">8</span><a href="#st8">Сбалансированность и устойчивость</a></li>
+      <li><span class="num">9</span><a href="#st9">Витрина и каналы магазина</a></li>
+      <li><span class="num">10</span><a href="#st10">Клиентская база</a></li>
+      <li><span class="num">11</span><a href="#st11">Формирование каталогов и ранжирование</a></li>
+      <li><span class="num">12</span><a href="#st12">Споры и ответственность</a></li>
+      <li><span class="num">13</span><a href="#st13">Процедурные документы и обжалование</a></li>
+      <li class="new"><span class="num">14</span><a href="#st14">Агентный слой Системы. Общие положения</a></li>
+      <li class="new"><span class="num">15</span><a href="#st15">Мандат и полномочия агента</a></li>
+      <li class="new"><span class="num">16</span><a href="#st16">Реестр агентов. Допуск и разделение полномочий</a></li>
+      <li class="new"><span class="num">17</span><a href="#st17">Оператор агентной поверхности</a></li>
+      <li class="new"><span class="num">18</span><a href="#st18">Первое касание и идентичность покупателя</a></li>
+      <li class="new"><span class="num">19</span><a href="#st19">Агентная выдача и точность предложения</a></li>
+      <li class="new"><span class="num">20</span><a href="#st20">Расчёты агентной сделки и взнос на поддержание слоя</a></li>
+      <li class="new"><span class="num">21</span><a href="#st21">Споры по агентным сделкам</a></li>
+    </ol>
+  </div>
+</section>
+
+<!-- преамбула -->
+<section id="preambula">
+  <h2>Преамбула. Концептуальная основа бизнес-модели</h2>
+  <article class="art">
+    <div class="h"><h4>Пункты 0.1–0.7 · действующая редакция</h4><div class="meta">перенос из ред. 2 · дословно</div></div>
+    <div class="slot"><span class="lbl">переносится из ред. 2 без изменений</span>
+      <ul>
+        <li>0.1 — тезис: ритейл движется к модели, честнее распределяющей создаваемую ценность; побеждает «выгодно всем».</li>
+        <li>0.2 — положение Системы inbetween между Stand Alone и маркетплейсом.</li>
+        <li>0.3 — критерий устойчивости: граница ухода (→ ст. 8).</li>
+        <li>0.4 — модель дохода: расчёты и финансовые потоки, co-payment (→ ст. 7).</li>
+        <li>0.5 — аналитические документы пула.</li>
+        <li>0.6 — техническая реализация (ПТК): архитектура и модули 01–08.</li>
+        <li>0.7 — стратегические документы (обоснование).</li>
+      </ul>
+    </div>
+    <div class="xref"><span class="lbl">дополнение ссылок в п. 0.5–0.7 (ред. 3)</span>
+      В п. 0.5 добавляется: <a href="agentic-commerce-architecture.html">«Агентная коммерция: архитектура агентного слоя»</a> — концепция первого касания, оргструктура и участники слоя, функциональная матрица F1–F11, бизнес-модель. В п. 0.6 добавляется привязка функций агентного слоя к модулям ПТК: <a href="agentic-commerce-architecture.html#func">F1–F11</a> (модули 01, 02, 03, 06, 08 и витрина 29/30/32).
+    </div>
+  </article>
+  <article class="art new">
+    <div class="h"><h4>Пункт 0.8. Агентный слой</h4><div class="meta">новое в ред. 3</div></div>
+    <ol>
+      <li><span class="n">0.8</span><span class="t">Точка входа покупателя смещается на поверхности программных агентов. Система относится к первому касанию как к арендуемому ресурсу, а к идентичности покупателя — как к неотчуждаемой части клиентской базы (ст. 18). Нормы агентного канала установлены статьями 14–21; их обоснование, организационная и функциональная структура слоя — в документе <a href="agentic-commerce-architecture.html">«Агентная коммерция: архитектура агентного слоя»</a>.</span></li>
+    </ol>
+  </article>
+</section>
+
+<!-- ст 1-5 -->
+<section id="st1">
+  <h2>Статьи 1–5</h2>
+  <article class="art" id="st1a">
+    <div class="h"><h4>Статья 1. Селлеры и участники Системы</h4><div class="meta">перенос из ред. 2</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>Определение селлера и типов участников; условия участия. Изменений в ред. 3 нет; понятия «агент участника» и «оператор агентной поверхности» вводятся отдельно в п. 14.2 и ст. 17 и не заменяют определения настоящей статьи.</div>
+  </article>
+
+  <article class="art" id="st2">
+    <div class="h"><h4>Статья 2. Оферта покупателям, платёжные средства, права покупателя</h4><div class="meta">перенос + вставка в п. 2.2</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>Включая п. 2.2 (платёжные средства и платёжные системы) и п. 2.4 (права покупателя, авторизация и подпись — ЕСИА/КЭП).</div>
+    <ol>
+      <li class="ins"><span class="n">2.2 +</span><span class="t">Положения настоящего пункта применяются к агентным сделкам с учётом п. 20.6.</span></li>
+    </ol>
+  </article>
+
+  <article class="art" id="st3">
+    <div class="h"><h4>Статья 3. Реестр участников и тарифы</h4><div class="meta">перенос + вставка в п. 3.2</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>Включая п. 3.2 (тариф участника устанавливается самим участником и фиксируется в реестре).</div>
+    <ol>
+      <li class="ins"><span class="n">3.2 +</span><span class="t">Условия и плата оператора агентной поверхности фиксируются в реестре в порядке п. 17.2–17.3. Плата, исчисляемая как доля оборота, в реестр не вносится.</span></li>
+    </ol>
+  </article>
+
+  <article class="art" id="st4">
+    <div class="h"><h4>Статья 4. Организатор: приёмка, каталоги, модерация, рейтинг</h4><div class="meta">перенос (8 пунктов) + новый пункт</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>Восемь пунктов: приёмка участников в реестр, формирование каталогов, модерация publish-first, рейтинг магазина (в т. ч. п. 4.3).</div>
+    <ol>
+      <li class="ins"><span class="n">4.9</span><span class="t">Организатор ведёт реестр агентов и осуществляет допуск агентов в порядке ст. 16, соблюдая разделение полномочий, установленное п. 16.4.</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование</span>Организационная структура агентного слоя и правило разделения полномочий — <a href="agentic-commerce-architecture.html#org">архитектура, §06</a>.</div>
+  </article>
+
+  <article class="art" id="st5">
+    <div class="h"><h4>Статья 5 ред. 2</h4><div class="meta">перенос из ред. 2 · заголовок уточнить по файлу ред. 2</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>Изменений в ред. 3 нет.</div>
+  </article>
+</section>
+
+<!-- ст 6 -->
+<section id="st6">
+  <h2>Статья 6. Цикл сделки и клиринг-сплит</h2>
+  <article class="art">
+    <div class="h"><h4>Статья 6</h4><div class="meta">перенос + новый пункт</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>Цикл сделки (шесть шагов DvP), статусы, эскроу; п. 6.2 — клиринг-сплит по вкладу.</div>
+    <ol>
+      <li class="ins"><span class="n">6.6</span><span class="t">Агентная сделка проходит цикл, установленный настоящей статьёй, с дополнительными состояниями приёма и проверки мандата. Помещение средств на эскроу-счёт и подтверждение исполнения — в порядке п. 20.1–20.2.</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование и реализация</span>Обмен сообщениями агентной сделки и место эскроу в нём — <a href="agentic-commerce-architecture.html#trace">архитектура, §09 «Трассировка агентной сделки»</a>; состояния автомата — модуль 01 Deal Engine FSM.</div>
+  </article>
+</section>
+
+<!-- ст 7 -->
+<section id="st7">
+  <h2>Статья 7. Пирог: распределение доходов</h2>
+  <article class="art">
+    <div class="h"><h4>Статья 7</h4><div class="meta">перенос + дополнение п. 7.2</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>Четыре статьи доходов; п. 7.1 — источник дохода Организатора из расчётов и финансовых потоков, не налог; п. 7.2 — взнос на поддержание инфраструктуры (co-payment) и три его условия; п. 7.3 — бесплатный базовый уровень.</div>
+    <ol>
+      <li class="ins"><span class="n">7.2 +</span><span class="t">К взносу на поддержание агентного слоя (п. 20.4) применяются все три условия настоящего пункта. Место в агентной выдаче предметом взноса быть не может (п. 19.3).</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование</span>Кто за что платит в агентном канале и юнит-экономика агентной сделки — <a href="agentic-commerce-architecture.html#bm">архитектура, §12 «Бизнес-модель агентного канала»</a>; затраты слоя во времени — <a href="infra-cost-copay-model.html">«Затраты на инфраструктуру и co-payment»</a>.</div>
+  </article>
+</section>
+
+<!-- ст 8 -->
+<section id="st8">
+  <h2>Статья 8. Сбалансированность и устойчивость</h2>
+  <article class="art">
+    <div class="h"><h4>Статья 8</h4><div class="meta">перенос + дополнение п. 8.5</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>П. 8.3 — устойчивость как граница ухода; п. 8.4 — три условия устойчивости; п. 8.5 — доли устанавливаются участниками, ориентир суммарного удержания ~15% GMV.</div>
+    <ol>
+      <li class="ins"><span class="n">8.5 +</span><span class="t">В суммарное удержание с участника включается взнос на поддержание агентного слоя (п. 20.4–20.5).</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование</span>Граница ухода нового типа участника (оператора агентной поверхности) — <a href="agentic-commerce-architecture.html#uchast">архитектура, §07 «Структура участников»</a>; проверка устойчивости — <a href="retail-evolution-three-models.html">«Эволюция ритейла: три модели»</a>.</div>
+  </article>
+</section>
+
+<!-- ст 9 -->
+<section id="st9">
+  <h2>Статья 9. Витрина и каналы магазина</h2>
+  <article class="art">
+    <div class="h"><h4>Статья 9</h4><div class="meta">перенос (7 пунктов) + новый пункт</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>Пять каналов магазина селлера, мульти-селлер корзина, признак source_type, SKU-атом (п. 9.4); документы реализации витрины (ПТК 29/30/31/32/34).</div>
+    <ol>
+      <li class="ins"><span class="n">9.8</span><span class="t">К каналам магазина селлера добавляется агентный канал: предложение магазина публикуется в машиночитаемом виде и доступно покупательским агентам через агента Системы и через операторов агентных поверхностей (ст. 14, 17, 19).</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование и реализация</span>Четыре слоя агентного канала и машиночитаемое предложение — <a href="agentic-commerce-architecture.html#arch">архитектура, §04</a>; каналы первого касания — <a href="agentic-commerce-architecture.html#touch">§03</a>.</div>
+  </article>
+</section>
+
+<!-- ст 10 -->
+<section id="st10">
+  <h2>Статья 10. Клиентская база</h2>
+  <article class="art">
+    <div class="h"><h4>Статья 10</h4><div class="meta">перенос (7 пунктов) + новый пункт</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>Признаки MIGRATED и NETWORK, привязка покупателя, переход между уровнями витрины (в т. ч. п. 10.2).</div>
+    <ol>
+      <li class="ins"><span class="n">10.8</span><span class="t">Покупатель, пришедший через агентный канал, учитывается с признаком <code>source_type = AGENT</code> и привязкой к магазину селлера. Права покупателя и порядок перехода — п. 18.2–18.3.</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование</span>Правило «первое касание можно арендовать, идентичность — нет», четыре канала касания и метрика конверсии касания в идентичность — <a href="agentic-commerce-architecture.html#touch">архитектура, §03 «Первое касание»</a>.</div>
+  </article>
+</section>
+
+<!-- ст 11 -->
+<section id="st11">
+  <h2>Статья 11. Формирование каталогов и ранжирование</h2>
+  <article class="art">
+    <div class="h"><h4>Статья 11</h4><div class="meta">перенос (7 пунктов) + дополнение п. 11.2</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>Формула ранжирования SKU и магазинов (п. 11.2), каталог магазинов, антиманипуляция, прозрачность.</div>
+    <ol>
+      <li class="ins"><span class="n">11.2 +</span><span class="t">При формировании ответа покупательскому агенту суммарный вес показателей исполнения не может быть ниже веса цены (п. 19.2). Веса публикуются.</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование</span>Риск гонки на дно в машинной выдаче и корректив К8 — <a href="agentic-commerce-architecture.html#korr">архитектура, §13 «Коррективы К7–К14»</a>.</div>
+  </article>
+</section>
+
+<!-- ст 12-13 -->
+<section id="st12">
+  <h2>Статьи 12–13. Споры, ответственность, процедурные документы</h2>
+  <article class="art">
+    <div class="h"><h4>Статья 12. Споры и ответственность</h4><div class="meta">перенос + новый пункт</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>Порядок и сроки рассмотрения споров, возврат средств из эскроу, ответственность участников.</div>
+    <ol>
+      <li class="ins"><span class="n">12.6</span><span class="t">В споре по агентной сделке доказательствами являются след мандатов и журнал согласий; порядок — ст. 21.</span></li>
+    </ol>
+  </article>
+  <article class="art" id="st13">
+    <div class="h"><h4>Статья 13. Процедурные документы и обжалование</h4><div class="meta">перенос + дополнение перечня</div></div>
+    <div class="slot"><span class="lbl">корпус статьи переносится из ред. 2</span>Перечень процедурных документов (подключение селлеров, спецификации), порядок обжалования решений Организатора.</div>
+    <ol>
+      <li class="ins"><span class="n">13 +</span><span class="t">Документы агентного слоя: <a href="agentic-commerce-architecture.html">«Агентная коммерция: архитектура агентного слоя»</a> — обоснование, организационная и функциональная структура, техническая реализация; статьи 14–21 настоящих Правил — норма.</span></li>
+    </ol>
+  </article>
+</section>
+
+<!-- 14 -->
+<section id="st14">
+  <h2>Статья 14. Агентный слой Системы. Общие положения</h2>
+  <article class="art new">
+    <div class="h"><h4>Статья 14</h4><div class="meta">новое в ред. 3 · связь: ст. 9, 11 · К9, К13</div></div>
+    <ol>
+      <li><span class="n">14.1</span><span class="t">Агентный слой Системы — совокупность интерфейсов, регламентов и сервисов, обеспечивающих совершение сделок программными агентами, действующими от имени покупателей и участников.</span></li>
+      <li><span class="n">14.2</span><span class="t">В настоящих Правилах используются понятия: <b>агент</b> — программа, совершающая действия от имени лица в пределах предоставленного полномочия; <b>покупательский агент</b> — агент, действующий от имени покупателя; <b>агент участника</b> — агент селлера, участника инфраструктуры или Расчётного Банка; <b>оператор агентной поверхности</b> — участник, предоставляющий поверхность взаимодействия покупателя с агентом; <b>мандат</b> — подписанное полномочие агенту; <b>первое касание</b> — первое взаимодействие покупателя или его агента с предложением Системы; <b>фид</b> — машиночитаемое представление предложения Системы; <b>агентная сделка</b> — сделка, созданная на основании мандата.</span></li>
+      <li><span class="n">14.3</span><span class="t">Агентный канал является каналом Системы (ст. 9) и не образует отдельного свода правил. Статьи 1–13 применяются к агентным сделкам в полном объёме; статьи 14–21 устанавливают дополнительные требования.</span></li>
+      <li><span class="n">14.4</span><span class="t">Требования агентного слоя не могут снижать уровень защиты покупателя и участника, установленный ст. 2, 6, 12, а также размер и порядок распределения, установленные п. 6.2 и ст. 7.</span></li>
+      <li><span class="n">14.5</span><span class="t">При расхождении между сведениями агентного интерфейса (манифест, фид, ответ агенту) и настоящими Правилами действуют Правила. Организатор устраняет расхождение в срок не более пяти рабочих дней и уведомляет затронутых участников.</span></li>
+      <li><span class="n">14.6</span><span class="t">Агентный слой вводится поэтапно. До введения соответствующей функции норма, её описывающая, применяется в части, обеспеченной технически; перечень введённых функций публикуется Организатором.</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование и реализация</span>Четыре слоя и пять ролей агентов — <a href="agentic-commerce-architecture.html#arch">архитектура, §04–§05</a>; функциональная матрица F1–F11 и этапность A0–A3 — <a href="agentic-commerce-architecture.html#func">§08</a>, <a href="agentic-commerce-architecture.html#road">§16</a>.</div>
+  </article>
+</section>
+
+<!-- 15 -->
+<section id="st15">
+  <h2>Статья 15. Мандат и полномочия агента</h2>
+  <article class="art new">
+    <div class="h"><h4>Статья 15</h4><div class="meta">новое в ред. 3 · связь: п. 2.4, ст. 6 · К9</div></div>
+    <ol>
+      <li><span class="n">15.1</span><span class="t">Агентная сделка создаётся только на основании мандата. Применяются три вида мандата: <b>мандат намерения</b>, <b>мандат корзины</b>, <b>мандат платежа</b>.</span></li>
+      <li><span class="n">15.2</span><span class="t">Мандат намерения содержит предмет (категорию или запрос), предельную сумму, срок действия, круг продавцов и допустимость частичного исполнения. Автоматическое продление мандата намерения не допускается.</span></li>
+      <li><span class="n">15.3</span><span class="t">Мандат корзины формируется агентом в пределах мандата намерения и содержит конкретные SKU, цену, срок доставки, выбранного участника инфраструктуры и ссылку на мандат намерения.</span></li>
+      <li><span class="n">15.4</span><span class="t">Мандат платежа определяет сумму, помещаемую на эскроу-счёт, идентификатор сделки и условие релиза. Агент не получает и не хранит платёжные реквизиты покупателя.</span></li>
+      <li><span class="n">15.5</span><span class="t">Мандат подписывается способом, имеющим юридическое значение (ЕСИА, квалифицированная электронная подпись), в порядке п. 2.4.</span></li>
+      <li><span class="n">15.6</span><span class="t">Покупатель отзывает мандат одним действием. Отзыв прекращает создание новых сделок; открытая сделка исполняется либо прекращается по ст. 12 с возвратом средств из эскроу.</span></li>
+      <li><span class="n">15.7</span><span class="t">Организатор ведёт неизменяемый журнал согласий: мандат, редакция Правил на момент согласия, снимок цены, срока и условий. Срок хранения — не менее срока исковой давности по сделке.</span></li>
+      <li><span class="n">15.8</span><span class="t">Заказ, поступивший без проверенного мандата, обслуживается как обычный заказ витрины и не пользуется агентными лимитами, упрощёнными сценариями и приоритетами.</span></li>
+      <li><span class="n">15.9</span><span class="t">Действие агента в пределах мандата признаётся действием покупателя. Выход за пределы мандата является основанием для отказа в создании или исполнении сделки.</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование и реализация</span>Состав и назначение трёх мандатов, российский контур подписи — <a href="agentic-commerce-architecture.html#mandat">архитектура, §10 «Мандаты»</a>; функция F4, модуль 03 Auth Service.</div>
+  </article>
+</section>
+
+<!-- 16 -->
+<section id="st16">
+  <h2>Статья 16. Реестр агентов. Допуск и разделение полномочий</h2>
+  <article class="art new">
+    <div class="h"><h4>Статья 16</h4><div class="meta">новое в ред. 3 · связь: ст. 4 · К9</div></div>
+    <ol>
+      <li><span class="n">16.1</span><span class="t">Организатор ведёт реестр агентов. В реестр вносятся: выпустивший агента, публичный ключ, назначение, лимиты по умолчанию, статус, дата приостановления или отзыва.</span></li>
+      <li><span class="n">16.2</span><span class="t">Допуск агента осуществляется по факту раскрытия сведений п. 16.1 и подтверждения ключа. Отказ в допуске мотивируется и может быть обжалован в порядке ст. 13.</span></li>
+      <li><span class="n">16.3</span><span class="t">Основания приостановления и исключения из реестра: подделка либо использование недействительного мандата, систематическое превышение лимитов, искажение сведений о цене, наличии или сроке, действия по п. 19.5.</span></li>
+      <li><span class="n">16.4</span><span class="t">Разделение полномочий Организатора: допуск агентов и формирование агентной выдачи (ст. 19) осуществляются разными подразделениями; подразделение, отвечающее за партнёрства с операторами поверхностей, не участвует в определении весов выдачи; рассмотрение агентных споров не подчинено ни одному из указанных подразделений.</span></li>
+      <li><span class="n">16.5</span><span class="t">Изменение весов агентной выдачи и ставки взноса на поддержание агентного слоя производится изменением настоящих Правил, а не решением Организатора.</span></li>
+      <li><span class="n">16.6</span><span class="t">Реестр агентов доступен участникам для просмотра в части, не раскрывающей ключи и лимиты отдельных покупателей.</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование</span>Оргструктура слоя и три «нельзя» в распределении полномочий — <a href="agentic-commerce-architecture.html#org">архитектура, §06</a>.</div>
+  </article>
+</section>
+
+<!-- 17 -->
+<section id="st17">
+  <h2>Статья 17. Оператор агентной поверхности</h2>
+  <article class="art new">
+    <div class="h"><h4>Статья 17</h4><div class="meta">новое в ред. 3 · шестой тип участника · К10, К14</div></div>
+    <ol>
+      <li><span class="n">17.1</span><span class="t">Оператор агентной поверхности — участник Системы, предоставляющий поверхность, на которой возникает первое касание покупателя с предложением Системы.</span></li>
+      <li><span class="n">17.2</span><span class="t">Присоединение оператора оформляется внесением в реестр участников с указанием предмета, объёма, порядка расчётов, срока и порядка прекращения участия.</span></li>
+      <li><span class="n">17.3</span><span class="t">Плата оператору является фиксированной либо ступенчатой и определяется потреблением ресурса (верификации мандатов, вызовы фида, обработанные заказы). Плата, исчисляемая как доля оборота, а равно право оператора изменять её в одностороннем порядке, не допускаются.</span></li>
+      <li><span class="n">17.4</span><span class="t">Оператор не приобретает прав на идентичность покупателя (ст. 18) и не вправе ограничивать повторное обращение покупателя к магазину селлера или к каталогу Системы напрямую.</span></li>
+      <li><span class="n">17.5</span><span class="t">Система обеспечивает участие не менее двух операторов агентных поверхностей и наличие собственного агента Системы. При сокращении числа операторов до одного Организатор уведомляет участников и восстанавливает требуемое число в срок не более шести месяцев; в этот период доля агентных сделок единственного оператора не может превышать долю, установленную решением о введении режима.</span></li>
+      <li><span class="n">17.6</span><span class="t">При прекращении участия оператора: покупатели, зарегистрированные в клиентской базе Системы, остаются в ней; незакрытые сделки исполняются в общем порядке; переданные оператору персональные данные подлежат прекращению обработки.</span></li>
+      <li><span class="n">17.7</span><span class="t">Продолжение участия оператора обусловлено достижением показателя конверсии первого касания в идентичность (п. 18.4) не ниже уровня, установленного и опубликованного заранее.</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование</span>Шестой тип участника, его вклад, границы ухода и встроенный риск наращивания доли — <a href="agentic-commerce-architecture.html#uchast">архитектура, §07</a>; коррективы К10 и К14 — <a href="agentic-commerce-architecture.html#korr">§13</a>.</div>
+  </article>
+</section>
+
+<!-- 18 -->
+<section id="st18">
+  <h2>Статья 18. Первое касание и идентичность покупателя</h2>
+  <article class="art new esc">
+    <div class="h"><h4>Статья 18</h4><div class="meta">новое в ред. 3 · дополняет ст. 10 · К7, К13</div></div>
+    <ol>
+      <li><span class="n">18.1</span><span class="t">Первое касание может быть предоставлено оператором агентной поверхности на возмездной основе. Идентичность покупателя предметом сделки быть не может.</span></li>
+      <li><span class="n">18.2</span><span class="t">Покупатель агентной сделки регистрируется в клиентской базе Системы с признаком <code>source_type = AGENT</code> и привязкой к магазину селлера, у которого совершена покупка (ст. 10).</span></li>
+      <li><span class="n">18.3</span><span class="t">Покупатель вправе обращаться повторно напрямую к магазину селлера и к каталогу Системы без участия поверхности первого касания. Ограничение этого права любым участником недействительно.</span></li>
+      <li><span class="n">18.4</span><span class="t">Организатор ведёт и раскрывает участникам не реже одного раза в квартал: долю агентных сделок, по которым покупатель зарегистрирован в клиентской базе Системы (конверсия первого касания в идентичность), и долю повторных заказов, совершённых напрямую.</span></li>
+      <li><span class="n">18.5</span><span class="t">Источник первого касания фиксируется по каждой агентной сделке. Канал, по которому показатель п. 18.4 систематически не достигает установленного уровня, пересматривается или прекращается.</span></li>
+      <li><span class="n">18.6</span><span class="t">Обработка данных покупателя осуществляется в объёме, необходимом для исполнения сделки и последующего обращения; цель, объём и срок указываются в мандате.</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование</span>Первое касание как предмет спора в агентном канале, четыре канала касания и воронка «касание → идентичность» — <a href="agentic-commerce-architecture.html#touch">архитектура, §03</a>.</div>
+  </article>
+</section>
+
+<!-- 19 -->
+<section id="st19">
+  <h2>Статья 19. Агентная выдача и точность предложения</h2>
+  <article class="art new">
+    <div class="h"><h4>Статья 19</h4><div class="meta">новое в ред. 3 · дополняет п. 4.3, ст. 11 · К8</div></div>
+    <ol>
+      <li><span class="n">19.1</span><span class="t">Организатор публикует манифест Системы и контракт полей фида, включающий: цену, наличие, срок сборки и доставки, условия возврата, тариф выбранного участника инфраструктуры, рейтинг магазина.</span></li>
+      <li><span class="n">19.2</span><span class="t">Ответ агенту формируется по формуле ранжирования п. 11.2 с обязательным учётом показателей исполнения (соблюдение срока, доля отказов, доля споров). Суммарный вес показателей исполнения не может быть ниже веса цены.</span></li>
+      <li><span class="n">19.3</span><span class="t">Веса формулы и порядок их изменения публикуются. Место в агентной выдаче не является предметом платного предоставления ни в какой форме, включая взнос на поддержание слоя (п. 20.4).</span></li>
+      <li><span class="n">19.4</span><span class="t">Селлер отвечает за достоверность полей фида. Отказ от исполнения агентного заказа по причине недостоверности сведений учитывается в показателях исполнения п. 19.2.</span></li>
+      <li><span class="n">19.5</span><span class="t">Запрещены действия, направленные на искусственное изменение позиции в агентной выдаче, в том числе фиктивные сделки, манипулирование заявленными сроками и дублирование SKU. Последствия — по правилам ст. 11 об антиманипуляции и п. 16.3.</span></li>
+      <li><span class="n">19.6</span><span class="t">Присутствие в фиде и приём агентных заказов предоставляются участнику на базовом уровне бесплатно (п. 7.3).</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование и реализация</span>Машиночитаемое предложение (слой B) — <a href="agentic-commerce-architecture.html#arch">архитектура, §04</a>; цена отказа в агентном канале — <a href="agentic-commerce-architecture.html#touch">§03</a>; функции F1–F2, витрина 30/32.</div>
+  </article>
+</section>
+
+<!-- 20 -->
+<section id="st20">
+  <h2>Статья 20. Расчёты агентной сделки и взнос на поддержание агентного слоя</h2>
+  <article class="art new esc">
+    <div class="h"><h4>Статья 20</h4><div class="meta">новое в ред. 3 · дополняет п. 2.2, ст. 6, 7 · К11, К12</div></div>
+    <ol>
+      <li><span class="n">20.1</span><span class="t">Средства агентной сделки помещаются на эскроу-счёт на основании мандата платежа и удерживаются до подтверждения исполнения в порядке ст. 6.</span></li>
+      <li><span class="n">20.2</span><span class="t">Подтверждение исполнения может быть представлено машинным способом агентом участника инфраструктуры. Доказательное значение такого подтверждения равно письменному.</span></li>
+      <li><span class="n">20.3</span><span class="t">Расщепление платежа производится по п. 6.2: селлеру — выручка от продажи, участникам инфраструктуры — тариф, установленный ими в реестре (п. 3.2), Организатору — расчётный тариф.</span></li>
+      <li><span class="n">20.4</span><span class="t">Взнос на поддержание агентного слоя устанавливается по правилам п. 7.2: покрывает себестоимость слоя, а не образует доход Организатора; определяется потреблением ресурса (верификации мандатов, вызовы фида, эскроу-операции); учитывается в прозрачном фонде.</span></li>
+      <li><span class="n">20.5</span><span class="t">Введение платежа, исчисляемого как доля оборота, за пользование агентным каналом не допускается. Взнос учитывается в суммарном удержании с участника и не может выводить его за предел, установленный п. 8.5.</span></li>
+      <li><span class="n">20.6</span><span class="t">Платёжными средствами агентной сделки являются средства, предусмотренные п. 2.2 (эквайринг, Система быстрых платежей), и эскроу-счёт. Расчёты цифровой валютой в агентных сделках не применяются.</span></li>
+      <li><span class="n">20.7</span><span class="t">Организатор ведёт учёт себестоимости агентного слоя, приведённой к тысяче агентных сделок, и раскрывает её в составе отчёта о фонде (п. 7.2).</span></li>
+      <li class="ins"><span class="n">20.8 +</span><span class="t">Перечень допустимых платёжных средств, установленный п. 20.6, действует для юрисдикции Российской Федерации. При работе Системы в иной юрисдикции перечень определяется решением Организатора применительно к этой юрисдикции, с сохранением двух неизменных требований: расчёт проходит через эскроу-механизм (ст. 6) и цифровая валюта как средство расчёта не применяется.</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">обоснование</span>Кто за что платит, юнит-экономика сделки и честная оценка масштаба канала — <a href="agentic-commerce-architecture.html#bm">архитектура, §12</a>; регуляторный контур (СБП, эскроу, исключение цифровой валюты) — <a href="agentic-commerce-architecture.html#raschet">§11</a>.</div>
+  </article>
+</section>
+
+<!-- 21 -->
+<section id="st21">
+  <h2>Статья 21. Споры по агентным сделкам</h2>
+  <article class="art new">
+    <div class="h"><h4>Статья 21</h4><div class="meta">новое в ред. 3 · дополняет ст. 12–13</div></div>
+    <ol>
+      <li><span class="n">21.1</span><span class="t">Спор рассматривается на основании следа мандатов и журнала согласий (п. 15.7): состава корзины, снимка условий на момент согласия, подтверждений исполнения.</span></li>
+      <li><span class="n">21.2</span><span class="t">Расхождение между условиями, представленными агенту в фиде, и условиями исполненной сделки толкуется в пользу покупателя. Убыток относится на сторону, представившую недостоверные сведения.</span></li>
+      <li><span class="n">21.3</span><span class="t">Выход агента за пределы мандата является основанием для прекращения сделки и возврата средств покупателю из эскроу.</span></li>
+      <li><span class="n">21.4</span><span class="t">Агентные споры рассматриваются подразделением, не подчинённым подразделениям каталога и партнёрств с операторами поверхностей (п. 16.4).</span></li>
+      <li><span class="n">21.5</span><span class="t">Сроки и порядок — по ст. 12. При отсутствии следа мандата спор рассматривается по общим правилам ст. 12 без применения п. 21.1–21.3.</span></li>
+    </ol>
+    <div class="xref"><span class="lbl">реализация</span>Разбор по следу мандатов — функция F9, модуль 08 Arbitrage Service; обмен сообщениями сделки — <a href="agentic-commerce-architecture.html#trace">архитектура, §09</a>.</div>
+  </article>
+</section>
+
+<!-- что нового -->
+<section id="novoe">
+  <h2>Что нового в ред. 3</h2>
+  <div class="scroll">
+  <table>
+    <tr><th>Место</th><th>Изменение</th><th>Корректив</th><th>Ссылка на обоснование</th></tr>
+    <tr><td>Преамбула п. 0.8</td><td>агентный слой; первое касание арендуется, идентичность — нет</td><td>К7, К13</td><td><a href="agentic-commerce-architecture.html#touch">§03</a></td></tr>
+    <tr><td>Преамбула п. 0.5–0.6</td><td>архитектура агентного слоя добавлена в перечни документов и функций</td><td>—</td><td><a href="agentic-commerce-architecture.html#func">§08</a></td></tr>
+    <tr><td>п. 2.2</td><td>платёжные средства агентных сделок → п. 20.6</td><td>К12</td><td><a href="agentic-commerce-architecture.html#raschet">§11</a></td></tr>
+    <tr><td>п. 3.2</td><td>тариф оператора поверхности в реестре; доля оборота не вносится</td><td>К14</td><td><a href="agentic-commerce-architecture.html#uchast">§07</a></td></tr>
+    <tr><td>ст. 4 (новый п.)</td><td>Организатор ведёт реестр агентов</td><td>К9</td><td><a href="agentic-commerce-architecture.html#org">§06</a></td></tr>
+    <tr><td>ст. 6 (новый п.)</td><td>цикл агентной сделки, состояния мандата</td><td>—</td><td><a href="agentic-commerce-architecture.html#trace">§09</a></td></tr>
+    <tr><td>п. 7.2</td><td>взнос агентного слоя под три условия co-payment</td><td>К11</td><td><a href="agentic-commerce-architecture.html#bm">§12</a></td></tr>
+    <tr><td>п. 8.5</td><td>взнос слоя входит в потолок удержания</td><td>К11</td><td><a href="agentic-commerce-architecture.html#bm">§12</a></td></tr>
+    <tr><td>ст. 9 (новый п.)</td><td>агентный канал магазина селлера</td><td>—</td><td><a href="agentic-commerce-architecture.html#arch">§04</a></td></tr>
+    <tr><td>ст. 10 (новый п.)</td><td><code>source_type = AGENT</code></td><td>К7</td><td><a href="agentic-commerce-architecture.html#touch">§03</a></td></tr>
+    <tr><td>п. 11.2</td><td>вес исполнения не ниже веса цены в агентной выдаче</td><td>К8</td><td><a href="agentic-commerce-architecture.html#korr">§13</a></td></tr>
+    <tr><td>ст. 12 (новый п.)</td><td>след мандатов как доказательство</td><td>—</td><td><a href="agentic-commerce-architecture.html#trace">§09</a></td></tr>
+    <tr><td>ст. 13</td><td>документы агентного слоя в перечне</td><td>—</td><td><a href="agentic-commerce-architecture.html">весь документ</a></td></tr>
+    <tr><td>Статьи 14–21</td><td>агентный слой: общие положения, мандаты, реестр агентов, оператор поверхности, первое касание, выдача, расчёты и взнос, споры</td><td>К7–К14</td><td><a href="agentic-commerce-architecture.html">архитектура агентного слоя</a></td></tr>
+  </table>
+  </div>
+  <p style="margin-top:14px"><b>Полнота.</b> Все восемь коррективов К7–К14 закреплены нормой: К7 → п. 18.2–18.3; К8 → п. 19.2–19.3; К9 → п. 15.1, 15.8; К10 → п. 17.5; К11 → п. 20.4–20.5; К12 → п. 20.6, 18.6; К13 → п. 18.4–18.5; К14 → п. 17.2–17.6.</p>
+  <div class="card" style="border-left:3px solid var(--amber);margin-top:16px">
+    <div class="kv">чтобы закрыть сборку</div>
+    <p style="margin:0">Корпус статей 1–13 переносится из ред. 2 дословно — в этом файле его место отмечено жёлтой меткой в каждой статье. Загрузите HTML или docx Правил ред. 2: структура, нумерация, ссылки и вставки этого документа сохраняются, дополняется только перенесённый текст, после чего файл становится единственным действующим документом Правил, а дополнение «статьи 14–21» самостоятельной силы не имеет.</p>
+  </div>
+</section>
+
+<section>
+<h2>Связанные документы пула</h2>
+<p style="font-size:13.5px">Как нормы этого документа воплощены в архитектуре, схемах и пути селлера. Ссылки двусторонние.</p>
+<table>
+  <thead><tr><th>Документ</th><th>Связь с Правилами</th></tr></thead>
+  <tbody>
+    <tr><td><a href="pravila-agentic-articles-14-21.html">Статьи 14–21 (дополнение)</a></td><td>исходное нормативное дополнение, сведённое в этот единый документ</td></tr>
+    <tr><td><a href="agentic-commerce-architecture.html">Архитектура агентного слоя</a></td><td>как ст. 14–21 воплощены в слоях, ролях агентов и мандатах</td></tr>
+    <tr><td><a href="full-cycle-seller-to-buyer-red2.html">Полный цикл, ред. 2</a></td><td>ст. 15–21 как надзорный ряд и янтарный блок в схеме сделки</td></tr>
+    <tr><td><a href="roles-mental-model.html">Кто есть кто</a> · <a href="vitrina-creation-components.html">Составные части витрины</a></td><td>ст. 9 (source of truth) и роли элементов Системы</td></tr>
+    <tr><td><a href="external-shop-integration.html">Внешний магазин в Системе</a></td><td>ст. 10.4 (source_type NETWORK) и ст. 20 (расчёт через Систему) для внешнего каталога</td></tr>
+    <tr><td><a href="payment-platform-requirements.html">Требования к платёжной платформе</a></td><td>ст. 20 расчёты — R1–R14 для банка-партнёра</td></tr>
+  </tbody>
+</table>
+</section>
+
+<footer>
+  Правила системы · ред. 3 · единый документ · 17.08.2026 · пул документов Системы, ядро<br>
+  Перекрёстные ссылки: агентный слой → <a href="agentic-commerce-architecture.html">архитектура агентного слоя</a> · концепция → <a href="retail-evolution-three-models.html">эволюция ритейла</a>, <a href="infra-cost-copay-model.html">затраты и co-payment</a> · условия участия → <a href="participation-conditions-by-type.html">по типам участников</a>.
+</footer>
+</div>
+
+<script>
+const fAll=document.getElementById('fAll'), fNew=document.getElementById('fNew');
+function mode(onlyNew){
+  document.body.classList.toggle('only-new',onlyNew);
+  fNew.setAttribute('aria-pressed',onlyNew);fAll.setAttribute('aria-pressed',!onlyNew);
+}
+fAll.onclick=()=>mode(false);
+fNew.onclick=()=>mode(true);
+</script>
+</body>
+</html>

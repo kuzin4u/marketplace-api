@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Кто есть кто: ЛК, API, база, витрина</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --tool:#1D5FBF;--med:#2E5B3A;--data:#8A4B9A;--cons:#B0791F;--stop:#A62B2B;--r:3px;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,sans-serif;font-size:15px;line-height:1.6}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 90px}
+header.top{background:var(--paper2);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;padding:26px 24px 20px}
+.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+h1{font-family:'IBM Plex Serif',Georgia,serif;font-size:clamp(25px,4vw,36px);margin:8px 0 6px;letter-spacing:-.02em}
+.sub{color:var(--ink2);max-width:82ch;margin:0}
+.banner{margin-top:16px;padding:9px 13px;border:1px solid var(--line);border-left:3px solid var(--tool);background:var(--paper);font-size:13px;color:var(--ink2);border-radius:var(--r)}
+.banner b{color:var(--tool)}.banner a{color:var(--tool)}
+.diagram{background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);padding:10px;margin:22px 0;overflow-x:auto}
+svg{display:block;margin:0 auto;min-width:880px}
+h2{font-family:'IBM Plex Serif',Georgia,serif;font-size:21px;margin:32px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+p{margin:0 0 12px;max-width:84ch}
+table{width:100%;border-collapse:collapse;font-size:13.6px;background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:10px 0 16px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);padding:9px 11px;border-bottom:1px solid var(--line);font-weight:600;background:var(--paper)}
+td{padding:10px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.mono{font-family:'IBM Plex Mono',monospace;font-size:12.2px}
+.tbl-scroll{overflow-x:auto}
+.role{font-weight:700}
+.r-tool{color:var(--tool)}.r-med{color:var(--med)}.r-data{color:var(--data)}.r-cons{color:var(--cons)}
+.callout{border:1px solid var(--line);border-left:3px solid var(--med);background:var(--paper2);padding:11px 14px;border-radius:var(--r);margin:14px 0;font-size:13.8px}
+.callout b{color:var(--med)}
+.callout.warn{border-left-color:var(--stop)}.callout.warn b{color:var(--stop)}
+.myth{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:12px 0}
+.myth>div{padding:12px 15px}
+.myth .no{background:rgba(166,43,43,.05);border-right:1px solid var(--line)}
+.myth .yes{background:rgba(46,91,58,.05)}
+.myth .h{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;margin-bottom:6px}
+.myth .no .h{color:var(--stop)}.myth .yes .h{color:var(--med)}
+.myth p{margin:0 0 8px;font-size:13.6px}
+footer{border-top:1px solid var(--line);margin-top:36px;padding-top:16px;font-size:12.5px;color:var(--ink3)}
+footer a{color:var(--med)}
+@media(max-width:640px){.myth{grid-template-columns:1fr}.myth .no{border-right:none;border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="eyebrow">ПТК · ментальная модель · кто есть кто</div>
+    <h1>Кто есть кто: ЛК, API, база, витрина</h1>
+    <p class="sub">Концептуальная схема ролей — чтобы не путать инструмент с данными. Личный кабинет, Marketplace API, база и витрина делают <em>разное</em>: один вводит, другой переносит, третий хранит, четвёртый показывает. Метафора — ресторан: пульт, официант, кухня, зал.</p>
+    <div class="banner"><b>Дополняет:</b> техническую <a href="vitrina-creation-components.html">схему составных частей</a> (те же элементы, но с реальными маршрутами и полями). Здесь — про роли и смысл, там — про механику.</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="diagram">
+<svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ментальная модель ролей">
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#3E4A57"/></marker>
+    <marker id="arb" markerWidth="9" markerHeight="9" refX="1" refY="3" orient="auto"><path d="M7,0 L0,3 L7,6 Z" fill="#B0791F"/></marker>
+  </defs>
+
+  <!-- 4 РОЛИ горизонтально -->
+  <!-- ИНСТРУМЕНТ -->
+  <g font-family="IBM Plex Sans">
+    <rect x="30" y="70" width="180" height="150" rx="12" fill="#EAF1FB" stroke="#1D5FBF" stroke-width="1.5"/>
+    <text x="120" y="98" text-anchor="middle" font-size="13" font-weight="700" fill="#1D5FBF">ИНСТРУМЕНТ</text>
+    <text x="120" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#141A21">Личный кабинет</text>
+    <text x="120" y="140" text-anchor="middle" font-size="11" fill="#3E4A57">формы: Shop Form,</text>
+    <text x="120" y="155" text-anchor="middle" font-size="11" fill="#3E4A57">SKU-CRUD</text>
+    <line x1="45" y1="168" x2="195" y2="168" stroke="#C9DBF2"/>
+    <text x="120" y="188" text-anchor="middle" font-size="12" font-style="italic" fill="#1D5FBF">🎛 «пульт»</text>
+    <text x="120" y="206" text-anchor="middle" font-size="10.5" fill="#6C7681">селлер вводит · закрытый</text>
+  </g>
+
+  <!-- ПОСРЕДНИК -->
+  <g font-family="IBM Plex Sans">
+    <rect x="255" y="70" width="180" height="150" rx="12" fill="#E7F0EA" stroke="#2E5B3A" stroke-width="1.5"/>
+    <text x="345" y="98" text-anchor="middle" font-size="13" font-weight="700" fill="#2E5B3A">ПОСРЕДНИК</text>
+    <text x="345" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#141A21">Marketplace API</text>
+    <text x="345" y="140" text-anchor="middle" font-size="11" fill="#3E4A57">server.js — код,</text>
+    <text x="345" y="155" text-anchor="middle" font-size="11" fill="#3E4A57">принимает, проверяет</text>
+    <line x1="270" y1="168" x2="420" y2="168" stroke="#C6D9CC"/>
+    <text x="345" y="188" text-anchor="middle" font-size="12" font-style="italic" fill="#2E5B3A">🧑‍🍳 «официант»</text>
+    <text x="345" y="206" text-anchor="middle" font-size="10.5" fill="#6C7681">переносит · сам не хранит</text>
+  </g>
+
+  <!-- ДАННЫЕ -->
+  <g font-family="IBM Plex Sans">
+    <rect x="480" y="70" width="180" height="150" rx="12" fill="#F3EAF6" stroke="#8A4B9A" stroke-width="1.5"/>
+    <text x="570" y="98" text-anchor="middle" font-size="13" font-weight="700" fill="#8A4B9A">ДАННЫЕ</text>
+    <text x="570" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#141A21">База (Supabase)</text>
+    <text x="570" y="140" text-anchor="middle" font-size="11" fill="#3E4A57">shops · skus ·</text>
+    <text x="570" y="155" text-anchor="middle" font-size="11" fill="#3E4A57">participants</text>
+    <line x1="495" y1="168" x2="645" y2="168" stroke="#E0CBE8"/>
+    <text x="570" y="188" text-anchor="middle" font-size="12" font-style="italic" fill="#8A4B9A">🗄 «кухня/склад»</text>
+    <text x="570" y="206" text-anchor="middle" font-size="10.5" fill="#6C7681">всё лежит здесь</text>
+  </g>
+
+  <!-- ПОТРЕБИТЕЛЬ: две разные роли -->
+  <g font-family="IBM Plex Sans">
+    <rect x="705" y="70" width="180" height="150" rx="12" fill="#FBF3E1" stroke="#B0791F" stroke-width="1.5"/>
+    <text x="795" y="90" text-anchor="middle" font-size="13" font-weight="700" fill="#B0791F">ПОТРЕБИТЕЛИ</text>
+    <text x="795" y="105" text-anchor="middle" font-size="9.5" fill="#6C7681">читают · показывают · публично</text>
+    <line x1="715" y1="114" x2="875" y2="114" stroke="#EDDDB8"/>
+    <!-- витрина: одно окно одного магазина -->
+    <text x="795" y="131" text-anchor="middle" font-size="12.5" font-weight="600" fill="#141A21">Витрина</text>
+    <text x="795" y="146" text-anchor="middle" font-size="10" fill="#3E4A57">окно ОДНОГО магазина</text>
+    <text x="795" y="159" text-anchor="middle" font-size="9.5" fill="#6C7681">его бренд + его товары · massamadre.ru</text>
+    <line x1="730" y1="169" x2="860" y2="169" stroke="#EDDDB8" stroke-dasharray="2 2"/>
+    <!-- агент: окно к каталогу многих -->
+    <text x="795" y="186" text-anchor="middle" font-size="12.5" font-weight="600" fill="#141A21">Агент 🟢</text>
+    <text x="795" y="201" text-anchor="middle" font-size="10" fill="#3E4A57">окно к каталогу МНОГИХ</text>
+    <text x="795" y="214" text-anchor="middle" font-size="9.5" fill="#6C7681">срез skus visible_catalog=TRUE</text>
+  </g>
+
+  <!-- ПОТОК ЗАПИСИ (слева направо) -->
+  <path d="M210 130 H253" stroke="#3E4A57" stroke-width="1.8" marker-end="url(#ar)"/>
+  <path d="M435 130 H478" stroke="#3E4A57" stroke-width="1.8" marker-end="url(#ar)"/>
+  <text x="232" y="122" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Sans">пишет</text>
+  <text x="457" y="122" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Sans">кладёт</text>
+
+  <!-- ПОТОК ЧТЕНИЯ (справа налево, витрина ← база через API) -->
+  <path d="M705 180 H662" stroke="#B0791F" stroke-width="1.6" marker-start="url(#arb)" fill="none"/>
+  <path d="M478 195 C 600 240, 640 200, 660 190" stroke="#B0791F" stroke-width="1.4" marker-start="url(#arb)" fill="none" stroke-dasharray="1 0"/>
+  <text x="683" y="172" text-anchor="middle" font-size="10" fill="#B0791F" font-family="IBM Plex Sans">читает</text>
+
+  <!-- ПОДПИСЬ ПОТОКОВ -->
+  <rect x="30" y="270" width="855" height="60" rx="10" fill="#F1F4F0" stroke="#B9BEB6"/>
+  <text x="60" y="296" font-size="12.5" font-weight="600" fill="#1A1F26" font-family="IBM Plex Serif">Два направления:</text>
+  <text x="60" y="316" font-size="12" fill="#3E4A57" font-family="IBM Plex Sans">→ СОЗДАНИЕ: селлер через ЛК пишет в API, API кладёт в базу.  ← ПОКАЗ: витрина и агент читают из базы через API. База — центр, всё остальное вращается вокруг неё.</text>
+
+  <!-- КАТАЛОГ = СРЕЗ ДАННЫХ -->
+  <g font-family="IBM Plex Sans">
+    <rect x="480" y="370" width="180" height="120" rx="12" fill="#fff" stroke="#8A4B9A" stroke-dasharray="5 3"/>
+    <text x="570" y="394" text-anchor="middle" font-size="12" font-weight="700" fill="#8A4B9A">«Каталог Системы»</text>
+    <text x="570" y="414" text-anchor="middle" font-size="11" fill="#3E4A57">это не место и не API —</text>
+    <text x="570" y="430" text-anchor="middle" font-size="11" fill="#3E4A57">это СРЕЗ таблицы skus:</text>
+    <text x="570" y="450" text-anchor="middle" font-size="11.5" font-weight="600" fill="#8A4B9A" font-family="IBM Plex Mono">visible_catalog = TRUE</text>
+    <text x="570" y="470" text-anchor="middle" font-size="10.5" fill="#6C7681">API отдаёт этот срез агенту</text>
+  </g>
+  <path d="M570 220 V368" stroke="#8A4B9A" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+  <path d="M660 430 C 740 430, 795 300, 795 222" stroke="#B0791F" stroke-width="1.3" marker-start="url(#arb)" fill="none" stroke-dasharray="4 3"/>
+  <text x="720" y="380" text-anchor="middle" font-size="9.5" fill="#B0791F" font-family="IBM Plex Sans">агент читает срез</text>
+
+  <!-- МАГАЗИН = ТОЖЕ ДАННЫЕ -->
+  <g font-family="IBM Plex Sans">
+    <rect x="240" y="370" width="180" height="120" rx="12" fill="#fff" stroke="#8A4B9A" stroke-dasharray="5 3"/>
+    <text x="330" y="394" text-anchor="middle" font-size="12" font-weight="700" fill="#8A4B9A">«Магазин селлера»</text>
+    <text x="330" y="414" text-anchor="middle" font-size="11" fill="#3E4A57">это тоже не ЛК —</text>
+    <text x="330" y="430" text-anchor="middle" font-size="11" fill="#3E4A57">это запись в базе:</text>
+    <text x="330" y="450" text-anchor="middle" font-size="11.5" font-weight="600" fill="#8A4B9A" font-family="IBM Plex Mono">shops(id=SHOP-slug)</text>
+    <text x="330" y="470" text-anchor="middle" font-size="10.5" fill="#6C7681">+ витрина, которую видят</text>
+  </g>
+  <path d="M520 200 C 440 260, 380 300, 350 368" stroke="#8A4B9A" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+</svg>
+</div>
+
+<h2>Развеиваем путаницу</h2>
+<div class="myth">
+  <div class="no">
+    <div class="h">✗ как часто думают</div>
+    <p><b>«ЛК = магазин селлера»</b> — будто кабинет и есть магазин.</p>
+    <p><b>«Marketplace API = каталог»</b> — будто API и есть каталог товаров.</p>
+  </div>
+  <div class="yes">
+    <div class="h">✓ как на самом деле</div>
+    <p><b>ЛК — инструмент</b> управления магазином. Магазин — запись <span class="mono">shops</span> + витрина. Кабинет ими <em>управляет</em>, но сам магазином не является.</p>
+    <p><b>API — посредник</b> (код server.js). Каталог — <em>срез данных</em> <span class="mono">skus</span> с <span class="mono">visible_catalog=TRUE</span>, который API <em>отдаёт</em> агенту.</p>
+  </div>
+</div>
+
+<h2>Роли одной строкой</h2>
+<div class="tbl-scroll"><table>
+  <thead><tr><th>Роль</th><th>Кто</th><th>Метафора</th><th>Что делает</th><th>Не делает</th></tr></thead>
+  <tbody>
+    <tr><td class="role r-tool">Инструмент</td><td>Личный кабинет (формы)</td><td>🎛 пульт</td><td>селлер вводит данные (пишет)</td><td>не хранит, не показывает покупателю</td></tr>
+    <tr><td class="role r-med">Посредник</td><td>Marketplace API (server.js)</td><td>🧑‍🍳 официант</td><td>принимает, проверяет, переносит</td><td>сам ничего не хранит</td></tr>
+    <tr><td class="role r-data">Данные</td><td>База (Supabase)</td><td>🗄 склад</td><td>хранит всё: магазины, товары, участников</td><td>ничего не решает и не показывает</td></tr>
+    <tr><td class="role r-cons">Потребитель · витрина</td><td>Витрина магазина</td><td>🍽 зал магазина</td><td>окно к данным ОДНОГО магазина: его бренд и товары</td><td>не показывает чужие магазины, ничего не создаёт</td></tr>
+    <tr><td class="role r-cons">Потребитель · агент</td><td>Агент Системы 🟢</td><td>🧑‍🍳 официант, обходящий залы</td><td>окно к каталогу МНОГИХ магазинов (срез <span class="mono">visible_catalog</span>)</td><td>не привязан к одному магазину, ничего не создаёт</td></tr>
+  </tbody>
+</table></div>
+
+<div class="callout"><b>Место витрины — и чем она отличается от агента.</b> Витрина и агент оба читают из базы, но это <b>разные окна</b>. Витрина — окно к данным <em>одного</em> магазина: показывает его бренд и его товары (<span class="mono">visible_shop=TRUE</span>), это лицо конкретного магазина, его «зал». Агент — окно к каталогу <em>многих</em> магазинов сразу: срез <span class="mono">skus</span> с <span class="mono">visible_catalog=TRUE</span> со всей Системы, это «официант, обходящий все залы». Один товар может быть виден и там, и там, но витрина всегда про один магазин, а агент — про весь каталог.</div>
+
+<div class="callout"><b>Где живут «магазин» и «каталог».</b> Оба — не интерфейсы, а <b>данные в базе</b>. Магазин — запись в <span class="mono">shops</span> (плюс витрина, которая её показывает). Каталог Системы — срез <span class="mono">skus</span> с <span class="mono">visible_catalog=TRUE</span>. Кабинет и витрина — лишь окна к этим данным: одно чтобы вводить, другое чтобы показывать.</div>
+
+<div class="callout warn"><b>Почему это важно не путать.</b> Если считать «ЛК = магазин», кажется, что у каждого селлера свой отдельный сервер-магазин. На деле магазин — строка в общей базе, а кабинет и витрина — общие интерфейсы, отличающиеся только тем, какие данные показывают. Это и есть инвариант Системы: <b>один API, одна база, много окон</b> — что делает возможным и единый каталог для агента, и честные общие правила расчёта.</div>
+
+<h2>Связанные документы пула</h2>
+<p style="font-size:13.5px;color:var(--ink2)">Эта схема — про роли и смысл; рядом — техника, полный цикл и нормы. Ссылки двусторонние.</p>
+<div class="tbl-scroll"><table>
+  <thead><tr><th>Документ</th><th>Связь со схемой</th></tr></thead>
+  <tbody>
+    <tr><td><a href="vitrina-creation-components.html">Составные части витрины</a></td><td>те же роли, но с реальными маршрутами, полями и порядком ключей — механика вместо смысла</td></tr>
+    <tr><td><a href="full-cycle-seller-to-buyer-red2.html">Полный цикл, ред. 2</a></td><td>где эти роли работают в целой сделке селлер→покупатель</td></tr>
+    <tr><td><a href="external-shop-integration.html">Внешний магазин в Системе</a></td><td>как роли меняются, когда каталог селлера внешний, а расчёты через Систему</td></tr>
+    <tr><td><a href="api-routes-seller.html">Справочник маршрутов</a></td><td>чем «посредник» (API) отвечает на запросы «инструмента» (форм)</td></tr>
+  </tbody>
+</table></div>
+
+<footer>
+  Ментальная модель ролей · часть пула документов Системы. Техническая версия с маршрутами и полями — <a href="vitrina-creation-components.html">схема составных частей</a>. Инструменты — <a href="../shop-form.html">Shop Form</a>, <a href="../sku-crud.html">SKU-CRUD</a>; маршруты — <a href="api-routes-seller.html">справочник</a>; полный цикл сделки — <a href="full-cycle-seller-to-buyer-red2.html">схема ред. 2</a>. Внешний магазин в Системе — <a href="external-shop-integration.html">модель интеграции</a>.
+</footer>
+</div>
+</body>
+</html>

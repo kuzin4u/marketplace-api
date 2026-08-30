@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Привлечение селлеров — сводный документ / Распределённый маркетплейс</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F3EC; --paper-line:#E4DECC;
+    --ink:#1D1B17; --ink-soft:#5B5548;
+    --ledger:#233A52; --copper:#B07A34; --copper-soft:#E7D4B0; --card:#FCFAF4;
+    --g1:#233A52; --g1-soft:#DCE4EC;
+    --g2:#A34A2E; --g2-soft:#F2DCD3;
+    --g3:#4E6B52; --g3-soft:#DCE6DD;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;padding:0 0 100px;}
+  .wrap{max-width:940px;margin:0 auto;padding:0 34px;}
+
+  /* COVER */
+  .cover{padding:70px 0 40px;border-bottom:3px double var(--ink);margin-bottom:20px;}
+  .cover .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ledger);}
+  .cover h1{font-family:'PT Serif',serif;font-weight:700;font-size:46px;line-height:1.12;margin:18px 0 14px;letter-spacing:-.015em;}
+  .cover h1 em{font-style:italic;color:var(--ledger);}
+  .cover .sub{font-size:16px;color:var(--ink-soft);max-width:640px;line-height:1.6;}
+  .cover .meta{margin-top:26px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);display:flex;gap:26px;flex-wrap:wrap;}
+
+  /* TOC */
+  .toc{background:var(--card);border:1px solid var(--paper-line);border-radius:6px;padding:22px 26px;margin-bottom:56px;}
+  .toc h4{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--copper);margin:0 0 14px;}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:32px;font-size:13.5px;line-height:1.9;}
+  .toc a{color:var(--ink);text-decoration:none;border-bottom:1px solid transparent;}
+  .toc a:hover{border-bottom-color:var(--copper);}
+
+  /* SECTIONS */
+  .sec{margin-bottom:64px;scroll-margin-top:20px;}
+  .sec-num{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--copper);font-weight:600;letter-spacing:.05em;}
+  .sec h2{font-family:'PT Serif',serif;font-size:28px;font-weight:700;margin:6px 0 8px;line-height:1.2;letter-spacing:-.01em;}
+  .sec .intro{font-size:15px;color:var(--ink-soft);line-height:1.6;max-width:720px;margin-bottom:24px;}
+  .sec h3{font-family:'PT Serif',serif;font-size:19px;margin:32px 0 10px;}
+  .sec p{font-size:14.5px;line-height:1.65;color:var(--ink);max-width:740px;margin:0 0 14px;}
+  .sec .note{font-size:13px;color:var(--ink-soft);}
+
+  table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:13.5px;}
+  th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);padding:0 12px 10px 0;border-bottom:1.5px solid var(--ink);vertical-align:bottom;}
+  td{padding:12px 12px 12px 0;border-bottom:1px solid var(--paper-line);vertical-align:top;line-height:1.5;}
+  td.em{font-weight:600;}
+
+  .callout{background:#FBF3E4;border-left:4px solid var(--copper);border-radius:4px;padding:16px 20px;margin:18px 0 24px;font-size:13.5px;color:var(--ink-soft);line-height:1.6;}
+  .callout b{color:var(--ink);}
+
+  .formula{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:#F1ECDD;border:1px dashed var(--copper);border-radius:4px;padding:13px 16px;color:var(--ledger);margin:14px 0 22px;overflow-x:auto;white-space:pre;line-height:1.6;}
+
+  .group-band{border-radius:6px 6px 0 0;padding:14px 20px;color:#fff;margin-top:26px;}
+  .group-band .gb-tag{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.85;}
+  .group-band h3{font-family:'PT Serif',serif;font-size:18px;margin:3px 0 0;color:#fff;}
+  .group-panel{border:1px solid var(--paper-line);border-top:none;border-radius:0 0 6px 6px;padding:20px 22px;background:var(--card);margin-bottom:6px;}
+  .pain{font-family:'PT Serif',serif;font-style:italic;font-size:14.5px;color:var(--ink-soft);border-left:3px solid var(--paper-line);padding-left:14px;margin:0 0 18px;line-height:1.5;}
+  ul.clean{list-style:none;margin:0 0 8px;padding:0;}
+  ul.clean li{padding:9px 0;border-bottom:1px dashed var(--paper-line);font-size:13.5px;line-height:1.5;}
+  ul.clean li:last-child{border-bottom:none;}
+  ul.clean li b{display:block;margin-bottom:2px;}
+
+  /* interactive funnel embed */
+  .funnels{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:20px 0 30px;}
+  .funnel-card{background:var(--card);border:1px solid var(--paper-line);border-radius:6px;overflow:hidden;}
+  .funnel-head{padding:13px 16px;color:#fff;}
+  .funnel-head .f-tag{font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;opacity:.85;}
+  .funnel-head h4{font-family:'PT Serif',serif;font-size:15px;margin:2px 0 0;color:#fff;}
+  .funnel-body{padding:12px 16px 14px;}
+  .fn-field{margin-bottom:10px;}
+  .fn-field label{font-size:10.5px;color:var(--ink-soft);display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;gap:5px;}
+  .fn-field label .lbl-txt{display:flex;align-items:center;gap:5px;}
+  .fn-field label .fv{font-family:'IBM Plex Mono',monospace;color:var(--ink);font-weight:600;}
+  .fn-field input[type=range]{width:100%;accent-color:var(--copper);}
+  .act-btn{width:14px;height:14px;border-radius:50%;flex-shrink:0;border:1px solid var(--copper);color:var(--copper);background:transparent;font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;}
+  .act-btn:hover{background:var(--copper);color:#fff;}
+  .act-tip{display:none;background:#FBF3E4;border-left:2px solid var(--copper);border-radius:3px;padding:8px 10px;margin:2px 0 8px;font-size:10px;line-height:1.5;color:var(--ink-soft);}
+  .act-tip.open{display:block;}
+  .act-tip b{color:var(--ink);display:block;margin-bottom:3px;}
+  .act-tip ul{margin:0;padding-left:14px;}
+  .act-tip li{margin-bottom:2px;}
+  .fn-pool{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-soft);border-top:1px dashed var(--paper-line);padding-top:9px;margin-top:5px;}
+  .fn-pool label{display:flex;align-items:center;gap:5px;}
+  .fn-pool input[type=number]{width:60px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;border:none;border-bottom:1px dashed var(--copper);background:transparent;text-align:right;}
+  .funnel-viz{padding:0 16px 14px;}
+  .fn-bar{height:20px;border-radius:3px;margin-bottom:4px;display:flex;align-items:center;padding-left:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#fff;white-space:nowrap;overflow:hidden;}
+
+  .timing-row{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0 22px;}
+  .timing-row .fn-field{flex:1;min-width:190px;}
+
+  .chart-legend{display:flex;gap:16px;margin-bottom:12px;flex-wrap:wrap;}
+  .leg-item{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+  .leg-dot{width:10px;height:10px;border-radius:2px;}
+  svg{width:100%;height:auto;display:block;}
+  .axis-label{font-family:'IBM Plex Mono',monospace;font-size:10px;fill:var(--ink-soft);}
+  .grid-line{stroke:var(--paper-line);stroke-width:1;}
+  .result-row{display:flex;gap:12px;flex-wrap:wrap;border-top:1px solid var(--paper-line);padding-top:14px;margin-top:14px;}
+  .result{background:#fff;border:1px solid var(--paper-line);border-radius:4px;padding:11px 14px;min-width:135px;flex:1;}
+  .result .r-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin-bottom:4px;}
+  .result .r-value{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;color:var(--ledger);}
+  .verdict{margin-top:14px;padding-top:12px;border-top:1px dashed var(--paper-line);font-size:12.5px;color:var(--ink-soft);line-height:1.55;}
+  .verdict b{color:var(--ink);}
+  .embed-card{background:var(--card);border:1px solid var(--paper-line);border-left:4px solid var(--ledger);border-radius:4px;padding:22px 24px;margin:10px 0 24px;}
+
+  /* channel map */
+  .chan-band{border-radius:6px 6px 0 0;padding:14px 20px;color:#fff;margin-top:28px;display:flex;align-items:center;gap:12px;}
+  .chan-band .num{font-family:'IBM Plex Mono',monospace;font-size:20px;opacity:.6;}
+  .chan-band h3{font-family:'PT Serif',serif;font-size:18px;margin:0;color:#fff;}
+  .chan-panel{border:1px solid var(--paper-line);border-top:none;border-radius:0 0 6px 6px;padding:20px 22px;background:#fff;margin-bottom:8px;}
+
+  .priority-table td.p{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--copper);}
+
+  footer{max-width:940px;margin:50px auto 0;padding:24px 34px 0;border-top:2px solid var(--ink);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);display:flex;justify-content:space-between;}
+
+  @media(max-width:640px){.cover h1{font-size:32px;}.toc ol{columns:1;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="eyebrow">Распределённый маркетплейс · Волна 1</div>
+    <h1>Привлечение селлеров:<br><em>сводный документ</em></h1>
+    <p class="sub">Полная проработка притока участников — от сегментации трёх источников и их клиентской базы до конкретных офферов, механизма воронки, действий под каждый показатель и карты каналов с реальными площадками.</p>
+    <div class="meta">
+      <span>Стартовые регионы: Москва+МО · СПб · Краснодарский край</span>
+      <span id="coverDate"></span>
+    </div>
+  </div>
+<div style="max-width:1000px;margin:0 auto 18px;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 2 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Документ стратегического слоя (обоснование бизнес-модели), на который опирается <b>Преамбула Правил системы (ред. 2)</b>. При расхождении норма — Правила.</div>
+  <div><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Преамбула — привлечение</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 10 — база</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 11 — маршрутизация</span></div>
+</div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h4>Содержание</h4>
+    <ol>
+      <li><a href="#s1">Три источника селлеров</a></li>
+      <li><a href="#s2">Клиентская база: миграция vs сеть</a></li>
+      <li><a href="#s3">Офферы под каждую группу</a></li>
+      <li><a href="#s4">Недовольство по WB и Ozon</a></li>
+      <li><a href="#s5">Механизм воронки (интерактив)</a></li>
+      <li><a href="#s6">Действия под каждый показатель</a></li>
+      <li><a href="#s7">Карта каналов привлечения</a></li>
+      <li><a href="#s8">С чего начать завтра</a></li>
+    </ol>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="sec" id="s1">
+    <div class="sec-num">01</div>
+    <h2>Три источника селлеров</h2>
+    <p class="intro">Определяющая часть модели: три источника входят в систему с принципиально разным стартовым капиталом доверия покупателей. От этого зависит, кто наполняет общую клиентскую базу, а кто её только использует — и какой стимул для группы вообще регистрируется как стимул.</p>
+
+    <table>
+      <thead><tr><th>Группа</th><th>Кто это</th><th>База на входе</th><th>Активация</th><th>Лояльность</th></tr></thead>
+      <tbody>
+        <tr><td class="em" style="color:var(--g1)">1 · Неорганизованные</td><td>Действующие компании эл.коммерции вне маркетплейсов (+18% МСП/полугодие)</td><td>Есть — своя база покупателей</td><td>Почти мгновенная (приходят с оборотом)</td><td>Высокая</td></tr>
+        <tr><td class="em" style="color:var(--g2)">2 · Разочаровавшиеся</td><td>Ушедшие с маркетплейсов из-за экономики (отток 24,5% с WB/Ozon за год)</td><td>Ноль — база принадлежала платформе</td><td>Средняя (есть опыт продаж)</td><td>Высокая (возвращаться некуда)</td></tr>
+        <tr><td class="em" style="color:var(--g3)">3 · Новые</td><td>Впервые выходящие в бизнес — из смежного дела или с нуля</td><td>Ноль (иногда офлайн-контакты)</td><td>Низкая (многие не доводят до 1-й продажи)</td><td>Максимальная — нет альтернативного канала</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Подгруппы по размеру и профилю</h3>
+    <table>
+      <thead><tr><th>Подгруппа</th><th>Профиль</th><th>Ориентир GMV/мес</th></tr></thead>
+      <tbody>
+        <tr><td class="em">1.1 Микро</td><td>Соло/семейный, DTC, крафт/еда — аналог Масса Матере</td><td>100–500 тыс ₽</td></tr>
+        <tr><td class="em">1.2 Малый-средний</td><td>Устоявшийся бренд, несколько каналов</td><td>500 тыс – 3 млн ₽</td></tr>
+        <tr><td class="em">1.3 Региональная сеть</td><td>Франшиза/сеть — якорный участник, тянет доверие остальных</td><td>3–10 млн ₽</td></tr>
+        <tr><td class="em">2.1 Экс-крупные</td><td>Были &gt;1 млн ₽/мес, ушли из-за комиссий и штрафов</td><td>был &gt;1 млн ₽</td></tr>
+        <tr><td class="em">2.2 Экс-средние/малые</td><td>200 тыс – 1 млн ₽, комиссия сделала бизнес нерентабельным</td><td>был 200 тыс–1 млн ₽</td></tr>
+        <tr><td class="em">3.1 Из офлайн-бизнеса</td><td>Есть офлайн-репутация, нет онлайн-опыта</td><td>с нуля</td></tr>
+        <tr><td class="em">3.2 С нуля</td><td>ИП без предыдущего бизнеса</td><td>с нуля</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout"><b>Целевая аудитория группы 1 — не топ-100.</b> Крупнейшие интернет-магазины (Lamoda, DNS, «Самокат») слишком велики и самодостаточны — им не нужна эскроу-защита, они сами диктуют условия партнёрам. Цель — растущий длинный хвост МСП ниже публичных рейтингов, тот самый сегмент +18% за полугодие.</div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="sec" id="s2">
+    <div class="sec-num">02</div>
+    <h2>Клиентская база: миграция vs сетевой приток</h2>
+    <p class="intro">База системы растёт из двух источников. Группа 1 в первые месяцы вносит в общую базу больше, чем берёт; группы 2–3 сначала только берут (сетевой эффект), пока не наработают своих лояльных покупателей. Это механизм принципа «клиентская база — достояние всех участников».</p>
+
+    <div class="formula">БазаСистемы(t) = МигрировавшаяБаза_1(t) + СетевойПриток_1,2,3(t)
+МигрировавшаяБаза_1(t) = СобственнаяБаза × МиграционнаяДоля(t)     [20% → 70% к 12 мес]
+СетевойПриток_g(t)     = GMV_g(t) / СреднийЧек − уже мигрировавшая часть</div>
+
+    <p>Миграция базы группы 1 <b>частичная и постепенная</b>: селлер не отдаёт контроль над аудиторией сразу — 20–40% в первые три месяца, рост до 60–70% к 9–12 месяцам по мере доверия к системе. Это балансирующий фактор: нельзя набирать в Волну 1 только группу 2 (мотивированную, но без базы) — нужна доля группы 1, чтобы наполнить общую базу для остальных.</p>
+
+    <div class="callout"><b>Разная скорость разгона GMV по группам.</b> Группа 1 — быстрее всех (спрос есть с первого дня, ~2 мес до steady state); группа 2 — средне (опыт есть, базы нет, ~4 мес); группа 3 — медленнее всех (учится с нуля, ~6 мес). Эта разница — не допущение, а прямое следствие того, с чем группа входит в систему.</div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="sec" id="s3">
+    <div class="sec-num">03</div>
+    <h2>Офферы под каждую группу</h2>
+    <p class="intro">Не общее УТП, а прямой ответ на конкретную боль. «Неотказуемый» стимул — это устранение уже пережитого или ожидаемого риска, а не бонус сверху. Каждый оффер использует уже заложенные в модель механизмы (эскроу 1–3 дня, 100% выручки, кредитование, бесплатное ПО), но подаётся как ответ на боль, а не список фич.</p>
+
+    <div class="group-band" style="background:var(--g1)">
+      <div class="gb-tag">Организация Неорганизованных</div>
+      <h3>«Вы уже продаёте сами. Пора продавать защищённо.»</h3>
+    </div>
+    <div class="group-panel">
+      <div class="pain">Вы растёте, но в одиночку — сами договариваетесь с логистами и складами «на честном слове», без защиты от неплатежа. Никакого масштаба, который есть у крупных площадок.</div>
+      <ul class="clean">
+        <li><b>Эскроу-защита каждой сделки с логистом или складом</b>Платите после подтверждения услуги, а не по предоплате в никуда. Риск неплатежа партнёра больше не ваш личный риск.</li>
+        <li><b>Кредитование покупателей на условиях крупных площадок</b>Финансовый инструмент, который в одиночку у банка вы бы не получили — поднимает конверсию и средний чек.</li>
+        <li><b>Ваш бренд и клиентская база остаются вашими</b>Вступление не требует передачи контроля — вы решаете сами, чем и когда делиться.</li>
+      </ul>
+    </div>
+
+    <div class="group-band" style="background:var(--g2)">
+      <div class="gb-tag">Организация Разочаровавшихся</div>
+      <h3>«Всё, из-за чего вы ушли, — здесь работает наоборот.»</h3>
+    </div>
+    <div class="group-panel">
+      <div class="pain">Комиссия съедала маржу, штрафы прилетали без предупреждения, деньги маркетплейс держал у себя неделями — вот что вытолкнуло вас с площадки.</div>
+      <ul class="clean">
+        <li><b>Выплата за 1–3 дня через эскроу</b>Вместо недель ожидания — снимает кассовый разрыв немедленно.</li>
+        <li><b>100% выручки — ваше</b>Вместо комиссии 15–25%+, а на Ozon для части категорий и 50–55%.</li>
+        <li><b>Правила фиксированы и видны заранее</b>Никаких штрафов задним числом.</li>
+        <li><b>Приоритетный доступ к покупателям системы — первые 2–3 месяца</b>Компенсация за отсутствие своей базы: опыт продаж + трафик = быстрая выручка.</li>
+      </ul>
+    </div>
+
+    <div class="group-band" style="background:var(--g3)">
+      <div class="gb-tag">Организация Новых</div>
+      <h3>«Начните без риска потерять то, чего у вас ещё нет.»</h3>
+    </div>
+    <div class="group-panel">
+      <div class="pain">Главный барьер — не деньги, а страх потратить время и не продать ничего, плюс отсутствие любой репутации у покупателя.</div>
+      <ul class="clean">
+        <li><b>Платите только когда продаёте</b>Ноль фиксированных платежей, ноль депозита за вход. Нет оборота — платить нечего.</li>
+        <li><b>Мгновенное доверие через бренд системы</b>Ваша карточка выглядит как участник системы с репутацией, а не магазин без отзывов.</li>
+        <li><b>Сопровождение первой сделки от начала до выплаты</b>Конкретное закрытие страха «а вдруг я всё сделаю не так».</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="sec" id="s4">
+    <div class="sec-num">04</div>
+    <h2>Недовольство по WB и Ozon — фактура для оффера гр.2</h2>
+    <p class="intro">Острые, свежие обиды — с ними заходят первыми (решение об уходе уже принято). Хронические, накопительные — требуют явного сравнения «было/стало». Ниже — конкретные факты для точной привязки оффера.</p>
+
+    <h3 style="color:var(--g2)">Wildberries</h3>
+    <table>
+      <thead><tr><th>Причина</th><th>Факт</th><th>Тип</th></tr></thead>
+      <tbody>
+        <tr><td class="em">Рост комиссий</td><td>Июнь 2025 +5%, октябрь 2025 доп. рост (одежда/обувь), март 2026 — изменены условия вывода денег</td><td>Хроническое</td></tr>
+        <tr><td class="em">Штрафы за ошибки склада</td><td>Списание 100 000 ₽ за неверные габариты из-за ошибки сотрудника склада WB — не продавца</td><td>Острое</td></tr>
+        <tr><td class="em">Форс-мажор без компенсации</td><td>Атака БПЛА на склады Котовск/Электросталь, потеря ~8% мощностей, споры о выплате за сгоревший товар (июль 2026)</td><td>Острое, свежее</td></tr>
+        <tr><td class="em">Регуляторный фон</td><td>Закон 289-ФЗ (31.07.2025), предупреждения ФАС — суды признают ретроактивные удержания необоснованными</td><td>Ваш союзник</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="color:var(--g2)">Ozon</h3>
+    <table>
+      <thead><tr><th>Причина</th><th>Факт</th><th>Тип</th></tr></thead>
+      <tbody>
+        <tr><td class="em">Резкий рост комиссий</td><td>С апреля 2026 комиссия для части категорий превышает 50–55% от цены товара</td><td>Острое</td></tr>
+        <tr><td class="em">Скрытые списания</td><td>Автоакции, страхование, отзывы — до 5–7% оборота; антифрод-удержания 30–50 тыс ₽</td><td>Хроническое</td></tr>
+        <tr><td class="em">Блокировка аккаунта</td><td>1200 баллов ведут к блокировке всего кабинета, а не одной карточки</td><td>Острое</td></tr>
+        <tr><td class="em">Потеря контроля над возвратами</td><td>С октября 2025 возвраты FBS автоматически идут на склады Ozon</td><td>Хроническое</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout"><b>Яндекс Маркет и СберМегаМаркет</b> — не приоритет для Волны 1: меньше объём, меньше системных жалоб продавцов. Основной пул группы 2 — ушедшие с WB/Ozon, которые вместе составляют ~80% онлайн-заказов РФ.</div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="sec" id="s5">
+    <div class="sec-num">05</div>
+    <h2>Механизм воронки и динамика</h2>
+    <p class="intro">Каждый оффер — воронка от пула до активного селлера. Нажмите «!» у любого показателя, чтобы увидеть действия, которые его обеспечивают. Размеры пулов реальны, коэффициенты конверсии — гипотезы для проверки на пилоте.</p>
+
+    <div class="funnels">
+      <!-- FUNNEL 2 -->
+      <div class="funnel-card">
+        <div class="funnel-head" style="background:var(--g2)"><div class="f-tag">Оффер 2 · Разочаровавшиеся</div><h4>Ушедшие с WB / Ozon</h4></div>
+        <div class="funnel-body">
+          <div class="fn-field"><label><span class="lbl-txt">Отклик <span class="act-btn" data-tip="resp_g2">!</span></span><span class="fv" id="v_g2_resp">8%</span></label><div class="act-tip" id="tip_resp_g2"></div><input type="range" id="g2_resp" min="1" max="25" value="8" step="0.5"></div>
+          <div class="fn-field"><label><span class="lbl-txt">Регистрация <span class="act-btn" data-tip="reg_g2">!</span></span><span class="fv" id="v_g2_reg">55%</span></label><div class="act-tip" id="tip_reg_g2"></div><input type="range" id="g2_reg" min="10" max="90" value="55" step="5"></div>
+          <div class="fn-field"><label><span class="lbl-txt">Активация <span class="act-btn" data-tip="act_g2">!</span></span><span class="fv" id="v_g2_act">60%</span></label><div class="act-tip" id="tip_act_g2"></div><input type="range" id="g2_act" min="10" max="95" value="60" step="5"></div>
+          <div class="fn-field"><label><span class="lbl-txt">Удержание 3 мес <span class="act-btn" data-tip="ret_g2">!</span></span><span class="fv" id="v_g2_ret">80%</span></label><div class="act-tip" id="tip_ret_g2"></div><input type="range" id="g2_ret" min="30" max="98" value="80" step="2"></div>
+          <div class="fn-pool"><label>Охват/мес <span class="act-btn" data-tip="reach_g2">!</span>: <input type="number" id="g2_reach" value="120"></label><div class="act-tip" id="tip_reach_g2"></div></div>
+        </div>
+        <div class="funnel-viz" id="viz_g2"></div>
+      </div>
+      <!-- FUNNEL 1 -->
+      <div class="funnel-card">
+        <div class="funnel-head" style="background:var(--g1)"><div class="f-tag">Оффер 1 · Неорганизованные</div><h4>Действующие компании</h4></div>
+        <div class="funnel-body">
+          <div class="fn-field"><label><span class="lbl-txt">Отклик <span class="act-btn" data-tip="resp_g1">!</span></span><span class="fv" id="v_g1_resp">3%</span></label><div class="act-tip" id="tip_resp_g1"></div><input type="range" id="g1_resp" min="1" max="25" value="3" step="0.5"></div>
+          <div class="fn-field"><label><span class="lbl-txt">Регистрация <span class="act-btn" data-tip="reg_g1">!</span></span><span class="fv" id="v_g1_reg">45%</span></label><div class="act-tip" id="tip_reg_g1"></div><input type="range" id="g1_reg" min="10" max="90" value="45" step="5"></div>
+          <div class="fn-field"><label><span class="lbl-txt">Активация <span class="act-btn" data-tip="act_g1">!</span></span><span class="fv" id="v_g1_act">90%</span></label><div class="act-tip" id="tip_act_g1"></div><input type="range" id="g1_act" min="10" max="95" value="90" step="5"></div>
+          <div class="fn-field"><label><span class="lbl-txt">Удержание 3 мес <span class="act-btn" data-tip="ret_g1">!</span></span><span class="fv" id="v_g1_ret">92%</span></label><div class="act-tip" id="tip_ret_g1"></div><input type="range" id="g1_ret" min="30" max="98" value="92" step="2"></div>
+          <div class="fn-pool"><label>Охват/мес <span class="act-btn" data-tip="reach_g1">!</span>: <input type="number" id="g1_reach" value="60"></label><div class="act-tip" id="tip_reach_g1"></div></div>
+        </div>
+        <div class="funnel-viz" id="viz_g1"></div>
+      </div>
+      <!-- FUNNEL 3 -->
+      <div class="funnel-card">
+        <div class="funnel-head" style="background:var(--g3)"><div class="f-tag">Оффер 3 · Новые</div><h4>Новые селлеры</h4></div>
+        <div class="funnel-body">
+          <div class="fn-field"><label><span class="lbl-txt">Отклик <span class="act-btn" data-tip="resp_g3">!</span></span><span class="fv" id="v_g3_resp">5%</span></label><div class="act-tip" id="tip_resp_g3"></div><input type="range" id="g3_resp" min="1" max="25" value="5" step="0.5"></div>
+          <div class="fn-field"><label><span class="lbl-txt">Регистрация <span class="act-btn" data-tip="reg_g3">!</span></span><span class="fv" id="v_g3_reg">50%</span></label><div class="act-tip" id="tip_reg_g3"></div><input type="range" id="g3_reg" min="10" max="90" value="50" step="5"></div>
+          <div class="fn-field"><label><span class="lbl-txt">Активация <span class="act-btn" data-tip="act_g3">!</span></span><span class="fv" id="v_g3_act">35%</span></label><div class="act-tip" id="tip_act_g3"></div><input type="range" id="g3_act" min="10" max="95" value="35" step="5"></div>
+          <div class="fn-field"><label><span class="lbl-txt">Удержание 3 мес <span class="act-btn" data-tip="ret_g3">!</span></span><span class="fv" id="v_g3_ret">70%</span></label><div class="act-tip" id="tip_ret_g3"></div><input type="range" id="g3_ret" min="30" max="98" value="70" step="2"></div>
+          <div class="fn-pool"><label>Охват/мес <span class="act-btn" data-tip="reach_g3">!</span>: <input type="number" id="g3_reach" value="250"></label><div class="act-tip" id="tip_reach_g3"></div></div>
+        </div>
+        <div class="funnel-viz" id="viz_g3"></div>
+      </div>
+    </div>
+
+    <div class="embed-card">
+      <div class="timing-row">
+        <div class="fn-field"><label><span class="lbl-txt">Задержка старта гр.1 <span class="act-btn" data-tip="lag1">!</span></span><span class="fv" id="v_lag1">3 мес</span></label><div class="act-tip" id="tip_lag1"></div><input type="range" id="lag1" min="0" max="9" value="3"></div>
+        <div class="fn-field"><label><span class="lbl-txt">Задержка старта гр.3 <span class="act-btn" data-tip="lag3">!</span></span><span class="fv" id="v_lag3">6 мес</span></label><div class="act-tip" id="tip_lag3"></div><input type="range" id="lag3" min="0" max="12" value="6"></div>
+        <div class="fn-field"><label><span class="lbl-txt">Отток / мес <span class="act-btn" data-tip="churn">!</span></span><span class="fv" id="v_churn">5%</span></label><div class="act-tip" id="tip_churn"></div><input type="range" id="churn" min="0" max="20" value="5"></div>
+      </div>
+
+      <div class="chart-legend">
+        <div class="leg-item"><span class="leg-dot" style="background:var(--g2)"></span>Гр.2</div>
+        <div class="leg-item"><span class="leg-dot" style="background:var(--g1)"></span>Гр.1</div>
+        <div class="leg-item"><span class="leg-dot" style="background:var(--g3)"></span>Гр.3</div>
+      </div>
+      <svg id="chart" viewBox="0 0 940 300"></svg>
+      <div class="result-row">
+        <div class="result"><div class="r-label">Активных, 6 мес</div><div class="r-value" id="r6">—</div></div>
+        <div class="result"><div class="r-label">Активных, 12 мес</div><div class="r-value" id="r12">—</div></div>
+        <div class="result"><div class="r-label">Активных, 24 мес</div><div class="r-value" id="r24">—</div></div>
+        <div class="result"><div class="r-label">Ведущая группа, 24 мес</div><div class="r-value" id="rlead" style="font-size:13px;">—</div></div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="sec" id="s6">
+    <div class="sec-num">06</div>
+    <h2>Действия под каждый показатель</h2>
+    <p class="intro">Сводка того, что раскрывается в подсказках «!» выше — каждый ползунок это не число, а конкретная работа, которая делает это число реальным.</p>
+    <table>
+      <thead><tr><th>Показатель</th><th>Что обеспечивает результат</th></tr></thead>
+      <tbody>
+        <tr><td class="em">Охват</td><td>Каналы доступа к пулу: партнёрство с сервисами аналитики (гр.2), ТПП/выставки (гр.1), школы (гр.3). См. раздел 07.</td></tr>
+        <tr><td class="em">Отклик</td><td>A/B-тест формулировок оффера; для гр.2 — привязка к свежему инциденту; для гр.1 — акцент на защите, а не «замене площадки»; для гр.3 — «ноль риска входа» первым пунктом.</td></tr>
+        <tr><td class="em">Регистрация</td><td>Короткий онбординг, быстрая настройка ПО; готовность инфраструктуры (Волна −1) до открытия воронки; для гр.3 — «мастер первого запуска».</td></tr>
+        <tr><td class="em">Активация</td><td>Гр.2 — приоритетная маршрутизация трафика первые 2–3 мес; гр.1 — бесшовный перенос процессов; гр.3 — программа сопровождения первой сделки (главный рычаг).</td></tr>
+        <tr><td class="em">Удержание</td><td>Операционная дисциплина — ни одного нарушения собственного оффера; первый сорванный срок выплаты обрушит удержание сильнее конкурента.</td></tr>
+        <tr><td class="em">Задержки старта</td><td>Гр.1 (3 мес) — копить кейсы гр.2 и партнёрства; гр.3 (6 мес) — дождаться порога общей базы, иначе новым некому продавать.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 7 - CHANNEL MAP -->
+  <div class="sec" id="s7">
+    <div class="sec-num">07</div>
+    <h2>Карта каналов привлечения</h2>
+    <p class="intro">Где физически кучкуется каждая группа и как выйти — с конкретными названиями площадок, готовыми к контакту.</p>
+
+    <div class="chan-band" style="background:var(--g2)">
+      <span class="num">01</span>
+      <h3>Telegram-чаты селлеров + сервисы аналитики → группа 2</h3>
+    </div>
+    <div class="chan-panel">
+      <p><b>Сервисы аналитики — приоритетный вход.</b> MPSTATS: 500 000+ пользователей, резидент Сколково, им пользуются более 50% топовых селлеров WB/Ozon — прямой доступ к тем, кто первым замечает ухудшение своей экономики. Есть готовая инфраструктура партнёрства (Academy, Consulting, Staff). Также SelSup (триал от 1 800 ₽), Moneyplace, Marketguru, Mayak, SellerFox.</p>
+      <p><b>Способ выхода:</b> не реклама (банится), а партнёрская интеграция — «ваши пользователи с падающей маржой получают альтернативный канал». Для сервиса это удержание клиента, для вас — тёплый, отфильтрованный по недовольству пул.</p>
+      <p><b>Telegram-чаты (прямой вход):</b> SellerDen + SellerDen-чат, Гильдия продавцов маркетплейсов, MPgram (закрытый чат поставщиков с оборотом от 1 млн ₽/мес — прямое попадание в подгруппу 2.1), SellerFox, Marketplace_biz. Только экспертное присутствие, согласованное с админами.</p>
+    </div>
+
+    <div class="chan-band" style="background:var(--g1)">
+      <span class="num">02</span>
+      <h3>Отраслевые выставки → группа 1</h3>
+    </div>
+    <div class="chan-panel">
+      <p><b>ECOM Expo (Москва)</b> — крупнейшая выставка технологий для e-commerce, 260+ сервисов, аудитория: собственники, CEO, директора e-commerce, руководители интернет-магазинов. Точное попадание в действующие компании.</p>
+      <p><b>Выставка продуктов питания, Крокус Экспо (9–12 февраля)</b> — крупнейшая B2B-площадка для производителей FMCG, переговоры с ретейлом и маркетплейсами. Прямой прицел на нишу еды/крафта (аналог Масса Матере).</p>
+      <p><b>ESE EXPO / ESE E-COM</b> — форум, где на одной площадке селлеры, производители, инвесторы, маркетплейсы и логистические компании. Двойная ценность: и селлеры гр.1, и логисты/склады для Волны −1, и потенциальные Расчётные Банки. Плюс конференция «Селлеры и маркетплейсы — 2026» (26–27 февраля), HouseHold Expo.</p>
+      <p><b>Способ выхода:</b> личный контакт на стенде/в кулуарах. Выставки идут по календарю — старт гр.1 естественно привязан к датам (февраль → продукты и «Селлеры-2026», весна → ECOM Expo). Это и есть «задержка 3 месяца» из модели, но с конкретными датами.</p>
+    </div>
+
+    <div class="chan-band" style="background:var(--g3)">
+      <span class="num">03</span>
+      <h3>Школы маркетплейсов + сообщества самозанятых → группа 3</h3>
+    </div>
+    <div class="chan-panel">
+      <p><b>Школы — приоритетный вход (перехват выпускников):</b> Школа бизнеса Т-Банка (бесплатный курс, отдельно WB/Ozon/ЯМ), Яндекс Практикум («Менеджер маркетплейсов» с менторством), MPSTATS Academy (это тот же MPSTATS — одно партнёрство закрывает и канал 1, и канал 3), Виллстор, Академия профессионалов #1.</p>
+      <p><b>Способ выхода:</b> партнёрство «следующий шаг после курса» — выпускник научился продавать, но ещё не столкнулся с комиссиями Ozon/WB. Для школы это ценность — запуск выпускников улучшает их метрики.</p>
+      <p><b>Сообщества самозанятых:</b> приложение «Мой налог» (15,4 млн, +26,8%/год), тематические сообщества доп. дохода — более холодный пул. <b>Ремесленные ярмарки/рынки</b> в трёх регионах — трудоёмкий, но самый доверительный офлайн-контакт.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 8 -->
+  <div class="sec" id="s8">
+    <div class="sec-num">08</div>
+    <h2>С чего начать завтра</h2>
+    <table class="priority-table">
+      <thead><tr><th>Приоритет</th><th>Канал</th><th>Первое конкретное действие</th></tr></thead>
+      <tbody>
+        <tr><td class="p">1</td><td class="em">MPSTATS (партнёрство)</td><td>Выйти на партнёрскую программу — закрывает и группу 2 (аналитика), и группу 3 (Academy) одним контактом</td></tr>
+        <tr><td class="p">2</td><td class="em">Выставка продуктов, Крокус (9–12 фев)</td><td>Забронировать посещение/стенд — прямой прицел на FMCG-нишу группы 1</td></tr>
+        <tr><td class="p">3</td><td class="em">Т-Банк / Яндекс Практикум</td><td>Предложить партнёрство «следующий шаг после курса» для группы 3</td></tr>
+        <tr><td class="p">4</td><td class="em">Telegram: SellerDen, MPgram, Гильдия</td><td>Экспертное присутствие, согласованное с админами</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><b>Ключевой инсайт:</b> MPSTATS — единая точка входа сразу в два канала (аналитика для разочаровавшихся + Academy для новых). С них логично начинать — один контакт даёт максимальный охват.</div>
+  </div>
+
+</div>
+
+<footer><span>Привлечение селлеров · сводный документ · Распределённый маркетплейс</span><span id="footerDate"></span></footer>
+
+<script>
+const ACTIONS = {
+  reach_g2:{t:'Как обеспечить охват (гр.2)',i:['Партнёрство с 2–3 сервисами аналитики (MPSTATS, SelSup) — доступ к их аудитории','Присутствие в 5–7 чатах «ушёл с WB/Ozon»','Контент под новостями о штрафах и росте комиссий']},
+  reach_g1:{t:'Как обеспечить охват (гр.1)',i:['Стенд/визит на ECOM Expo и выставку продуктов','2–3 партнёрства с ТПП/гильдиями в регионах','Партнёрство с МойСклад/1С — контакты продавцов']},
+  reach_g3:{t:'Как обеспечить охват (гр.3)',i:['Партнёрство с 2–3 школами — перехват выпускников','Присутствие в сообществах самозанятых','Прямой контакт на ремесленных ярмарках']},
+  resp_g2:{t:'Как поднять отклик (гр.2)',i:['A/B-тест заголовков на первой сотне контактов','Привязка к свежему инциденту (штраф, атака, блокировка)','Оставить лучший вариант по замеру']},
+  resp_g1:{t:'Как поднять отклик (гр.1)',i:['Акцент на защите, а не «замене площадки»','Показывать дополнение к бизнесу, не спасение','A/B-тест под неспешную аудиторию']},
+  resp_g3:{t:'Как поднять отклик (гр.3)',i:['«Ноль риска входа» первым пунктом','«Следующий шаг после курса, без комиссии»','A/B-тест на выпускниках школ']},
+  reg_g2:{t:'Снизить трение регистрации (гр.2)',i:['Короткий онбординг — сократить число шагов','Инфраструктура (Волна −1) готова до открытия','Бесшовный перенос готовых процессов']},
+  reg_g1:{t:'Снизить трение регистрации (гр.1)',i:['Не ломать то, что уже работает','Быстрая настройка ПО (как на Масса Матере)','Склады/логисты в реестре к моменту входа']},
+  reg_g3:{t:'Снизить трение регистрации (гр.3)',i:['«Мастер первого запуска» с сопровождением','Вести за руку — у гр.3 выше страх','Ноль платежей на входе — проговорить явно']},
+  act_g2:{t:'Обеспечить первую продажу (гр.2)',i:['Приоритетная маршрутизация покупателей на гр.2','Трафик из общей базы первые 2–3 мес','Опыт + трафик = быстрая выручка']},
+  act_g1:{t:'Обеспечить первую продажу (гр.1)',i:['Активация почти автоматическая — приходят с оборотом','Бесшовный перенос процессов','Не сломать работающее']},
+  act_g3:{t:'Обеспечить первую продажу (гр.3)',i:['Программа сопровождения: чек-листы, куратор','Главный рычаг поднять активацию с 35%','Довести до первой сделки — частый провал']},
+  ret_g2:{t:'Удержать через 3 мес (гр.2)',i:['Выплаты строго 1–3 дня — ни одного срыва','Первый срыв обрушит удержание','Работа с падением продаж до ухода']},
+  ret_g1:{t:'Удержать через 3 мес (гр.1)',i:['Комиссия реально 0,1–0,2%, правила стабильны','Операционная дисциплина','Удержание максимальное, если не ломать']},
+  ret_g3:{t:'Удержать через 3 мес (гр.3)',i:['Удержать через первые успехи','Сопровождение после первой сделки','Удержание растёт — нет альтернативы']},
+  lag1:{t:'Период задержки гр.1',i:['Заключить партнёрства с ТПП/МойСклад','Накопить кейсы гр.2 как доказательство','Не звать гр.1 без доказательств']},
+  lag3:{t:'Период задержки гр.3',i:['Дождаться порога общей базы (гр.1+гр.2)','Новым нужен реальный трафик','Не запускать массовый набор рано']},
+  churn:{t:'Снизить отток',i:['Действия те же, что для удержания','Раннее выявление проблемных селлеров','Работа до решения уйти']},
+  reach:{t:'Охват',i:['См. раздел 07 — карта каналов']}
+};
+function renderTip(k){const a=ACTIONS[k];if(!a)return '';return `<b>${a.t}</b><ul>${a.i.map(x=>`<li>${x}</li>`).join('')}</ul>`;}
+document.querySelectorAll('.act-btn').forEach(btn=>{
+  const k=btn.dataset.tip; const tip=document.getElementById('tip_'+k);
+  if(tip) tip.innerHTML=renderTip(k);
+  btn.addEventListener('click',e=>{e.preventDefault();if(tip)tip.classList.toggle('open');});
+});
+
+function fmt(n,d=0){if(isNaN(n))return '—';return n.toLocaleString('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d});}
+document.querySelectorAll('#s5 input').forEach(el=>el.addEventListener('input',recalc));
+function funnelMonthly(g){const reach=parseFloat(document.getElementById(g+'_reach').value)||0;const resp=parseFloat(document.getElementById(g+'_resp').value)/100;const reg=parseFloat(document.getElementById(g+'_reg').value)/100;const act=parseFloat(document.getElementById(g+'_act').value)/100;return reach*resp*reg*act;}
+function drawFunnel(g,color){const reach=parseFloat(document.getElementById(g+'_reach').value)||0;const resp=parseFloat(document.getElementById(g+'_resp').value)/100;const reg=parseFloat(document.getElementById(g+'_reg').value)/100;const act=parseFloat(document.getElementById(g+'_act').value)/100;const st=[{l:'Охват',v:reach},{l:'Отклик',v:reach*resp},{l:'Регистр.',v:reach*resp*reg},{l:'Актив.',v:reach*resp*reg*act}];const max=reach||1;let h='';st.forEach(s=>{const w=Math.max(s.v/max*100,7);h+=`<div class="fn-bar" style="width:${w}%;background:${color}">${s.l}: ${fmt(s.v,1)}</div>`;});document.getElementById('viz_'+g).innerHTML=h;}
+function simulate(){const churn=parseFloat(document.getElementById('churn').value)/100;const lag1=parseFloat(document.getElementById('lag1').value);const lag3=parseFloat(document.getElementById('lag3').value);const ret={g1:parseFloat(document.getElementById('g1_ret').value)/100,g2:parseFloat(document.getElementById('g2_ret').value)/100,g3:parseFloat(document.getElementById('g3_ret').value)/100};const inflow={g1:funnelMonthly('g1'),g2:funnelMonthly('g2'),g3:funnelMonthly('g3')};const lag={g1:lag1,g2:0,g3:lag3};const months=24;const series=[];let active={g1:0,g2:0,g3:0};for(let m=0;m<=months;m++){['g1','g2','g3'].forEach(g=>{active[g]=active[g]*(1-churn);if(m>=lag[g])active[g]+=inflow[g]*ret[g];});series.push({m,g1:active.g1,g2:active.g2,g3:active.g3,total:active.g1+active.g2+active.g3});}return series;}
+function drawChart(series){const svg=document.getElementById('chart');const W=940,H=300,padL=52,padR=18,padT=14,padB=30;const iW=W-padL-padR,iH=H-padT-padB;const maxV=Math.max(...series.map(s=>s.total),1);const x=i=>padL+(i/(series.length-1))*iW;const y=v=>padT+iH-(v/maxV)*iH;let c='';for(let g=0;g<=4;g++){const yy=padT+iH-(g/4)*iH;c+=`<line class="grid-line" x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}"/><text class="axis-label" x="${padL-8}" y="${yy+3}" text-anchor="end">${fmt(maxV*g/4,0)}</text>`;}for(let m=0;m<=24;m+=4){c+=`<text class="axis-label" x="${x(m)}" y="${H-8}" text-anchor="middle">мес ${m}</text>`;}function area(gt,gb,col){let p=`M ${x(0)} ${y(gb(series[0]))}`;series.forEach((s,i)=>p+=` L ${x(i)} ${y(gb(s))}`);for(let i=series.length-1;i>=0;i--)p+=` L ${x(i)} ${y(gt(series[i]))}`;p+=' Z';return `<path d="${p}" fill="${col}" fill-opacity="0.6"/>`;}c+=area(s=>0,s=>s.g2,'var(--g2)');c+=area(s=>s.g2,s=>s.g2+s.g1,'var(--g1)');c+=area(s=>s.g2+s.g1,s=>s.g2+s.g1+s.g3,'var(--g3)');svg.innerHTML=c;}
+function recalc(){['g1','g2','g3'].forEach(g=>{document.getElementById('v_'+g+'_resp').textContent=parseFloat(document.getElementById(g+'_resp').value)+'%';document.getElementById('v_'+g+'_reg').textContent=document.getElementById(g+'_reg').value+'%';document.getElementById('v_'+g+'_act').textContent=document.getElementById(g+'_act').value+'%';document.getElementById('v_'+g+'_ret').textContent=document.getElementById(g+'_ret').value+'%';});document.getElementById('v_lag1').textContent=document.getElementById('lag1').value+' мес';document.getElementById('v_lag3').textContent=document.getElementById('lag3').value+' мес';document.getElementById('v_churn').textContent=document.getElementById('churn').value+'%';drawFunnel('g2','var(--g2)');drawFunnel('g1','var(--g1)');drawFunnel('g3','var(--g3)');const series=simulate();drawChart(series);const s6=series[6],s12=series[12],s24=series[24];document.getElementById('r6').textContent=Math.round(s6.total);document.getElementById('r12').textContent=Math.round(s12.total);document.getElementById('r24').textContent=Math.round(s24.total);const lead=s24.g3>=s24.g1&&s24.g3>=s24.g2?'Гр.3 Новые':(s24.g1>=s24.g2?'Гр.1 Неорг.':'Гр.2 Разоч.');document.getElementById('rlead').textContent=lead;const early=s6.total>0?s6.g2/s6.total*100:0;let v=`На 6 мес гр.2 даёт ${fmt(early,0)}% активных — быстрый старт за счёт принятого решения. К 24 мес ведёт ${lead.toLowerCase()}, всего ≈${Math.round(s24.total)} активных. Три волны накладываются: гр.2 даёт скорость, гр.1 — оборот и базу, гр.3 — массовый охват.`;document.getElementById('verdict').innerHTML=v;}
+recalc();
+const d=new Date().toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'});
+document.getElementById('coverDate').textContent=d;
+document.getElementById('footerDate').textContent=d;
+</script>
+</body>
+</html>

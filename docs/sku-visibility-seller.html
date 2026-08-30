@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Управление видимостью SKU — глазами селлера</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --sys:#2E5B3A;--own:#B0791F;--money:#A62B2B;--up:#0F7B4A;--prem:#5A3E9A;--r:8px;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,sans-serif;font-size:15px;line-height:1.55}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 90px}
+header.top{background:var(--paper2);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;padding:26px 24px 20px}
+.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+h1{font-family:'IBM Plex Serif',Georgia,serif;font-size:clamp(23px,3.5vw,32px);margin:8px 0 6px;letter-spacing:-.02em;line-height:1.15}
+.sub{color:var(--ink2);max-width:84ch;margin:0}
+.thesis{margin-top:16px;padding:12px 16px;border:1px solid var(--line);border-left:3px solid var(--sys);background:var(--paper);border-radius:var(--r);font-size:14px;color:var(--ink2)}
+.thesis b{color:var(--sys)}
+h2{font-family:'IBM Plex Serif',Georgia,serif;font-size:21px;margin:32px 0 8px;border-bottom:2px solid var(--line);padding-bottom:6px}
+h3{font-size:16px;margin:20px 0 6px}
+p{margin:6px 0 12px;max-width:86ch}
+/* КАРТОЧКА ТОВАРА — мокап */
+.mock{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0}
+.card{background:var(--paper2);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.card .ttl{font-weight:700;font-size:16px;margin-bottom:2px}
+.card .meta{font-size:12px;color:var(--ink3);margin-bottom:12px}
+.chgroup{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);font-weight:600;margin:12px 0 6px}
+.chan{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:7px;margin:6px 0;background:var(--paper)}
+.tgl{width:36px;height:20px;border-radius:99px;flex:none;position:relative;transition:background .15s}
+.tgl.on{background:var(--sys)}.tgl.off{background:#C4C9C0}
+.tgl::after{content:'';position:absolute;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}
+.tgl.on::after{left:18px}.tgl.off::after{left:2px}
+.chan .nm{font-weight:600;font-size:13.5px}
+.chan .ec{margin-left:auto;font-size:11px;color:var(--ink3);text-align:right;line-height:1.35}
+.chan .ec b{color:var(--money);font-weight:600}
+.chan .ec .free{color:var(--own)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:8px 0 0;font-size:12px}
+.lg{display:flex;align-items:center;gap:6px}
+.diagram{background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);padding:10px;margin:16px 0;overflow-x:auto}
+svg{display:block;margin:0 auto;min-width:880px}
+.tbl-scroll{overflow-x:auto;margin:12px 0}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;min-width:640px}
+th{text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);padding:9px 10px;border-bottom:1px solid var(--line);font-weight:600;background:var(--paper)}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.mono{font-size:11.5px}
+.callout{border:1px solid var(--line);border-left:3px solid var(--sys);background:var(--paper2);padding:11px 14px;border-radius:var(--r);margin:16px 0;font-size:13.8px}
+.callout b{color:var(--sys)}
+.callout.up{border-left-color:var(--up)}.callout.up b{color:var(--up)}
+.callout.prem{border-left-color:var(--prem)}.callout.prem b{color:var(--prem)}
+.level{border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;margin:10px 0;display:flex;gap:14px;align-items:flex-start}
+.level .lv{flex:none;width:130px;font-weight:700;color:var(--sys);font-size:13.5px}
+.level .ld{flex:1;font-size:13.5px;color:var(--ink2)}
+.flags{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink3);background:#EEF1EC;padding:2px 7px;border-radius:4px}
+footer{border-top:1px solid var(--line);margin-top:34px;padding-top:16px;font-size:12.5px;color:var(--ink3)}
+footer a{color:var(--sys)}
+@media(max-width:680px){.mock{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="eyebrow">ПТК · интерфейс селлера · видимость SKU по каналам</div>
+    <h1>Управление видимостью SKU — глазами селлера</h1>
+    <p class="sub">Селлер не думает флагами <span class="mono">visible_shop / visible_catalog</span>. Он думает «где продаётся моя булка». Все каналы доступны всегда — Система не ограничивает меню, а даёт полный доступ и удобное управление. Селлер комбинирует каналы по выгоде. Ниже — как это выглядит и по каким правилам работает.</p>
+    <div class="thesis"><b>Два принципа:</b> <b>(1)</b> все каналы открыты — селлер включает что выгодно, у каждого своя экономика прямо у тумблера. <b>(2)</b> храповик: при сделке уровень сервиса можно срочно ПОВЫСИТь (добрать Систему), но нельзя ПОНИЗИТЬ (спрыгнуть с Системы мимо гарантии) — только вверх.</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- 1. ЧТО СЕЛЛЕР ВИДИТ ВМЕСТО ФЛАГОВ -->
+<h2>Что селлер видит вместо флагов</h2>
+<p>На карточке товара — тумблеры каналов, а рядом экономика каждого: что даёт и сколько стоит. Так выбор осознанный, а не гадание.</p>
+<div class="mock">
+  <div class="card">
+    <div class="ttl">Тартин на закваске</div>
+    <div class="meta">SKU-001 · Хлеб и выпечка · 450 ₽</div>
+    <div class="chgroup">Где показывать (каналы)</div>
+    <div class="chan"><div class="tgl on"></div><div class="nm">Моя витрина</div><div class="ec"><span class="free">0% Системе</span><br>только твой трафик</div></div>
+    <div class="chan"><div class="tgl on"></div><div class="nm">Каталог Системы</div><div class="ec"><b>take-rate</b> со сделки<br>охват покупателей Системы</div></div>
+    <div class="chan"><div class="tgl on"></div><div class="nm">Агент 🟢</div><div class="ec"><b>take-rate</b> со сделки<br>ИИ приводит покупателя</div></div>
+    <div class="chan"><div class="tgl off"></div><div class="nm">По прямой ссылке</div><div class="ec">приватно<br>только кому дал ссылку</div></div>
+    <div class="chan"><div class="tgl off"></div><div class="nm">Внешние маркетплейсы</div><div class="ec">по правилам площадки<br>Ozon / WB</div></div>
+  </div>
+  <div class="card" style="border-color:#C9B98A;background:linear-gradient(180deg,#FDFBF4,#fff 55%)">
+    <div class="ttl">Как это работает</div>
+    <div class="meta">интерфейс вместо флагов базы</div>
+    <p style="font-size:13px;margin:8px 0">Каждый тумблер — это <b>канал</b>: место, где покупатель видит и покупает товар. Один и тот же Тартин показан в нескольких местах — это не копии, а один SKU (<a href="vitrina-creation-components.html">SKU-атом</a>).</p>
+    <p style="font-size:13px;margin:8px 0">За флагом <span class="flags">visible_shop</span> стоит тумблер «Моя витрина», за <span class="flags">visible_catalog</span> — «Каталог Системы». Селлер их не видит — видит понятные каналы.</p>
+    <p style="font-size:13px;margin:8px 0">Рядом с каждым — <b>экономика</b>: свой канал бесплатен (твой трафик), каналы Системы берут take-rate, но дают охват. Селлер сравнивает выгоду и решает.</p>
+    <p style="font-size:12.5px;margin:8px 0 0;color:#6C7681">Каналы опираются на <a href="pravila-sistemy-red3-edinyi.html">Статью 9 «Витрина и каналы магазина»</a> Правил.</p>
+  </div>
+</div>
+
+<!-- 2. ТРИ УРОВНЯ УПРАВЛЕНИЯ -->
+<h2>Три уровня управления — от одного товара до всех сразу</h2>
+<p>Селлер с 4 SKU и селлер с 4000 SKU оба довольны: первый настроит вручную, второй — правилом на магазин плюс исключения.</p>
+<div class="level"><div class="lv">1 · Магазин</div><div class="ld"><b>Умолчание на весь магазин.</b> «Все мои товары — в мою витрину и каталог Системы». Новый товар наследует автоматически — не настраивать каждый. Убирает рутину.</div></div>
+<div class="level"><div class="lv">2 · Группа</div><div class="ld"><b>Массово по категории.</b> «Весь хлеб — в каталог, кондитерку — только на своей витрине». Выбрал категорию, переключил канал разом. Убирает монотонность.</div></div>
+<div class="level"><div class="lv">3 · SKU</div><div class="ld"><b>Точечно на один товар.</b> «Этот сезонный кулич — только по ссылке для своих». Один SKU, ручная настройка, <b>переопределяет умолчание</b>. Даёт контроль.</div></div>
+<div class="callout"><b>Приоритет: SKU важнее группы, группа важнее магазина.</b> Умолчание магазина действует на всё, настройка группы переопределяет его для категории, настройка SKU — для одного товара. Чем точнее уровень, тем он главнее. Селлер задаёт общее правило и делает исключения, не трогая остальное.</div>
+
+<!-- 3. ДВА СЕРВИСА КОНФИГУРАЦИИ -->
+<h2>Два сервиса конфигурации — разной стоимости</h2>
+<p>Настроить каналы можно двумя способами, и это <b>два разных сервиса</b> с разной ценой — по форме сервиса из <a href="service-registry.html">реестра</a>.</p>
+<div class="tbl-scroll"><table>
+  <thead><tr><th>Сервис</th><th>Когда</th><th>Что делает Система</th><th>Тариф</th></tr></thead>
+  <tbody>
+    <tr><td><b>Конфигурация заранее</b><br><span style="color:var(--ink3);font-size:12px">статичное правило</span></td><td>один раз, в настройках</td><td>хранит правило каналов, применяет его ко всем заказам</td><td>базовый / включён</td></tr>
+    <tr><td><b>Конфигурация при сделке</b><br><span style="color:var(--prem);font-size:12px">динамика на лету</span></td><td>в момент продажи</td><td>меняет уровень сервиса под конкретную сделку в реальном времени</td><td><b style="color:var(--prem)">премиум</b></td></tr>
+  </tbody>
+</table></div>
+<div class="callout prem"><b>Почему динамика дороже.</b> Настроить заранее — селлер сделал сам, Система просто хранит правило: дёшево. Решать в момент сделки — Система под каждый заказ в реальном времени меняет уровень: это живой вычислительный сервис, потому премиум. Как в рекламе: статичное размещение против аукциона в реальном времени.</div>
+
+<!-- 4. ХРАПОВИК -->
+<h2>Храповик: при сделке — только вверх</h2>
+<p>Динамика в момент сделки работает <b>в одну сторону</b>: можно срочно добрать сервис Системы, но нельзя спрыгнуть с неё мимо гарантии.</p>
+<div class="diagram">
+<svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Храповик уровня сервиса">
+  <defs>
+    <marker id="ok" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0F7B4A"/></marker>
+    <marker id="no" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#A62B2B"/></marker>
+  </defs>
+  <!-- уровни -->
+  <rect x="120" y="200" width="240" height="60" rx="9" fill="#FBF6EA" stroke="#B0791F"/>
+  <text x="240" y="225" text-anchor="middle" font-size="13" font-weight="700" fill="#B0791F" font-family="IBM Plex Sans">Своя витрина</text>
+  <text x="240" y="245" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">ниже вовлечение Системы</text>
+
+  <rect x="540" y="60" width="240" height="60" rx="9" fill="#EEF3EF" stroke="#2E5B3A"/>
+  <text x="660" y="85" text-anchor="middle" font-size="13" font-weight="700" fill="#2E5B3A" font-family="IBM Plex Sans">Через Систему</text>
+  <text x="660" y="105" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">эскроу, каталог, гарантия</text>
+
+  <!-- вверх ОК -->
+  <path d="M360 210 C 470 180, 480 110, 538 95" stroke="#0F7B4A" stroke-width="2.4" marker-end="url(#ok)" fill="none"/>
+  <text x="455" y="135" text-anchor="middle" font-size="12" font-weight="700" fill="#0F7B4A" font-family="IBM Plex Sans">↑ ПОВЫШЕНИЕ — OK</text>
+  <text x="455" y="152" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">срочно нужна Система — добираем на лету</text>
+
+  <!-- вниз НЕТ -->
+  <path d="M540 118 C 470 175, 420 200, 362 225" stroke="#A62B2B" stroke-width="2.2" marker-end="url(#no)" fill="none" stroke-dasharray="7 5"/>
+  <text x="470" y="235" text-anchor="middle" font-size="12" font-weight="700" fill="#A62B2B" font-family="IBM Plex Sans">↓ ПОНИЖЕНИЕ — запрещено</text>
+  <text x="470" y="252" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">нельзя увести сделку мимо гарантии</text>
+  <!-- крест на запрете -->
+  <circle cx="415" cy="188" r="13" fill="#fff" stroke="#A62B2B" stroke-width="2"/>
+  <path d="M409 182 L421 194 M421 182 L409 194" stroke="#A62B2B" stroke-width="2"/>
+</svg>
+</div>
+<div class="tbl-scroll"><table>
+  <thead><tr><th>Ситуация при сделке</th><th>Направление</th><th>Решение</th><th>Почему</th></tr></thead>
+  <tbody>
+    <tr><td>Продавал через свою витрину, срочно нужно через Систему</td><td style="color:var(--up);font-weight:600">↑ вверх</td><td style="color:var(--up);font-weight:700">Разрешено</td><td>добавляем гарантию — покупатель и Система в плюсе</td></tr>
+    <tr><td>Продавал через Систему, захотел эту сделку увести на свою витрину</td><td style="color:var(--money);font-weight:600">↓ вниз</td><td style="color:var(--money);font-weight:700">Запрещено</td><td>подрыв доверия — покупатель ждал эскроу, деньги пошли бы мимо</td></tr>
+  </tbody>
+</table></div>
+<div class="callout up"><b>Зачем храповик — и это про деньги Системы.</b> Каналы открыты все (селлер берёт что выгодно), но храповик закрывает лазейку «в последний момент спрыгнул с Системы». Свобода вверх — добирай сервис сколько нужно; стоп вниз — не вымывай уже гарантированные сделки. Так take-rate защищён без запрета каналов: селлер не ограничен в доступе, но не может динамически обходить Систему в моменте.</div>
+
+<!-- 5. КАК ЛОЖИТСЯ НА МОДЕЛЬ -->
+<h2>Как это ложится на построенное</h2>
+<p>Ничего нового по сути — это конфигуратор из <a href="service-registry.html">реестра сервисов</a>, применённый на уровне товара:</p>
+<div class="tbl-scroll"><table>
+  <thead><tr><th>В интерфейсе селлера</th><th>В модели Системы</th></tr></thead>
+  <tbody>
+    <tr><td>тумблер канала на карточке</td><td>сервис-канал с переключателем <span class="mono">вкл|выкл</span> (реестр)</td></tr>
+    <tr><td>умолчание на магазин</td><td>профиль магазина (конфигурация)</td></tr>
+    <tr><td>исключение на SKU</td><td>переопределение профиля для товара</td></tr>
+    <tr><td>экономика у тумблера</td><td>тариф + предмет клиринга сервиса</td></tr>
+    <tr><td>конфигурация заранее / при сделке</td><td>два сервиса конфигурации, разный тариф</td></tr>
+    <tr><td>храповик (только вверх)</td><td>правило направления сервиса динамики</td></tr>
+  </tbody>
+</table></div>
+<div class="callout"><b>Что достроить в Системе.</b> Три уровня приоритета (магазин→группа→SKU) в хранении настроек видимости; экономику-подсказку у каждого канала; сервис динамической конфигурации с правилом «только повышение»; связать тумблеры с реальными флагами <span class="mono">visible_shop/visible_catalog</span> и будущими каналами (агент, ссылка, внешние). Флаги в базе остаются — селлеру они просто не показываются.</div>
+
+<footer>
+  Управление видимостью SKU глазами селлера · часть пула. Основа: <a href="service-registry.html">реестр сервисов</a>, <a href="service-tiers.html">линейка сервисов</a>. Каналы: <a href="pravila-sistemy-red3-edinyi.html">Статья 9 Правил</a>. SKU-атом: <a href="vitrina-creation-components.html">составные витрины</a>. Живая витрина: <a href="../vitrina-live.html">vitrina-live</a>. Расчёт по сделке: <a href="massamadre-settlement-mechanisms.html">механизмы</a>.
+</footer>
+</div>
+<div style="max-width:1080px;margin:16px auto;padding:10px 16px;border-left:3px solid #9A5B00;background:#FCEEDA;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">⚙ Работающий альфа-релиз этой модели (Postgres+API, 13/13): <a href="alpha-channels-dashboard.html" style="color:#9A5B00;font-weight:600">конфигуратор каналов — кабинет</a></div>
+</body>
+</html>

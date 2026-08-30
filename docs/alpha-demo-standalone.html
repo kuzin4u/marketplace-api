@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Демо · Конфигуратор каналов Масса Мадре</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --sys:#2E5B3A;--own:#B0791F;--money:#A62B2B;--up:#0F7B4A;--r:8px;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,sans-serif;font-size:15px;line-height:1.5}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 70px}
+header.top{background:var(--paper2);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;padding:22px 24px 18px}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+.badge-demo{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:99px;background:#E5EEFB;color:#1D5FBF;border:1px solid #A9C6EE;margin-left:8px;vertical-align:middle}
+h1{font-family:'IBM Plex Serif',Georgia,serif;font-size:clamp(21px,3vw,28px);margin:8px 0 6px;letter-spacing:-.02em}
+.sub{color:var(--ink2);max-width:80ch;margin:0;font-size:14px}
+.shopline{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13.5px;color:var(--ink2)}
+.shopline b{color:var(--ink)}
+.demo-banner{margin:14px 0 0;padding:10px 14px;border-left:3px solid #1D5FBF;background:#EAF1FB;border-radius:6px;font-size:12.5px;color:var(--ink2)}
+.demo-banner b{color:#1D5FBF}
+.cat{background:var(--paper2);border:1px solid var(--line);border-radius:12px;margin:18px 0;overflow:hidden}
+.cat-head{padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#FBFCFA,#fff)}
+.cat-head .nm{font-weight:700;font-size:16px}
+.cat-head .cnt{font-size:12px;color:var(--ink3)}
+.scheme{margin-left:auto;font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;transition:all .2s}
+.scheme.s1{background:#FBF1E2;color:#8A5A12;border:1px solid #E0BC85}
+.scheme.s3{background:#EAF1FB;color:#1D5FBF;border:1px solid #A9C6EE}
+.scheme.s5{background:#EAF3EC;color:var(--sys);border:1px solid #A9CDB4}
+.cat-body{padding:14px 18px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.col h4{margin:0 0 8px;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3)}
+.row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:7px;margin:6px 0;background:var(--paper)}
+.tgl{width:34px;height:19px;border-radius:99px;flex:none;position:relative;cursor:pointer;transition:background .15s}
+.tgl.on{background:var(--sys)}.tgl.off{background:#C4C9C0}
+.tgl::after{content:'';position:absolute;top:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:left .15s}
+.tgl.on::after{left:17px}.tgl.off::after{left:2px}
+.row .nm{font-weight:600;font-size:13px}
+.row .ec{margin-left:auto;font-size:10.5px;color:var(--ink3);text-align:right;line-height:1.3}
+.row .ec b{color:var(--money)}.row .ec .free{color:var(--own)}
+.svc{display:flex;align-items:center;gap:8px;padding:6px 10px;font-size:13px;border-bottom:1px dashed #E6E9E3}
+.svc:last-child{border-bottom:none}
+.svc .tgl{width:30px;height:17px}.svc .tgl.on::after{left:15px}
+.svc .nm{font-size:12.5px}
+.lvl-pill{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:#EEF1EC;color:var(--ink2);margin-left:8px;transition:all .2s}
+.lvl-pill.hi{background:#EAF3EC;color:var(--sys)}
+.settlement{font-size:12.5px;color:var(--ink2);margin:4px 0 10px;display:flex;align-items:center;gap:8px}
+.settlement .seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.settlement .seg button{border:none;background:var(--paper2);padding:4px 10px;font-size:11.5px;font-family:inherit;cursor:pointer;color:var(--ink3)}
+.settlement .seg button.act{background:var(--sys);color:#fff;font-weight:600}
+.settlement .seg button.act.own{background:var(--own)}
+.foot-status{margin:20px 0;padding:12px 16px;border:1px solid var(--line);border-left:3px solid var(--up);background:var(--paper2);border-radius:var(--r);font-size:13px}
+.foot-status b{color:var(--up)}
+h2{font-family:'IBM Plex Serif',Georgia,serif;font-size:18px;margin:26px 0 6px}
+.reset{margin-top:10px;padding:7px 14px;border:1px solid var(--line);border-radius:6px;background:var(--paper2);font-family:inherit;font-size:13px;cursor:pointer;color:var(--ink2)}
+.reset:hover{background:var(--paper)}
+footer{border-top:1px solid var(--line);margin-top:28px;padding-top:14px;font-size:12px;color:var(--ink3)}
+@media(max-width:680px){.cat-body{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="eyebrow">Конфигуратор каналов<span class="badge-demo">ДЕМО</span></div>
+    <h1>Масса Мадре — три схемы в одном магазине</h1>
+    <p class="sub">Уровень сервиса задаётся на группу SKU (категорию). Один селлер работает по трём разным схемам одновременно. Пощёлкайте тумблеры — уровень сервиса и клиринг пересчитываются в реальном времени.</p>
+    <div class="shopline">Магазин: <b>Масса Мадре</b> · <span class="mono">SHOP-massamadre</span></div>
+    <div class="demo-banner"><b>Это демонстрация.</b> Всё считается локально в браузере — как в настоящем конфигураторе, но без сервера. Изменения не сохраняются: обновите страницу или нажмите «Сбросить», чтобы вернуть исходные три схемы.</div>
+  </div>
+</header>
+
+<div class="wrap" id="cats"></div>
+
+<script>
+// ── МОДЕЛЬ (портирована из SQL-резолвера альфы) ──
+const CHANNELS = [
+  {code:'SHOP_OWN', title:'Моя витрина',        sys:false, take:0,    ec:'<span class="free">0%</span> свой трафик'},
+  {code:'CATALOG',  title:'Каталог Системы',    sys:true,  take:0.05, ec:'<b>take-rate 5%</b> охват'},
+  {code:'AGENT',    title:'Агент',              sys:true,  take:0.05, ec:'<b>take-rate 5%</b> ИИ-трафик'},
+];
+const FUL = [
+  {code:'PACKING', title:'Упаковка'},
+  {code:'DELIVERY',title:'Доставка'},
+  {code:'STORAGE', title:'Хранение'},
+  {code:'RETURNS', title:'Возвраты'},
+];
+// исходные три схемы Массы Мадре (как в 02_seed)
+const SEED = {
+  'CAT-BREAD':  {name:'🍞 Хлеб на закваске', cnt:'2 SKU · Тартин, Бородинский',
+    channels:{SHOP_OWN:true, CATALOG:true, AGENT:false}, settlement:'OWN',
+    ful:{PACKING:false,DELIVERY:false,STORAGE:false,RETURNS:false}},
+  'CAT-PASTRY': {name:'🍰 Кондитерка', cnt:'2 SKU · Эклер, Тарт лимонный',
+    channels:{SHOP_OWN:true, CATALOG:false, AGENT:false}, settlement:'OWN',
+    ful:{PACKING:true,DELIVERY:true,STORAGE:false,RETURNS:false}},
+  'CAT-FARM':   {name:'🥐 Выпечка', cnt:'2 SKU · Круассан, Улитка с корицей',
+    channels:{SHOP_OWN:true, CATALOG:true, AGENT:true}, settlement:'SYSTEM',
+    ful:{PACKING:true,DELIVERY:true,STORAGE:true,RETURNS:true}},
+};
+let state = structuredClone(SEED);
+
+// уровень сервиса (как service_level в SQL): +1 за каждый системный канал; +2 расчёт Системы; +1 если есть fulfilment Системы
+function level(c){
+  let n=0;
+  CHANNELS.forEach(ch=>{ if(ch.sys && c.channels[ch.code]) n++; });
+  if(c.settlement==='SYSTEM') n+=2;
+  if(Object.values(c.ful).some(v=>v)) n+=1;
+  return n;
+}
+function schemeLabel(lvl){
+  if(lvl>=5) return {t:'Полная система', cls:'s5'};
+  if(lvl>=2) return {t:'Расширенная', cls:'s5'};
+  if(Object.values(state).length) {} // noop
+  return null;
+}
+
+function render(){
+  const box=document.getElementById('cats');
+  box.innerHTML='';
+  for(const [cat,c] of Object.entries(state)){
+    const lvl=level(c);
+    // подпись схемы по составу
+    let scheme;
+    if(lvl>=5) scheme={t:'Полная система',cls:'s5'};
+    else if(c.settlement==='OWN' && Object.values(c.ful).some(v=>v) && !c.channels.CATALOG) scheme={t:'Fulfilment Системы',cls:'s3'};
+    else if(c.channels.CATALOG) scheme={t:'Своя витрина + Каталог',cls:'s1'};
+    else scheme={t:'Только своя витрина',cls:'s1'};
+
+    const el=document.createElement('div');
+    el.className='cat';
+    el.innerHTML=`
+      <div class="cat-head">
+        <div><div class="nm">${c.name}</div><div class="cnt">${cat} · ${c.cnt}</div></div>
+        <span class="scheme ${scheme.cls}">${scheme.t}</span>
+      </div>
+      <div class="cat-body">
+        <div class="col">
+          <h4>Каналы показа</h4>
+          ${CHANNELS.map(ch=>`
+            <div class="row">
+              <div class="tgl ${c.channels[ch.code]?'on':'off'}" data-cat="${cat}" data-ch="${ch.code}"></div>
+              <div class="nm">${ch.title}</div>
+              <div class="ec">${ch.ec}</div>
+            </div>`).join('')}
+        </div>
+        <div class="col">
+          <h4>Расчёт и fulfilment</h4>
+          <div class="settlement">Расчёт:
+            <span class="seg">
+              <button class="${c.settlement==='OWN'?'act own':''}" data-cat="${cat}" data-set="OWN">свой</button>
+              <button class="${c.settlement==='SYSTEM'?'act':''}" data-cat="${cat}" data-set="SYSTEM">Система</button>
+            </span>
+          </div>
+          ${FUL.map(f=>`
+            <div class="svc">
+              <div class="tgl ${c.ful[f.code]?'on':'off'}" data-cat="${cat}" data-ful="${f.code}"></div>
+              <span class="nm">${f.title} — ${c.ful[f.code]?'<b style="color:var(--sys)">Система</b>':'свой'}</span>
+            </div>`).join('')}
+          <div style="margin-top:10px">Уровень сервиса: <span class="lvl-pill ${lvl>=5?'hi':''}">ранг ${lvl}</span></div>
+        </div>
+      </div>`;
+    box.appendChild(el);
+  }
+  // навесить обработчики
+  box.querySelectorAll('.tgl[data-ch]').forEach(t=>t.onclick=()=>{
+    const c=state[t.dataset.cat]; c.channels[t.dataset.ch]=!c.channels[t.dataset.ch]; render();
+  });
+  box.querySelectorAll('.tgl[data-ful]').forEach(t=>t.onclick=()=>{
+    const c=state[t.dataset.cat]; c.ful[t.dataset.ful]=!c.ful[t.dataset.ful]; render();
+  });
+  box.querySelectorAll('button[data-set]').forEach(b=>b.onclick=()=>{
+    state[b.dataset.cat].settlement=b.dataset.set; render();
+  });
+}
+
+function addFooter(){
+  const w=document.querySelector('.wrap');
+  const f=document.createElement('div');
+  f.innerHTML=`
+    <div class="foot-status"><b>Как это работает.</b> Уровень сервиса («ранг») пересчитывается из включённых каналов, расчёта и fulfilment — та же формула, что в SQL-резолвере альфы. В боевой версии эти переключатели пишут правила в базу через API, а храповик не даёт понизить уровень в момент сделки.</div>
+    <button class="reset" id="resetBtn">↺ Сбросить к трём схемам</button>
+    <footer>Демо конфигуратора каналов · модель Системы взаиморасчётов · данные Масса Мадре для наглядности</footer>`;
+  w.appendChild(f);
+  document.getElementById('resetBtn').addEventListener('click', ()=>{ state=structuredClone(SEED); render(); });
+}
+
+render();
+addFooter();
+</script>
+<div style="max-width:1080px;margin:16px auto;padding:10px 16px;border-left:3px solid #1D5FBF;background:#EAF1FB;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">🚀 Как разместить (A демо / B-C живой): <a href="alpha-deploy-guide.html" style="color:#1D5FBF;font-weight:600">инструкция размещения</a></div>
+</body>
+</html>

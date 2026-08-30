@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Комплексное предложение селлеру / Распределённый маркетплейс</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#F6F3EC;--paper-line:#E4DECC;--ink:#1D1B17;--ink-soft:#5B5548;--ledger:#233A52;--copper:#B07A34;--card:#FCFAF4;
+    --b0:#8A5A2B;--b1:#233A52;--b2:#A34A2E;--b3:#6E5A8F;--b4:#8A6D2F;--b5:#4E6B52;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;padding:0 0 90px;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 34px;}
+  .cover{padding:70px 0 40px;border-bottom:3px double var(--ink);margin-bottom:22px;}
+  .cover .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ledger);}
+  .cover h1{font-family:'PT Serif',serif;font-weight:700;font-size:40px;line-height:1.1;margin:16px 0 14px;letter-spacing:-.015em;}
+  .cover h1 em{font-style:italic;color:var(--ledger);}
+  .cover .sub{font-size:15.5px;color:var(--ink-soft);max-width:680px;line-height:1.6;}
+  .frame{background:#FBF3E4;border-left:4px solid var(--copper);border-radius:4px;padding:16px 20px;margin:28px 0 40px;font-size:13.5px;color:var(--ink-soft);line-height:1.6;}
+  .frame b{color:var(--ink);}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin:8px 0 6px;}
+  .sec-num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--copper);font-weight:600;}
+  .sec-head h2{font-family:'PT Serif',serif;font-size:23px;margin:0;font-weight:700;}
+  .sec-sub{color:var(--ink-soft);font-size:13.5px;max-width:700px;margin:0 0 22px;line-height:1.5;}
+  .block{border-radius:8px;overflow:hidden;margin-bottom:20px;box-shadow:0 1px 2px rgba(0,0,0,.05);border:1px solid var(--paper-line);}
+  .block-head{padding:14px 20px;color:#fff;display:flex;align-items:center;gap:14px;}
+  .block-head .bn{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;opacity:.55;}
+  .block-head .bt{font-family:'PT Serif',serif;font-size:18px;font-weight:700;}
+  .block-head .from{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;opacity:.9;text-align:right;}
+  .block-body{background:#fff;padding:16px 20px 18px;}
+  .block-body .what{font-size:13.5px;line-height:1.55;margin-bottom:14px;color:var(--ink);}
+  .block-body .what b{color:var(--ink);}
+  .providers{display:flex;flex-wrap:wrap;gap:8px;}
+  .prov{font-size:12px;background:var(--card);border:1px solid var(--paper-line);border-radius:20px;padding:5px 13px;color:var(--ink-soft);}
+  .prov b{color:var(--ink);font-weight:600;}
+  .prov.anchor{border-color:var(--copper);background:#FBF3E4;}
+  table{width:100%;border-collapse:collapse;margin:8px 0 30px;font-size:13px;}
+  th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);padding:0 12px 9px 0;border-bottom:1.5px solid var(--ink);}
+  td{padding:11px 12px 11px 0;border-bottom:1px solid var(--paper-line);vertical-align:top;line-height:1.5;}
+  td.em{font-weight:600;}
+  .callout{background:var(--card);border:1px solid var(--paper-line);border-left:4px solid var(--copper);border-radius:4px;padding:16px 20px;margin:6px 0 30px;font-size:13.5px;color:var(--ink-soft);line-height:1.6;}
+  .callout b{color:var(--ink);}
+  footer{max-width:960px;margin:40px auto 0;padding:24px 34px 0;border-top:2px solid var(--ink);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);display:flex;justify-content:space-between;}
+  @media(max-width:640px){.cover h1{font-size:29px;}.block-head .from{margin-left:0;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cover">
+    <div class="eyebrow">Распределённый маркетплейс · комплексное предложение</div>
+    <h1>Полный сервис селлеру:<br><em>всё в одном окне</em></h1>
+    <p class="sub">Селлер получает не список поставщиков, а единый пакет от имени Системы, где каждую функцию выполняет конкретный участник. Система — сборщик и гарант расчётов, участники — исполнители. Для селлера это «одно окно», за которым стоят реальные компании.</p>
+  </div>
+
+  <div class="frame">
+    <b>Принцип сборки.</b> Организатор собирает предложения участников в единый пакет и гарантирует расчёты через эскроу. В каждой ключевой роли — минимум два участника (корректива 2), поэтому предложение включает выбор, а не одного навязанного поставщика. Селлер видит цельный сервис; внутри — прямые договоры с исполнителями под защитой Системы.
+  </div>
+
+  <div class="sec-head"><span class="sec-num">01</span><h2>Структура комплексного предложения</h2></div>
+  <p class="sec-sub">Шесть блоков закрывают полный цикл, который раньше давал маркетплейс «в одном окне». Каждый блок — от имени конкретного типа участника.</p>
+
+  <!-- BLOCK 0 -->
+  <div class="block">
+    <div class="block-head" style="background:var(--b0)"><span class="bn">0</span><span class="bt">Ядро системы</span><span class="from">от имени<br>Организатора / НСВР</span></div>
+    <div class="block-body">
+      <div class="what">Зонтичный бренд, приёмка в реестр, <b>эскроу-расчёты и клиринг</b>, бесплатное ПО 5-канального магазина. Связывает все остальные блоки и гарантирует безопасность расчётов между селлером и каждым участником.</div>
+      <div class="providers"><span class="prov anchor"><b>Система</b> (Организатор)</span><span class="prov anchor"><b>НСВР</b> — эскроу-ядро</span></div>
+    </div>
+<div style="max-width:1000px;margin:0 auto 18px;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 2 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Документ стратегического слоя (обоснование бизнес-модели), на который опирается <b>Преамбула Правил системы (ред. 2)</b>. При расхождении норма — Правила.</div>
+  <div><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 3 — услуги/состав</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 6 — эскроу-расчёты</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 13 — сборка Волны −1</span></div>
+</div>
+  </div>
+
+  <!-- BLOCK 1 -->
+  <div class="block">
+    <div class="block-head" style="background:var(--b1)"><span class="bn">1</span><span class="bt">Хранение и фулфилмент</span><span class="from">от имени<br>фулфилмент-оператора</span></div>
+    <div class="block-body">
+      <div class="what">Приёмка, хранение, сборка, упаковка, маркировка, отгрузка «под ключ». Селлер не держит свой склад и персонал — платит за фактические операции. Один оператор часто закрывает и склад, и сборку, и отгрузку.</div>
+      <div class="providers"><span class="prov"><b>CDEK Fulfilment</b> · 27 городов, 600+ дарксторов</span><span class="prov"><b>СДТ</b> · 6 складов, 3000+ продавцов</span><span class="prov"><b>ПЭК: fulfilment</b></span><span class="prov"><b>Бета Про</b></span><span class="prov"><b>UPMARKET</b></span></div>
+    </div>
+  </div>
+
+  <!-- BLOCK 2 -->
+  <div class="block">
+    <div class="block-head" style="background:var(--b2)"><span class="bn">2</span><span class="bt">Доставка покупателю (последняя миля)</span><span class="from">от имени<br>курьерской компании</span></div>
+    <div class="block-body">
+      <div class="what">Курьерская доставка и сеть ПВЗ до конечного покупателя. Независимые сети — естественные союзники Системы против логистики самих маркетплейсов.</div>
+      <div class="providers"><span class="prov"><b>СДЭК</b> · лидер, сеть ПВЗ по РФ</span><span class="prov"><b>Boxberry</b></span><span class="prov"><b>Dostavista</b> · краудсорсинг</span><span class="prov"><b>Почта России</b> · охват регионов</span></div>
+    </div>
+  </div>
+
+  <!-- BLOCK 3 -->
+  <div class="block">
+    <div class="block-head" style="background:var(--b3)"><span class="bn">3</span><span class="bt">Межрегиональная логистика</span><span class="from">от имени<br>магистрального перевозчика</span></div>
+    <div class="block-body">
+      <div class="what">Магистральная перевозка между тремя стартовыми регионами (Москва — СПб — Краснодар). Агрегированный поток Системы заполняет рейсы в обе стороны — меньше порожних.</div>
+      <div class="providers"><span class="prov"><b>Деловые линии</b></span><span class="prov"><b>ПЭК</b></span><span class="prov"><b>КИТ</b></span></div>
+    </div>
+  </div>
+
+  <!-- BLOCK 4 -->
+  <div class="block">
+    <div class="block-head" style="background:var(--b4)"><span class="bn">4</span><span class="bt">Финансовый сервис</span><span class="from">от имени<br>Расчётного Банка</span></div>
+    <div class="block-body">
+      <div class="what"><b>Эскроу-счета, быстрые выплаты 1–3 дня, эквайринг покупателя, кредитование/BNPL.</b> Критический блок — без него не работают расчёты и статьи дохода 3–4. Ставка эквайринга через Расчётный Банк — переговорный рычаг в пользу селлера.</div>
+      <div class="providers"><span class="prov"><b>ПСБ</b></span><span class="prov"><b>ВТБ</b></span><span class="prov"><b>Первый Инвестиционный Банк</b></span><span class="prov"><b>РСХБ</b></span></div>
+    </div>
+  </div>
+
+  <!-- BLOCK 5 -->
+  <div class="block">
+    <div class="block-head" style="background:var(--b5)"><span class="bn">5</span><span class="bt">Продвижение и аналитика</span><span class="from">от имени<br>сервиса аналитики + Система</span></div>
+    <div class="block-body">
+      <div class="what">Доступ к сетевому трафику бренда Системы + инструменты аналитики продаж. Частично от самой Системы (трафик), частично от сервисов-партнёров (аналитика).</div>
+      <div class="providers"><span class="prov anchor"><b>Система</b> · сетевой трафик</span><span class="prov"><b>MPSTATS</b> · аналитика + Academy</span><span class="prov"><b>SelSup</b></span></div>
+    </div>
+  </div>
+
+  <div class="sec-head"><span class="sec-num">02</span><h2>Карта: кто, что и почему согласится</h2></div>
+  <p class="sec-sub">Сводка компаний-адресантов по блокам с мотивацией каждого участвовать.</p>
+  <table>
+    <thead><tr><th>Блок</th><th>Адресанты предложения</th><th>Почему согласятся</th></tr></thead>
+    <tbody>
+      <tr><td class="em">0 · Ядро</td><td>Система (Организатор), НСВР</td><td>Это сам Организатор — предложение его собственное</td></tr>
+      <tr><td class="em">1 · Фулфилмент</td><td>CDEK Fulfilment, СДТ, ПЭК, Бета Про, UPMARKET</td><td>Агрегированный поток селлеров + эскроу-гарантия оплаты; самый заинтересованный участник</td></tr>
+      <tr><td class="em">2 · Последняя миля</td><td>СДЭК, Boxberry, Dostavista, Почта России</td><td>Клиенты вне экосистемы Ozon/WB; союз против МП-логистики</td></tr>
+      <tr><td class="em">3 · Магистраль</td><td>Деловые линии, ПЭК, КИТ</td><td>Заполнение порожних рейсов агрегированным потоком</td></tr>
+      <tr><td class="em">4 · Финансы</td><td>ПСБ, ВТБ, Первый Инвестиционный, РСХБ</td><td>Новый транзакционный поток + доля в статьях 3–4; моат эскроу-API</td></tr>
+      <tr><td class="em">5 · Аналитика</td><td>Система, MPSTATS, SelSup</td><td>Удержание клиента через новое решение; MPSTATS — двойная точка входа</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout"><b>Как это подаётся селлеру.</b> Одно предложение с шестью закрытыми потребностями, где напротив каждой — конкретная компания (а лучше две на выбор) и условие с эскроу-гарантией расчёта. Селлер видит не «соберите себе сервис сами», а готовый пакет от Системы, внутри которого — прямые договоры с проверенными исполнителями под финансовой защитой. Это и есть материальное наполнение обещания «независимый магазин с нулевыми затратами на технологию и свободой выбора».</div>
+
+  <div class="callout"><b>Приоритет сборки (Волна −1).</b> Сначала якорный фулфилмент (CDEK Fulfilment или СДТ — закрывают блоки 1 и частично 2–3) и Расчётный Банк (блок 4, критический путь). Затем вторые участники в каждую роль ради выбора и переговорной позиции. MPSTATS (блок 5) — параллельно, он же канал привлечения самих селлеров.</div>
+
+</div>
+<footer><span>Комплексное предложение селлеру · Распределённый маркетплейс</span><span id="footerDate"></span></footer>
+<script>document.getElementById('footerDate').textContent=new Date().toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'});</script>
+</body>
+</html>

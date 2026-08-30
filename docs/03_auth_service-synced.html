@@ -1,0 +1,189 @@
+
+<div style="max-width:1100px;margin:0 auto 18px;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 2 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Модуль ПТК, реализующий нормы <b>Правил системы (ред. 2)</b>. Общая архитектура — «Архитектура ПТК» (26). При расхождении норма — Правила.</div>
+  <div><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 2.4 — присоединение</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 4.3 — KYC/реестр</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 13.1 — вступление</span></div>
+</div><h2 class="sr-only">Auth Service — идентификация, KYC, подписание · Распределённый маркетплейс · 15 ролей RBAC</h2>
+<style>
+.at-btn{padding:6px 14px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text-secondary);transition:.15s;display:inline-block;margin:2px}
+.at-btn:hover{border-color:var(--border-strong)}.at-btn.on{border-color:var(--text-accent);color:var(--text-primary);background:var(--bg-accent)}
+.bl{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}
+.bl.is-new{border-color:var(--border-accent);border-width:2px}
+.bl h3{font-size:15px;font-weight:500;margin-bottom:8px}.bl h4{font-size:13px;font-weight:500;margin:10px 0 4px;color:var(--text-secondary)}
+.bl p{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{padding:6px 8px;text-align:left;font-weight:500;font-size:11px;color:var(--text-muted);border-bottom:1px solid var(--border)}
+.tb td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top}
+.tb tr.rn{background:var(--bg-accent)}
+.cb{font-family:var(--font-mono);font-size:11.5px;color:var(--text-secondary);background:var(--surface-0);border-radius:8px;padding:10px;margin-top:6px;line-height:1.7;white-space:pre-wrap;overflow-x:auto}
+.cb b{color:var(--text-accent);font-weight:500}
+.ss{display:flex;gap:10px;margin-bottom:2px}.sn{width:28px;height:28px;border-radius:50%;background:var(--bg-accent);color:var(--text-accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}.sb{flex:1;font-size:12px;color:var(--text-secondary);line-height:1.6;padding:4px 0}.sb b{color:var(--text-primary);font-weight:500}.sa{color:var(--text-muted);font-size:14px;text-align:center;margin:2px 0 2px 9px}
+.wr{font-size:12px;padding:8px 12px;border-radius:6px;background:var(--bg-warning);color:var(--text-warning);margin-top:8px}
+.ok{font-size:12px;padding:8px 12px;border-radius:6px;background:var(--bg-success);color:var(--text-success);margin-top:8px}
+.dn{font-size:12px;padding:10px 14px;border-radius:8px;background:var(--bg-accent);color:var(--text-accent);margin-bottom:12px;line-height:1.5}
+.bn{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;background:var(--bg-accent);color:var(--text-accent);margin-left:4px}
+.bk{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;background:var(--bg-success);color:var(--text-success);margin-left:4px}
+.sr{font-size:10px;color:var(--text-accent);background:var(--bg-accent);padding:1px 5px;border-radius:3px;font-weight:600}
+</style>
+
+<div class="dn"><b>Адаптация для маркетплейса.</b> 4 способа входа, 3 уровня KYC — без изменений. RBAC расширен 7 → 15 ролей (+8 для участников Системы, ст. 1). Добавлен API-key auth (HMAC-SHA256) для операторов инфраструктуры. JWT: +participant_id. Roadmap: +этапы для маркетплейсных ролей.</div>
+
+<div id="tabs" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px"></div>
+<div id="ct"></div>
+
+<script>
+var tabs=[
+  {id:"arch",l:"Архитектура"},
+  {id:"esia",l:"ЕСИА (Госуслуги)"},
+  {id:"kep",l:"КЭП (КриптоПро)"},
+  {id:"pep",l:"ПЭП (SMS)"},
+  {id:"fns",l:"ФНС: ИНН / НПД / ЕГРЮЛ"},
+  {id:"jwt",l:"JWT и сессии"},
+  {id:"roles",l:"Роли и права (15)"},
+  {id:"kyc",l:"KYC-уровни"},
+  {id:"data",l:"Модель данных"},
+  {id:"roadmap",l:"Roadmap внедрения"}
+];
+var cur="arch";
+function R(){
+  var h="";for(var i=0;i<tabs.length;i++){var t=tabs[i];h+='<button class="at-btn'+(t.id===cur?' on':'')+'" data-t="'+t.id+'">'+t.l+'</button>';}
+  document.getElementById("tabs").innerHTML=h;
+  document.querySelectorAll(".at-btn").forEach(function(b){b.onclick=function(){cur=this.getAttribute("data-t");R()}});
+  document.getElementById("ct").innerHTML=D[cur]||'';
+}
+var D={};
+
+D.arch='<div class="bl"><h3>Auth Service — архитектура</h3><p>Единая точка идентификации и аутентификации для всех пользователей НСВР. Поддерживает 4 способа входа и 3 уровня верификации (KYC). Другие сервисы никогда не проверяют подлинность пользователя самостоятельно — только через Auth Service.</p>'+
+'<div class="cb"><b>Auth Service</b>\n ├─ Identity Provider       // ЕСИА, email/phone, OAuth\n ├─ Signature Module        // ПЭП (SMS) + КЭП (КриптоПро)\n ├─ Verification Engine     // ФНС (ИНН, НПД, ЕГРЮЛ), ЕСИА (паспорт)\n ├─ Token Manager           // JWT access + refresh, Vault\n ├─ RBAC Engine             // 15 ролей, scopes, permissions\n ├─ <b>API Key Manager</b>         // НОВЫЙ: HMAC-SHA256 для операторов\n └─ Rate Limiter            // Redis, per-IP / per-phone</div>'+
+'<h4>Стек технологий <span class="bk">без изменений</span></h4>'+
+'<div class="cb">Runtime:      Go или Node.js (Express + Passport.js)\nDB:           PostgreSQL (nsvr_auth)\nCache:        Redis (сессии, rate limit, SMS-коды, API-key lookup)\nESIA SDK:     esia-connector (OpenID Connect клиент)\nКриптография: КриптоПро CSP 5.0 + КриптоПро JCP (Java/Go bridge)\nSMS:          SMSAero (primary) + Тинькофф SMS (failover)\nJWT:          RS256, ключи в HashiCorp Vault\nMonitoring:   Prometheus (auth_rate, kyc_conversion, error_rate)</div>'+
+'<h4>4 способа входа <span class="bk">без изменений</span></h4>'+
+'<table class="tb"><thead><tr><th>Способ</th><th>KYC-уровень</th><th>Для кого</th><th>Технология</th></tr></thead><tbody>'+
+'<tr><td>Телефон + SMS OTP</td><td>Level 0 (базовый)</td><td>Все</td><td>SMS OTP (6 цифр, TTL 5 мин, rate limit 3/час)</td></tr>'+
+'<tr><td>ЕСИА (Госуслуги)</td><td>Level 2 (полный)</td><td>ФЛ, ИП, самозанятые</td><td>OAuth 2.0 + OpenID Connect</td></tr>'+
+'<tr><td>КЭП (сертификат)</td><td>Level 2 (полный)</td><td>ЮЛ (ООО, АО)</td><td>КриптоПро CSP 5.0, CAdES-BES</td></tr>'+
+'<tr><td>Email + пароль</td><td>Level 0</td><td>Вспомогательный</td><td>bcrypt + TOTP 2FA (Google Auth)</td></tr>'+
+'</tbody></table></div>';
+
+D.esia='<div class="bl"><h3>ЕСИА — интеграция с Госуслугами <span class="bk">без изменений</span></h3><p>ЕСИА (Единая Система Идентификации и Аутентификации) — федеральная система. Подключение даёт НСВР верифицированные ФИО, паспорт, ИНН, СНИЛС без ручной проверки.</p>'+
+'<h4>Что получаем от ЕСИА</h4>'+
+'<table class="tb"><thead><tr><th>Scope</th><th>Данные</th><th>Использование</th></tr></thead><tbody>'+
+'<tr><td>fullname</td><td>ФИО</td><td>Заполнение договоров</td></tr>'+
+'<tr><td>inn</td><td>ИНН физлица</td><td>Проверка в ФНС, реквизиты</td></tr>'+
+'<tr><td>id_doc</td><td>Серия/номер паспорта</td><td>Верификация, спец. шаблоны</td></tr>'+
+'<tr><td>contacts</td><td>Телефон, email</td><td>Уведомления</td></tr>'+
+'<tr><td>organizations</td><td>ОГРН, ИНН ЮЛ, должность, isChief</td><td>B2B: автозаполнение реквизитов ЮЛ</td></tr>'+
+'</tbody></table>'+
+'<h4>Sequence: вход через ЕСИА</h4>'+
+'<div class="ss"><div class="sn">1</div><div class="sb"><b>Frontend:</b> кнопка «Войти через Госуслуги»</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">2</div><div class="sb"><b>Auth Service</b> формирует Authorization Request:<br><span style="font-family:var(--font-mono);font-size:11px">GET https://esia.gosuslugi.ru/aas/oauth2/v3/ac?client_id=NSVR&scope=openid+fullname+inn+id_doc+contacts+organizations&response_type=code&redirect_uri=https://нсвр.рф/auth/esia/callback</span></div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">3</div><div class="sb"><b>Госуслуги:</b> логин/пароль (или биометрия) → подтверждение доступа → redirect с authorization_code</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">4</div><div class="sb"><b>Auth Service → ЕСИА Token Endpoint:</b><br><span style="font-family:var(--font-mono);font-size:11px">POST https://esia.gosuslugi.ru/aas/oauth2/v3/te</span><br>grant_type=authorization_code, code, client_id, client_secret → access_token + id_token</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">5</div><div class="sb"><b>Auth Service → ЕСИА UserInfo:</b><br><span style="font-family:var(--font-mono);font-size:11px">GET https://esia.gosuslugi.ru/rs/prns/{oid}</span><br>Ответ: {firstName, lastName, middleName, inn, snils, birthDate, ...}</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">6</div><div class="sb"><b>Auth Service → ЕСИА Organizations:</b><br><span style="font-family:var(--font-mono);font-size:11px">GET https://esia.gosuslugi.ru/rs/prns/{oid}/orgs</span><br>Ответ: [{ogrn, name, inn, kpp, position, isChief}, ...]<br>Если руководитель → автоматическая роль OOO_DIRECTOR</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">7</div><div class="sb"><b>Auth Service:</b> создаёт/обновляет user profile (fullname, inn, passport, orgs). KYC level = 2 (ESIA_VERIFIED). JWT (access + refresh) → redirect в dashboard</div></div>'+
+'<div class="wr"><b>Срок подключения: 2–3 месяца.</b> Заявка через Технологический портал ЕСИА → экспертиза Минцифры → тестовый стенд (SVCDEV) → промышленная среда. Требуется: ООО с ОГРН, сертификат ГОСТ (КриптоПро), описание ИС, согласие на обработку ПД.</div></div>';
+
+D.kep='<div class="bl"><h3>КЭП — квалифицированная электронная подпись <span class="bk">без изменений</span></h3><p>КЭП = полный аналог собственноручной подписи (ФЗ-63, ст. 6). Обязательна для B2B-сделок и сделок с участием ЮЛ на суммы >500K. Пользователь уже имеет КЭП (на USB-токене или в облаке), НСВР проверяет и использует.</p>'+
+'<h4>Два варианта КЭП</h4>'+
+'<table class="tb"><thead><tr><th>Параметр</th><th>Локальная КЭП (USB-токен)</th><th>Облачная КЭП (DSS)</th></tr></thead><tbody>'+
+'<tr><td>Носитель</td><td>USB-токен (Рутокен, JaCarta) у пользователя</td><td>Облако УЦ (КриптоПро DSS, Контур.Крипто)</td></tr>'+
+'<tr><td>Плагин браузера</td><td>КриптоПро ЭЦП Browser Plug-in</td><td>Не нужен (облачная подпись)</td></tr>'+
+'<tr><td>Криптография</td><td>КриптоПро CSP 5.0, ГОСТ 34.10-2012</td><td>КриптоПро DSS, ГОСТ 34.10-2012</td></tr>'+
+'<tr><td>UX</td><td>Установить плагин → вставить токен → ввести PIN</td><td>Подтвердить через мобильное приложение УЦ или SMS</td></tr>'+
+'<tr><td>Стоимость</td><td>~1500₽/год (у пользователя)</td><td>~3000₽/год (подписка УЦ)</td></tr>'+
+'<tr><td>Целевая аудитория</td><td>ЮЛ, уже имеющие КЭП для отчётности</td><td>ИП, самозанятые, новые пользователи</td></tr>'+
+'</tbody></table>'+
+'<h4>Sequence: подпись документа КЭП (локальная)</h4>'+
+'<div class="ss"><div class="sn">1</div><div class="sb"><b>Frontend:</b> PDF договора в iframe. Кнопка «Подписать КЭП»</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">2</div><div class="sb"><b>Browser Plug-in:</b> запрос сертификатов с токена. Пользователь выбирает сертификат</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">3</div><div class="sb"><b>Plug-in:</b> ввод PIN → подпись хеша (SHA-256) документа алгоритмом ГОСТ 34.10-2012. Формирует CAdES-BES (attached или detached)</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">4</div><div class="sb"><b>Frontend → Auth Service:</b> POST /verify-kep {document_hash, signature, certificate_base64}</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">5</div><div class="sb"><b>Auth Service:</b> КриптоПро JCP/CSP — проверка: цепочка сертификатов → CRL (не отозван?) → OCSP → валидность по дате → подпись корректна? Если ОК: user.kyc_level = 2, запись подписи</div></div>'+
+'<h4>Sequence: облачная КЭП (DSS)</h4>'+
+'<div class="ss"><div class="sn">1</div><div class="sb"><b>Auth Service → КриптоПро DSS API:</b> POST /sign {document_hash, user_dss_id}</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">2</div><div class="sb"><b>DSS:</b> push в приложение УЦ на телефон пользователя. Пользователь подтверждает</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">3</div><div class="sb"><b>DSS → Auth Service (callback):</b> {signature, certificate, timestamp}</div></div></div>';
+
+D.pep='<div class="bl"><h3>ПЭП — простая электронная подпись через SMS <span class="bk">без изменений</span></h3><p>Основной способ подписания для C2C-сделок. Юридически значима при наличии Соглашения об использовании ПЭП (подписывается при регистрации). Быстрый UX: 1 SMS → 1 клик.</p>'+
+'<h4>Юридическое обоснование</h4><p>ФЗ-63, ст. 6, п. 2: «Информация в электронной форме, подписанная простой электронной подписью, признаётся электронным документом, равнозначным документу на бумажном носителе, подписанному собственноручной подписью, в случаях, установленных <b>соглашением</b> между участниками электронного взаимодействия».</p>'+
+'<p>Соглашение об использовании ПЭП — принимается при регистрации (чекбокс). Содержит: порядок формирования ключа ПЭП (SMS-код), обязанность соблюдать конфиденциальность, признание юридической силы.</p>'+
+'<h4>Sequence: подпись ПЭП</h4>'+
+'<div class="ss"><div class="sn">1</div><div class="sb"><b>Frontend:</b> PDF в iframe. Чекбокс «Я прочитал и согласен». Кнопка «Подписать»</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">2</div><div class="sb"><b>Auth Service:</b> генерирует OTP (6 цифр, crypto/rand). Сохраняет в Redis: key=sign:{user_id}:{doc_hash}, value=OTP, TTL=300с. Отправляет SMS через SMSAero</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">3</div><div class="sb"><b>Пользователь:</b> вводит SMS-код. Frontend → POST /api/v1/auth/verify-pep {doc_hash, otp_code}</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">4</div><div class="sb"><b>Auth Service:</b> Redis lookup → сравнение (constant-time) → если ОК:<br>• Генерирует хеш подписи: SHA-256(PDF_hash + timestamp + phone + otp_code)<br>• Добавляет блок подписи в метаданные: {signer, phone_last4, hash, timestamp}<br>• Event: document.signed → Contract Builder добавляет подпись в PDF</div></div>'+
+'<div class="ok"><b>Rate limits:</b> 3 SMS/час на номер, 5 попыток ввода кода на документ, 10 подписаний/день на пользователя</div></div>';
+
+D.fns='<div class="bl"><h3>ФНС: проверка ИНН / НПД / ЕГРЮЛ <span class="bk">без изменений</span></h3><p>Auth Service проверяет данные пользователей через API ФНС для верификации и автозаполнения реквизитов.</p>'+
+'<h4>3 API ФНС</h4>'+
+'<table class="tb"><thead><tr><th>API</th><th>Что проверяем</th><th>Когда</th><th>Endpoint</th><th>Кеш</th></tr></thead><tbody>'+
+'<tr><td>Проверка ИНН ФЛ</td><td>Существует ли ИНН, соответствует ли ФИО</td><td>Регистрация (Level 1+)</td><td>service.nalog.ru/inn-proc.json</td><td>30 дней</td></tr>'+
+'<tr><td>Статус НПД</td><td>Зарегистрирован ли как плательщик НПД</td><td>C2B-сделка с самозанятым</td><td>npd-api.nalog.ru/api/v1/taxpayer/{inn}/status</td><td>1 час</td></tr>'+
+'<tr><td>ЕГРЮЛ/ЕГРИП</td><td>Данные ЮЛ: название, адрес, директор, статус</td><td>B2B: при добавлении организации</td><td>egrul.nalog.ru/api/</td><td>24 часа</td></tr>'+
+'</tbody></table>'+
+'<h4>Sequence: проверка ИНН (Level 0 → Level 1)</h4>'+
+'<div class="ss"><div class="sn">1</div><div class="sb"><b>Пользователь:</b> вводит ИНН в профиле (12 цифр для ФЛ, 10 для ЮЛ)</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">2</div><div class="sb"><b>Auth Service → ФНС API:</b> POST service.nalog.ru/inn-proc.json {fam, nam, otch, bdate, doctype, docno, inn}. Ответ: {inn, result: "found"}</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">3</div><div class="sb"><b>Auth Service:</b> ИНН совпадает с ФИО? Если ОК: kyc_level = 1, inn сохранён. Redis: кеш 30 дней. Notification: «Вы верифицированы. Лимит сделок: 100K₽»</div></div>'+
+'<h4>Автоформирование чека самозанятого</h4>'+
+'<div class="cb">// При deal.completed (C2B, исполнитель = самозанятый):\n1. Auth Service → НПД API: проверка статуса (кеш 1ч)\n2. Если НПД активен → Contract Builder → API «Мой налог»:\n   POST /income {amount, inn, client_name, service_name}\n3. ФНС выдаёт чек (receipt_url, receipt_id)\n4. Чек прикрепляется к deal как closing_document\n   type=SELF_EMPLOYED_RECEIPT</div></div>';
+
+D.jwt='<div class="bl"><h3>JWT и сессии <span class="bk">расширена</span></h3>'+
+'<div class="cb"><b>Access Token (JWT, RS256)</b>\nHeader: {alg: "RS256", kid: "nsvr-auth-2027"}\nPayload: {\n  sub: "user-uuid",\n  iat: 1735689600,\n  exp: 1735693200,          // 1 час\n  iss: "https://auth.nsvr.ru",\n  aud: "https://api.nsvr.ru",\n  scope: "deals:read deals:write profile:read",\n  kyc_level: 2,\n  party_type: "INDIVIDUAL",  // или SELF_EMPLOYED, IP, OOO\n  org_id: "org-uuid" | null, // если от имени ЮЛ\n  <b>roles: ["SELLER"],</b>          // НОВОЕ: массив ролей (может быть >1)\n  <b>participant_id: "uuid",</b>     // НОВОЕ: FK → Registry (для операторов и селлеров)\n}</div>'+
+'<div class="cb"><b>Refresh Token</b>\nOpaque string, 256 bit random\nХранится в Redis: key=refresh:{token_hash}, value={user_id, device_id, created}\nTTL: 30 дней\nОдноразовый: при использовании выдаётся новый refresh + новый access\nRotation: старый refresh инвалидируется</div>'+
+'<h4>Token lifecycle <span class="bk">без изменений</span></h4>'+
+'<div class="cb">1. Login (ЕСИА / SMS / КЭП) → access (1ч) + refresh (30д)\n2. API запрос: Authorization: Bearer {access_token}\n3. Expired → POST /auth/refresh {refresh_token} → новая пара\n4. Logout → Redis: delete refresh, access в blacklist (TTL = remaining exp)\n5. Подозрительная активность → revoke all tokens for user</div>'+
+'<h4>API-key аутентификация для операторов <span class="bn">● новое</span></h4>'+
+'<p>Операторы инфраструктуры (фулфилмент, логистика, склад, магистраль) взаимодействуют через API (webhooks, задания). API-key auth аналогично банк-API в Escrow Service.</p>'+
+'<div class="cb"><b>Webhook от оператора:</b>\nPOST /api/v1/deals/{id}/fulfillment-ready\nHeaders:\n  X-API-Key: {api_key}\n  X-Signature: HMAC-SHA256(body, secret_key)\n  X-Timestamp: 2026-08-12T10:30:00Z\n\n<b>Проверка:</b>\n1. X-API-Key → lookup participant_id в Redis (кеш 1 мин)\n2. X-Timestamp ≤ 5 мин назад (replay protection)\n3. HMAC-SHA256(body, secret_key) === X-Signature\n4. Scopes: ["tasks:write", "webhooks:send"] → разрешено?\n5. Rate limit: 100 req/min per API-key</div></div>';
+
+D.roles='<div class="bl"><h3>Роли и права (RBAC): 7 → 15 <span class="sr">ст. 1</span></h3>'+
+'<table class="tb"><thead><tr><th>Роль</th><th>Статус</th><th>Описание</th><th>Ключевые права</th><th>KYC</th><th>Вход</th></tr></thead><tbody>'+
+'<tr><td>USER</td><td><span class="bk">НСВР</span></td><td>Обычный пользователь (ФЛ)</td><td>deals:create, deals:read(own), deals:sign, deals:deposit, profile:*</td><td>L0–L2</td><td>SMS/ЕСИА</td></tr>'+
+'<tr><td>SELF_EMPLOYED</td><td><span class="bk">НСВР</span></td><td>Самозанятый (НПД)</td><td>USER + deals:issue_receipt</td><td>L1+</td><td>SMS/ЕСИА</td></tr>'+
+'<tr><td>IP</td><td><span class="bk">НСВР</span></td><td>ИП</td><td>USER + deals:c2b, deals:issue_act_vat</td><td>L1+</td><td>SMS/ЕСИА/КЭП</td></tr>'+
+'<tr><td>OOO_DIRECTOR</td><td><span class="bk">НСВР</span></td><td>Директор ООО (подтверждён ЕСИА/ЕГРЮЛ)</td><td>USER + deals:b2b, org:manage, org:add_members, deals:kep_sign</td><td>L2</td><td>ЕСИА/КЭП</td></tr>'+
+'<tr><td>OOO_MEMBER</td><td><span class="bk">НСВР</span></td><td>Сотрудник ООО (добавлен директором)</td><td>deals:read(org), deals:create (с лимитом от директора)</td><td>L1+</td><td>SMS/ЕСИА</td></tr>'+
+'<tr><td>ADMIN</td><td><span class="bk">НСВР</span></td><td>Полный доступ Admin Panel</td><td>admin:*, users:*, deals:*, finance:*, audit:read</td><td>—</td><td>VPN + 2FA</td></tr>'+
+'<tr><td>MODERATOR</td><td><span class="bk">НСВР</span></td><td>Модерация споров</td><td>disputes:*, deals:read, users:read</td><td>—</td><td>VPN + 2FA</td></tr>'+
+'<tr class="rn"><td><b>SELLER</b></td><td><span class="bn">● ст. 1</span></td><td>Селлер маркетплейса</td><td>catalog:manage(own), orders:read(own), analytics:read(own), binding:manage(own)</td><td>L1+ (ИП/ООО/самозан)</td><td>SMS/ЕСИА/КЭП</td></tr>'+
+'<tr class="rn"><td><b>BUYER_MP</b></td><td><span class="bn">● новая</span></td><td>Покупатель маркетплейса</td><td>catalog:read, orders:create, orders:read(own), disputes:create</td><td>L0–L1</td><td>SMS/ЕСИА</td></tr>'+
+'<tr class="rn"><td><b>FULFILLMENT_OP</b></td><td><span class="bn">● ст. 1</span></td><td>Оператор фулфилмента/3PL</td><td>tasks:read, tasks:update, sla:read(own), webhooks:send</td><td>L2 (ЮЛ)</td><td>API-key + КЭП</td></tr>'+
+'<tr class="rn"><td><b>WAREHOUSE_OP</b></td><td><span class="bn">● новая</span></td><td>Складской сервис</td><td>inventory:manage, tariffs:manage(own), sla:read(own)</td><td>L2 (ЮЛ)</td><td>API-key + КЭП</td></tr>'+
+'<tr class="rn"><td><b>LOGISTICS_OP</b></td><td><span class="bn">● ст. 1</span></td><td>Последняя миля</td><td>deliveries:read, deliveries:update, tracking:write, webhooks:send</td><td>L2 (ЮЛ)</td><td>API-key + КЭП</td></tr>'+
+'<tr class="rn"><td><b>TRUNK_OP</b></td><td><span class="bn">● новая</span></td><td>Магистральная логистика</td><td>routes:manage, tariffs:manage(own), tracking:write</td><td>L2 (ЮЛ)</td><td>API-key + КЭП</td></tr>'+
+'<tr class="rn"><td><b>BANK_PARTNER</b></td><td><span class="bn">● новая</span></td><td>Расчётный банк</td><td>escrow:* (через mTLS + HMAC, отдельный контур)</td><td>—</td><td>mTLS + HMAC</td></tr>'+
+'<tr class="rn"><td><b>ORGANIZER</b></td><td><span class="bn">● ст. 5</span></td><td>Организатор Системы</td><td>registry:*, clearing:read, disputes:escalate, gate:manage, monitoring:*</td><td>—</td><td>VPN + 2FA + КЭП</td></tr>'+
+'</tbody></table></div>';
+
+D.kyc='<div class="bl"><h3>KYC-уровни (Know Your Customer) <span class="bk">расширена</span></h3>'+
+'<table class="tb"><thead><tr><th>Уровень</th><th>Как получить</th><th>Данные</th><th>Лимиты</th><th>Сделки C2C</th><th>Роли маркетплейса</th></tr></thead><tbody>'+
+'<tr><td>Level 0<br>Базовый</td><td>Регистрация по телефону + SMS</td><td>Телефон, имя (самоназванное)</td><td>Просмотр, черновики. Нельзя подписывать.</td><td>Никакие</td><td>GUEST, BUYER_MP (просмотр)</td></tr>'+
+'<tr><td>Level 1<br>Проверенный</td><td>ИНН введён + проверен через ФНС</td><td>+ ИНН, ФИО (из ФНС)</td><td>До 100K₽/сделка. До 500K₽/мес.</td><td>Товары, мелкие услуги, хендмейд</td><td>BUYER_MP (покупки), SELLER (самозанятый)</td></tr>'+
+'<tr><td>Level 2<br>Идентифицированный</td><td>ЕСИА (Госуслуги) или КЭП</td><td>+ Паспорт, СНИЛС, организации</td><td>До 10M₽/сделка. Без месячного лимита.</td><td>Все: C2C, C2B, B2B, займы, GAP</td><td>SELLER (ИП/ООО), все операторы (ЮЛ), ORGANIZER</td></tr>'+
+'</tbody></table>'+
+'<h4>Progressive KYC <span class="bk">без изменений</span></h4><p>Пользователь начинает с Level 0. Система просит повысить при первой операции, требующей более высокого уровня. UX: «Для подписания договора подтвердите ИНН (30 секунд)» или «Для сделки >100K войдите через Госуслуги».</p>'+
+'<div class="wr"><b>Стратегия:</b> На MVP запускаемся с Level 0 + Level 1 (телефон + ИНН). Level 2 (ЕСИА) подключается параллельно (заявка в М1, подключение к М3–М4). КЭП — Этап 1.5. До подключения ЕСИА все сделки ≤100K₽.</div></div>';
+
+D.data='<div class="bl"><h3>Модель данных Auth Service <span class="bk">расширена</span></h3>'+
+'<div class="cb"><b>users</b>\n  id: UUID (PK)\n  phone: String (unique, E.164)    // +79001234567\n  email: String? (unique)\n  password_hash: String?           // bcrypt, для email-входа\n  kyc_level: Int (0, 1, 2)\n  party_type: enum [INDIVIDUAL, SELF_EMPLOYED, IP, OOO_DIRECTOR, OOO_MEMBER]\n\n  // Из ЕСИА или ручного ввода\n  first_name, last_name, middle_name: String?\n  inn: String?                     // ИНН ФЛ (12 цифр)\n  snils: String?                   // из ЕСИА\n  passport_series, passport_number: String?  // из ЕСИА\n\n  // ЕСИА\n  esia_oid: String?                // OID пользователя в ЕСИА\n  esia_linked_at: Timestamp?\n\n  // КЭП\n  kep_cert_serial: String?         // серийный номер\n  kep_cert_issuer: String?         // УЦ\n  kep_linked_at: Timestamp?\n\n  // НОВОЕ: маркетплейс\n  <b>roles: String[]</b>                   // массив ролей (было: party_type → single)\n  <b>participant_id: UUID?</b>             // FK → Registry Service\n\n  status: enum [ACTIVE, BLOCKED, SUSPENDED]\n  created_at, updated_at, last_login_at: Timestamp</div>'+
+'<div class="cb"><b>organizations</b> (без изменений)\n  id: UUID (PK)\n  inn: String (unique)\n  kpp: String?\n  ogrn: String\n  name: String\n  legal_address: String?\n  director_user_id: UUID (FK)\n  status: enum [ACTIVE, BLOCKED]\n  esia_verified: Boolean\n  egrul_checked_at: Timestamp?\n  created_at: Timestamp</div>'+
+'<div class="cb"><b>sessions</b> (без изменений)\n  id: UUID (PK)\n  user_id: UUID (FK)\n  refresh_token_hash: String (unique)\n  device_id: String?\n  ip_address: String\n  user_agent: String\n  created_at: Timestamp\n  expires_at: Timestamp   // 30 дней\n  revoked_at: Timestamp?</div>'+
+'<div class="cb"><b>verifications</b> (без изменений)\n  id: UUID (PK)\n  user_id: UUID (FK)\n  type: enum [SMS_OTP, ESIA, KEP, INN_CHECK, NPD_CHECK, EGRUL]\n  status: enum [PENDING, SUCCESS, FAILED, EXPIRED]\n  metadata: JSONB         // {otp_hash, attempts, inn, ...}\n  created_at, verified_at: Timestamp</div>'+
+'<div class="cb"><b>api_keys</b> (НОВАЯ таблица)\n  id: UUID (PK)\n  participant_id: UUID             // FK → Registry\n  api_key_hash: String             // bcrypt\n  secret_key: String               // для HMAC (зашифрован Vault)\n  scopes: String[]                 // ["tasks:read", "tasks:write"]\n  status: enum [ACTIVE, REVOKED]\n  created_at, expires_at: Timestamp  // ротация 90 дней\n  last_used_at: Timestamp?</div></div>';
+
+D.roadmap='<div class="bl"><h3>Roadmap внедрения Auth Service</h3>'+
+'<table class="tb"><thead><tr><th>Этап</th><th>Что</th><th>Срок</th><th>KYC</th><th>Блокирует</th></tr></thead><tbody>'+
+'<tr><td>Этап 0</td><td>Вход по SMS + JWT. Базовая авторизация (USER)</td><td>2 недели</td><td>L0</td><td>Ничего — можно начинать остальные сервисы</td></tr>'+
+'<tr><td>Этап 1</td><td>Проверка ИНН через ФНС. Progressive KYC L0→L1. Rate limiting</td><td>+1 неделя</td><td>L0, L1</td><td>Подписание (ПЭП). Сделки до 100K</td></tr>'+
+'<tr><td>Этап 2</td><td>ПЭП (SMS-подпись). Интеграция с Contract Builder</td><td>+2 недели</td><td>L0, L1</td><td>MVP запуск (M4): C2C до 100K₽</td></tr>'+
+'<tr><td>Этап 3</td><td>ЕСИА (Госуслуги). Заявка в М1, подключение М3–М4</td><td>+2–3 мес. (параллельно)</td><td>L0, L1, L2</td><td>Снятие лимита 100K. C2B/B2B. Займы</td></tr>'+
+'<tr><td>Этап 4</td><td>ФНС: НПД (самозанятые) + ЕГРЮЛ. Автозаполнение</td><td>+2 недели (после Э3)</td><td>L2</td><td>C2B с самозанятыми. B2B с автопроверкой</td></tr>'+
+'<tr><td>Этап 5</td><td>КЭП (КриптоПро Plugin). Только для B2B >500K</td><td>+3–4 недели</td><td>L2</td><td>B2B полный функционал</td></tr>'+
+'<tr class="rn"><td><b>Этап 6</b></td><td><b>RBAC маркетплейса: SELLER, BUYER_MP, операторские роли. API-key Manager</b></td><td>+2 недели</td><td>—</td><td>Кабинет селлера. API для операторов</td></tr>'+
+'<tr class="rn"><td><b>Этап 7</b></td><td><b>ORGANIZER роль. Интеграция с Registry Service (participant_id в JWT)</b></td><td>+1 неделя</td><td>—</td><td>Управление реестром. Арбитраж Организатора</td></tr>'+
+'</tbody></table></div>';
+
+R();
+</script>

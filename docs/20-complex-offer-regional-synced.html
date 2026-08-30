@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Комплексное предложение по регионам / Распределённый маркетплейс</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#F6F3EC;--paper-line:#E4DECC;--ink:#1D1B17;--ink-soft:#5B5548;--ledger:#233A52;--copper:#B07A34;--card:#FCFAF4;
+    --msk:#233A52;--msk-soft:#DCE4EC;--spb:#4E6B52;--spb-soft:#DCE6DD;--kr:#A34A2E;--kr-soft:#F2DCD3;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;padding:0 0 90px;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 34px;}
+  .cover{padding:70px 0 38px;border-bottom:3px double var(--ink);margin-bottom:22px;}
+  .cover .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ledger);}
+  .cover h1{font-family:'PT Serif',serif;font-weight:700;font-size:40px;line-height:1.1;margin:16px 0 14px;letter-spacing:-.015em;}
+  .cover h1 em{font-style:italic;color:var(--ledger);}
+  .cover .sub{font-size:15.5px;color:var(--ink-soft);max-width:700px;line-height:1.6;}
+  .frame{background:#FBF3E4;border-left:4px solid var(--copper);border-radius:4px;padding:16px 20px;margin:26px 0 36px;font-size:13.5px;color:var(--ink-soft);line-height:1.6;}
+  .frame b{color:var(--ink);}
+  .tabs{display:flex;gap:0;border:1.5px solid var(--ink);border-radius:7px;overflow:hidden;width:fit-content;margin-bottom:28px;}
+  .tabs button{font-family:'Inter';font-size:14px;font-weight:600;padding:11px 24px;border:none;background:transparent;cursor:pointer;color:var(--ink-soft);border-right:1.5px solid var(--ink);}
+  .tabs button:last-child{border-right:none;}
+  .tabs button.msk.on{background:var(--msk);color:#fff;} .tabs button.spb.on{background:var(--spb);color:#fff;} .tabs button.kr.on{background:var(--kr);color:#fff;}
+  .region{display:none;} .region.on{display:block;}
+  .rhead{padding:18px 22px;border-radius:8px 8px 0 0;color:#fff;}
+  .rhead .rname{font-family:'PT Serif',serif;font-size:24px;font-weight:700;}
+  .rhead .rshare{font-family:'IBM Plex Mono',monospace;font-size:12px;opacity:.9;margin-top:3px;}
+  .rbody{border:1px solid var(--paper-line);border-top:none;border-radius:0 0 8px 8px;background:#fff;padding:20px 22px;margin-bottom:26px;}
+  .rnote{font-size:13.5px;color:var(--ink-soft);line-height:1.55;margin-bottom:18px;}
+  .rnote b{color:var(--ink);}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);padding:0 12px 9px 0;border-bottom:1.5px solid var(--ink);}
+  td{padding:11px 12px 11px 0;border-bottom:1px solid var(--paper-line);vertical-align:top;line-height:1.5;}
+  td.blk{font-weight:600;white-space:nowrap;}
+  .fed{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;background:var(--card);border:1px solid var(--paper-line);border-radius:3px;padding:1px 5px;color:var(--ink-soft);margin-left:4px;vertical-align:middle;}
+  .loc{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;background:#FBF3E4;border:1px solid var(--copper);border-radius:3px;padding:1px 5px;color:var(--copper);margin-left:4px;vertical-align:middle;}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin:6px 0 6px;}
+  .sec-num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--copper);font-weight:600;}
+  .sec-head h2{font-family:'PT Serif',serif;font-size:21px;margin:0;font-weight:700;}
+  .sec-sub{color:var(--ink-soft);font-size:13px;max-width:720px;margin:0 0 18px;line-height:1.5;}
+  .callout{background:var(--card);border:1px solid var(--paper-line);border-left:4px solid var(--copper);border-radius:4px;padding:16px 20px;margin:20px 0 8px;font-size:13.5px;color:var(--ink-soft);line-height:1.6;}
+  .callout b{color:var(--ink);}
+  footer{max-width:1000px;margin:40px auto 0;padding:24px 34px 0;border-top:2px solid var(--ink);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);display:flex;justify-content:space-between;}
+  @media(max-width:640px){.cover h1{font-size:28px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cover">
+    <div class="eyebrow">Распределённый маркетплейс · региональная разбивка</div>
+    <h1>Комплексное предложение<br><em>по трём регионам</em></h1>
+    <p class="sub">Ядро, финансы и федеральные операторы едины во всех регионах, но локальная логистика, склады и магистральные связи свои для каждого. Три готовых региональных пакета для Волны 1.</p>
+  </div>
+
+  <div class="frame">
+    <b>Что общее, а что региональное.</b> Блок 0 (ядро Системы/НСВР) и блок 4 (Расчётные Банки) — федеральные, одинаковы везде. Фулфилмент и последняя миля имеют федеральных игроков (СДЭК/CDEK, Boxberry, Почта), присутствующих во всех трёх регионах, <b>плюс сильных локальных операторов</b>, которые дешевле и быстрее на своей территории. Магистраль соединяет регионы попарно. Поэтому пакет собирается как «федеральное ядро + местный исполнитель».
+  </div>
+
+  <div class="tabs">
+    <button class="msk on" id="tMsk" onclick="show('msk')">Москва + МО · 26,9%</button>
+    <button class="spb" id="tSpb" onclick="show('spb')">Санкт-Петербург · 6,1%</button>
+    <button class="kr" id="tKr" onclick="show('kr')">Краснодарский край · 5,3%</button>
+  </div>
+
+  <!-- MOSCOW -->
+  <div class="region on" id="msk">
+    <div class="rhead" style="background:var(--msk)"><div class="rname">Москва + Московская область</div><div class="rshare">26,9% национального онлайн-рынка · крупнейший хаб, максимум операторов</div></div>
+<div style="max-width:1000px;margin:0 auto 18px;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 2 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Документ стратегического слоя (обоснование бизнес-модели), на который опирается <b>Преамбула Правил системы (ред. 2)</b>. При расхождении норма — Правила.</div>
+  <div><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 3 — услуги/тарифы</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 13 — сборка Волны −1</span></div>
+</div>
+    <div class="rbody">
+      <div class="rnote"><b>Роль региона:</b> головной хаб. Здесь максимальная плотность фулфилмент-операторов и складов, отсюда идёт магистраль в СПб и Краснодар. Пилот и первые селлеры Волны 1 логично запускать здесь — выбор участников наибольший, гейт «≥2 в роли» проходится легче всего.</div>
+      <table>
+        <thead><tr><th style="width:24%">Блок</th><th>Участники в регионе</th></tr></thead>
+        <tbody>
+          <tr><td class="blk">0 · Ядро</td><td>Система (Организатор), НСВР <span class="fed">федеральное</span></td></tr>
+          <tr><td class="blk">1 · Фулфилмент</td><td>CDEK Fulfilment <span class="fed">фед</span>, СДТ (Подольск) <span class="loc">локал</span>, ПЭК <span class="fed">фед</span>, Бета Про (Москва+область) <span class="loc">локал</span>, UPMARKET (Подольск) <span class="loc">локал</span>, TEAM DEEM (Москва) <span class="loc">локал</span></td></tr>
+          <tr><td class="blk">2 · Последняя миля</td><td>СДЭК <span class="fed">фед</span>, Boxberry <span class="fed">фед</span>, Dostavista (плотная городская курьерка) <span class="loc">локал</span>, Почта России <span class="fed">фед</span></td></tr>
+          <tr><td class="blk">3 · Магистраль</td><td>Деловые линии, ПЭК, КИТ — узел исходящих на СПб и Краснодар</td></tr>
+          <tr><td class="blk">4 · Финансы</td><td>ПСБ, ВТБ, Первый Инвестиционный, РСХБ <span class="fed">федеральное</span></td></tr>
+          <tr><td class="blk">5 · Аналитика</td><td>Система (трафик), MPSTATS, SelSup <span class="fed">федеральное</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SPB -->
+  <div class="region" id="spb">
+    <div class="rhead" style="background:var(--spb)"><div class="rname">Санкт-Петербург</div><div class="rshare">6,1% национального онлайн-рынка · второй хаб, сильная логистика на Северо-Запад</div></div>
+    <div class="rbody">
+      <div class="rnote"><b>Роль региона:</b> второй по значимости хаб, ворота на Северо-Запад. Федеральные операторы присутствуют полноценно, есть развитая локальная фулфилмент-сцена. Магистраль на Москву — самая короткая и загруженная, порожних рейсов меньше всего.</div>
+      <table>
+        <thead><tr><th style="width:24%">Блок</th><th>Участники в регионе</th></tr></thead>
+        <tbody>
+          <tr><td class="blk">0 · Ядро</td><td>Система (Организатор), НСВР <span class="fed">федеральное</span></td></tr>
+          <tr><td class="blk">1 · Фулфилмент</td><td>CDEK Fulfilment (склад в СПб) <span class="fed">фед</span>, ПЭК <span class="fed">фед</span>, локальные фулфилмент-центры СПб (склады Шушары/Парнас) <span class="loc">локал</span></td></tr>
+          <tr><td class="blk">2 · Последняя миля</td><td>СДЭК <span class="fed">фед</span>, Boxberry <span class="fed">фед</span>, Почта России <span class="fed">фед</span>, локальная курьерка СПб <span class="loc">локал</span></td></tr>
+          <tr><td class="blk">3 · Магистраль</td><td>Деловые линии, ПЭК — короткое плечо СПб↔Москва (самое загруженное, минимум порожних)</td></tr>
+          <tr><td class="blk">4 · Финансы</td><td>ПСБ, ВТБ, Первый Инвестиционный, РСХБ <span class="fed">федеральное</span></td></tr>
+          <tr><td class="blk">5 · Аналитика</td><td>Система (трафик), MPSTATS, SelSup <span class="fed">федеральное</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- KRASNODAR -->
+  <div class="region" id="kr">
+    <div class="rhead" style="background:var(--kr)"><div class="rname">Краснодарский край</div><div class="rshare">5,3% национального онлайн-рынка · логистический центр Юга, сильные локалы</div></div>
+    <div class="rbody">
+      <div class="rnote"><b>Роль региона:</b> логистический центр Южного федерального округа — отсюда обслуживаются край, Ростовская область, Ставрополье, побережье. Именно здесь локальные операторы наиболее конкурентоспособны против федеральных: 22+ фулфилмент-компаний в городе, дешевле и быстрее на своей территории. FMCG/крафт-ниша (прецедент Масса Матере) здесь особенно уместна.</div>
+      <table>
+        <thead><tr><th style="width:24%">Блок</th><th>Участники в регионе</th></tr></thead>
+        <tbody>
+          <tr><td class="blk">0 · Ядро</td><td>Система (Организатор), НСВР <span class="fed">федеральное</span></td></tr>
+          <tr><td class="blk">1 · Фулфилмент</td><td>CDEK Fulfilment (склады Новая Адыгея, ул. Уральская) <span class="fed">фед</span>, «Фулфилмент Краснодар» (4 склада, 3500 м²) <span class="loc">локал</span>, CallPlex (3800 м², покрытие ЮФО) <span class="loc">локал</span>, FULL LOGISTIC <span class="loc">локал</span></td></tr>
+          <tr><td class="blk">2 · Последняя миля</td><td>СДЭК <span class="fed">фед</span>, Boxberry <span class="fed">фед</span>, Почта России <span class="fed">фед</span>, локальная курьерка по краю и побережью <span class="loc">локал</span></td></tr>
+          <tr><td class="blk">3 · Магистраль</td><td>Деловые линии, ПЭК, КИТ — плечо Краснодар↔Москва (длинное, важно грузить в обе стороны)</td></tr>
+          <tr><td class="blk">4 · Финансы</td><td>ПСБ, ВТБ, Первый Инвестиционный, РСХБ <span class="fed">федеральное</span></td></tr>
+          <tr><td class="blk">5 · Аналитика</td><td>Система (трафик), MPSTATS, SelSup <span class="fed">федеральное</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec-head"><span class="sec-num">Итог</span><h2>Как это меняет сборку</h2></div>
+  <p class="sec-sub">Региональная разбивка уточняет порядок Волны −1 и делает предложение конкретным для каждого селлера в его городе.</p>
+  <div class="callout"><b>Единое федеральное ядро — один раз на всю Систему.</b> Расчётные Банки (блок 4), аналитика (блок 5) и Организатор/НСВР (блок 0) заключаются централизованно и работают во всех трёх регионах. Это не нужно повторять по регионам — договорились один раз.</div>
+  <div class="callout"><b>Локальный исполнитель — под каждый регион.</b> Фулфилмент, склад и последняя миля собираются на месте: федеральный игрок (СДЭК/CDEK — присутствует везде) как якорь + сильный локальный оператор как второй участник (корректива 2). В Краснодаре локалы особенно сильны, в Москве — максимум выбора, в СПб — короткое магистральное плечо.</div>
+  <div class="callout"><b>Магистраль связывает попарно.</b> Три плеча: Москва↔СПб (короткое, загруженное), Москва↔Краснодар (длинное, критично грузить в обе стороны), и опосредованно СПб↔Краснодар через московский хаб. Начинать логично с московского узла как центра исходящих.</div>
+
+</div>
+<footer><span>Комплексное предложение по регионам · Распределённый маркетплейс</span><span id="footerDate"></span></footer>
+<script>
+function show(r){
+  ['msk','spb','kr'].forEach(x=>{document.getElementById(x).classList.toggle('on',x===r);document.getElementById('t'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('on',x===r);});
+}
+document.getElementById('footerDate').textContent=new Date().toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'});
+</script>
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Подключение за 1 день · Модель автоматизации</title>
+<style>
+:root{--bg:#fff;--bg2:#f8f9fb;--bg3:#f1f3f6;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--ac:#1e40af;--acbg:#dbeafe;--grn:#16a34a;--grnbg:#dcfce7;--orn:#d97706;--ornbg:#fef3c7;--red:#dc2626;--redbg:#fee2e2;--pur:#7c3aed;--purbg:#ede9fe;--cyn:#0891b2;--cynbg:#ecfeff;--brd:#e2e8f0;--mono:'SF Mono','JetBrains Mono',monospace;--sans:-apple-system,'Inter','Segoe UI',sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--bg2:#181b24;--bg3:#1f232e;--tx:#e4e6ec;--tx2:#9ca0b0;--tx3:#6b6f80;--ac:#5c8aff;--acbg:#1a2744;--grn:#4ade80;--grnbg:#0f2f1a;--orn:#fbbf24;--ornbg:#2a2010;--red:#f87171;--redbg:#2f1212;--pur:#c084fc;--purbg:#2a1744;--cyn:#22d3ee;--cynbg:#0a2a2e;--brd:#2a2e38}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--tx);font-size:13px;line-height:1.6}
+.w{max-width:1100px;margin:0 auto;padding:24px 20px}
+.hdr{margin-bottom:24px;padding-bottom:18px;border-bottom:1.5px solid var(--brd)}
+.hdr h1{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px}
+.hdr .sub{color:var(--tx2);font-size:13px}
+.nav{display:flex;gap:4px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:10;margin-bottom:14px;border-bottom:1px solid var(--brd)}
+.nb{padding:6px 12px;border-radius:6px;border:1.5px solid var(--brd);cursor:pointer;font-size:12px;font-weight:500;background:transparent;color:var(--tx2);transition:.15s}
+.nb:hover{border-color:#999}.nb.on{border-color:var(--ac);color:var(--ac);background:var(--acbg)}
+.pn{display:none}.pn.vis{display:block}
+.cd{border:1px solid var(--brd);border-radius:12px;padding:18px;margin-bottom:12px}
+.cd h3{font-size:15px;font-weight:600;margin-bottom:8px}
+.cd h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--tx2)}
+.cd p{font-size:13px;color:var(--tx2);line-height:1.65;margin-bottom:6px}
+.dm{font-family:var(--mono);font-size:11px;color:var(--tx2);background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:14px 16px;margin-top:8px;line-height:1.8;white-space:pre;overflow-x:auto}
+.dm b{color:var(--ac);font-weight:600}.dm em{color:var(--grn);font-style:normal;font-weight:600}.dm i{color:var(--orn);font-style:normal;font-weight:600}.dm u{color:var(--pur);text-decoration:none;font-weight:600}.dm s{color:var(--red);text-decoration:none;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+th{padding:7px 8px;text-align:left;font-weight:600;font-size:10px;color:var(--tx3);border-bottom:1.5px solid var(--brd);text-transform:uppercase;letter-spacing:.3px}
+td{padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--tx2);vertical-align:top}
+tr.hl{background:var(--acbg)}
+.note{font-size:12px;padding:10px 14px;border-radius:8px;margin-top:10px;line-height:1.6}
+.note.info{background:var(--acbg);color:var(--ac)}.note.warn{background:var(--ornbg);color:var(--orn)}.note.rule{background:var(--redbg);color:var(--red)}.note.ok{background:var(--grnbg);color:var(--grn)}
+.k{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700}
+.k-g{background:var(--grnbg);color:var(--grn)}.k-o{background:var(--ornbg);color:var(--orn)}.k-r{background:var(--redbg);color:var(--red)}.k-b{background:var(--acbg);color:var(--ac)}.k-p{background:var(--purbg);color:var(--pur)}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Подключение за 1 день · Модель автоматизации</h1>
+  <div class="sub">Устранение bottleneck · Параллелизация · Автогенерация · Zero-config каналы · Без потери качества</div>
+</div>
+
+<div style="max-width:1000px;margin:0 auto 8px;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 2</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Настоящий документ действует в рамках <b>Правил системы (ред. 2)</b> и подчинён им при любом расхождении. Процедуры ниже реализуют следующие статьи Правил:</div>
+  <div><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 2 — присоединение</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 3.2 — тарифы</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 6 — расчёты</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 12 — права</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 13 — вступление/выход</span></div>
+</div>
+<div class="nav" id="nav"></div>
+<div id="ct"></div>
+
+<script>
+var T=[
+  {id:'diag',    l:'Диагностика: где теряем время'},
+  {id:'model',   l:'Модель: 3 фазы за 25 мин'},
+  {id:'phase1',  l:'Фаза 1: Идентификация'},
+  {id:'phase2',  l:'Фаза 2: Магазин + товары'},
+  {id:'phase3',  l:'Фаза 3: Активация'},
+  {id:'parallel',l:'Параллелизация'},
+  {id:'smart',   l:'Smart Defaults'},
+  {id:'import',  l:'Импорт: 3 сценария'},
+  {id:'moder',   l:'Модерация без ожидания'},
+  {id:'legal',   l:'Юридика: click-wrap'},
+  {id:'quality', l:'Гарантии качества'},
+  {id:'compare', l:'Было → Стало'}
+];
+var cur='diag';
+function R(){
+  var h='';T.forEach(function(t){h+='<button class="nb'+(t.id===cur?' on':'')+'" data-t="'+t.id+'">'+t.l+'</button>';});
+  document.getElementById('nav').innerHTML=h;
+  document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){cur=this.getAttribute('data-t');R();}});
+  document.querySelectorAll('.pn').forEach(function(p){p.classList.toggle('vis',p.id==='p-'+cur);});
+}
+document.addEventListener('DOMContentLoaded',R);
+</script>
+
+<!-- ==================== ДИАГНОСТИКА ==================== -->
+<div class="pn vis" id="p-diag">
+<div class="cd">
+  <h3>Где теряем время в 7-шаговой процедуре</h3>
+  <p>Из 48 часов целевого времени ~47 часов — ожидание, а не работа. Активное время селлера — менее 40 минут. Проблема не в сложности шагов, а в их последовательности и в паузах между ними.</p>
+
+  <table>
+    <thead><tr><th>Шаг</th><th>Активное время</th><th>Ожидание</th><th>Причина ожидания</th><th>Можно убрать?</th></tr></thead>
+    <tbody>
+      <tr><td>1. Заявка + KYC</td><td>5 мин</td><td>10 мин</td><td>SMS, проверка ФНС</td><td><span class="k k-g">Да — параллельно</span></td></tr>
+      <tr><td>2. Договор</td><td>2 мин (подпись)</td><td><b>2–72 часа</b></td><td>Селлер «читает потом»</td><td><span class="k k-g">Да — click-wrap</span></td></tr>
+      <tr><td>3. Магазин</td><td>5 мин</td><td>5 мин</td><td>Wizard, выбор slug</td><td><span class="k k-g">Да — автогенерация</span></td></tr>
+      <tr><td>4. Импорт товаров</td><td>10–30 мин</td><td>0</td><td>—</td><td><span class="k k-o">Частично — AI</span></td></tr>
+      <tr><td>5. Каналы</td><td>5–20 мин</td><td>0</td><td>—</td><td><span class="k k-g">Да — zero-config</span></td></tr>
+      <tr><td>6. Тестовый заказ</td><td>5 мин</td><td>25 мин</td><td>Guided tour</td><td><span class="k k-g">Да — автотест</span></td></tr>
+      <tr><td>7. Go Live</td><td>1 мин</td><td><b>4–48 часов</b></td><td>Модерация SKU</td><td><span class="k k-g">Да — publish-first</span></td></tr>
+      <tr class="hl"><td><b>Итого</b></td><td><b>~35 мин</b></td><td><b>~47 часов</b></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note rule"><b>Главный bottleneck.</b> Не технология, а <b>разрыв внимания</b>: селлер уходит «почитать договор», «подготовить фото», «настроить потом». Каждый разрыв — 50% шанс не вернуться. Решение: не дать уйти — весь flow за одну сессию.</div>
+</div>
+</div>
+
+<!-- ==================== МОДЕЛЬ ==================== -->
+<div class="pn" id="p-model">
+<div class="cd">
+  <h3>Новая модель: 3 фазы за 25 минут</h3>
+  <p>7 последовательных шагов → 3 параллельных фазы. Селлер не ждёт ни на одном этапе. Система делает всё, что может, без участия человека, и спрашивает только то, чего не может угадать.</p>
+
+  <div class="dm"><b>СТАРАЯ МОДЕЛЬ: 7 шагов последовательно (до 48ч)</b>
+  ═══════════════════════════════════════════════
+
+  Заявка → KYC → <s>ожидание</s> → Договор → <s>ожидание</s> → Магазин →
+  → Импорт → Каналы → Тест → <s>модерация</s> → Go Live
+
+  Время селлера: 35 мин.  Ожидание: 47 часов.  Шагов: 7.
+
+
+<b>НОВАЯ МОДЕЛЬ: 3 фазы параллельно (25 мин)</b>
+  ═══════════════════════════════════════════════
+
+  ┌─────────────────────────────────────────────────────────┐
+  │ <b>ФАЗА 1: ИДЕНТИФИКАЦИЯ</b>                    <em>3 мин</em>         │
+  │ ИНН + телефон → всё остальное автоматически             │
+  │ KYC + договор (click-wrap) + роль в реестре             │
+  └─────────────┬───────────────────────────────────────────┘
+                │ (без паузы)
+  ┌─────────────▼───────────────────────────────────────────┐
+  │ <b>ФАЗА 2: МАГАЗИН + ТОВАРЫ</b>                 <em>15–20 мин</em>     │
+  │ Магазин создан автоматически (smart defaults)            │
+  │ Селлер загружает товары (единственное ручное действие)    │
+  │ Параллельно: TG-бот создан, субдомен готов, тест прошёл │
+  └─────────────┬───────────────────────────────────────────┘
+                │ (без паузы)
+  ┌─────────────▼───────────────────────────────────────────┐
+  │ <b>ФАЗА 3: АКТИВАЦИЯ</b>                        <em>2 мин</em>         │
+  │ Одна кнопка «Открыть магазин»                            │
+  │ SKU публикуются мгновенно (publish-first, модерация фоном)│
+  │ Welcome-пакет автоматически                              │
+  └─────────────────────────────────────────────────────────┘
+
+  Время селлера: <em>25 мин</em>.  Ожидание: <em>0</em>.  Разрывов внимания: <em>0</em>.</div>
+</div>
+
+<div class="cd">
+  <h3>Принцип: спрашивай только то, чего нельзя угадать</h3>
+  <table>
+    <thead><tr><th>Что нужно</th><th>Старая модель</th><th>Новая модель</th></tr></thead>
+    <tbody>
+      <tr><td>Название магазина</td><td>Селлер вводит вручную</td><td>Из ИНН (наименование ИП/ООО). Можно поменять потом</td></tr>
+      <tr><td>Логотип</td><td>Загрузить обязательно</td><td>Автогенерация (первая буква + цвет). Загрузить потом</td></tr>
+      <tr><td>Slug URL</td><td>Wizard с проверкой</td><td>Транслитерация названия. Поменять потом</td></tr>
+      <tr><td>Описание</td><td>Текстовое поле</td><td>AI-генерация по категории + ИНН. Поменять потом</td></tr>
+      <tr><td>Цвет бренда</td><td>Color picker</td><td>Из палитры категории (хлеб = тёплый, молочное = голубой)</td></tr>
+      <tr><td>Фулфилмент</td><td>Выбор из списка</td><td>Автоназначение из гейта (ближайший по региону)</td></tr>
+      <tr><td>Каналы</td><td>Настройка каждого</td><td>TG-бот + субдомен — автоматически. Остальные — потом</td></tr>
+      <tr><td>Договор</td><td>Превью PDF → SMS подпись</td><td>Click-wrap: «Принимаю условия» при регистрации</td></tr>
+      <tr><td>Тестовый заказ</td><td>Ручной walkthrough</td><td>Автоматический health-check (фоном)</td></tr>
+    </tbody>
+  </table>
+  <div class="note ok"><b>Правило «потом».</b> Всё, что не влияет на работоспособность магазина, можно настроить после запуска. Селлер получает рабочий магазин за 25 минут и улучшает его по ходу работы. Система напоминает: «Добавьте логотип — это повысит доверие на 23%».</div>
+</div>
+</div>
+
+<!-- ==================== ФАЗА 1 ==================== -->
+<div class="pn" id="p-phase1">
+<div class="cd">
+  <h3>Фаза 1: Идентификация <span class="k k-g">3 минуты</span></h3>
+  <p>Селлер вводит <b>2 поля</b>: ИНН и телефон. Всё остальное — автоматически.</p>
+
+  <div class="dm"><b>ЭКРАН РЕГИСТРАЦИИ (2 поля + 2 чекбокса)</b>
+
+  ┌────────────────────────────────────────────────┐
+  │                                                │
+  │  Подключиться к Системе                        │
+  │                                                │
+  │  ИНН:     [7707123456__]                       │
+  │            ✓ ООО «Масса Матере»                │
+  │            ✓ ОГРН 1177746012345                │
+  │            ✓ Москва, ул. Пекарная, 15          │
+  │                                                │
+  │  Телефон:  [+7 900 123-45-67]                  │
+  │            Код из SMS: [• • • • • •]           │
+  │                                                │
+  │  ☑ Принимаю Правила системы и условия          │
+  │    договора присоединения                      │
+  │  ☑ Согласен на обработку персональных данных   │
+  │                                                │
+  │  [Создать магазин →]                           │
+  │                                                │
+  └────────────────────────────────────────────────┘
+
+<b>ЧТО ПРОИСХОДИТ ЗА 3 МИНУТЫ (параллельно):</b>
+
+  ИНН введён
+    │
+    ├──→ <em>ФНС API</em> (async, 1 сек):
+    │    наименование, тип (ФЛ/ИП/ООО), ОГРН, адрес, статус
+    │
+    ├──→ <em>SMS OTP</em> (async, 5 сек):
+    │    6 цифр, WebOTP autofill
+    │
+    ├──→ <em>KYC Level 1</em> (автоматически):
+    │    ИНН проверен + телефон подтверждён
+    │
+    ├──→ <em>Click-wrap договор</em> (чекбокс = акцепт оферты):
+    │    Ссылка «Правила системы» открывается в новой вкладке
+    │    Договор = публичная оферта, акцепт = нажатие кнопки
+    │    PDF генерируется ПОСЛЕ, отправляется на email
+    │
+    ├──→ <em>Registry</em> (автоматически):
+    │    participant.status = ACTIVE
+    │    participant.role = SELLER
+    │    participant.group = определяется по анкете (1/2/3)
+    │
+    ├──→ <em>Auth</em> (автоматически):
+    │    user.role += SELLER
+    │    JWT с расширенными правами
+    │
+    └──→ <b>Переход к Фазе 2 без паузы</b></div>
+
+  <div class="note info"><b>Определение группы.</b> После нажатия «Создать магазин» — один вопрос (inline, не отдельный экран): «Откуда вы? ● У меня есть интернет-магазин ● Ухожу с Ozon/WB ● Начинаю с нуля». Определяет группу (1/2/3), стимулы, priority_boost, источник импорта.</div>
+</div>
+</div>
+
+<!-- ==================== ФАЗА 2 ==================== -->
+<div class="pn" id="p-phase2">
+<div class="cd">
+  <h3>Фаза 2: Магазин + товары <span class="k k-g">15–20 минут</span></h3>
+  <p>Магазин уже создан (smart defaults из Фазы 1). Селлер видит готовый магазин и добавляет товары — единственное действие, которое требует его участия.</p>
+
+  <div class="dm"><b>ЧТО УЖЕ ГОТОВО (автоматически из Фазы 1):</b>
+
+  ✓ Магазин: shop.status = ACTIVE
+  ✓ Название: из ИНН (наименование ИП/ООО)
+  ✓ Slug: транслитерация → /shop/massa-matere
+  ✓ Логотип: автогенерация (первая буква + цвет категории)
+  ✓ Описание: AI-генерация по категории
+  ✓ Цвет бренда: из палитры категории
+  ✓ Фулфилмент: автоназначение (ближайший из гейта)
+  ✓ Telegram-бот: создан (BotFather API, автоматически)
+  ✓ Субдомен: нсвр.рф/shop/{slug} — активен
+  ✓ API-ключ: сгенерирован
+
+<b>ЧТО ВИДИТ СЕЛЛЕР:</b>
+
+  ┌────────────────────────────────────────────────┐
+  │  ✅ Магазин «Масса Матере» создан!             │
+  │                                                │
+  │  🍞 [авто-логотип] Масса Матере                │
+  │  нсвр.рф/shop/massa-matere                    │
+  │  📱 @massa_matere_bot (Telegram)               │
+  │                                                │
+  │  ─────────────────────────────────             │
+  │  Теперь добавьте товары:                       │
+  │                                                │
+  │  [📸 Сфотографировать товар]     ← Quick Add   │
+  │  [📋 Импортировать с Ozon/WB]    ← для гр.2    │
+  │  [📄 Загрузить файл (CSV)]       ← для гр.1    │
+  │                                                │
+  │  Или добавьте первый товар вручную:            │
+  │  [+ Добавить товар]                            │
+  └────────────────────────────────────────────────┘
+
+<b>СЕЛЛЕР ДОБАВЛЯЕТ ТОВАРЫ (единственное ручное действие):</b>
+
+  ← 15–20 минут для 3–10 SKU
+  ← AI помогает на каждом шаге</div>
+
+  <h4>Параллельно (фоном, пока селлер добавляет товары):</h4>
+  <table>
+    <thead><tr><th>Процесс</th><th>Статус</th><th>Время</th></tr></thead>
+    <tbody>
+      <tr><td>ML-модерация каждого SKU</td><td>Запускается при сохранении SKU</td><td>2–5 сек на SKU</td></tr>
+      <tr><td>Индексация в Elasticsearch</td><td>CDC при каждом INSERT</td><td>< 5 сек</td></tr>
+      <tr><td>Health-check интеграций</td><td>Тест webhook фулфилмент/логистика</td><td>10 сек (автоматически)</td></tr>
+      <tr><td>Генерация PDF договора</td><td>Contract Builder → email</td><td>2 сек + отправка</td></tr>
+      <tr><td>Создание TG Mini App витрины</td><td>Автоматически из каталога SKU</td><td>5 сек</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== ФАЗА 3 ==================== -->
+<div class="pn" id="p-phase3">
+<div class="cd">
+  <h3>Фаза 3: Активация <span class="k k-g">2 минуты</span></h3>
+
+  <div class="dm"><b>ЭКРАН АКТИВАЦИИ</b>
+
+  ┌────────────────────────────────────────────────┐
+  │                                                │
+  │  Ваш магазин готов к запуску!                   │
+  │                                                │
+  │  🍞 Масса Матере                                │
+  │  ├── 4 товара добавлено ✓                      │
+  │  ├── Модерация: 4/4 одобрено ✓                 │
+  │  ├── Telegram-бот: @massa_matere_bot ✓         │
+  │  ├── Сайт: нсвр.рф/shop/massa-matere ✓        │
+  │  ├── Фулфилмент: 3PL-Сервис (подключён) ✓     │
+  │  └── Health-check: все системы OK ✓            │
+  │                                                │
+  │  Что произойдёт:                               │
+  │  · Товары появятся в каталоге Системы          │
+  │  · Магазин будет виден покупателям              │
+  │  · Вы получите промокод для ваших клиентов     │
+  │  · Priority boost активируется на 90 дней      │
+  │                                                │
+  │  ┌──────────────────────────────────────┐      │
+  │  │                                      │      │
+  │  │      [🚀 Открыть магазин]            │      │
+  │  │                                      │      │
+  │  └──────────────────────────────────────┘      │
+  │                                                │
+  │  💡 Всё можно улучшить позже:                  │
+  │     логотип, описание, домен, VK, Instagram    │
+  │                                                │
+  └────────────────────────────────────────────────┘
+
+<b>ПОСЛЕ НАЖАТИЯ «Открыть магазин»:</b>
+
+  0 сек   → shop.visible = true
+  < 5 сек → все SKU в Elasticsearch (каталог)
+  < 5 сек → магазин в каталоге магазинов
+  10 сек  → welcome email + SMS
+  10 сек  → Организатору: алерт «новый селлер»
+  10 сек  → Priority boost: activated
+  30 сек  → QR-код + промокод сгенерированы
+
+  <em>Магазин принимает заказы.</em></div>
+</div>
+</div>
+
+<!-- ==================== ПАРАЛЛЕЛИЗАЦИЯ ==================== -->
+<div class="pn" id="p-parallel">
+<div class="cd">
+  <h3>Параллелизация: что происходит одновременно</h3>
+
+  <div class="dm"><b>ДИАГРАММА ПАРАЛЛЕЛЬНЫХ ПРОЦЕССОВ</b>
+
+Время →  0    1    2    3    5    10   15   20   25 мин
+
+<b>Селлер</b>
+ ██████   ИНН + тел + чекбокс (Фаза 1)
+      ████████████████████████   Добавляет товары (Фаза 2)
+                              ██   Открыть магазин (Фаза 3)
+
+<b>Система (параллельно)</b>
+ ██   ФНС API (проверка ИНН)
+ ██   SMS OTP
+  █   KYC Level 1
+  █   Click-wrap → акцепт
+  █   Registry: создание participant
+  █   Auth: SELLER role + JWT
+  ██  Магазин: smart defaults
+  ██  TG-бот: автосоздание
+  █   Субдомен: DNS
+   █  Фулфилмент: автоназначение
+   █  API-ключ: генерация
+      ██  ML-модерация SKU #1
+       ██ ML-модерация SKU #2
+        ██ ML-модерация SKU #3
+        ██ CDC → Elasticsearch
+         █ Health-check webhooks
+          █ PDF договора → email
+                              █  CDC → каталог (Go Live)
+                              █  Welcome-пакет
+                              █  Priority boost
+
+<b>ИТОГО:</b>
+  Селлер занят:     25 мин (непрерывно)
+  Система работает: 25 мин (параллельно с селлером)
+  Ожидание:         0 мин
+  Разрывы внимания: 0</div>
+</div>
+
+<div class="cd">
+  <h3>Ключевой приём: пока селлер добавляет товар N, система модерирует товар N−1</h3>
+  <div class="dm"><b>КОНВЕЙЕР МОДЕРАЦИИ</b>
+
+  Селлер:     [SKU-1 создаёт] [SKU-2 создаёт] [SKU-3 создаёт] [SKU-4]
+  ML-модер.:        [SKU-1 проверяет] [SKU-2 проверяет] [SKU-3]  [SKU-4]
+  ES индекс:              [SKU-1 индекс] [SKU-2 индекс] [SKU-3]  [SKU-4]
+
+  Когда селлер закончил последний SKU —
+  все предыдущие уже промодерированы и проиндексированы.
+  Последний модерируется за 2–5 сек.
+
+  Результат: к моменту «Открыть магазин» —
+  <em>все SKU готовы, ожидание = 0</em>.</div>
+</div>
+</div>
+
+<!-- ==================== SMART DEFAULTS ==================== -->
+<div class="pn" id="p-smart">
+<div class="cd">
+  <h3>Smart Defaults: угадываем всё, что можем</h3>
+
+  <table>
+    <thead><tr><th>Параметр</th><th>Источник</th><th>Алгоритм</th><th>Точность</th><th>Можно поменять</th></tr></thead>
+    <tbody>
+      <tr><td><b>Название магазина</b></td><td>ФНС API</td><td>Наименование из ЕГРИП/ЕГРЮЛ. Для ИП: убираем «ИП» и фамилию, если есть бренд</td><td>~80%</td><td>Да, в ЛК</td></tr>
+      <tr><td><b>Slug (URL)</b></td><td>Название</td><td>Транслитерация + lowercase + дедупликация (massa-matere, massa-matere-2)</td><td>~95%</td><td>Да, в ЛК</td></tr>
+      <tr><td><b>Логотип</b></td><td>Название</td><td>Первая буква + фоновый цвет из палитры категории (хлеб = #8B4513, молочное = #0891b2)</td><td>Placeholder</td><td>Да, загрузить свой</td></tr>
+      <tr><td><b>Описание</b></td><td>Категория + регион</td><td>Claude Haiku: «Создай описание пекарни в Москве, категория: хлеб и выпечка, стиль: крафтовый»</td><td>~70%</td><td>Да, отредактировать</td></tr>
+      <tr><td><b>Цвет бренда</b></td><td>Категория</td><td>Палитра: продукты→тёплый, крафт→терракот, молочное→голубой, фермерское→зелёный</td><td>~85%</td><td>Да, picker</td></tr>
+      <tr><td><b>Регион доставки</b></td><td>Адрес из ИНН</td><td>Ближайший из 3 стартовых регионов (МСК, СПб, Краснодар)</td><td>~90%</td><td>Да, расширить</td></tr>
+      <tr><td><b>Фулфилмент</b></td><td>Гейт (Registry)</td><td>Ближайший ACTIVE оператор с минимальной нагрузкой в регионе</td><td>Оптимальный</td><td>Да (Волна 2)</td></tr>
+      <tr><td><b>TG-бот</b></td><td>Название + slug</td><td>BotFather API: @{slug}_shop_bot. Автонастройка webhook, Mini App</td><td>100%</td><td>Переименовать</td></tr>
+      <tr><td><b>Категория товара</b></td><td>Фото + название</td><td>Claude Haiku Vision: «Что на фото? → Хлеб → категория: Хлеб и выпечка»</td><td>~90%</td><td>Да, выбрать другую</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note info"><b>Принцип «0 обязательных полей кроме ИНН и телефона».</b> Всё остальное система генерирует. Селлер улучшает потом — когда магазин уже работает и приносит первые заказы. Мотивация к улучшению = реальные покупатели, а не абстрактное «надо заполнить».</div>
+</div>
+</div>
+
+<!-- ==================== ИМПОРТ ==================== -->
+<div class="pn" id="p-import">
+<div class="cd">
+  <h3>Импорт товаров: 3 сценария по группам</h3>
+
+  <h4>Гр. 2: Импорт из Ozon/WB — «перенеси свой магазин за 5 минут»</h4>
+  <div class="dm"><b>ONE-CLICK IMPORT</b>
+
+  Селлер вводит: ссылку на свой магазин Ozon/WB
+    │
+    ├──→ Parser: загрузка всех карточек (title, фото, описание, цена)
+    │    Параллельно: фото скачиваются на CDN (не hotlink)
+    │
+    ├──→ Экран: «Нашли 12 товаров. Убрать ненужные?»
+    │    Все отмечены ✓ по умолчанию (opt-out, не opt-in)
+    │    Цена — из Ozon/WB, селлер корректирует если нужно
+    │
+    ├──→ Селлер нажимает «Импортировать всё»
+    │
+    ├──→ Bulk-создание: 12 SKU за 3 сек
+    │    ML-модерация: облегчённая (контент проверен площадкой)
+    │    confidence ≥ 0.90 → авто-approve (порог снижен)
+    │
+    └──→ <em>12 SKU в каталоге через 10 сек</em>
+
+  <b>Время селлера: 5 мин</b> (ссылка + просмотр + подтверждение)
+  <b>Качество:</b> фото и описания уже профессиональные (с МП)</div>
+
+  <h4>Гр. 3: Quick Add — «сфотографируй и продавай»</h4>
+  <div class="dm"><b>PHOTO-FIRST ADD</b>
+
+  Селлер фотографирует товар на телефон
+    │
+    ├──→ Upload → Claude Haiku Vision:
+    │    «На фото: хлеб ржаной с кориандром и тмином»
+    │    → Предлагает: название, категория, теги, описание
+    │
+    ├──→ Селлер вводит только <b>цену</b> и <b>количество</b>
+    │    (название, описание, категория — pre-filled)
+    │
+    ├──→ [Сохранить] → SKU создан
+    │    ML-модерация: 2 сек
+    │    CDC → ES: 5 сек
+    │
+    └──→ <em>Товар в каталоге через 7 сек</em>
+
+  <b>Время на 1 SKU: 2–3 мин</b> (фото + цена + подтвердить)
+  <b>Время на 4 SKU: 10–12 мин</b></div>
+
+  <h4>Гр. 1: API/CSV — «подключи свою систему»</h4>
+  <div class="dm"><b>API INTEGRATION</b>
+
+  Вариант A: CSV-файл (10–30 мин)
+    Скачать шаблон → заполнить → загрузить → валидация → bulk-создание
+
+  Вариант B: API из 1С/МойСклад (1–4ч, разработчик)
+    POST /api/v1/seller/products (bulk)
+    Webhook: stock_updated → автообновление остатков
+
+  Вариант C: Парсинг своего сайта (10 мин)
+    Ссылка на сайт → parser → аналогично Ozon-импорту
+
+  <b>Для гр. 1 время подключения длиннее (4–24ч),</b>
+  <b>но это техническая интеграция, не onboarding.</b>
+  <b>Магазин РАБОТАЕТ сразу, API подключается параллельно.</b></div>
+</div>
+</div>
+
+<!-- ==================== МОДЕРАЦИЯ ==================== -->
+<div class="pn" id="p-moder">
+<div class="cd">
+  <h3>Модерация без ожидания: publish-first</h3>
+  <p>Ключевое решение: <b>SKU публикуется сразу</b>, модерация проверяет фоном. Если ML уверен ≥ 85% — товар виден покупателям мгновенно. Если ML не уверен — товар виден только в магазине селлера (не в каталоге) до ручной проверки.</p>
+
+  <div class="dm"><b>PUBLISH-FIRST МОДЕРАЦИЯ</b>
+
+  SKU создан
+    │
+    ├──→ ML-модерация (2–5 сек):
+    │
+    │    confidence ≥ 0.85:
+    │    ├── status = <em>ACTIVE</em>
+    │    ├── visible_shop = true
+    │    ├── visible_catalog = <em>true</em>     ← сразу в каталоге
+    │    └── moderation_status = APPROVED_AUTO
+    │
+    │    confidence 0.50–0.85:
+    │    ├── status = <em>ACTIVE</em>
+    │    ├── visible_shop = <em>true</em>          ← виден в магазине!
+    │    ├── visible_catalog = <i>false</i>       ← не в каталоге до проверки
+    │    └── moderation_status = PENDING_REVIEW
+    │        → модератор: SLA 4ч
+    │        → если approve → visible_catalog = true
+    │
+    │    confidence < 0.50:
+    │    ├── status = <s>REJECTED</s>
+    │    ├── visible_shop = false
+    │    ├── visible_catalog = false
+    │    └── Уведомление: «Товар отклонён: причина»
+
+<b>ЭФФЕКТ:</b>
+  · 85%+ SKU — в каталоге мгновенно (нет ожидания)
+  · 10–14% SKU — в магазине сразу, в каталоге через 4ч
+  · 1–5% SKU — отклонены (запрещённый контент)
+
+<b>ЗАЩИТА ОТ ЗЛОУПОТРЕБЛЕНИЙ:</b>
+  · Первые 3 SKU нового селлера: publish-first в магазине,
+    но в каталог — только после ручной проверки (SLA 4ч)
+  · Post-publication review: случайная выборка 5% SKU
+    проверяется вручную даже после авто-approve
+  · Жалоба покупателя → немедленная ручная проверка</div>
+
+  <div class="note ok"><b>Без потери качества.</b> Publish-first не значит «без проверки». ML проверяет за 2–5 секунд — это быстрее, чем человек, и с тем же уровнем точности для стандартного контента. Человек подключается только для edge cases (15% SKU). Post-publication review ловит false positives.</div>
+</div>
+</div>
+
+<!-- ==================== ЮРИДИКА ==================== -->
+<div class="pn" id="p-legal">
+<div class="cd">
+  <h3>Юридика: click-wrap вместо подписания</h3>
+  <p>Bottleneck «прочитать и подписать договор» устраняется переходом на модель click-wrap оферты — как при регистрации на любом сервисе.</p>
+
+  <table>
+    <thead><tr><th></th><th>Старая модель</th><th>Новая модель</th></tr></thead>
+    <tbody>
+      <tr><td><b>Тип договора</b></td><td>Двусторонний (генерация PDF, подпись каждой стороны)</td><td>Публичная оферта (click-wrap, ст. 437 ГК РФ)</td></tr>
+      <tr><td><b>Акцепт</b></td><td>SMS OTP / КЭП</td><td>Чекбокс «Принимаю условия» + нажатие кнопки «Создать магазин»</td></tr>
+      <tr><td><b>Момент заключения</b></td><td>После подписания обеими сторонами</td><td>В момент нажатия кнопки (ст. 438 ГК РФ — акцепт конклюдентными действиями)</td></tr>
+      <tr><td><b>PDF</b></td><td>До подписания (превью)</td><td>После акцепта (отправляется на email как подтверждение)</td></tr>
+      <tr><td><b>Время</b></td><td>2–72 часа</td><td><span class="k k-g">0 секунд</span> (часть регистрации)</td></tr>
+      <tr><td><b>Юр. сила</b></td><td>ПЭП/КЭП</td><td>Click-wrap = акцепт публичной оферты. Судебная практика подтверждает (Постановление Пленума ВС №49 от 25.12.2018)</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Что остаётся в оферте</h4>
+  <div class="dm"><b>ПУБЛИЧНАЯ ОФЕРТА — СОДЕРЖАНИЕ</b>
+
+  Правила системы (ред. 2) — полный текст по ссылке
+  ├── Права и обязанности (ст. 12)
+  ├── SLA (ст. 2.4) — стандартный набор по роли SELLER
+  ├── Тарифы (ст. 3.2) — расчёт 0,2→0,5% + взнос co-payment за сверх-базовое
+  ├── Порядок расчётов (ст. 6) — клиринг 1–3 дня
+  ├── Порядок выхода (ст. 13.5) — уведомление за N дней
+  └── Обработка ПД (ФЗ-152)
+
+  Акцепт = чекбокс + нажатие кнопки «Создать магазин»
+  Дата акцепта = timestamp в audit_log
+  IP-адрес, User-Agent = фиксируются
+  PDF = генерируется и отправляется на email
+
+<b>ДЛЯ ООО (усиленная форма):</b>
+  Click-wrap при регистрации +
+  КЭП в течение 30 дней (уведомление в ЛК)
+  До подписания КЭП: магазин работает, но лимит GMV 100K₽/мес</div>
+
+  <div class="note warn"><b>Для ООО.</b> Click-wrap достаточен для начала работы. КЭП — в течение 30 дней. Лимит GMV защищает обе стороны. После КЭП — лимит снимается.</div>
+</div>
+</div>
+
+<!-- ==================== КАЧЕСТВО ==================== -->
+<div class="pn" id="p-quality">
+<div class="cd">
+  <h3>Гарантии качества при ускорении</h3>
+  <p>Каждое ускорение проверено на вопрос: «что может пойти не так?»</p>
+
+  <table>
+    <thead><tr><th>Ускорение</th><th>Риск</th><th>Защита</th><th>Fallback</th></tr></thead>
+    <tbody>
+      <tr><td><b>Click-wrap вместо подписания</b></td><td>Селлер не читает условия, потом жалуется</td><td>Ключевые пункты вынесены на экран регистрации (комиссия, выплата, выход). Email с PDF</td><td>30-дневный grace period: селлер может выйти без последствий</td></tr>
+      <tr><td><b>Smart defaults (автогенерация)</b></td><td>Некорректное название/описание</td><td>Всё можно поменять в ЛК. Система напоминает: «Проверьте описание магазина»</td><td>Модератор проверяет первых 50 магазинов (Волна 0–1)</td></tr>
+      <tr><td><b>Publish-first модерация</b></td><td>Запрещённый контент в каталоге</td><td>ML-фильтр 85%+. Первые 3 SKU: каталог после ручной проверки. Post-publication review 5%</td><td>Мгновенное скрытие по жалобе. Блокировка при повторе</td></tr>
+      <tr><td><b>Автоназначение фулфилмента</b></td><td>Неподходящий оператор</td><td>Назначается ближайший по региону с лучшим SLA</td><td>Селлер меняет в ЛК. Волна 2: свободный выбор (ст. 13.3)</td></tr>
+      <tr><td><b>Автосоздание TG-бота</b></td><td>Конфликт имён в BotFather</td><td>Автоматическая дедупликация: @slug_shop_bot → @slug_shop_bot_2</td><td>Ручное создание через ЛК</td></tr>
+      <tr><td><b>AI-генерация описания</b></td><td>Неточное/странное описание</td><td>Помечается: «Сгенерировано автоматически. Отредактируйте.»</td><td>Селлер пишет своё</td></tr>
+      <tr><td><b>Импорт с Ozon/WB</b></td><td>Устаревшие фото/цены</td><td>Селлер видит превью и корректирует перед импортом</td><td>Ручное редактирование каждого SKU</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note ok"><b>Принцип.</b> Автоматизация не снижает качество — она перемещает контроль с блокирующего (до публикации) на фоновый (после публикации). Покупатель защищён: ML-фильтр + post-review + жалобы + эскроу. Селлер защищён: grace period + fallback на каждом шаге.</div>
+</div>
+</div>
+
+<!-- ==================== СРАВНЕНИЕ ==================== -->
+<div class="pn" id="p-compare">
+<div class="cd">
+  <h3>Было → Стало: полное сравнение</h3>
+
+  <table>
+    <thead><tr><th>Параметр</th><th>Было (7 шагов)</th><th>Стало (3 фазы)</th><th>Как достигнуто</th></tr></thead>
+    <tbody>
+      <tr><td><b>Общее время</b></td><td>до 48 часов</td><td><span class="k k-g">25 мин</span></td><td>Параллелизация + smart defaults</td></tr>
+      <tr><td><b>Активное время селлера</b></td><td>35 мин</td><td><span class="k k-g">25 мин</span></td><td>Убраны wizard-ы и настройки</td></tr>
+      <tr><td><b>Время ожидания</b></td><td>47 часов</td><td><span class="k k-g">0</span></td><td>Параллелизация + publish-first</td></tr>
+      <tr><td><b>Разрывы внимания</b></td><td>3–5 (договор, фото, каналы)</td><td><span class="k k-g">0</span></td><td>Одна непрерывная сессия</td></tr>
+      <tr><td><b>Полей ввода</b></td><td>~25 (wizard-ы)</td><td><span class="k k-g">2 + цены товаров</span></td><td>Smart defaults из ИНН и AI</td></tr>
+      <tr><td><b>Шагов</b></td><td>7 (последовательно)</td><td><span class="k k-g">3 (параллельно)</span></td><td>Объединение + автоматизация</td></tr>
+      <tr><td><b>Договор</b></td><td>PDF → чтение → SMS/КЭП</td><td><span class="k k-g">Чекбокс</span></td><td>Click-wrap оферта</td></tr>
+      <tr><td><b>Магазин</b></td><td>4 экрана wizard</td><td><span class="k k-g">Автоматически</span></td><td>Smart defaults</td></tr>
+      <tr><td><b>Каналы</b></td><td>Настройка каждого</td><td><span class="k k-g">TG + сайт авто</span></td><td>Zero-config</td></tr>
+      <tr><td><b>Тестовый заказ</b></td><td>Ручной walkthrough</td><td><span class="k k-g">Автоматический</span></td><td>Health-check фоном</td></tr>
+      <tr><td><b>Модерация</b></td><td>До публикации (SLA 4ч)</td><td><span class="k k-g">Publish-first</span></td><td>ML 85%+ → мгновенно</td></tr>
+      <tr><td><b>Качество SKU</b></td><td>Ручная модерация</td><td><span class="k k-g">Тот же уровень</span></td><td>ML + post-review + жалобы</td></tr>
+      <tr><td><b>Юридическая защита</b></td><td>Подписанный PDF</td><td><span class="k k-g">Тот же уровень</span></td><td>Click-wrap (ст. 437–438 ГК)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="dm"><b>ИТОГОВАЯ ФОРМУЛА</b>
+
+  Старая: 7 шагов × последовательно = 48 часов (35 мин работы + 47ч ожидания)
+  Новая:  3 фазы  × параллельно     = <em>25 минут</em> (25 мин работы + 0 ожидания)
+
+  <b>Ускорение: 115×</b> (по общему времени)
+  <b>Ускорение: 1.4×</b> (по активному времени селлера)
+
+  Разница = не «селлер работает быстрее»,
+            а «система не заставляет селлера ждать».
+
+  <i>Главный вывод:</i> bottleneck был не в сложности процедуры,
+  а в её последовательности и разрывах внимания.
+  Параллелизация + smart defaults + publish-first
+  устраняют ожидание полностью.</div>
+</div>
+</div>
+
+</div><!-- /wrap -->
+</body>
+</html>

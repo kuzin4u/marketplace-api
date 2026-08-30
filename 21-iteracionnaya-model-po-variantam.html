@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Итерационная модель по вариантам параметров</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1280px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--ac);margin-bottom:16px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--ac);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:16px;overflow-x:auto}
+.tab{padding:7px 14px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;white-space:nowrap;background:none;font-family:inherit}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.tab:focus-visible{outline:2px solid var(--ac);outline-offset:-2px}
+.sec{display:none}.sec.on{display:block}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}.c ul{padding-left:16px;margin:4px 0}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.st{font-size:15px;font-weight:600;margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:11px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb .num{text-align:right;font-family:ui-monospace,monospace}
+.b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:3px;white-space:nowrap}
+.b-ok{background:var(--gn2);color:var(--gn)}.b-amb{background:var(--wr2);color:var(--wr)}
+.b-no{background:var(--rd2);color:var(--rd)}.b-und{background:#eeede8;color:var(--t3)}
+/* панель */
+.rig{background:#1c1c1a;border-radius:8px;padding:16px;color:#e8e6df;margin-top:10px}
+.rig h4{font-size:13px;color:#fff}
+.rig .sub{font-size:11px;color:#9c998e;margin-bottom:12px}
+.cg{display:grid;grid-template-columns:repeat(5,1fr);gap:10px 14px;margin-bottom:12px}
+@media(max-width:900px){.cg{grid-template-columns:1fr 1fr}}
+.cf label{font-size:11px;color:#b8b5a9;display:block;margin-bottom:3px}
+.cf input,.cf select{width:100%;background:#2c2c29;color:#e8e6df;border:1px solid #45443f;border-radius:4px;padding:6px 8px;font-size:12px;font-family:inherit}
+.sp{width:100%;border-collapse:collapse;font-size:11.5px;font-family:ui-monospace,monospace;margin-top:6px}
+.sp th{text-align:right;padding:5px 7px;color:#9c998e;font-size:10px;border-bottom:1px solid #45443f}
+.sp th:first-child{text-align:left}
+.sp td{padding:5px 7px;border-bottom:1px solid #333330;text-align:right}
+.sp td:first-child{text-align:left;color:#b8b5a9}
+.sp tr.tot td{border-top:1px solid #45443f;color:#8fe3c6;font-weight:700}
+.sp tr.warn td{color:#f2c27a}
+.chk{margin-top:12px;padding:10px 12px;border-radius:5px;font-size:12px;line-height:1.5}
+.chk.ok{background:#0d3d30;color:#a8ecd2}
+.chk.amb{background:#4a3a12;color:#f2c27a}
+.chk.no{background:#4a1b1b;color:#f3aeae}
+.chk.und{background:#262623;color:#9c998e}
+.chk b{display:block;color:#fff;margin-bottom:3px}
+.miss{margin-top:8px;font-size:11.5px;color:#9c998e}
+.miss span{display:inline-block;background:#2c2c29;border:1px solid #45443f;border-radius:3px;padding:1px 7px;margin:2px 3px 2px 0;font-family:ui-monospace,monospace;font-size:10.5px}
+/* сравнение */
+.cmp{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;background:var(--card);border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+.cmp th{text-align:right;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-size:10.5px;color:var(--t2);font-weight:700}
+.cmp th:first-child{text-align:left}
+.cmp td{padding:7px 8px;border-bottom:1px solid var(--bd);text-align:right;font-family:ui-monospace,monospace;font-size:11.5px}
+.cmp td:first-child{text-align:left;font-family:-apple-system,sans-serif;font-size:12px}
+.cmp tr:last-child td{border-bottom:none}
+.cmp tr.fin td{background:var(--gn2);font-weight:700;color:#084a38;border-top:2px solid var(--gn)}
+.cmp tr.und td{color:var(--t3)}
+.bars{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+.bar-i{height:8px;border-radius:2px;background:var(--ac);display:inline-block}
+a{color:#2a6cb6}
+@media print{.tabs{display:none}.sec{display:block!important}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Итерационная модель по вариантам параметров</h1>
+  <p>Один и тот же заказ, посчитанный по каждому из десяти вариантов. Модель показывает не только результат, но и то, чего варианту не хватает, чтобы расчёт вообще состоялся.</p>
+  <div class="meta">23 августа 2026 · Значения взяты из <a href="20-matrica-variantov.html">матрицы вариантов</a> без изменений</div>
+<div style="max-width:1280px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Источники значений: <a href="20-matrica-variantov.html" style="font-weight:600;">матрица вариантов</a>, <a href="19-svodnye-tablicy-iteracij.html" style="font-weight:600;">сводные таблицы</a>, <a href="17-analiz-iteracij-vybor-nabora.html" style="font-weight:600;">анализ итераций</a>. Прототип расчёта: <a href="pipeline-model-interactive.html" style="font-weight:600;">модель конвейера</a>. Устройство: <a href="11-arhitektura-realizacii-obektov.html" style="font-weight:600;">архитектура реализации</a>, <a href="16-kak-rabotaet-sistema-polnoe.html" style="font-weight:600;">полное описание</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="co co-a" style="margin-bottom:12px"><b>Реестр вариантов.</b>Ориентация каждого прохода, отличия и единый вектор изменений — <a href="22-reestr-variantov-vektor.html">«Реестр девяти вариантов»</a>.</div>
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab">Расчёт по варианту</button>
+  <button class="tab" data-t="s2" role="tab">Все варианты сразу</button>
+  <button class="tab" data-t="s3" role="tab">Что показала модель</button>
+</div>
+
+<!-- ═══ 1 ═══ -->
+<div class="sec on" id="s1">
+<div class="rig">
+  <h4>Заказ и вариант</h4>
+  <div class="sub">Заказ одинаков для всех вариантов; меняется только набор параметров.</div>
+  <div class="cg">
+    <div class="cf"><label for="vr">Вариант параметров</label><select id="vr"></select></div>
+    <div class="cf"><label for="goods">Товары, ₽</label><input type="number" id="goods" value="1420" step="50" min="100"></div>
+    <div class="cf"><label for="qty">Единиц</label><input type="number" id="qty" value="3" min="1"></div>
+    <div class="cf"><label for="ch">Канал заказа</label><select id="ch"><option value="own">своя витрина</option><option value="net">каталог или агент</option></select></div>
+    <div class="cf"><label for="ffm">Фулфилмент</label><select id="ffm"><option value="1">Системы</option><option value="0">свой</option></select></div>
+  </div>
+  <table class="sp" id="sp"><tbody></tbody></table>
+  <div class="chk ok" id="chk"></div>
+  <div class="miss" id="miss"></div>
+</div>
+
+<div class="c" style="margin-top:12px">
+<h3>Что означает «вариант не определяет расчёт»</h3>
+<p>Часть вариантов вообще не задавала тарифов и ставок — они занимались устройством, а не значениями. Модель это не скрывает и не подставляет числа из соседних вариантов: если параметра нет, расчёт не производится, а перечисляется, чего не хватает. Подстановка «похожего» значения — самый простой способ получить убедительную, но выдуманную цифру.</p>
+<p style="margin-top:6px">Отдельный случай — <b>неоднозначные варианты</b>. Они задали величины, но не задали плательщика услуг, поэтому один и тот же заказ считается двумя способами и даёт две разные цены для покупателя. Модель показывает обе.</p>
+</div>
+</div>
+
+<!-- ═══ 2 ═══ -->
+<div class="sec" id="s2">
+<div class="st">Один заказ по всем вариантам</div>
+<p style="font-size:12.5px;color:var(--t2)">Параметры заказа берутся с первой вкладки. Серые строки — варианты, которые расчёт не определяют.</p>
+<table class="cmp" id="cmp"></table>
+<div class="co co-a" id="cmpnote"></div>
+</div>
+
+<!-- ═══ 3 ═══ -->
+<div class="sec" id="s3">
+<div class="st">Что показала модель</div>
+
+<div class="co co-r"><b>Половина вариантов не может посчитать заказ.</b>Из десяти только пять доводят расчёт до однозначного результата. Два не задают значений вовсе — они меняли устройство, а не числа. Два задают значения, но не задают плательщика, и потому дают две разные цены для покупателя на одном заказе. Это не изъян тех вариантов: они решали другую задачу. Изъян в том, что до седьмого прохода никто не заметил, что расчёт неоднозначен.</div>
+
+<div class="c">
+<h3>Три наблюдения, которые видны только в исполняемом виде</h3>
+<ul>
+<li><b>Разброс между определёнными вариантами — около одиннадцати процентов суммы товаров.</b> На заказе в 1 420 ₽ продавцу остаётся от 1 180 до 1 334 ₽ в зависимости от набора. Меньше всего даёт вариант модели конвейера — из-за полного удержания независимо от канала; больше всего расширение и коррекция, где удержание действующее. При сетевом заказе рекомендуемый набор даёт 1 159 ₽ — и это осознанная плата за приведённого покупателя, а не потеря.</li>
+<li><b>Ранние варианты дают продавцу меньше, чем поздние.</b> Не потому, что мы стали щедрее, а потому что ранние брали полное удержание независимо от канала, а аудит кода считал сборку за единицу — на трёх позициях это 186 ₽ вместо 83 ₽. Оба решения исправлены расчётом, а не спором.</li>
+<li><b>Краевые правила появляются только в седьмом варианте.</b> До него ни один набор не отвечает, что делать при нехватке средств, как округлять и ниже какой суммы заказ не создавать. На больших чеках это незаметно, на малых — определяет, состоится ли сделка вообще.</li>
+</ul>
+</div>
+
+<div class="co co-g"><b>Для чего эта модель нужна дальше.</b>Она превращает выбор набора из обсуждения в проверку: любое предложение изменить параметр можно прогнать через тот же заказ и увидеть последствие в рублях. И она же служит приёмочным тестом — когда расчёт будет переписан циклом по реестру, сервер обязан дать те же числа, что даёт здесь рекомендуемый вариант.</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var D=null;
+  // Наборы значений — строго из матрицы вариантов
+  var VARIANTS=[
+    {id:'v1',n:'В-1 · Реестр сервисов',
+     ff:function(q){return 15+25+35+8}, ffNote:'приёмка 15 + упаковка 25 + сборка 35 + хранение 8',
+     dlv:250, take:0.125, takeNote:'совокупное удержание 12,5 %',
+     payer:null, roles:9, minOrder:false, rounding:false,
+     miss:['плательщик услуг','округление','порог заказа','приоритет при нехватке']},
+    {id:'v2',n:'В-2 · Модель конвейера',
+     ff:function(q){return 62}, ffNote:'пакет оператора 62 ₽ за заказ',
+     dlv:210, take:0.125, takeNote:'10 % фонд + 2,5 % Организатор',
+     payer:'seller', roles:7, minOrder:false, rounding:false,
+     miss:['округление','порог заказа','приоритет при нехватке']},
+    {id:'v3',n:'В-3 · Аудит кода',
+     ff:function(q){return 62*q}, ffNote:'тариф сборки за единицу × количество',
+     dlv:350, take:0.002, takeNote:'сбор Организатора 0,2 %',
+     payer:'seller', roles:4, minOrder:false, rounding:false,
+     miss:['округление','порог заказа','приоритет при нехватке','роли сверх четырёх']},
+    {id:'v4',n:'В-4 · Механизм сбора базы', undef:true,
+     miss:['тарифы исполнения','ставка удержания','плательщик','краевые правила'],
+     why:'Вариант задавал параметры роста — горизонт, доли миграции, комиссию за приведённого. Расчёт заказа он не описывает.'},
+    {id:'v5',n:'В-5 · Архитектура реализации', undef:true,
+     miss:['все числовые значения'],
+     why:'Вариант задавал устройство: реестр как данные, расчёт как проход по реестру, снимок конфигурации. Значений он не назначал принципиально.'},
+    {id:'v6',n:'В-6 · Паспорт P-01…50', ambiguous:true,
+     ff:function(q){return 15+25+35+8}, ffNote:'тарифы реестра',
+     dlv:350, take:0.125, takeAlt:0.002, takeNote:'12,5 % целевое и 0,2 % действующее — обе величины рядом',
+     payer:null, roles:9, minOrder:false, rounding:false,
+     miss:['плательщик услуг','какая из двух ставок применяется','краевые правила']},
+    {id:'v7',n:'В-7 · Расширение P-51…95',
+     ff:function(q){return 15+25+35+8}, ffNote:'тарифы реестра, за заказ',
+     dlv:350, take:0.002, takeAlt:0.125, takeNote:'действующий сбор либо целевое удержание, по выбору',
+     payer:'split', roles:4, minOrder:true, rounding:true,
+     miss:['роли сверх четырёх']},
+    {id:'v8',n:'В-8 · Коррекция P-96…122',
+     ff:function(q){return 15+25+35+8}, ffNote:'тарифы реестра, за заказ',
+     dlv:210, take:0.002, takeAlt:0.125, takeNote:'то же, доставка по тарифу оператора',
+     payer:'split', roles:9, minOrder:true, rounding:true, cap:true,
+     miss:['ставка не различает канал']},
+    {id:'v9',n:'В-9 · Надзор P-123…135',
+     ff:function(q){return 15+25+35+8}, ffNote:'наследует В-8',
+     dlv:210, take:0.002, takeAlt:0.125, takeNote:'наследует В-8; вариант добавил надзор, а не расчёт',
+     payer:'split', roles:9, minOrder:true, rounding:true, cap:true,
+     miss:['ставка не различает канал']},
+    {id:'v10',n:'Рекомендуемый набор', fin:true,
+     ff:function(q){return 15+25+35+8}, ffNote:'тарифы реестра, за заказ',
+     dlv:210, takeOwn:0.025, takeNet:0.125, takeNote:'2,5 % со своей витрины, 12,5 % с сетевого заказа',
+     payer:'split', roles:9, minOrder:true, rounding:true, cap:true, channel:true,
+     miss:[]}
+  ];
+
+  var sel=document.getElementById('vr');
+  VARIANTS.forEach(function(v,i){
+    var o=document.createElement('option'); o.value=i; o.textContent=v.n;
+    if(v.fin) o.selected=true;
+    sel.appendChild(o);
+  });
+
+  function m(x){return (Math.round(x*100)/100).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2})}
+  function order(){
+    return {
+      g:+document.getElementById('goods').value||0,
+      q:+document.getElementById('qty').value||1,
+      ch:document.getElementById('ch').value,
+      ffOn:document.getElementById('ffm').value==='1'
+    };
+  }
+
+  // расчёт одного варианта; возвращает объект или {undef:true}
+  function calc(v,o,useAlt){
+    if(v.undef) return {undef:true};
+    var ff=v.ffOn===false?0:(o.ffOn? v.ff(o.q):0);
+    var rate;
+    if(v.channel) rate=(o.ch==='own'? v.takeOwn : v.takeNet);
+    else rate=(useAlt&&v.takeAlt!=null)? v.takeAlt : v.take;
+    var hold=o.g*rate;
+    var res={ff:ff, hold:hold, rate:rate, dlv:v.dlv};
+    if(v.payer==='seller'||v.payer==='split'){
+      res.fromSeller=ff+hold;
+      res.buyer=o.g+v.dlv;
+      res.seller=o.g-res.fromSeller;
+    } else { // плательщик не задан — две ветки
+      res.two=true;
+      res.sellerA=o.g-hold;            // услуги сверх товара
+      res.buyerA=o.g+ff+v.dlv;
+      res.sellerB=o.g-ff-hold;         // услуги из товара
+      res.buyerB=o.g+v.dlv;
+      res.seller=res.sellerB; res.buyer=res.buyerB; res.fromSeller=ff+hold;
+    }
+    res.share=(res.fromSeller)/o.g*100;
+    res.minFail=v.minOrder && (o.g < 3*(ff+hold));
+    res.capFail=v.cap && res.share>15;
+    return res;
+  }
+
+  function render(){
+    var v=VARIANTS[+sel.value], o=order();
+    var r=calc(v,o);
+    var tb=document.querySelector('#sp tbody'); tb.innerHTML='';
+    var chk=document.getElementById('chk'), miss=document.getElementById('miss');
+
+    function row(a,b,c,cls){
+      var tr=document.createElement('tr'); if(cls)tr.className=cls;
+      tr.innerHTML='<td>'+a+'</td><td>'+b+'</td><td style="color:#8a877d">'+(c||'')+'</td>';
+      tb.appendChild(tr);
+    }
+
+    if(r.undef){
+      chk.className='chk und';
+      chk.innerHTML='<b>Вариант расчёт не определяет</b>'+v.why;
+      miss.innerHTML='Не задано: '+v.miss.map(function(x){return '<span>'+x+'</span>'}).join('');
+      return;
+    }
+
+    row('Товары', m(o.g), o.q+' ед.');
+    row('Доставка', m(r.dlv), 'тариф варианта');
+    row('Услуги фулфилмента', m(r.ff), v.ffNote);
+    row('Удержание Системы', m(r.hold), v.takeNote+' → '+(r.rate*100).toFixed(1).replace('.',',')+' %');
+    if(r.two){
+      row('Продавцу · услуги сверх товара', m(r.sellerA), 'покупатель платит '+m(r.buyerA), 'warn');
+      row('Продавцу · услуги из товара', m(r.sellerB), 'покупатель платит '+m(r.buyerB), 'warn');
+    } else {
+      row('Покупатель платит', m(r.buyer), 'товар и доставка');
+      var tr=document.createElement('tr'); tr.className='tot';
+      tr.innerHTML='<td>Продавцу</td><td>'+m(r.seller)+'</td><td style="color:#8a877d">удержано '+
+        r.share.toFixed(1).replace('.',',')+' % от товара</td>';
+      tb.appendChild(tr);
+    }
+
+    if(r.two){
+      chk.className='chk amb';
+      chk.innerHTML='<b>Расчёт неоднозначен</b>Вариант задал величины, но не задал, кто платит за услуги фулфилмента. Одни и те же параметры дают разницу в цене для покупателя в '+
+        m(r.buyerA-r.buyerB)+' ₽ и в выручке продавца в '+m(r.sellerA-r.sellerB)+' ₽. Пока плательщик не определён, ни одну из двух цифр нельзя показывать продавцу.';
+    } else if(r.minFail){
+      chk.className='chk no';
+      chk.innerHTML='<b>Заказ не создаётся</b>Сумма товаров ниже порога: фиксированные услуги составляют '+m(r.fromSeller)+' ₽, порог требует не менее '+m(3*r.fromSeller)+' ₽. Вариант это правило содержит и потому останавливает сделку до её создания.';
+    } else if(r.capFail){
+      chk.className='chk amb';
+      chk.innerHTML='<b>Расчёт сходится, но удержание выше потолка</b>Доля составляет '+r.share.toFixed(1).replace('.',',')+
+        ' % при потолке 15 %. Для полного фулфилмента это ожидаемо: потолок относится к удержанию Системы, а не к оплате операторов.';
+    } else {
+      chk.className='chk ok';
+      chk.innerHTML='<b>Расчёт однозначен и сходится</b>Продавцу '+m(r.seller)+' ₽, удержано '+
+        r.share.toFixed(1).replace('.',',')+' % от суммы товаров. Покупатель платит '+m(r.buyer)+' ₽.';
+    }
+    miss.innerHTML = v.miss.length
+      ? 'Вариант не задаёт: '+v.miss.map(function(x){return '<span>'+x+'</span>'}).join('')
+      : 'Набор полон: заданы значения, плательщик и краевые правила.';
+    renderCmp();
+  }
+
+  function renderCmp(){
+    var o=order(), t=document.getElementById('cmp');
+    var maxSeller=0;
+    var rows=VARIANTS.map(function(v){
+      var r=calc(v,o);
+      if(!r.undef) maxSeller=Math.max(maxSeller,r.seller);
+      return {v:v,r:r};
+    });
+    var h='<thead><tr><th>Вариант</th><th>Покупатель платит</th><th>Услуги</th><th>Удержание</th><th>Продавцу</th><th>Доля</th><th>Состояние</th></tr></thead><tbody>';
+    rows.forEach(function(x){
+      var v=x.v,r=x.r;
+      if(r.undef){
+        h+='<tr class="und"><td>'+v.n+'</td><td colspan="5" style="text-align:left;font-family:-apple-system,sans-serif">расчёт не определяется этим вариантом</td><td><span class="b b-und">нет данных</span></td></tr>';
+        return;
+      }
+      var st=r.two?'<span class="b b-amb">двузначно</span>'
+             :r.minFail?'<span class="b b-no">заказ отклонён</span>'
+             :r.capFail?'<span class="b b-amb">выше потолка</span>'
+             :'<span class="b b-ok">сходится</span>';
+      var wid=maxSeller?Math.round(r.seller/maxSeller*54):0;
+      h+='<tr'+(v.fin?' class="fin"':'')+'><td>'+v.n+'</td>'+
+        '<td>'+(r.two? m(r.buyerB)+' / '+m(r.buyerA) : m(r.buyer))+'</td>'+
+        '<td>'+m(r.ff)+'</td><td>'+m(r.hold)+'</td>'+
+        '<td><span class="bars"><i class="bar-i" style="width:'+wid+'px"></i>'+m(r.seller)+'</span></td>'+
+        '<td>'+r.share.toFixed(1).replace('.',',')+' %</td><td>'+st+'</td></tr>';
+    });
+    t.innerHTML=h+'</tbody>';
+
+    var ok=rows.filter(function(x){return !x.r.undef&&!x.r.two}).map(function(x){return x.r.seller});
+    var lo=Math.min.apply(null,ok), hi=Math.max.apply(null,ok);
+    document.getElementById('cmpnote').innerHTML='<b>Разброс по вариантам.</b>На одном и том же заказе продавцу остаётся от '+
+      m(lo)+' до '+m(hi)+' ₽ — разница '+m(hi-lo)+' ₽, или '+((hi-lo)/o.g*100).toFixed(1).replace('.',',')+
+      ' % суммы товаров. Выбор набора параметров влияет на экономику продавца сильнее, чем выбор между нами и площадкой.';
+  }
+
+  ['vr','goods','qty','ch','ffm'].forEach(function(id){
+    var e=document.getElementById(id);
+    e.addEventListener('input',render); e.addEventListener('change',render);
+  });
+
+  var tabs=document.querySelectorAll('#tabs .tab');
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.t)});
+    if(t.dataset.t==='s2') renderCmp();
+    window.scrollTo({top:0,behavior:'smooth'});
+  })});
+
+  render();
+})();
+</script>
+</body>
+</html>

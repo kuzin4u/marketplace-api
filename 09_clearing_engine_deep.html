@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>09 · Clearing Engine · Спецификация</title>
+<style>
+:root{--bg:#fff;--bg2:#f8f9fb;--bg3:#f1f3f6;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--ac:#1e40af;--acbg:#dbeafe;--grn:#16a34a;--grnbg:#dcfce7;--orn:#d97706;--ornbg:#fef3c7;--red:#dc2626;--redbg:#fee2e2;--pur:#7c3aed;--purbg:#ede9fe;--cyn:#0891b2;--cynbg:#ecfeff;--brd:#e2e8f0;--mono:'SF Mono','JetBrains Mono',monospace;--sans:-apple-system,'Inter','Segoe UI',sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--bg2:#181b24;--bg3:#1f232e;--tx:#e4e6ec;--tx2:#9ca0b0;--tx3:#6b6f80;--ac:#5c8aff;--acbg:#1a2744;--grn:#4ade80;--grnbg:#0f2f1a;--orn:#fbbf24;--ornbg:#2a2010;--red:#f87171;--redbg:#2f1212;--pur:#c084fc;--purbg:#2a1744;--cyn:#22d3ee;--cynbg:#0a2a2e;--brd:#2a2e38}}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--sans);background:var(--bg);color:var(--tx);font-size:13px;line-height:1.6}
+.w{max-width:1100px;margin:0 auto;padding:24px 20px}
+.hdr{margin-bottom:24px;padding-bottom:18px;border-bottom:1.5px solid var(--brd)}
+.hdr h1{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px}.hdr .sub{color:var(--tx2);font-size:13px}
+.nav{display:flex;gap:4px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:10;margin-bottom:14px;border-bottom:1px solid var(--brd)}
+.nb{padding:6px 12px;border-radius:6px;border:1.5px solid var(--brd);cursor:pointer;font-size:12px;font-weight:500;background:transparent;color:var(--tx2);transition:.15s}
+.nb:hover{border-color:#999}.nb.on{border-color:var(--ac);color:var(--ac);background:var(--acbg)}
+.pn{display:none}.pn.vis{display:block}
+.cd{border:1px solid var(--brd);border-radius:12px;padding:18px;margin-bottom:12px}
+.cd h3{font-size:15px;font-weight:600;margin-bottom:8px}.cd h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--tx2)}
+.cd p{font-size:13px;color:var(--tx2);line-height:1.65;margin-bottom:6px}
+.dm{font-family:var(--mono);font-size:11px;color:var(--tx2);background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:14px 16px;margin-top:8px;line-height:1.8;white-space:pre;overflow-x:auto}
+.dm b{color:var(--ac);font-weight:600}.dm em{color:var(--grn);font-style:normal;font-weight:600}.dm i{color:var(--orn);font-style:normal;font-weight:600}.dm u{color:var(--pur);text-decoration:none;font-weight:600}.dm s{color:var(--red);text-decoration:none;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+th{padding:7px 8px;text-align:left;font-weight:600;font-size:10px;color:var(--tx3);border-bottom:1.5px solid var(--brd);text-transform:uppercase;letter-spacing:.3px}
+td{padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--tx2);vertical-align:top}
+.note{font-size:12px;padding:10px 14px;border-radius:8px;margin-top:10px;line-height:1.6}
+.note.info{background:var(--acbg);color:var(--ac)}.note.warn{background:var(--ornbg);color:var(--orn)}.note.rule{background:var(--redbg);color:var(--red)}.note.ok{background:var(--grnbg);color:var(--grn)}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>09 · Clearing Engine</h1>
+  <div class="sub">Go · Расщепление платежа на N получателей · ст. 6.7, 3.5, 12.6</div>
+</div>
+
+<div class="nav" id="nav"></div>
+<div id="ct"></div>
+
+<script>
+var T=[
+  {id:'role',   l:'Роль в ПТК'},
+  {id:'fsm',    l:'FSM клиринга'},
+  {id:'calc',   l:'Расчёт split'},
+  {id:'api',    l:'API (gRPC + REST)'},
+  {id:'dispute',l:'Пересчёт при споре'},
+  {id:'bank',   l:'Интеграция с банком'},
+  {id:'track_a',l:'Трек A (без эскроу)'},
+  {id:'data',   l:'Модель данных'},
+  {id:'monitor',l:'Мониторинг'},
+  {id:'impl',   l:'Реализация по спринтам'}
+];
+var cur='role';
+function R(){var h='';T.forEach(function(t){h+='<button class="nb'+(t.id===cur?' on':'')+'" data-t="'+t.id+'">'+t.l+'</button>';});document.getElementById('nav').innerHTML=h;document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){cur=this.getAttribute('data-t');R();}});document.querySelectorAll('.pn').forEach(function(p){p.classList.toggle('vis',p.id==='p-'+cur);});}
+document.addEventListener('DOMContentLoaded',R);
+</script>
+
+<!-- ==================== РОЛЬ ==================== -->
+<div class="pn vis" id="p-role">
+<div class="cd">
+  <h3>Роль в архитектуре ПТК</h3>
+  <p>Clearing Engine — единственный сервис, который касается денег после эскроу. Получает от Deal Engine (01) событие «заказ подтверждён» → рассчитывает доли по тарифам из Registry (10) → отправляет инструкции в Escrow Service (02) на splitRelease.</p>
+
+  <div class="dm"><b>МЕСТО В АРХИТЕКТУРЕ</b>
+
+  Deal Engine (01)                Registry (10)
+       │                              │
+       │ event: CLEARING              │ tariffs, bindings
+       ▼                              ▼
+  ┌─────────────────────────────────────┐
+  │         <b>CLEARING ENGINE (09)</b>        │
+  │                                     │
+  │  1. Получает order_id               │
+  │  2. Запрашивает тарифы (Registry)   │
+  │  3. Рассчитывает split              │
+  │  4. Отправляет splitRelease (Escrow)│
+  │  5. Фиксирует в clearing_splits    │
+  │  6. Уведомляет участников (04)      │
+  └──────────┬──────────────────────────┘
+             │
+     ┌───────┼───────┐
+     ▼       ▼       ▼
+  Escrow   Notif.  Audit
+  (02)     (04)    Log
+
+<b>Язык:</b> Go (высокая надёжность, конкурентность)
+<b>Протокол:</b> gRPC (внутренний), REST (admin)
+<b>БД:</b> PostgreSQL (clearing_splits, clearing_log)
+<b>Зависимости:</b> Registry (10), Escrow (02), Deal Engine (01)
+<b>Статья Правил:</b> ст. 6.7 (flow денег), ст. 3.5 (формула), ст. 12.6 (пересчёт при споре)</div>
+</div>
+
+<div class="cd">
+  <h3>Что делает и чего НЕ делает</h3>
+  <table>
+    <thead><tr><th>Делает</th><th>НЕ делает</th></tr></thead>
+    <tbody>
+      <tr><td>Рассчитывает сумму каждому участнику по формуле объём × тариф</td><td>НЕ определяет тарифы (это Registry)</td></tr>
+      <tr><td>Отправляет инструкции банку на splitRelease</td><td>НЕ принимает платежи (это Escrow)</td></tr>
+      <tr><td>Пересчитывает split при споре (ст. 12.6)</td><td>НЕ разрешает споры (это Arbitrage)</td></tr>
+      <tr><td>Генерирует акт расщепления (clearing_act.pdf)</td><td>НЕ генерирует договоры (это Contract Builder)</td></tr>
+      <tr><td>Ведёт clearing_log (аудит)</td><td>НЕ управляет FSM сделки (это Deal Engine)</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== FSM ==================== -->
+<div class="pn" id="p-fsm">
+<div class="cd">
+  <h3>FSM клиринга</h3>
+  <div class="dm"><b>СОСТОЯНИЯ CLEARING</b>
+
+  PENDING ──→ CALCULATING ──→ SPLITTING ──→ RELEASED ──→ COMPLETED
+     │             │               │            │
+     │         ошибка расчёта  банк reject   частичный
+     │             │               │         release
+     ▼             ▼               ▼            │
+  CANCELLED    CALC_ERROR     SPLIT_FAILED      ▼
+                   │               │        PARTIAL
+                   ▼               ▼
+              RETRY (3x)     RETRY (3x)
+                   │               │
+              ESCALATED       ESCALATED
+              (ручной)        (ручной)
+
+  <b>Дополнительные состояния (споры):</b>
+
+  COMPLETED ──→ DISPUTE_RECALC ──→ RECALCULATED ──→ ADJUSTED
+                     │                                  │
+                 ошибка                            ADJUSTMENT_
+                     │                             RELEASED
+                     ▼
+                RECALC_ERROR → ESCALATED
+
+
+<b>ПЕРЕХОДЫ:</b>
+  PENDING → CALCULATING        Deal Engine event: status=CLEARING
+  CALCULATING → SPLITTING      Расчёт успешен, split готов
+  SPLITTING → RELEASED         Банк принял все N инструкций
+  RELEASED → COMPLETED         Все переводы подтверждены
+  COMPLETED → DISPUTE_RECALC   Arbitrage event: спор решён, нужен пересчёт
+  RECALCULATED → ADJUSTED      Пересчитанный split отправлен банку
+  ADJUSTED → COMPLETED         Корректирующие переводы подтверждены</div>
+</div>
+</div>
+
+<!-- ==================== РАСЧЁТ ==================== -->
+<div class="pn" id="p-calc">
+<div class="cd">
+  <h3>Расчёт split (ст. 3.5: объём × тариф = сумма)</h3>
+  <div class="dm"><b>АЛГОРИТМ calculateSplit(order_id)</b>
+
+  func calculateSplit(orderID string) ([]SplitLine, error) {
+
+    // 1. Получить заказ
+    order := dealEngine.GetOrder(orderID)
+
+    // 2. Получить привязку селлера → операторы
+    binding := registry.GetBinding(order.SellerID)
+
+    // 3. Получить тарифы каждого оператора
+    tariffs := registry.GetTariffs(
+      binding.FulfillmentID,
+      binding.LogisticsID,
+      binding.TrunkID,      // nullable
+      binding.WarehouseID,  // nullable
+    )
+
+    // 4. Рассчитать каждую долю
+    var splits []SplitLine
+    var totalOps float64
+
+    // 4a. Фулфилмент: тариф × количество единиц
+    if binding.FulfillmentID != "" {
+      qty := order.TotalQty()
+      tariff := tariffs.Get(binding.FulfillmentID, "ASSEMBLY")
+      amount := tariff.Rate * float64(qty)
+
+      // Проверка: сборка пакетом (если qty ≥ 5 и есть тариф ASSEMBLY_BULK)
+      bulkTariff := tariffs.Get(binding.FulfillmentID, "ASSEMBLY_BULK")
+      if bulkTariff != nil && qty >= 5 {
+        amount = bulkTariff.Rate * float64(qty)
+      }
+
+      totalOps += amount
+      splits = append(splits, SplitLine{
+        ParticipantID: binding.FulfillmentID,
+        Role:          "FULFILLMENT",
+        Amount:        amount,
+        TariffRef:     tariff.ID,
+        Calculation:   fmt.Sprintf("%d ед × %.2f₽", qty, tariff.Rate),
+      })
+    }
+
+    // 4b. Логистика: тариф по зоне
+    if binding.LogisticsID != "" {
+      zone := resolveZone(order.ShippingAddress)  // MSK → ZONE_1
+      tariff := tariffs.Get(binding.LogisticsID, "DELIVERY_"+zone)
+      if tariff != nil {
+        splits = append(splits, SplitLine{
+          ParticipantID: binding.LogisticsID,
+          Role:          "LOGISTICS",
+          Amount:        tariff.Rate,
+          TariffRef:     tariff.ID,
+          Calculation:   fmt.Sprintf("%s = %.2f₽", zone, tariff.Rate),
+        })
+        // Логистика оплачивается из delivery fee, не из goods
+      }
+    }
+
+    // 4c. Магистраль (межрегион, если есть)
+    if binding.TrunkID != "" {
+      route := resolveRoute(order.SellerRegion, order.BuyerRegion)
+      tariff := tariffs.Get(binding.TrunkID, "TRUNK_"+route)
+      if tariff != nil {
+        totalOps += tariff.Rate
+        splits = append(splits, SplitLine{
+          ParticipantID: binding.TrunkID,
+          Role:          "TRUNK",
+          Amount:        tariff.Rate,
+          TariffRef:     tariff.ID,
+          Calculation:   fmt.Sprintf("%s = %.2f₽", route, tariff.Rate),
+        })
+      }
+    }
+
+    // 4d. Организатор: % от суммы товаров
+    orgTariff := tariffs.Get("ORG-001", "ORGANIZER_FEE")
+    orgAmount := order.TotalGoods * orgTariff.Rate / 100
+    orgAmount = math.Round(orgAmount*100) / 100  // округление до копеек
+    totalOps += orgAmount
+    splits = append(splits, SplitLine{
+      ParticipantID: "ORG-001",
+      Role:          "ORGANIZER",
+      Amount:        orgAmount,
+      TariffRef:     orgTariff.ID,
+      Calculation:   fmt.Sprintf("%.2f₽ × %.2f%%", order.TotalGoods, orgTariff.Rate),
+    })
+
+    // 4e. Селлер: остаток (100% товара минус операторы)
+    sellerAmount := order.TotalGoods - totalOps
+    if sellerAmount < 0 {
+      return nil, ErrNegativeSellerAmount{
+        OrderID: orderID,
+        Goods:   order.TotalGoods,
+        Ops:     totalOps,
+      }
+    }
+    splits = append(splits, SplitLine{
+      ParticipantID: order.SellerID,
+      Role:          "SELLER",
+      Amount:        sellerAmount,
+      Calculation:   fmt.Sprintf("%.2f₽ − %.2f₽", order.TotalGoods, totalOps),
+    })
+
+    // 5. Проверка: сумма splits = эскроу
+    var checkSum float64
+    for _, s := range splits {
+      checkSum += s.Amount
+    }
+    // Delivery оплачивается отдельно (из delivery fee)
+    expected := order.TotalGoods  // splits покрывают товарную часть
+    if math.Abs(checkSum - expected) > 0.01 {
+      return nil, ErrSplitMismatch{Expected: expected, Got: checkSum}
+    }
+
+    return splits, nil
+  }</div>
+</div>
+</div>
+
+<!-- ==================== API ==================== -->
+<div class="pn" id="p-api">
+<div class="cd">
+  <h3>API: gRPC (внутренний) + REST (admin)</h3>
+
+  <h4>gRPC (между сервисами)</h4>
+  <div class="dm"><b>// clearing.proto</b>
+
+service ClearingEngine {
+  // Вызывается Deal Engine при переходе в CLEARING
+  rpc ProcessClearing(ClearingRequest) returns (ClearingResult);
+
+  // Вызывается Arbitrage при решении спора (ст. 12.6)
+  rpc RecalculateClearing(RecalcRequest) returns (ClearingResult);
+
+  // Получить split для заказа
+  rpc GetSplit(SplitRequest) returns (SplitResult);
+}
+
+message ClearingRequest {
+  string order_id = 1;
+}
+
+message RecalcRequest {
+  string order_id = 1;
+  string dispute_id = 2;
+  string guilty_participant_id = 3;
+  string guilty_role = 4;          // SELLER | FULFILLMENT | LOGISTICS
+  double refund_amount = 5;        // сумма возврата покупателю
+}
+
+message ClearingResult {
+  string clearing_id = 1;
+  string status = 2;               // COMPLETED | ERROR
+  repeated SplitLine splits = 3;
+  double total_released = 4;
+}
+
+message SplitLine {
+  string participant_id = 1;
+  string role = 2;
+  double amount = 3;
+  string tariff_ref = 4;
+  string calculation = 5;
+  string status = 6;               // PENDING | RELEASED | ADJUSTED
+}</div>
+
+  <h4>REST (admin / ЛК селлера)</h4>
+  <table>
+    <thead><tr><th>Метод</th><th>Endpoint</th><th>Кто вызывает</th><th>Что делает</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td>/api/v1/clearing/{order_id}</td><td>ЛК селлера, Admin</td><td>Получить split заказа</td></tr>
+      <tr><td>GET</td><td>/api/v1/clearing/{order_id}/act</td><td>ЛК, бухгалтерия</td><td>Скачать clearing_act.pdf</td></tr>
+      <tr><td>GET</td><td>/api/v1/clearing/stats?seller_id=X&period=30d</td><td>ЛК селлера</td><td>Агрегированная статистика клирингов</td></tr>
+      <tr><td>POST</td><td>/api/v1/clearing/{order_id}/retry</td><td>Admin</td><td>Повторить отправку в банк (при SPLIT_FAILED)</td></tr>
+      <tr><td>GET</td><td>/api/v1/clearing/health</td><td>Monitoring</td><td>Статус: queue depth, avg time, errors</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== СПОР ==================== -->
+<div class="pn" id="p-dispute">
+<div class="cd">
+  <h3>Пересчёт при споре (ст. 12.6)</h3>
+  <div class="dm"><b>RECALCULATE: виновник определён, пересчитываем split</b>
+
+  Вход: order_id, guilty=LOGISTICS, refund=350₽
+
+  Исходный split:
+    SELLER      817.16₽ ✓ (не виноват — без изменений)
+    FULFILLMENT 600.00₽ ✓ (не виноват — без изменений)
+    LOGISTICS   350.00₽ → <s>0₽</s>  (виновник — вся доля изымается)
+    ORGANIZER     2.84₽ ✓ (не виноват — без изменений)
+
+  Пересчитанный split:
+    SELLER      817.16₽  → банк (без изменений)
+    FULFILLMENT 600.00₽  → банк (без изменений)
+    LOGISTICS     0.00₽  → ничего (доля изъята)
+    ORGANIZER     2.84₽  → банк (без изменений)
+    <s>REFUND      350.00₽  → покупателю (из доли логистики)</s>
+
+  Банковские инструкции:
+    1. partialRefund(buyer, 350₽)  — из эскроу обратно покупателю
+    2. release(seller, 817.16₽)    — без изменений
+    3. release(fulfillment, 600₽)  — без изменений
+    4. release(organizer, 2.84₽)   — без изменений
+    5. release(logistics, 0₽)      — ничего
+
+  <b>Правило:</b> refund ≤ доля виновника.
+  Если refund > доли виновника → ESCALATED (L2, ручной)</div>
+</div>
+</div>
+
+<!-- ==================== БАНК ==================== -->
+<div class="pn" id="p-bank">
+<div class="cd">
+  <h3>Интеграция с банком (Трек B)</h3>
+  <div class="dm"><b>ИНТЕРФЕЙС БАНКА (абстракция)</b>
+
+  interface BankAdapter {
+    // Расщепление эскроу на N получателей
+    SplitRelease(escrowID string, splits []BankSplit) (BankResult, error)
+
+    // Частичный возврат покупателю
+    PartialRefund(escrowID string, amount float64) (BankResult, error)
+
+    // Статус расщепления
+    GetSplitStatus(clearingID string) (BankStatus, error)
+  }
+
+  <b>АДАПТЕРЫ (ст. 6.9):</b>
+
+  // Трек B: реальный банк (ПСБ / ВТБ)
+  type PSBAdapter struct { ... }  // Промсвязьбанк API
+  type VTBAdapter struct { ... }  // ВТБ API
+
+  // Трек A: ручной клиринг (без банка)
+  type ManualAdapter struct { ... }
+    → SplitRelease: записывает инструкции в таблицу
+    → Организатор вручную переводит деньги
+    → Отмечает «переведено» в админке
+
+  // Тест: mock
+  type MockAdapter struct { ... }
+    → Всегда OK, задержка 100ms
+
+<b>ПЕРЕКЛЮЧЕНИЕ:</b>
+  config.bank_adapter = "manual"  // Трек A (Волна 0–1)
+  config.bank_adapter = "psb"     // Трек B (после контракта)
+
+  Один и тот же Clearing Engine,
+  разный банковский адаптер.</div>
+</div>
+</div>
+
+<!-- ==================== ТРЕК A ==================== -->
+<div class="pn" id="p-track_a">
+<div class="cd">
+  <h3>Трек A: клиринг без эскроу</h3>
+  <p>До подключения банка Clearing Engine работает с ManualAdapter. Расчёт split — автоматический (формула та же). Выполнение — ручное (Организатор переводит).</p>
+
+  <div class="dm"><b>FLOW В ТРЕКЕ A</b>
+
+  1. Покупатель платит → <i>напрямую селлеру</i> (карта, СБП, наличные)
+  2. Deal Engine → CLEARING
+  3. Clearing Engine:
+     → calculateSplit (автоматически)
+     → ManualAdapter.SplitRelease:
+        записывает в clearing_instructions:
+        «Фулфилменту 600₽, логистике 350₽, организатору 2.84₽»
+        status = PENDING_MANUAL
+
+  4. Организатор в Admin Panel:
+     → Видит список pending инструкций
+     → Раз в неделю: агрегирует по участнику
+        «Фулфилменту за неделю: 3×600 + 2×150 = 2100₽»
+     → Переводит вручную (СБП / платёжка)
+     → Отмечает «переведено» → status = RELEASED
+
+  5. Или: Организатор уведомляет селлера:
+     «Вам поступило 1420₽. Из них 600₽ — фулфилменту,
+      350₽ — логистике, 2.84₽ — организатору.
+      Переведите сами по реквизитам.»
+
+<b>Минусы:</b> ручной труд, задержка, нет эскроу-защиты
+<b>Плюсы:</b> работает без банка, формула та же
+<b>Переход:</b> config.bank_adapter = "psb" → автоматически</div>
+</div>
+</div>
+
+<!-- ==================== ДАННЫЕ ==================== -->
+<div class="pn" id="p-data">
+<div class="cd">
+  <h3>Модель данных</h3>
+  <div class="dm"><b>ТАБЛИЦЫ CLEARING ENGINE</b>
+
+  clearing_splits (уже в schema 01)
+  ├── id TEXT PK
+  ├── order_id TEXT FK → orders
+  ├── participant_id TEXT FK → participants
+  ├── role TEXT (SELLER|FULFILLMENT|LOGISTICS|TRUNK|ORGANIZER)
+  ├── amount NUMERIC(12,2)
+  ├── tariff_ref TEXT
+  ├── calculation TEXT
+  ├── status TEXT (PENDING|RELEASED|ADJUSTED|FAILED)
+  ├── released_at TIMESTAMPTZ
+  └── created_at TIMESTAMPTZ
+
+  clearing_log (новая)
+  ├── id BIGSERIAL PK
+  ├── clearing_id TEXT (group of splits for one order)
+  ├── order_id TEXT
+  ├── event TEXT (CALCULATED|SENT_TO_BANK|RELEASED|FAILED|RECALC)
+  ├── details JSONB
+  ├── bank_ref TEXT (ID транзакции банка)
+  └── created_at TIMESTAMPTZ
+
+  clearing_instructions (для Трека A — ручной клиринг)
+  ├── id TEXT PK
+  ├── period_start DATE
+  ├── period_end DATE
+  ├── participant_id TEXT
+  ├── total_amount NUMERIC(12,2)
+  ├── orders_count INTEGER
+  ├── details JSONB (список order_id + сумм)
+  ├── status TEXT (PENDING_MANUAL|TRANSFERRED|CONFIRMED)
+  ├── transferred_at TIMESTAMPTZ
+  └── created_at TIMESTAMPTZ</div>
+</div>
+</div>
+
+<!-- ==================== МОНИТОРИНГ ==================== -->
+<div class="pn" id="p-monitor">
+<div class="cd">
+  <h3>Мониторинг</h3>
+  <table>
+    <thead><tr><th>Метрика</th><th>Целевое</th><th>Алерт</th></tr></thead>
+    <tbody>
+      <tr><td>Время расчёта split</td><td>< 200ms</td><td>> 1s</td></tr>
+      <tr><td>Время до release (банк)</td><td>< 30 сек</td><td>> 5 мин</td></tr>
+      <tr><td>Очередь PENDING</td><td>0</td><td>> 10</td></tr>
+      <tr><td>SPLIT_FAILED за час</td><td>0</td><td>> 3</td></tr>
+      <tr><td>Расхождение checksum</td><td>0</td><td>любое ≠ 0</td></tr>
+      <tr><td>Negative seller amount</td><td>0</td><td>любое > 0 (дешёвый товар + дорогой фулфилмент)</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== РЕАЛИЗАЦИЯ ==================== -->
+<div class="pn" id="p-impl">
+<div class="cd">
+  <h3>Реализация по спринтам</h3>
+  <table>
+    <thead><tr><th>Спринт</th><th>Что реализовано</th><th>Где</th><th>Что упрощено</th></tr></thead>
+    <tbody>
+      <tr><td><b>0</b></td><td>calculateClearing() — расчёт split</td><td>server.js (функция внутри монолита)</td><td>Не отдельный сервис. Нет gRPC. Нет очереди. Синхронный вызов при POST /orders</td></tr>
+      <tr><td><b>0</b></td><td>clearing_splits — таблица</td><td>01_schema.sql</td><td>Полная (без clearing_log и clearing_instructions)</td></tr>
+      <tr><td><b>1</b></td><td>Clearing preview в корзине</td><td>cart-checkout.html</td><td>Клиентский расчёт (JS), не серверный</td></tr>
+      <tr><td><b>1</b></td><td>Клиринг в ЛК селлера</td><td>seller-cabinet.html → Аналитика</td><td>Статические данные, не из API</td></tr>
+      <tr><td><b>2</b></td><td>Ручной клиринг (Трек A)</td><td>Admin panel → clearing_instructions</td><td>ManualAdapter: Организатор переводит вручную</td></tr>
+      <tr><td><b>3+</b></td><td>Отдельный Go-сервис</td><td>clearing-engine/ (свой repo)</td><td>Полная реализация: gRPC, банк-адаптер, очередь, retry</td></tr>
+    </tbody>
+  </table>
+  <div class="note info"><b>Принцип:</b> формула расчёта (объём × тариф) одинакова во всех спринтах. Меняется только обёртка: от функции в монолите (Спринт 0) до отдельного Go-сервиса с gRPC и банковской интеграцией (Спринт 3+).</div>
+</div>
+</div>
+
+</div>
+</body>
+</html>

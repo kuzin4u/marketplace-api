@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Реестр участия · расчёт только через Систему</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1320px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--gn);margin-bottom:14px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--gn);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.ctl{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--bd);margin-bottom:12px}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.fb{padding:4px 11px;font-size:11px;border:1px solid var(--bd);background:var(--card);border-radius:20px;cursor:pointer;color:var(--t2);font-family:inherit}
+.fb:hover{border-color:var(--gn);color:var(--t1)}.fb.on{background:var(--gn);border-color:var(--gn);color:#fff;font-weight:600}
+.fb:focus-visible{outline:2px solid var(--gn);outline-offset:2px}
+.stat{font-size:11px;color:var(--t3);margin-left:auto;font-family:ui-monospace,monospace}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;margin-top:8px}
+.tab{padding:5px 11px;font-size:11px;color:var(--t3);cursor:pointer;border:none;background:none;font-family:inherit;border-radius:5px}
+.tab:hover{color:var(--t1);background:var(--card)}.tab.on{background:var(--gn2);color:var(--gn);font-weight:600}
+.sec{display:none}.sec.on{display:block}
+.st{font-size:15px;font-weight:600;margin:15px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}.c ul{padding-left:16px;margin:4px 0}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.co-p{background:var(--pr2);border-left:3px solid var(--pr);color:#2e2670}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:10.5px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.tb .num{text-align:right;font-family:ui-monospace,monospace}
+.scroll{overflow-x:auto;border:1px solid var(--bd);border-radius:8px;background:var(--card)}
+table.mx{border-collapse:collapse;font-size:11.5px;width:100%;min-width:900px}
+table.mx th{position:sticky;top:0;z-index:2;text-align:left;padding:7px 8px;background:#f0efe9;border-bottom:1px solid var(--bd);font-size:10px;font-weight:700;color:var(--t2);white-space:nowrap}
+table.mx td{padding:6px 8px;border-bottom:1px solid var(--bd)}
+table.mx tr:hover td{background:#fbfaf7}
+table.mx tr.bad td{opacity:.5}
+.ax{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--t2);white-space:nowrap}
+.nm{font-weight:600;font-size:12px}
+.lv{font-family:ui-monospace,monospace;font-weight:700;color:var(--gn)}
+.b{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;white-space:nowrap}
+.b-ok{background:var(--gn2);color:var(--gn)}.b-part{background:var(--wr2);color:var(--wr)}
+.b-no{background:var(--rd2);color:var(--rd)}.b-w1{background:var(--ac2);color:var(--ac)}
+.b-bad{background:var(--rd2);color:var(--rd)}
+.ty{border:1px solid var(--bd);border-left:4px solid var(--gn);border-radius:6px;background:var(--card);padding:12px 15px;margin-bottom:9px}
+.ty h4{font-size:13px;font-weight:700;margin-bottom:3px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ty .n{font-family:ui-monospace,monospace;font-size:10px;color:#fff;background:var(--t2);padding:1px 6px;border-radius:3px}
+.ty p{font-size:12.5px;color:var(--t2);margin-bottom:4px}
+.ty dl{display:grid;grid-template-columns:120px 1fr;gap:3px 10px;font-size:12px;color:var(--t2);margin-top:5px}
+.ty dt{color:var(--t3);font-size:10.5px;text-transform:uppercase;letter-spacing:.03em}
+.art{background:#fbfaf7;border:1px solid var(--bd);border-radius:6px;padding:12px 16px;margin-bottom:9px}
+.art h4{font-size:12.5px;font-weight:700;color:var(--pr);margin-bottom:5px;font-family:ui-monospace,monospace}
+.art .txt{font-size:12.5px;color:var(--t1);line-height:1.65}
+.art .txt p{margin-bottom:5px}
+.art .note{font-size:11.5px;color:var(--t3);margin-top:6px;font-style:italic}
+.gone{text-decoration:line-through;color:var(--t3)}
+a{color:#2a6cb6}
+@media print{.ctl{position:static}.sec{display:block!important}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Реестр участия · расчёт только через Систему</h1>
+  <p>Волевое решение: расчёт по сделкам ведётся исключительно через расчётный контур Системы. Ось расчёта снята — пространство вариантов сократилось со ста сорока четырёх сочетаний до сорока восьми, из них допустимы двадцать семь. Ниже — реестр в новых границах, что решение дало, что закрыло и чем это компенсируется.</p>
+  <div class="meta">23 августа 2026 · Оси: витрина 2 × исполнение 3 × каналы 4 × бренд 2 = 48 · Предмет клиринга всегда «сделка» · Удержание 12,5 %: 0,5 % расчёты и 12,0 % фонд</div>
+<div style="max-width:1320px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Заменяет по части расчёта: <a href="40-reestr-variantov-uchastiya.html" style="font-weight:600;">реестр вариантов участия</a> и <a href="41-matrica-sochetanii-uchastiya.html" style="font-weight:600;">матрицу сочетаний</a>. Основания: <a href="39-protokol-i-pravki-v-pravila.html" style="font-weight:600;">протокол и правки Правил</a>, <a href="36-sistemnyi-sloy-opisanie.html" style="font-weight:600;">системный слой</a>, <a href="external-shop-integration.html" style="font-weight:600;">внешний магазин</a>, <a href="service-tiers.html" style="font-weight:600;">линейка уровней</a>, <a href="28-servis-edinyi.html" style="font-weight:600;">сервисный слой</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="co co-p" style="margin-bottom:10px"><b>Персональные данные: оператор — Система.</b>Продавец и операторы обрабатывают данные как исполнители по сделке. Право на повторное обращение возникает при совпадении метки канала и добровольного согласия — <a href="43-personalnye-dannye-statya-i-kontur.html">статья 23 и контур обязанностей в ПТК</a>.</div>
+<div class="co co-g" style="margin-bottom:10px"><b>Шкала уровней принята: возрастающая, диапазон 2–7.</b>Прежние две отменены. Определение, разграничение конфигурации и сделки, порядок перевода записей и норма — <a href="44-shkala-urovnei-reshenie.html">решение по шкале уровней</a>.</div>
+<div class="ctl">
+  <div class="row">
+    <button class="fb on" data-f="all">Все 48</button>
+    <button class="fb" data-f="valid">Допустимые</button>
+    <button class="fb" data-f="bad">Недопустимые</button>
+    <button class="fb" data-f="ok">Работают</button>
+    <button class="fb" data-f="w1">Волна 1</button>
+    <button class="fb" data-f="no">Не сделано</button>
+    <span class="stat" id="stat"></span>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-t="s1">Матрица 48</button>
+    <button class="tab" data-t="s2">Варианты участия</button>
+    <button class="tab" data-t="s6">Конфигурация и сделка</button>
+    <button class="tab" data-t="s3">Что решение дало</button>
+    <button class="tab" data-t="s4">Что закрыло</button>
+    <button class="tab" data-t="s5">Правка в Правила</button>
+  </div>
+</div>
+
+<!-- 1 -->
+<div class="sec on" id="s1">
+<div class="scroll"><table class="mx" id="t"></table></div>
+<div id="an"></div>
+</div>
+
+<!-- 2 -->
+<div class="sec" id="s2">
+<div class="st">Варианты участия в новых границах</div>
+<div class="co co-g"><b>Продавец конфигурирует четыре оси вместо пяти.</b>Витрина, исполнение, каналы, бренд. Расчёт больше не выбирается — он всегда через Систему. Это упрощает и разговор с продавцом: вопросов при подборе становится три вместо четырёх.</div>
+
+<div class="ty"><h4><span class="n">уровень 4</span>Витрина своя · внешний магазин</h4>
+<p>Продавец сохраняет сайт, домен и каталог. В Систему идёт зеркало каталога, сделки — через расчётный контур.</p>
+<dl><dt>Берёт</dt><dd>Расчёт, эскроу, каталог, агент; исполнение по выбору</dd>
+<dt>Удержание</dt><dd>12,5 % плюс тарифы операторов за выбранные звенья</dd>
+<dt>Состояние</dt><dd>Волна 1: нужны коннектор, признак источника, проверка наличия</dd></dl></div>
+
+<div class="ty"><h4><span class="n">уровень 5</span>Витрина Системы · базовое участие</h4>
+<p>Витрина рождается в Системе, исполнение остаётся своим. Самый лёгкий из доступных сегодня входов.</p>
+<dl><dt>Берёт</dt><dd>Витрину, расчёт, эскроу, каталог по желанию</dd>
+<dt>Удержание</dt><dd>12,5 %, тарифов операторов нет — продавец возит сам</dd>
+<dt>Состояние</dt><dd>Работает до входа в эскроу</dd></dl></div>
+
+<div class="ty"><h4><span class="n">уровень 6</span>Полное участие</h4>
+<p>Витрина, каталог, расчёт и исполнение от Системы. Продавец отдаёт операционную часть целиком.</p>
+<dl><dt>Берёт</dt><dd>Всё, включая звенья исполнения по отдельности</dd>
+<dt>Удержание</dt><dd>12,5 % плюс тарифы операторов; на среднем чеке в сумме 19–20 %</dd>
+<dt>Состояние</dt><dd>Работает до входа в эскроу</dd></dl></div>
+
+<div class="ty"><h4><span class="n">уровень 6+</span>Белая марка</h4>
+<p>Та же глубина, что у полного участия, но покупатель видит бренд продавца, а не Системы.</p>
+<dl><dt>Берёт</dt><dd>Всё плюс режим фасада</dd>
+<dt>Удержание</dt><dd>12,5 % плюс подписка</dd>
+<dt>Состояние</dt><dd>Не сделано: нет режима фасада и привязки домена</dd></dl></div>
+
+<div class="co co-a"><b>Глубина участия существует в двух видах.</b>Сконфигурированная — постоянная, меняется только конфигуратором в обе стороны. Уровень сделки — разовый, может быть выше сконфигурированного, но не ниже. Подробнее во вкладке «Конфигурация и сделка».</div>
+<div class="co co-a"><b>Четыре варианта вместо восьми — и это не потеря гибкости.</b>Гибкость никуда не делась: она переехала внутрь исполнения. Звенья — хранение, сборка, упаковка, доставка, возвраты — по-прежнему берутся по отдельности, на уровне магазина, категории или товара. Продавец может возить хлеб сам, а выпечку отдавать складу, оставаясь на одном уровне участия.</div>
+
+<div class="st" style="margin-top:14px">Прочие типы участия — без изменений</div>
+<table class="tb">
+<thead><tr><th style="width:22%">Тип</th><th style="width:34%">Что меняется решением</th><th>Комментарий</th></tr></thead>
+<tbody>
+<tr><td>Организатор</td><td>Ничего</td><td>Тариф расчётов 0,5 %, ведение фонда, гарантия расчёта</td></tr>
+<tr><td>Участник инфраструктуры</td><td><b>Усиливается</b></td><td>Все сделки идут через контур — значит гарантия оплаты через эскроу действует всегда, без исключений. Это главный довод при переговорах с операторами</td></tr>
+<tr><td>Расчётный банк</td><td><b>Усиливается</b></td><td>Весь оборот проходит через эскроу, а не часть. Объём потока для банка предсказуем</td></tr>
+<tr><td>Оператор поверхности</td><td>Ничего</td><td>Агентные сделки и раньше шли через контур по статье 20</td></tr>
+<tr><td>Покупатель</td><td><b>Усиливается</b></td><td>Гарантия удержания средств до подтверждения действует на любой сделке в Системе. Раньше при своём расчёте продавца её не было</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- 6 -->
+<div class="sec" id="s6">
+<div class="st">Конфигурация и сделка — два разных состояния</div>
+<div class="co co-p"><b>Уточнение, меняющее смысл храповика.</b>Глубина участия существует в двух видах, и они не связаны напрямую. <b>Конфигурация</b> — постоянное состояние магазина, категории или товара; она меняется только конфигуратором. <b>Уровень сделки</b> — разовое состояние конкретной операции; он может оказаться выше конфигурации, но конфигурацию не меняет.</div>
+
+<table class="tb">
+<thead><tr><th style="width:22%">Признак</th><th style="width:38%">Конфигурация</th><th>Уровень сделки</th></tr></thead>
+<tbody>
+<tr><td>Где живёт</td><td>Правила видимости и исполнения магазина, категории, товара</td><td>Атрибут конкретного заказа</td></tr>
+<tr><td>Кто меняет</td><td>Только конфигуратор, действием продавца</td><td>Определяется в момент оформления</td></tr>
+<tr><td>Когда действует</td><td>На все будущие сделки</td><td>Только на эту сделку</td></tr>
+<tr><td>Можно понизить</td><td><b>Да.</b> Продавец вправе отказаться от сервиса; это подействует на следующие заказы</td><td><b>Нет.</b> Ниже конфигурации сделка опуститься не может</td></tr>
+<tr><td>Можно повысить</td><td>Да, в любой момент</td><td>Да, в момент операции — разово</td></tr>
+<tr><td>Последействие</td><td>Постоянное, до следующей правки</td><td>Никакого: следующая сделка снова идёт по конфигурации</td></tr>
+</tbody>
+</table>
+
+<div class="co co-g" style="margin-top:10px"><b>Отсюда точная формулировка храповика.</b>Он ограничивает <b>сделку относительно конфигурации</b>, а не конфигурацию относительно её прошлого состояния. Уровень сделки не может быть ниже сконфигурированного; выше — может, разово, по решению в момент операции. Понижение конфигурации храповиком не запрещено вовсе: продавец волен отказаться от сервиса, и это подействует на будущие заказы, но не тронет уже начатые.</div>
+
+<div class="c">
+<h3>Почему это важно, а не терминология</h3>
+<ul>
+<li><b>Продавец не оказывается в ловушке.</b> Прежняя формулировка «понизить нельзя» читалась как запрет уменьшать участие вообще. На деле запрет касается только момента сделки: покупатель, уже оформляющий заказ с гарантией, не должен её лишиться. Свобода продавца сокращать участие сохраняется полностью — а это одно из прав, отличающих Систему от площадки.</li>
+<li><b>Повышение при сделке не залипает.</b> Продавец, срочно проведший один заказ через Систему полностью, не оказывается переведённым на этот уровень навсегда. Иначе разовая срочность превращалась бы в необратимое обязательство, и пользоваться ею стало бы страшно.</li>
+<li><b>Удержание считается по уровню сделки, а не по конфигурации.</b> Если заказ прошёл на повышенном уровне, доли считаются по фактически оказанным сервисам этого заказа. Иначе продавец платил бы за то, чего в сделке не было, или наоборот.</li>
+<li><b>Снимок конфигурации становится обязательным.</b> Заказ должен помнить и то, что было сконфигурировано на момент создания, и то, на каком уровне он фактически прошёл. Без снимка последующая правка конфигуратора меняла бы прошлые заказы задним числом — а это ровно то, чего не должно быть в расчётном контуре.</li>
+</ul>
+</div>
+
+<div class="co co-w"><b>Что из этого следует для данных.</b>Нужны два поля вместо одного: сконфигурированный уровень и уровень сделки. Ограничение в базе применяется к журналу сделок — уровень операции не ниже сконфигурированного, — а не к таблице конфигурации. Сегодня ограничение стоит на журнале повышений и сравнивает новое значение с прежним; при таком уточнении оно должно сравнивать значение сделки с конфигурацией, действовавшей на момент её создания.</div>
+
+<div class="co co-a"><b>И следствие для интерфейса конфигуратора.</b>Понижение в конфигураторе не должно отклоняться — оно законно. Отклоняться должна попытка провести сделку ниже сконфигурированного уровня, а такой попытки в интерфейсе вообще нет: она возможна только через прямой вызов. То есть проверка нужна на стороне сервера, а в кабинете переключатели работают в обе стороны свободно.</div>
+</div>
+
+<!-- 3 -->
+<div class="sec" id="s3">
+<div class="st">Что решение дало</div>
+
+<div class="co co-g"><b>Снят главный технический блокер.</b>Предмет клиринга больше не вычисляется — он всегда «сделка». Это означает, что расчёту не нужно различать три предмета, а конфигуратору не нужно их выводить из переключателей. Работа, которая стояла первой в очереди и открывала пять вариантов из десяти, сократилась: нужны не три предмета, а один, зато с полным набором ролей внутри него.</div>
+
+<div class="c">
+<h3>Пять следствий, каждое проверяемо</h3>
+<ul>
+<li><b>Инвариант становится нормой, а не намерением.</b> «Деньги всегда через Систему» было выводом системного слоя и оговоркой в документе внешнего магазина. Теперь это правило без исключений, и его можно записать статьёй.</li>
+<li><b>Экономика продавца перестаёт зависеть от конфигурации.</b> Одно удержание 12,5 % на любом уровне. Сравнение с площадкой считается один раз, а не для каждого варианта отдельно.</li>
+<li><b>Гарантия покупателю становится всеобщей.</b> Раньше при своём расчёте продавца эскроу не было — покупатель на такой витрине не был защищён, хотя видел бренд Системы. Это была уязвимость обещания, а не только техники.</li>
+<li><b>Довод для операторов и банка усиливается.</b> Гарантия оплаты через эскроу действует на каждой сделке, объём потока предсказуем. При частичном расчёте оператор не мог быть уверен, что оплата придёт из контура.</li>
+<li><b>Очередь работ сокращается.</b> Из шести шагов, которые я предлагал ранее, два отпадают: переключатель расчёта на чекауте и выделение предмета «услуга» как формы участия продавца.</li>
+</ul>
+</div>
+
+<div class="co co-a"><b>Что осталось от предмета «услуга».</b>Он не исчез — он переехал внутрь сделки. Оплата операторов исполнения по-прежнему клирингуется как услуга: логист получает свой тариф, склад свой. Изменилось одно: <b>услуга перестала быть формой участия продавца</b> и стала строкой внутри расщепления. Это упрощение, а не потеря.</div>
+</div>
+
+<!-- 4 -->
+<div class="sec" id="s4">
+<div class="st">Что решение закрыло — и чем это компенсируется</div>
+<div class="co co-r"><b>Говорю прямо: цена решения есть, и она в привлечении.</b>Исчезли три формы входа, и все три предназначались осторожному продавцу с готовой базой — той самой первой группе, которая единственная приходит со своими покупателями.</div>
+
+<table class="tb">
+<thead><tr><th style="width:22%">Что исчезло</th><th style="width:30%">Кому было адресовано</th><th>Чем компенсировать</th></tr></thead>
+<tbody>
+<tr><td class="gone">Только трафик</td><td>Есть всё, кроме потока покупателей. Платил бы 3–8 % с приведённых заказов и ничего больше</td><td>Внешний магазин: витрина остаётся своей, но сделки идут через контур. Порог выше, зато и гарантия появляется</td></tr>
+<tr><td class="gone">Расчёт свой</td><td>Есть приём платежей, нет склада и курьеров. Платил бы только тарифы операторов</td><td>Прямой договор с оператором вне Системы остаётся возможным — Система его не запрещает. Но тогда это не участие, а просто отсутствие отношений</td></tr>
+<tr><td class="gone">Гибрид по заказу</td><td>Разные заказы требовали разной модели</td><td>Гибкость сохранилась в исполнении: разные категории могут иметь разные звенья. Различаться перестал только расчёт</td></tr>
+</tbody>
+</table>
+
+<div class="co co-w" style="margin-top:10px"><b>Главное возражение, к которому надо готовиться.</b>Действующий интернет-магазин с работающим приёмом платежей спросит: зачем мне менять расчёт, если у меня всё считается. Ответ не в цене, а в том, чего у него нет: гарантия покупателю, автоматический расчёт с операторами и поток из каталога. Но <b>это разговор на другом уровне доверия</b>, чем прежний «попробуйте бесплатно, платите только за приведённых».</div>
+
+<div class="c">
+<h3>Три способа снизить порог, не возвращая ось расчёта</h3>
+<ul>
+<li><b>Пробный период по удержанию.</b> Первые месяцы или первые заказы — по сниженной ставке. Порог снижается деньгами, а не архитектурой; храповик и гарантия остаются целыми.</li>
+<li><b>Параллельная работа без исключительности.</b> Продавец не обязан переводить в Систему весь оборот. Он заводит часть ассортимента и сравнивает на своих выплатах — это переток доли, который и так заложен в модели.</li>
+<li><b>Ставка по каналу.</b> Отложенный вариант: заказ со своей витрины дешевле, чем приведённый Системой. Он возвращает лёгкость входа, не возвращая свободу расчёта, — но требует, чтобы клиринг различал канал, а это отдельная работа.</li>
+</ul>
+</div>
+
+<div class="co co-p"><b>Что я рекомендую проверить на пилоте именно из-за этого решения.</b>Долю продавцов первой группы, которые отказываются от участия из-за требования проводить деньги через Систему. Это единственная величина, по которой можно судить, была ли цена решения приемлемой. Если отказов мало — упрощение окупилось. Если много — возвращать нужно не ось расчёта, а ставку по каналу.</div>
+</div>
+
+<!-- 5 -->
+<div class="sec" id="s5">
+<div class="st">Проект правки в Правила</div>
+<p style="font-size:12.5px;color:var(--t2)">Формулировка готова к включению. Норма не создаёт нового института — она делает безусловным то, что уже описано как инвариант системного слоя.</p>
+
+<div class="art"><h4>Статья 6 · Расчёты и клиринг</h4>
+<div class="txt">
+<p><b>6.9.</b> Расчёты по сделкам, совершённым в Системе, производятся исключительно через расчётный контур Системы. Приём средств покупателя, их удержание до подтверждения исполнения, расщепление между участниками и выплата осуществляются в порядке, установленном настоящей статьёй, независимо от места ведения витрины, состава используемых услуг и канала, из которого пришёл покупатель.</p>
+<p><b>6.10.</b> Совершение расчётов помимо расчётного контура по сделкам, созданным в Системе, не допускается. Сделки, расчёт по которым производится участником самостоятельно, сделками в Системе не признаются, и настоящие Правила к ним не применяются.</p>
+</div>
+<div class="note">Второй пункт важнее первого: он проводит границу. Продавец не лишается права торговать самостоятельно — но такая торговля просто находится вне Системы, а не внутри неё на особых условиях.</div></div>
+
+<div class="art"><h4>Статья 9 · Витрина и каналы</h4>
+<div class="txt">
+<p><b>9.10.</b> Форма ведения витрины не влияет на порядок расчётов. Участник, сохранивший собственную витрину, проводит сделки через расчётный контур Системы наравне с участниками, ведущими витрину в Системе.</p>
+</div>
+<div class="note">Согласует решение с моделью внешнего магазина: каталог может быть федеративным, расчёт — нет.</div></div>
+
+<div class="art"><h4>Статья 2 · Защита покупателя</h4>
+<div class="txt">
+<p><b>2.6.</b> Гарантия удержания средств до подтверждения исполнения предоставляется по всем сделкам в Системе без исключений. Участник не вправе предлагать покупателю сделку в Системе на условиях, исключающих такую гарантию.</p>
+</div>
+<div class="note">Закрывает уязвимость, существовавшую при свободном выборе расчёта: покупатель видел бренд Системы, но защиты не имел.</div></div>
+
+<div class="co co-g"><b>Что при этом не меняется.</b>Право продавца торговать где угодно, включая площадки, — сохраняется полностью. Право уйти, забрав своих покупателей, — сохраняется. Бесплатный базовый уровень, потолок удержания, запрет платного места в выдаче — сохраняются. Решение касается одного: сделок, совершаемых <b>в Системе</b>.</div>
+</div>
+
+</div>
+<script>
+(function(){
+  var AX={
+    vit:[{k:'sys',t:'Системы'},{k:'own',t:'своя'}],
+    isp:[{k:'sys',t:'Системы'},{k:'part',t:'частичное'},{k:'own',t:'своё'}],
+    ch:[{k:'none',t:'без каталога'},{k:'cat',t:'каталог'},{k:'agent',t:'агент'},{k:'both',t:'каталог и агент'}],
+    br:[{k:'sys',t:'Системы'},{k:'own',t:'продавца'}]
+  };
+  var R=[];
+  AX.vit.forEach(function(v){AX.isp.forEach(function(i){AX.ch.forEach(function(c){AX.br.forEach(function(b){
+    var cat=(c.k==='cat'||c.k==='both'), ag=(c.k==='agent'||c.k==='both');
+    var bad=null;
+    if(ag&&!cat) bad='агент без каталога: подбирать не из чего';
+    else if(b.k==='own'&&v.k==='own') bad='белая марка на своей витрине: бренд и так свой';
+    var d=2; if(i.k==='sys')d+=2; else if(i.k==='part')d+=1;
+    if(v.k==='sys')d+=1; if(cat)d+=1; if(ag)d+=1;
+    var state,why,nm;
+    if(bad){state='bad';why=bad;nm='—';}
+    else{
+      if(b.k==='own'){state='no';why='нет режима фасада и привязки домена';nm='Белая марка';}
+      else if(v.k==='own'){state='w1';why='нужны коннектор, признак источника, проверка наличия';nm='Внешний магазин';}
+      else if(ag){state='part';why='агент существует прокси-маршрутом';nm=(i.k==='own'?'Базовое участие':'Полное участие');}
+      else {state='ok';why='работает до входа в эскроу; дальше ручной расчёт либо банк';nm=(i.k==='own'?'Базовое участие':'Полное участие');}
+    }
+    var hold = (i.k==='own') ? '12,5 %' : '12,5 % плюс тарифы операторов';
+    R.push({v:v,i:i,c:c,b:b,bad:bad,d:d,state:state,why:why,nm:nm,hold:hold});
+  })})})});
+
+  var tbl=document.getElementById('t'), st=document.getElementById('stat'), flt='all';
+  function badge(s){return s==='bad'?'<span class="b b-bad">недопустимо</span>':s==='ok'?'<span class="b b-ok">работает</span>':
+    s==='part'?'<span class="b b-part">частично</span>':s==='w1'?'<span class="b b-w1">волна 1</span>':'<span class="b b-no">не сделано</span>';}
+  function draw(){
+    var n=0,h='<thead><tr><th style="width:36px">№</th><th>Витрина</th><th>Исполнение</th><th>Каналы</th><th>Бренд</th><th style="width:46px">Глуб.</th><th>Удержание</th><th>Вариант</th><th>Состояние</th><th>Примечание</th></tr></thead><tbody>';
+    R.forEach(function(x,idx){
+      var ok = flt==='all' || (flt==='valid'&&!x.bad) || (flt==='bad'&&x.bad) ||
+               (flt==='ok'&&(x.state==='ok'||x.state==='part')) || (flt==='w1'&&x.state==='w1') || (flt==='no'&&x.state==='no');
+      if(!ok) return; n++;
+      h+='<tr class="'+(x.bad?'bad':'')+'"><td class="ax">'+(idx+1)+'</td><td class="ax">'+x.v.t+'</td><td class="ax">'+x.i.t+
+        '</td><td class="ax">'+x.c.t+'</td><td class="ax">'+x.b.t+'</td><td class="lv">'+(x.bad?'—':x.d)+
+        '</td><td class="ax">'+(x.bad?'—':x.hold)+'</td><td class="nm">'+x.nm+'</td><td>'+badge(x.state)+
+        '</td><td style="color:var(--t2);font-size:11px">'+x.why+'</td></tr>';
+    });
+    tbl.innerHTML=h+'</tbody>'; st.textContent=n+' из '+R.length;
+  }
+  document.querySelectorAll('.ctl .fb').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('.ctl .fb').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on'); flt=b.dataset.f; draw();})});
+  document.querySelectorAll('#tabs .tab').forEach(function(t){t.addEventListener('click',function(){
+    document.querySelectorAll('#tabs .tab').forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.t)});
+    window.scrollTo({top:0,behavior:'smooth'});})});
+  draw();
+
+  var tot=R.length, bad=R.filter(function(x){return x.bad}).length, val=tot-bad;
+  function cnt(s){return R.filter(function(x){return x.state===s}).length}
+  var ok=cnt('ok'),part=cnt('part'),w1=cnt('w1'),no=cnt('no');
+  document.getElementById('an').innerHTML=
+   '<div class="co co-g"><b>Итог в новых границах.</b>Из '+tot+' сочетаний допустимы '+val+', отсеиваются '+bad+
+   ' по двум структурным причинам: агент без каталога и белая марка на своей витрине. Доступны сегодня '+(ok+part)+
+   ' сочетаний — '+ok+' работают полностью и '+part+' частично; '+w1+' отнесены к первой волне, '+no+' ждут режима фасада.</div>'+
+   '<div class="co co-a"><b>Сравнение с прежним пространством.</b>Было 144 сочетания, из них допустимы 61 и доступны 9. Стало '+tot+
+   ' сочетаний, допустимы '+val+', доступны '+(ok+part)+'. <b>Абсолютное число доступных вариантов не изменилось</b> — изменилась доля: раньше работала седьмая часть допустимого пространства, теперь треть. '+
+   'Решение не добавило возможностей, но убрало из реестра то, чего всё равно не было в коде.</div>';
+})();
+</script>
+</body>
+</html>

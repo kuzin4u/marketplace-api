@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сервисный слой Системы · интегрированное описание</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1240px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--ac);margin-bottom:16px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--ac);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:16px;overflow-x:auto}
+.tab{padding:7px 13px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;white-space:nowrap;background:none;font-family:inherit}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.tab:focus-visible{outline:2px solid var(--ac);outline-offset:-2px}
+.sec{display:none}.sec.on{display:block}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}.c ul{padding-left:16px;margin:4px 0}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.co-p{background:var(--pr2);border-left:3px solid var(--pr);color:#2e2670}
+.st{font-size:15px;font-weight:600;margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:11px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.tb tr.ph td{background:#f0efe9;font-weight:700;font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.04em}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
+.b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:3px;white-space:nowrap}
+.b-d{background:var(--ac2);color:var(--ac)}.b-u{background:var(--gn2);color:var(--gn)}
+.b-k{background:var(--pr2);color:var(--pr)}.b-n{background:#eeede8;color:var(--t3)}
+.b-ob{background:var(--rd2);color:var(--rd)}.b-op{background:var(--wr2);color:var(--wr)}
+.b-au{background:#eeede8;color:var(--t3)}
+.b-есть{background:var(--gn2);color:var(--gn)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px}
+@media(max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+.ab{border:1px solid var(--bd);border-radius:6px;padding:12px;background:var(--card)}
+.ab h4{font-size:12.5px;font-weight:600;margin-bottom:4px}
+.ab p{font-size:12px;color:var(--t2)}
+.field{border:1px solid var(--bd);border-left:3px solid var(--ac);border-radius:6px;padding:10px 14px;margin-bottom:7px;background:var(--card)}
+.field h4{font-size:12.5px;font-weight:700;margin-bottom:3px}
+.field p{font-size:12px;color:var(--t2)}
+.field .vals{font-family:ui-monospace,monospace;font-size:11px;color:var(--ac);background:var(--ac2);padding:4px 8px;border-radius:4px;margin-top:5px;display:inline-block}
+.bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.fb{padding:4px 10px;font-size:11px;border:1px solid var(--bd);background:var(--card);border-radius:20px;cursor:pointer;color:var(--t2);font-family:inherit}
+.fb:hover{border-color:var(--ac);color:var(--t1)}.fb.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+.stat{font-size:11px;color:var(--t3);margin-left:auto}
+a{color:#2a6cb6}
+@media print{.tabs,.bar{display:none}.sec{display:block!important;page-break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Сервисный слой Системы · интегрированное описание</h1>
+  <p>Свод шести документов сервисного слоя, собранный по принципу включения: ни одно положение и ни одна величина не отброшены. Там, где источники расходятся, оба значения сохранены и разведены по областям применения — расхождение снимается контекстом, а не удалением.</p>
+  <div class="meta">23 августа 2026 · Источники: реестр сервисов, линейка уровней, полный разбор по фазам, модель ↔ скелет, действующая модель конвейера, комплексное предложение селлеру · Параметры вынесены в <a href="25-servisnyj-sloj-parametry.html">отдельный документ</a></div>
+<div style="max-width:1240px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Интегрирует: <a href="service-registry.html" style="font-weight:600;">реестр сервисов</a>, <a href="service-tiers.html" style="font-weight:600;">линейку уровней</a>, <a href="service-registry-full-analysis.html" style="font-weight:600;">полный разбор по фазам</a>, <a href="model-vs-reality-service-tiers.html" style="font-weight:600;">модель ↔ скелет</a>, <a href="pipeline-model-interactive.html" style="font-weight:600;">модель конвейера</a>, <a href="19-complex-offer-seller-synced.html" style="font-weight:600;">комплексное предложение</a>. Парные документы: <a href="25-servisnyj-sloj-parametry.html" style="font-weight:600;">параметры сервисного слоя</a>, <a href="26-operacionnyj-sloj-opisanie.html" style="font-weight:600;">операционный слой</a>, <a href="27-operacionnyj-sloj-parametry.html" style="font-weight:600;">его параметры</a>. Нормы: <a href="pravila-sistemy-red3-edinyi.html" style="font-weight:600;">Правила ред. 3</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab">Принцип и форма</button>
+  <button class="tab" data-t="s2" role="tab">Реестр · 28 сервисов</button>
+  <button class="tab" data-t="s3" role="tab">Клиринг и роли</button>
+  <button class="tab" data-t="s4" role="tab">Уровни и профиль</button>
+  <button class="tab" data-t="s5" role="tab">Когда включается</button>
+  <button class="tab" data-t="s6" role="tab">Пакет участников</button>
+  <button class="tab" data-t="s7" role="tab">Сохранённые расхождения</button>
+</div>
+
+<!-- ═══ 1 ═══ -->
+<div class="sec on" id="s1">
+<div class="co co-p"><b>Принцип сборки этого документа.</b>Включение, а не отрезание. Каждое положение шести источников входит сюда целиком; ни одно значение не заменено «более правильным». Где источники дают разные величины одной и той же вещи, обе сохраняются с указанием, откуда взяты и когда применимы. Опыт предыдущих проходов показал: выбор одного значения из двух почти всегда оказывался выбором из неполного множества.</div>
+
+<div class="st" style="margin-top:14px">Главный тезис сервисного слоя</div>
+<div class="c">
+<p>Система описана не списком услуг, а <b>машиной их включения</b>. Список в реестре — снимок на сегодня; форма и правило включения — механизм на завтра. Пока новый сервис попадает в существующий предмет клиринга, он встаёт в конфигуратор магазина, в расчёт и в кабинет одной записью, без правки ядра.</p>
+<p style="margin-top:6px">Отсюда следует устройство всего слоя: <b>уровень вовлечения — не отдельный продукт, а пресет переключателей</b>; профиль магазина — набор значений формы; клиринг — один движок, у которого меняется предмет, а не механика.</p>
+</div>
+
+<div class="st" style="margin-top:16px">Форма сервиса — шесть полей</div>
+<p style="font-size:12.5px;color:var(--t2)">Пять полей заданы реестром, шестое добавлено при разборе расчёта: без него один и тот же сервис считался двумя способами.</p>
+
+<div class="field"><h4>1 · Переключатель</h4><p>Как продавец включает сервис в профиле магазина. Ось выбора для конфигуратора.</p><span class="vals">Система | свой | выключено</span></div>
+<div class="field"><h4>2 · Тариф</h4><p>Сколько стоит и как начисляется. Способ начисления определяет, умножается ли тариф на количество, на период или берётся раз за операцию.</p><span class="vals">% от суммы | фикс за операцию | за единицу | за заказ | за период | ступенчатый</span></div>
+<div class="field"><h4>3 · Предмет клиринга</h4><p>Что именно проходит через расчётный контур. Ключевое поле: пока сервис попадает в известный предмет, ядро расчёта не трогается.</p><span class="vals">СДЕЛКА | УСЛУГА | КОМИССИЯ | новый предмет</span></div>
+<div class="field"><h4>4 · Точка в потоке</h4><p>Где сервис вступает в жизненный цикл заказа.</p><span class="vals">до оплаты | при поступлении товара | при сборке | при доставке | при выдаче | после выдачи | вне заказа</span></div>
+<div class="field"><h4>5 · Видимость</h4><p>Кому и когда предлагается.</p><span class="vals">опция на чекауте | настройка магазина | кабинет продвижения | автоматически по правилу | фон</span></div>
+<div class="field" style="border-left-color:var(--co)"><h4>6 · Плательщик <span class="b b-d">добавлено</span></h4><p>За чей счёт оказывается услуга. Правило распределения: платит тот, ради кого услуга оказана. Без этого поля реестр и расчётный контур описывали разные экономические модели, не замечая расхождения.</p><span class="vals">покупатель | продавец | делится | вне сделки</span></div>
+
+<div class="co co-a" style="margin-top:12px"><b>Почему именно эти шесть.</b>Они покрывают всё, что Системе нужно знать о сервисе, чтобы им управлять: как его выбирают, как тарифицируют, как через него идут деньги, когда он срабатывает, кому показан и кто за него платит. Остальное — внутреннее дело самого сервиса.</div>
+
+<div class="st" style="margin-top:16px">Правило включения нового сервиса</div>
+<table class="tb">
+<thead><tr><th style="width:6%">Шаг</th><th style="width:28%">Что сделать</th><th>Условие и последствие</th></tr></thead>
+<tbody>
+<tr><td><b>1</b></td><td>Заполнить форму</td><td>Описать шестью полями. Незаполненное поле означает, что сервис не готов к включению, — именно так пропускался плательщик</td></tr>
+<tr><td><b>2</b></td><td>Проверить предмет клиринга</td><td>Попадает в СДЕЛКА / УСЛУГА / КОМИССИЯ — расчётный контур готов. Нужен новый предмет — это единственный случай правки ядра</td></tr>
+<tr><td><b>3</b></td><td>Добавить переключатель в профиль магазина</td><td>Новая ось в конфигураторе; продавец получает возможность включить</td></tr>
+<tr><td><b>4</b></td><td>Встроить в поток заказа</td><td>Повесить на его точку — кабинет и статусы подхватывают автоматически</td></tr>
+<tr><td><b>5</b></td><td>Записать в реестр</td><td>Строка в таблице: сервис существует, документирован, доступен продавцам</td></tr>
+</tbody>
+</table>
+<div class="co co-g"><b>Пример из источника.</b>Продавцы просят страхование груза: переключатель «Система или выключено», тариф — процент от суммы заказа, предмет — КОМИССИЯ (уже есть), точка — при оформлении, видимость — опция на чекауте, плательщик — покупатель. Все поля заполнены известными типами, ядро не тронуто. Появился спрос на рассрочку — та же форма, предмет УСЛУГА либо новый финансовый; модель принимает оба одинаково.</div>
+</div>
+
+<!-- ═══ 2 ═══ -->
+<div class="sec" id="s2">
+<div class="st">Полный реестр по семи фазам пути сделки</div>
+<div class="bar" id="flt">
+  <button class="fb on" data-f="all">Все фазы</button>
+  <button class="fb" data-f="ob">Только обязательные</button>
+  <button class="fb" data-f="op">Только опции</button>
+  <button class="fb" data-f="au">Авто и фон</button>
+  <span class="stat" id="stat"></span>
+</div>
+<p style="font-size:12px;color:var(--t2)">Колонка тарифа несёт <b>все</b> известные значения: рыночный ориентир из разбора и тариф участника из реестра, если они различаются. Оба — действительные величины разной природы.</p>
+
+<table class="tb" id="tr">
+<thead><tr><th style="width:19%">Сервис</th><th style="width:9%">Предмет</th><th style="width:24%">Тариф</th><th style="width:8%">Обяз.</th><th style="width:12%">Роль в расчёте</th><th style="width:12%">Плательщик</th><th>Получатель</th></tr></thead>
+<tbody>
+<tr class="ph"><td colspan="7">Фаза 1 · Подключение продавца</td></tr>
+<tr data-o="ob"><td>Приёмка в реестр, онбординг</td><td class="b-n">—</td><td>бесплатно</td><td><span class="b b-ob">обяз</span></td><td>—</td><td>—</td><td>—</td></tr>
+<tr data-o="ob"><td>Проверка участника, ЕСИА и ИНН</td><td class="b-n">—</td><td>бесплатно для продавца; 50–150 ₽ стоимость проверки</td><td><span class="b b-ob">обяз</span></td><td>—</td><td>Организатор</td><td>банк-партнёр</td></tr>
+<tr data-o="ob"><td>Шаблон магазина, ПО витрины</td><td class="b-n">—</td><td>бесплатно</td><td><span class="b b-ob">обяз</span></td><td>—</td><td>—</td><td>—</td></tr>
+
+<tr class="ph"><td colspan="7">Фаза 2 · Товар и витрина</td></tr>
+<tr data-o="ob"><td>Витрина в Системе</td><td class="b-k">СДЕЛКА</td><td>в составе удержания</td><td><span class="b b-ob">обяз</span></td><td>SYSTEM</td><td>продавец</td><td>Организатор и фонд сети</td></tr>
+<tr data-o="op"><td>White-label, свой бренд</td><td class="b-k">СДЕЛКА</td><td>подписка 3–15 тыс ₽/мес либо в тарифе</td><td><span class="b b-op">опция</span></td><td>SYSTEM</td><td>продавец</td><td>Организатор</td></tr>
+<tr data-o="au"><td>Модерация карточки</td><td class="b-n">—</td><td>бесплатно</td><td><span class="b b-au">фон</span></td><td>—</td><td>—</td><td>—</td></tr>
+
+<tr class="ph"><td colspan="7">Фаза 3 · Обнаружение и трафик</td></tr>
+<tr data-o="op"><td>Общий каталог</td><td class="b-n">—</td><td>бесплатно</td><td><span class="b b-op">опция</span></td><td>—</td><td>—</td><td>—</td></tr>
+<tr data-o="op"><td>Агентный канал</td><td class="b-n">—</td><td>бесплатно, инфраструктура</td><td><span class="b b-op">опция</span></td><td>—</td><td>—</td><td>—</td></tr>
+<tr data-o="op"><td>Продвижение, буст выдачи</td><td class="b-d">КОМИССИЯ</td><td>1–5 % оборота либо 5–30 ₽ за переход</td><td><span class="b b-op">опция</span></td><td>REFERRAL</td><td>продавец</td><td>Организатор</td></tr>
+<tr data-o="op"><td>Комиссия за приведённого</td><td class="b-d">КОМИССИЯ</td><td>3–8 % с приведённого заказа</td><td><span class="b b-op">опция</span></td><td>REFERRAL</td><td>продавец</td><td>Организатор или агент</td></tr>
+
+<tr class="ph"><td colspan="7">Фаза 4 · Заказ</td></tr>
+<tr data-o="ob"><td>Корзина и оформление</td><td class="b-n">—</td><td>бесплатно</td><td><span class="b b-ob">обяз</span></td><td>—</td><td>—</td><td>—</td></tr>
+<tr data-o="ob"><td>Регистрация покупателя</td><td class="b-n">—</td><td>бесплатно</td><td><span class="b b-ob">обяз</span></td><td>—</td><td>—</td><td>—</td></tr>
+<tr data-o="op"><td>Страхование заказа</td><td class="b-u">УСЛУГА</td><td>0,3–1 % суммы заказа</td><td><span class="b b-op">опция</span></td><td>INSURANCE</td><td>покупатель</td><td>страховщик</td></tr>
+
+<tr class="ph"><td colspan="7">Фаза 5 · Исполнение — открытый набор</td></tr>
+<tr data-o="op"><td>Хранение</td><td class="b-u">УСЛУГА</td><td>ориентир 3–15 ₽/заказ или 15–40 ₽/м³ в сутки · тариф участника 40–50 ₽ за паллетоместо в сутки</td><td><span class="b b-op">опция</span></td><td>FULFILLMENT</td><td>продавец</td><td>склад-участник</td></tr>
+<tr data-o="op"><td>Приёмка и фасовка</td><td class="b-u">УСЛУГА</td><td>ориентир 8–25 ₽/операция · тариф участника 100 ₽ за паллету</td><td><span class="b b-op">опция</span></td><td>FULFILLMENT</td><td>продавец</td><td>оператор фулфилмента</td></tr>
+<tr data-o="op"><td>Упаковка</td><td class="b-u">УСЛУГА</td><td>ориентир 15–40 ₽/заказ</td><td><span class="b b-op">опция</span></td><td>FULFILLMENT</td><td>продавец</td><td>оператор фулфилмента</td></tr>
+<tr data-o="op"><td>Сборка</td><td class="b-u">УСЛУГА</td><td>ориентир 20–50 ₽/заказ · тариф участника 200 ₽ за единицу, массовая 150 ₽ за единицу · пакет оператора 62–110 ₽/заказ</td><td><span class="b b-op">опция</span></td><td>FULFILLMENT</td><td>продавец</td><td>оператор фулфилмента</td></tr>
+<tr data-o="op"><td>Доставка последней мили</td><td class="b-u">УСЛУГА</td><td>ориентир 150–350 ₽ · зоны 350 / 500 / 800 ₽ · операторы 175 / 210 / 290 ₽</td><td><span class="b b-op">опция</span></td><td>LOGISTICS</td><td>покупатель</td><td>логист-участник</td></tr>
+<tr data-o="op"><td>Пункт выдачи</td><td class="b-u">УСЛУГА</td><td>ориентир 5–20 ₽/выдача · в модели 12 ₽</td><td><span class="b b-op">опция</span></td><td>LOGISTICS</td><td>покупатель</td><td>партнёр ПВЗ</td></tr>
+<tr data-o="op"><td>Магистраль между регионами</td><td class="b-u">УСЛУГА</td><td>операторы 30 / 35 / 40 ₽ за заказ · тариф участника 1500–2200 ₽ за паллету</td><td><span class="b b-op">опция</span></td><td>LOGISTICS</td><td>продавец</td><td>магистральный перевозчик</td></tr>
+<tr data-o="au"><td>Возвраты</td><td class="b-u">УСЛУГА</td><td>ориентир 10–30 ₽/заказ при доле возвратов около 8 % · тариф участника 300 ₽ за возврат</td><td><span class="b b-au">авто</span></td><td>FULFILLMENT</td><td>по вине стороны</td><td>оператор фулфилмента</td></tr>
+
+<tr class="ph"><td colspan="7">Фаза 6 · Оплата и эскроу</td></tr>
+<tr data-o="ob"><td>Расчёт, удержание Системы</td><td class="b-k">СДЕЛКА</td><td>целевое 12,5 % = 10 % фонд сети + 2,5 % Организатор · действующий сбор 0,2 % · план роста до 0,5 %</td><td><span class="b b-ob">обяз</span></td><td>SYSTEM и ORGANIZER</td><td>продавец</td><td>Организатор и фонд сети</td></tr>
+<tr data-o="ob"><td>Эквайринг</td><td class="b-k">СДЕЛКА</td><td>1–1,5 % либо в составе расчёта · комиссия расчётного контура 0,175 %</td><td><span class="b b-ob">обяз</span></td><td>в расчётном контуре</td><td>покупатель</td><td>банк-партнёр</td></tr>
+<tr data-o="ob"><td>Эскроу-гарантия</td><td class="b-k">СДЕЛКА</td><td>в составе удержания</td><td><span class="b b-ob">обяз</span></td><td>держание и сплит</td><td>—</td><td>банк и Организатор</td></tr>
+<tr data-o="op"><td>Кредитование и рассрочка</td><td class="b-d">КОМИССИЯ</td><td>2 % суммы либо банковская ставка</td><td><span class="b b-op">опция</span></td><td>FINANCE</td><td>покупатель</td><td>банк-партнёр и Организатор</td></tr>
+
+<tr class="ph"><td colspan="7">Фаза 7 · Клиринг и раскрытие</td></tr>
+<tr data-o="ob"><td>Расщепление платежа</td><td class="b-k">СДЕЛКА</td><td>в составе удержания</td><td><span class="b b-ob">обяз</span></td><td>ядро расчёта</td><td>—</td><td>всем участникам</td></tr>
+<tr data-o="ob"><td>Раскрытие эскроу и выплата</td><td class="b-k">СДЕЛКА</td><td>в составе удержания; срок 1–3 дня</td><td><span class="b b-ob">обяз</span></td><td>триггер раскрытия</td><td>—</td><td>всем участникам</td></tr>
+<tr data-o="au"><td>Антифрод и резервы</td><td class="b-n">—</td><td>в составе фонда поддержки 10 %</td><td><span class="b b-au">фон</span></td><td>—</td><td>—</td><td>фонд сети</td></tr>
+<tr data-o="au"><td>Арбитраж споров</td><td class="b-u">УСЛУГА</td><td>бесплатно либо фикс за случай</td><td><span class="b b-au">условн</span></td><td>HOLD</td><td>проигравшая сторона</td><td>Организатор</td></tr>
+</tbody>
+</table>
+
+<div class="co co-a" style="margin-top:10px"><b>Двадцать восемь сервисов, из них тринадцать в базовом реестре.</b>Пятнадцать добавлены при разборе полного пути. Разделы открыты: новые записи входят той же формой, структура не меняется.</div>
+</div>
+
+<!-- ═══ 3 ═══ -->
+<div class="sec" id="s3">
+<div class="st">Три предмета клиринга и девять ролей</div>
+<div class="c">
+<p>Клиринг — универсальный движок; меняется не механика, а <b>предмет</b>. Это и есть ось, под которую подстраивается вся Система: вопрос не «есть ли расчёт», а «что именно расщепляется».</p>
+</div>
+
+<div class="g3">
+<div class="ab"><h4><span class="b b-k">СДЕЛКА</span></h4><p>Клирингуется вся сумма покупателя: витрина, расчёт, эскроу, white-label, само расщепление и раскрытие. Ядро удержания.</p></div>
+<div class="ab"><h4><span class="b b-u">УСЛУГА</span></h4><p>Клирингуется работа: весь фулфилмент, логистика, страхование, арбитраж. Тариф за операцию, единицу или заказ.</p></div>
+<div class="ab"><h4><span class="b b-d">КОМИССИЯ</span></h4><p>Клирингуется приведённая ценность: продвижение, приведённый трафик, кредитование. Процент за результат.</p></div>
+</div>
+
+<div class="st" style="margin-top:16px">Девять ролей и что из них работает</div>
+<table class="tb">
+<thead><tr><th style="width:16%">Роль</th><th style="width:10%">Предмет</th><th style="width:30%">Какие сервисы</th><th style="width:20%">Кому уходит</th><th>Состояние</th></tr></thead>
+<tbody>
+<tr><td><b>SELLER</b></td><td>остаток</td><td>то, что осталось после операторов и удержания</td><td>продавцу</td><td><span class="b b-есть">работает</span></td></tr>
+<tr><td><b>FULFILLMENT</b></td><td>УСЛУГА</td><td>хранение, приёмка, упаковка, сборка, возвраты</td><td>операторам и складам</td><td><span class="b b-есть">работает</span></td></tr>
+<tr><td><b>LOGISTICS</b></td><td>УСЛУГА</td><td>доставка, пункт выдачи, магистраль</td><td>логистам и партнёрам ПВЗ</td><td><span class="b b-есть">работает</span></td></tr>
+<tr><td><b>ORGANIZER</b></td><td>СДЕЛКА</td><td>сбор за расчёт и реестр</td><td>Организатору</td><td><span class="b b-есть">работает</span></td></tr>
+<tr><td><b>SYSTEM</b></td><td>СДЕЛКА</td><td>удержание Системы, фонд поддержки сети</td><td>Организатору и фонду</td><td><span class="b b-op">нет в расчёте</span></td></tr>
+<tr><td><b>REFERRAL</b></td><td>КОМИССИЯ</td><td>продвижение, приведённый трафик</td><td>Организатору или агенту</td><td><span class="b b-op">нет в расчёте</span></td></tr>
+<tr><td><b>FINANCE</b></td><td>КОМИССИЯ</td><td>кредитование, рассрочка</td><td>банку и Организатору</td><td><span class="b b-op">нет в расчёте</span></td></tr>
+<tr><td><b>INSURANCE</b></td><td>УСЛУГА</td><td>страхование заказа</td><td>страховщику</td><td><span class="b b-op">нет в расчёте</span></td></tr>
+<tr><td><b>HOLD</b></td><td>УСЛУГА</td><td>заморозка доли до решения спора</td><td>Организатору</td><td><span class="b b-op">нет в расчёте</span></td></tr>
+</tbody>
+</table>
+
+<div class="co co-r" style="margin-top:12px"><b>Главный разрыв слоя — по полю «предмет клиринга», а не по уровням.</b>Расчёт держит предмет УСЛУГА целиком и берёт сбор Организатора. СДЕЛКА как удержание и КОМИССИЯ как плата за приведённого в расчёте отсутствуют. Именно это поле формы отделяет реализованное от нереализованного — и именно поэтому достройка монетизации есть добавление ролей, а не слом архитектуры: оба недостающих предмета уже определены формой.</div>
+</div>
+
+<!-- ═══ 4 ═══ -->
+<div class="sec" id="s4">
+<div class="st">Шесть уровней вовлечения</div>
+<p style="font-size:12.5px;color:var(--t2)">Разные продавцы приходят с разными нехватками. Система не навязывает одну модель: продавец берёт ровно то, чего ему не хватает. Расчёт есть на каждом уровне, но предмет клиринга разный.</p>
+
+<table class="tb">
+<thead><tr><th style="width:6%">№</th><th style="width:16%">Уровень</th><th style="width:9%">Витрина</th><th style="width:9%">Расчёт</th><th style="width:9%">Фулфилмент</th><th style="width:9%">Каталог</th><th style="width:14%">Что клирингуется</th><th>Под какую нехватку</th></tr></thead>
+<tbody>
+<tr><td><b>1</b></td><td>Полный</td><td>Система</td><td>Система</td><td>Система</td><td>Система</td><td class="b-k">вся сделка</td><td>Нет ничего своего — нужен готовый комплект</td></tr>
+<tr><td><b>2</b></td><td>Витрина своя</td><td>своя</td><td>Система</td><td>Система</td><td>Система</td><td class="b-k">вся сделка</td><td>Есть сайт, нет расчёта и логистики</td></tr>
+<tr><td><b>3</b></td><td>Фулфилмент наш</td><td>своя</td><td>свой</td><td>Система</td><td>Система</td><td class="b-u">услуга</td><td>Оплата налажена, нет склада и курьеров</td></tr>
+<tr><td><b>4</b></td><td>Только трафик</td><td>каталог-лайт</td><td>свой</td><td>свой</td><td>Система</td><td class="b-d">комиссия</td><td>Налаженный магазин, нужен канал сбыта</td></tr>
+<tr><td><b>5</b></td><td>White-label</td><td>фасад продавца</td><td>Система</td><td>Система</td><td>Система</td><td class="b-k">вся сделка</td><td>Нужен свой бренд на движке Системы</td></tr>
+<tr><td><b>6</b></td><td>Гибрид по заказу</td><td>своя</td><td>по заказу</td><td>свой или Системы</td><td>Система</td><td>по типу заказа</td><td>Разные заказы устроены по-разному</td></tr>
+</tbody>
+</table>
+
+<div class="co co-w" style="margin-top:10px"><b>Про нумерацию — обе шкалы сохранены.</b>В линейке первый уровень означает наибольшее участие Системы. В журнале повышений уровня шкала обратная: больший номер — большее вовлечение, и запрет понижения записан как «новый номер больше прежнего». Обе действуют в своих документах; при сведении в код применяется шкала журнала, поскольку она уже закреплена ограничением в данных.</div>
+
+<div class="st" style="margin-top:16px">Профиль магазина — уровень как конфигурация</div>
+<div class="c">
+<p>Уровень не переписывает движок: это набор независимых переключателей. Шесть уровней — готовые пресеты одной модели.</p>
+<div class="mono" style="background:#1c1c1a;color:#d8e8dd;padding:12px 15px;border-radius:6px;margin:8px 0;line-height:1.7;white-space:pre">профиль_магазина = {
+  витрина:    СИСТЕМА | СВОЯ
+  расчёт:     СИСТЕМА | СВОЙ | ПО_ЗАКАЗУ
+  фулфилмент: СИСТЕМА | СВОЙ
+  каталог:    В_СИСТЕМЕ | ТОЛЬКО_СВОЙ
+  бренд:      СИСТЕМА | ПРОДАВЦА
+  предмет:    СДЕЛКА | УСЛУГА | КОМИССИЯ    ← вычисляется из значений выше
+}</div>
+<p>Профиль магазина как таблица не спроектирован — сегодня магазин существует без профиля сервисов. Это самый нижний слой конфигурации, и без него правила уровней негде хранить.</p>
+</div>
+
+<div class="st" style="margin-top:16px">Порядок доведения по востребованности</div>
+<table class="tb">
+<thead><tr><th style="width:12%">Доля продавцов</th><th>Сервисы</th></tr></thead>
+<tbody>
+<tr><td><b>100 %</b></td><td>витрина, расчёт, эскроу, клиринг, корзина и заказ — ядро сделки</td></tr>
+<tr><td>95 %</td><td>общий каталог</td></tr>
+<tr><td>70 %</td><td>доставка последней мили</td></tr>
+<tr><td>65 %</td><td>упаковка</td></tr>
+<tr><td>60 %</td><td>продвижение</td></tr>
+<tr><td>55 %</td><td>хранение, сборка</td></tr>
+<tr><td>50 %</td><td>приёмка и фасовка</td></tr>
+<tr><td>45 %</td><td>агентный канал, возвраты</td></tr>
+<tr><td>40 %</td><td>пункт выдачи</td></tr>
+<tr><td>35 %</td><td>приведённый трафик</td></tr>
+<tr><td>30 %</td><td>кредитование</td></tr>
+<tr><td>25 %</td><td>white-label</td></tr>
+<tr><td>20 %</td><td>страхование</td></tr>
+<tr><td>15 %</td><td>арбитраж по спорам</td></tr>
+</tbody>
+</table>
+<div class="co co-g"><b>Читается как приоритет работ.</b>Сначала ядро, потом массовые опции, затем нишевые. Этот ряд задаёт волны запуска — сервис, нужный половине продавцов, делается раньше того, что нужен пятой части, независимо от того, какой интереснее.</div>
+</div>
+
+<!-- ═══ 5 ═══ -->
+<div class="sec" id="s5">
+<div class="st">Пять моделей включения сервиса</div>
+<p style="font-size:12.5px;color:var(--t2)">Ось, ортогональная и фазам, и уровням: она отвечает на вопрос, <b>когда</b> сервис включается. В паспорте параметров эта ось до сих пор отсутствовала.</p>
+
+<table class="tb">
+<thead><tr><th style="width:18%">Модель</th><th style="width:22%">Когда срабатывает</th><th style="width:34%">Что так включается</th><th>Фазы</th></tr></thead>
+<tbody>
+<tr><td><b>При подключении</b></td><td>разово, профиль магазина</td><td>онбординг, витрина, каталог, расчёт, эскроу и базовая схема фулфилмента — по умолчанию либо мастером</td><td>1–2</td></tr>
+<tr><td><b>На товар</b></td><td>разные товары — разные схемы</td><td>хлеб на своей доставке, зефир через фулфилмент Системы; конфигуратор в пределах магазина, изолирован</td><td>2–5</td></tr>
+<tr><td><b>На заказ</b></td><td>выбор в момент оформления</td><td>пункт выдачи против доставки, страхование, рассрочка — на конкретном заказе</td><td>4–6</td></tr>
+<tr><td><b>Подписка</b></td><td>активен фоном, оплата периодом</td><td>white-label, продвижение подпиской, премиальное хранение</td><td>2–3</td></tr>
+<tr><td><b>По событию</b></td><td>сам при наступлении условия</td><td>возвраты при возврате, антифрод на каждой сделке, раскрытие эскроу по исполнению</td><td>5–7</td></tr>
+</tbody>
+</table>
+
+<div class="co co-a" style="margin-top:10px"><b>Два горизонта настройки.</b>При присоединении продавец задаёт обязательное ядро и выбирает готовую связку. В процессе работы донастраивает по товару и по заказу, подключает опции по мере роста. Реестр поддерживает оба горизонта одной формой — и это то, что делает возможным одновременно быстрый старт и постепенное усложнение.</div>
+
+<div class="st" style="margin-top:16px">Шесть практических связок</div>
+<table class="tb">
+<thead><tr><th style="width:16%">Профиль</th><th style="width:24%">Берёт из реестра</th><th style="width:18%">Делает сам</th><th style="width:16%">Удержание</th><th>Кто это</th></tr></thead>
+<tbody>
+<tr><td><b>Своя логистика</b></td><td>ядро и каталог</td><td>весь фулфилмент</td><td>около 12,5 %</td><td>пекарня, локальный производитель</td></tr>
+<tr><td><b>Лёгкий старт</b></td><td>ядро и доставка</td><td>склад и упаковка</td><td>около 17 %</td><td>новый продавец без склада</td></tr>
+<tr><td><b>Полный фулфилмент</b></td><td>ядро, весь фулфилмент, возвраты</td><td>ничего из операций</td><td>19–20 %</td><td>ушедший с площадки</td></tr>
+<tr><td><b>Трафик-максимум</b></td><td>ядро, продвижение, приведённый трафик, агент</td><td>операции</td><td>12,5 % плюс 2–8 %</td><td>растущий в конкурентной категории</td></tr>
+<tr><td><b>White-label</b></td><td>внешняя витрина, расчёт, клиринг</td><td>фасад под своим брендом</td><td>12,5 % плюс подписка</td><td>крупный со своим сайтом</td></tr>
+<tr><td><b>Финансовый</b></td><td>ядро, кредитование, страхование</td><td>операции</td><td>12,5 % плюс финансовые ставки</td><td>с дефицитом оборотного капитала</td></tr>
+</tbody>
+</table>
+<p style="font-size:12.5px;color:var(--t2);margin-top:8px">Эти шесть связок — готовые наборы для предложения при подключении одним выбором вместо ручной настройки каждого сервиса. Они же ложатся на шесть уровней вовлечения.</p>
+</div>
+
+<!-- ═══ 6 ═══ -->
+<div class="sec" id="s6">
+<div class="st">Комплексное предложение: шесть блоков и их исполнители</div>
+<div class="co co-a"><b>Принцип сборки.</b>Продавец получает не список поставщиков, а единый пакет от имени Системы, где каждую функцию выполняет конкретный участник. Организатор — сборщик и гарант расчётов, участники — исполнители. В каждой ключевой роли не менее двух участников, поэтому предложение включает выбор, а не одного навязанного поставщика.</div>
+
+<table class="tb">
+<thead><tr><th style="width:6%">Блок</th><th style="width:18%">Что закрывает</th><th style="width:16%">От чьего имени</th><th style="width:26%">Участники</th><th>Почему участник согласен</th></tr></thead>
+<tbody>
+<tr><td><b>0</b></td><td>Ядро: бренд, реестр, эскроу и клиринг, бесплатное ПО магазина</td><td>Организатор</td><td>Система, расчётное ядро</td><td>Это собственное предложение Организатора</td></tr>
+<tr><td><b>1</b></td><td>Хранение и фулфилмент под ключ</td><td>оператор фулфилмента</td><td>CDEK Fulfilment (27 городов, 600+ дарксторов), СДТ (6 складов, 3000+ продавцов), ПЭК, Бета Про, UPMARKET</td><td>Агрегированный поток продавцов и гарантия оплаты через эскроу — самый заинтересованный участник</td></tr>
+<tr><td><b>2</b></td><td>Доставка покупателю, сеть пунктов выдачи</td><td>курьерская компания</td><td>СДЭК, Boxberry, Dostavista, Почта России</td><td>Клиенты вне экосистемы площадок; союз против их собственной логистики</td></tr>
+<tr><td><b>3</b></td><td>Магистраль между регионами</td><td>магистральный перевозчик</td><td>Деловые линии, ПЭК, КИТ</td><td>Заполнение порожних рейсов агрегированным потоком</td></tr>
+<tr><td><b>4</b></td><td>Эскроу-счета, выплаты 1–3 дня, эквайринг, кредитование</td><td>расчётный банк</td><td>ПСБ, ВТБ, Первый Инвестиционный, РСХБ</td><td>Новый транзакционный поток и доля в статьях дохода; преимущество эскроу-интерфейса</td></tr>
+<tr><td><b>5</b></td><td>Продвижение и аналитика продаж</td><td>сервис аналитики и Система</td><td>Система (сетевой трафик), MPSTATS, SelSup</td><td>Удержание клиента через новое решение</td></tr>
+</tbody>
+</table>
+
+<div class="co co-r" style="margin-top:12px"><b>Критический блок назван прямо.</b>Четвёртый — финансовый: без него не работают ни расчёты, ни статьи дохода, зависящие от них. Это единственный блок, который нельзя закрыть собственными силами, и единственный, где переговоры начинаются раньше разработки.</div>
+
+<div class="c">
+<h3>Зоны роста реестра</h3>
+<p>Названы в источниках как всплывающие по логике пути, но пока не включённые. Каждая добавляется той же формой:</p>
+<ul>
+<li>Аналитика и дашборд продавцу — сервис данных, фазы 2 и 7</li>
+<li>Ценообразование и репрайсер — фаза 2</li>
+<li>Программа лояльности покупателя — фаза 3</li>
+<li>Фискальный модуль, чеки — фаза 6</li>
+<li>Досудебная медиация до формального арбитража — фаза 7</li>
+</ul>
+<p style="margin-top:6px">Вывод источника о полноте: ядро сделки закрыто полностью, путь от подключения до раскрытия эскроу проходим сервисами реестра. Периферия — зона роста, не блокирующая запуск.</p>
+</div>
+</div>
+
+<!-- ═══ 7 ═══ -->
+<div class="sec" id="s7">
+<div class="st">Расхождения источников — сохранены, а не устранены</div>
+<div class="co co-p"><b>Как читать эту вкладку.</b>Ни одно из перечисленных расхождений не разрешено вычёркиванием. Для каждого указано, откуда взято каждое значение и в какой области оно действует. Там, где области не пересекаются, расхождения нет вовсе — есть две разные величины, которые прежде смешивались под одним именем.</div>
+
+<table class="tb">
+<thead><tr><th style="width:16%">Величина</th><th style="width:28%">Значение А</th><th style="width:28%">Значение Б</th><th>Как разводятся</th></tr></thead>
+<tbody>
+<tr><td><b>Сборка заказа</b></td><td>20–50 ₽ за заказ — <i>рыночный ориентир</i> из разбора по фазам, помечен там как реалистичный тариф РФ</td><td>200 ₽ за единицу, массовая 150 ₽ — <i>тариф участника</i> из реестра тарифов, применяется в сквозном примере и спецификации расчёта</td><td>Разные вещи: ориентир рынка против записанного тарифа конкретного оператора. В расчёте применяется тариф участника; ориентир служит для переговоров и оценки конкурентности</td></tr>
+<tr><td><b>Удержание Системы</b></td><td>12,5 % = 10 % фонд сети + 2,5 % Организатор — <i>целевая структура</i></td><td>0,2 % — <i>действующий сбор</i> Организатора, с планом роста до 0,5 %</td><td>Не конкуренты: целевая структура и текущая настройка. Обе записаны, переход между ними — вопрос момента, а не выбора значения</td></tr>
+<tr><td><b>Пакет фулфилмента</b></td><td>62 / 85 / 110 ₽ за заказ — <i>три оператора</i> в действующей модели конвейера</td><td>Сумма отдельных звеньев по ориентирам: приёмка, хранение, сборка, упаковка</td><td>Пакет — предложение оператора целиком; звенья — разбор его состава. Продавец берёт либо пакет, либо звенья по отдельности</td></tr>
+<tr><td><b>Доставка</b></td><td>150–350 ₽ ориентир; зоны 350 / 500 / 800 ₽</td><td>Операторы 175 / 210 / 290 ₽ за заказ</td><td>Зоны — тарифная сетка по расстоянию; операторские — цена конкретного перевозчика. Применяется тариф выбранного оператора по его зоне</td></tr>
+<tr><td><b>Нумерация уровней</b></td><td>Линейка: 1 — наибольшее участие Системы</td><td>Журнал повышений: больший номер — большее вовлечение</td><td>Обе действуют в своих документах. В данных применяется шкала журнала — она закреплена ограничением таблицы</td></tr>
+<tr><td><b>Число ролей расчёта</b></td><td>Девять по реестру</td><td>Четыре в работающем расчёте</td><td>Не расхождение, а состояние: пять ролей описаны формой и ждут включения. Обе цифры верны для своего слоя</td></tr>
+</tbody>
+</table>
+
+<div class="co co-g" style="margin-top:12px"><b>Что даёт такой способ сведения.</b>Ни одна величина не потеряна, и при этом расчёт остаётся однозначным: в каждом случае указано, какое из значений применяется в деньгах, а какое служит ориентиром или историей. Именно смешение этих ролей — ориентир, тариф, целевое, действующее — и порождало прежние противоречия.</div>
+
+<div class="co co-w"><b>Что осталось незакрытым внутри слоя.</b>Профиль магазина как хранимая конфигурация не спроектирован; пять ролей расчёта не включены; плательщик заполнен по всем сервисам, но нигде не хранится как поле. Это три работы, без которых сервисный слой остаётся описанием, а не механизмом.</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var tabs=document.querySelectorAll('#tabs .tab');
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.t)});
+    window.scrollTo({top:0,behavior:'smooth'});
+  })});
+  var rows=[].slice.call(document.querySelectorAll('#tr tbody tr[data-o]'));
+  var phs=[].slice.call(document.querySelectorAll('#tr tbody tr.ph'));
+  function apply(f){
+    var n=0;
+    rows.forEach(function(r){var v=(f==='all'||r.dataset.o===f);r.style.display=v?'':'none';if(v)n++});
+    phs.forEach(function(p){
+      var vis=false,x=p.nextElementSibling;
+      while(x&&!x.classList.contains('ph')){if(x.style.display!=='none'){vis=true;break}x=x.nextElementSibling}
+      p.style.display=vis?'':'none';
+    });
+    document.getElementById('stat').textContent=n+' из '+rows.length+' сервисов';
+  }
+  document.querySelectorAll('#flt .fb').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('#flt .fb').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on'); apply(b.dataset.f);});});
+  apply('all');
+})();
+</script>
+</body>
+</html>

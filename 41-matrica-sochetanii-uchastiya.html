@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Полная матрица сочетаний участия</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.5;font-size:13px}
+.w{max-width:1400px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--gn);margin-bottom:14px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--gn);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.ctl{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--bd);margin-bottom:12px}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.row input{flex:1;min-width:160px;padding:6px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12.5px;font-family:inherit;background:var(--card)}
+.fb{padding:4px 11px;font-size:11px;border:1px solid var(--bd);background:var(--card);border-radius:20px;cursor:pointer;color:var(--t2);font-family:inherit}
+.fb:hover{border-color:var(--gn);color:var(--t1)}.fb.on{background:var(--gn);border-color:var(--gn);color:#fff;font-weight:600}
+.fb:focus-visible{outline:2px solid var(--gn);outline-offset:2px}
+.stat{font-size:11px;color:var(--t3);margin-left:auto;font-family:ui-monospace,monospace}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;margin-top:8px}
+.tab{padding:5px 11px;font-size:11px;color:var(--t3);cursor:pointer;border:none;background:none;font-family:inherit;border-radius:5px}
+.tab:hover{color:var(--t1);background:var(--card)}.tab.on{background:var(--gn2);color:var(--gn);font-weight:600}
+.sec{display:none}.sec.on{display:block}
+.st{font-size:15px;font-weight:600;margin:14px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}.c ul{padding-left:16px;margin:4px 0}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.co-p{background:var(--pr2);border-left:3px solid var(--pr);color:#2e2670}
+.scroll{overflow-x:auto;border:1px solid var(--bd);border-radius:8px;background:var(--card)}
+table.mx{border-collapse:collapse;font-size:11.5px;width:100%;min-width:1080px}
+table.mx th{position:sticky;top:0;z-index:2;text-align:left;padding:7px 8px;background:#f0efe9;border-bottom:1px solid var(--bd);font-size:10px;font-weight:700;color:var(--t2);white-space:nowrap}
+table.mx td{padding:6px 8px;border-bottom:1px solid var(--bd);vertical-align:middle}
+table.mx tr:last-child td{border-bottom:none}
+table.mx tr:hover td{background:#fbfaf7}
+table.mx tr.bad td{opacity:.5}
+.ax{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--t2);white-space:nowrap}
+.nm{font-weight:600;font-size:12px}
+.lv{font-family:ui-monospace,monospace;font-weight:700;color:var(--gn)}
+.b{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;white-space:nowrap}
+.b-deal{background:var(--gn2);color:var(--gn)}.b-serv{background:var(--ac2);color:var(--ac)}
+.b-comm{background:var(--wr2);color:var(--wr)}.b-none{background:#eeede8;color:var(--t3)}
+.b-ok{background:var(--gn2);color:var(--gn)}.b-part{background:var(--wr2);color:var(--wr)}
+.b-no{background:var(--rd2);color:var(--rd)}.b-w1{background:var(--ac2);color:var(--ac)}
+.b-bad{background:var(--rd2);color:var(--rd)}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:10.5px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.tb .num{text-align:right;font-family:ui-monospace,monospace}
+.hit{background:#fff8e6!important}
+a{color:#2a6cb6}
+@media print{.ctl{position:static}.sec{display:block!important}table.mx{min-width:0;font-size:8.5px}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Полная матрица сочетаний участия</h1>
+  <p>Перебор всех положений пяти осей конфигурации: сто сорок четыре сочетания. Для каждого — допустимость, предмет клиринга, глубина участия, удержание и состояние готовности. Недопустимые не удалены, а помечены с указанием причины — их оказалось больше половины, и это отдельный результат.</p>
+  <div class="meta">23 августа 2026 · Оси: витрина 2 × расчёт 3 × исполнение 3 × каналы 4 × бренд 2 = 144 · Тариф расчётов 0,5 %, удержание 12,5 % по протоколу</div>
+<div style="max-width:1400px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Развёртка <a href="40-reestr-variantov-uchastiya.html" style="font-weight:600;">реестра вариантов участия</a>. Основания: <a href="39-protokol-i-pravki-v-pravila.html" style="font-weight:600;">протокол и правки Правил</a>, <a href="service-tiers.html" style="font-weight:600;">линейка уровней</a>, <a href="service-registry.html" style="font-weight:600;">реестр сервисов</a>, <a href="sku-visibility-seller.html" style="font-weight:600;">управление видимостью</a>, <a href="external-shop-integration.html" style="font-weight:600;">внешний магазин</a>, <a href="28-servis-edinyi.html" style="font-weight:600;">сервисный слой</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="co co-r" style="margin-bottom:10px"><b>Принято решение: расчёт только через Систему.</b>Ось расчёта снята, пространство вариантов сократилось до 48 сочетаний. Действующий реестр — <a href="42-reestr-uchastiya-raschet-cherez-sistemu.html">участие при расчёте через Систему</a>; варианты «только трафик», «расчёт свой» и «гибрид по заказу» из реестра исключены.</div>
+<div class="ctl">
+  <div class="row">
+    <input id="q" type="search" placeholder="Поиск по сочетанию…" autocomplete="off">
+    <button class="fb on" data-f="all">Все 144</button>
+    <button class="fb" data-f="valid">Допустимые</button>
+    <button class="fb" data-f="bad">Недопустимые</button>
+    <button class="fb" data-f="ok">Работают</button>
+    <button class="fb" data-f="w1">Волна 1</button>
+    <button class="fb" data-f="no">Не сделано</button>
+    <span class="stat" id="stat"></span>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-t="s1">Матрица</button>
+    <button class="tab" data-t="s2">Правила отбора</button>
+    <button class="tab" data-t="s3">Что показал перебор</button>
+  </div>
+</div>
+
+<div class="sec on" id="s1">
+<div class="scroll"><table class="mx" id="t"></table></div>
+</div>
+
+<div class="sec" id="s2">
+<div class="st">Правила, по которым сочетание признаётся недопустимым</div>
+<div class="co co-a"><b>Принцип.</b>Недопустимость означает не запрет Системы, а бессмысленность или противоречие. Ни одно сочетание не удалено из матрицы: у каждого помеченного указана причина, чтобы решение можно было пересмотреть.</div>
+
+<table class="tb">
+<thead><tr><th style="width:22%">Правило</th><th style="width:34%">Формулировка</th><th>Почему</th></tr></thead>
+<tbody>
+<tr><td><b>Нет предмета</b></td><td>Свой расчёт, своё исполнение, каталог и агент выключены</td><td>Продавец не берёт у Системы ничего. Это не вариант участия, а отсутствие отношений: нечего клирингововать и не за что платить</td></tr>
+<tr><td><b>Агент без каталога</b></td><td>Агент включён, каталог выключен</td><td>Агент подбирает из каталога Системы. Без каталога ему нечего показывать — сочетание технически пусто</td></tr>
+<tr><td><b>Марка без расчёта</b></td><td>Бренд продавца при своём расчёте или расчёте по заказу</td><td>Белая марка означает, что покупатель не видит Систему, но сделку ведёт она. При своём расчёте скрывать нечего — Системы в сделке и так нет</td></tr>
+<tr><td><b>Марка на своей витрине</b></td><td>Бренд продавца при собственной витрине</td><td>Избыточно: на своём сайте бренд и так свой. Сочетание схлопывается в вариант «витрина своя»</td></tr>
+</tbody>
+</table>
+
+<div class="st" style="margin-top:16px">Как вычисляются производные величины</div>
+<table class="tb">
+<thead><tr><th style="width:22%">Величина</th><th>Правило вычисления</th></tr></thead>
+<tbody>
+<tr><td><b>Предмет клиринга</b></td><td>Расчёт через Систему — сделка. Свой расчёт при исполнении Системы — услуга. Всё своё при включённом каталоге или агенте — комиссия за приведённого</td></tr>
+<tr><td><b>Удержание</b></td><td>Сделка — 12,5 % от суммы товаров: 0,5 % расчёты и 12,0 % фонд. Услуга — нет удержания, только тарифы операторов. Комиссия — 3–8 % с приведённых заказов</td></tr>
+<tr><td><b>Глубина участия</b></td><td>Сумма: расчёт через Систему — два, по заказу — один; исполнение Системы — два, частичное — один; витрина Системы — один; каталог — один; агент — один. Диапазон от одного до семи</td></tr>
+<tr><td><b>Готовность</b></td><td>Расчёт по заказу или свой — не сделано. Своя витрина — волна первая, нужен коннектор. Бренд продавца — не сделано, нет режима фасада. Агент включён — частично, прокси-маршрут. Иначе — работает до входа в эскроу</td></tr>
+</tbody>
+</table>
+
+<div class="co co-w"><b>Одно ограничение матрицы.</b>Ось каналов свёрнута до четырёх положений — сочетаний каталога и агента. Прямая ссылка и внешние площадки не разворачивались: первая не меняет ни предмета, ни удержания, вторая вообще вне Системы. При полном развороте пяти каналов сочетаний было бы пятьсот семьдесят шесть, и подавляющее большинство отличалось бы только видимостью товара.</div>
+</div>
+
+<div class="sec" id="s3">
+<div class="st">Что показал перебор</div>
+<div id="analysis"></div>
+</div>
+
+</div>
+<script>
+(function(){
+  var AX={
+    vit:[{k:'sys',t:'витрина Системы'},{k:'own',t:'витрина своя'}],
+    ras:[{k:'sys',t:'расчёт Системы'},{k:'own',t:'расчёт свой'},{k:'mix',t:'расчёт по заказу'}],
+    isp:[{k:'sys',t:'исполнение Системы'},{k:'part',t:'исполнение частичное'},{k:'own',t:'исполнение своё'}],
+    ch:[{k:'none',t:'без каталога'},{k:'cat',t:'каталог'},{k:'agent',t:'агент'},{k:'both',t:'каталог и агент'}],
+    br:[{k:'sys',t:'бренд Системы'},{k:'own',t:'бренд продавца'}]
+  };
+  var ROWS=[];
+  AX.vit.forEach(function(v){AX.ras.forEach(function(r){AX.isp.forEach(function(i){AX.ch.forEach(function(c){AX.br.forEach(function(b){
+    var cat=(c.k==='cat'||c.k==='both'), ag=(c.k==='agent'||c.k==='both');
+    var bad=null;
+    if(r.k==='own'&&i.k==='own'&&!cat&&!ag) bad='нет предмета: Система не участвует ни в чём';
+    else if(ag&&!cat) bad='агент без каталога: подбирать не из чего';
+    else if(b.k==='own'&&r.k!=='sys') bad='белая марка без расчёта Системы: скрывать нечего';
+    else if(b.k==='own'&&v.k==='own') bad='белая марка на своей витрине: бренд и так свой';
+
+    var predmet,hold;
+    if(r.k==='sys'||r.k==='mix'){ predmet='сделка'; hold=(r.k==='mix'?'12,5 % на заказах через Систему':'12,5 %'); }
+    else if(i.k!=='own'){ predmet='услуга'; hold='нет удержания, только тарифы операторов'; }
+    else if(cat||ag){ predmet='комиссия'; hold='3–8 % с приведённых заказов'; }
+    else { predmet='—'; hold='—'; }
+
+    var d=0;
+    if(r.k==='sys')d+=2; else if(r.k==='mix')d+=1;
+    if(i.k==='sys')d+=2; else if(i.k==='part')d+=1;
+    if(v.k==='sys')d+=1; if(cat)d+=1; if(ag)d+=1;
+
+    var state,why;
+    if(bad){ state='bad'; why=bad; }
+    else if(r.k==='mix'){ state='no'; why='нет переключателя расчёта в заказе'; }
+    else if(r.k==='own'){ state='no'; why='заказ не читает режим расчёта; предмет «услуга» в клиринге не выделен'; }
+    else if(b.k==='own'){ state='no'; why='нет режима фасада и привязки домена'; }
+    else if(v.k==='own'){ state='w1'; why='нужен коннектор, признак источника и проверка наличия'; }
+    else if(ag){ state='part'; why='агент существует прокси-маршрутом'; }
+    else { state='ok'; why='работает до входа в эскроу; дальше ручной расчёт либо банк'; }
+
+    var nm;
+    if(bad) nm='—';
+    else if(r.k==='own'&&i.k==='own') nm='Только трафик';
+    else if(r.k==='own') nm='Расчёт свой';
+    else if(r.k==='mix') nm='Гибрид по заказу';
+    else if(b.k==='own') nm='Белая марка';
+    else if(v.k==='own') nm='Внешний магазин';
+    else if(i.k==='own') nm='Витрина и расчёт Системы';
+    else nm='Полное участие';
+
+    ROWS.push({v:v,r:r,i:i,c:c,b:b,bad:bad,predmet:predmet,hold:hold,d:d,state:state,why:why,nm:nm});
+  })})})})});
+
+  var tbl=document.getElementById('t'), q=document.getElementById('q'), st=document.getElementById('stat');
+  var flt='all';
+  function badge(s){
+    if(s==='bad') return '<span class="b b-bad">недопустимо</span>';
+    if(s==='ok') return '<span class="b b-ok">работает</span>';
+    if(s==='part') return '<span class="b b-part">частично</span>';
+    if(s==='w1') return '<span class="b b-w1">волна 1</span>';
+    return '<span class="b b-no">не сделано</span>';
+  }
+  function pb(p){
+    if(p==='сделка') return '<span class="b b-deal">сделка</span>';
+    if(p==='услуга') return '<span class="b b-serv">услуга</span>';
+    if(p==='комиссия') return '<span class="b b-comm">комиссия</span>';
+    return '<span class="b b-none">—</span>';
+  }
+  function draw(){
+    var s=(q.value||'').trim().toLowerCase(), n=0;
+    var h='<thead><tr><th style="width:38px">№</th><th>Витрина</th><th>Расчёт</th><th>Исполнение</th><th>Каналы</th><th>Бренд</th><th style="width:46px">Глуб.</th><th>Предмет</th><th>Удержание</th><th>Вариант</th><th>Состояние</th><th>Примечание</th></tr></thead><tbody>';
+    ROWS.forEach(function(x,idx){
+      var okF = flt==='all' || (flt==='valid'&&!x.bad) || (flt==='bad'&&x.bad) ||
+                (flt==='ok'&&(x.state==='ok'||x.state==='part')) || (flt==='w1'&&x.state==='w1') || (flt==='no'&&x.state==='no');
+      var txt=[x.v.t,x.r.t,x.i.t,x.c.t,x.b.t,x.nm,x.predmet,x.why].join(' ').toLowerCase();
+      var okQ=!s||txt.indexOf(s)>-1;
+      if(!(okF&&okQ)) return;
+      n++;
+      h+='<tr class="'+(x.bad?'bad':'')+(s&&okQ?' hit':'')+'">'+
+        '<td class="ax">'+(idx+1)+'</td>'+
+        '<td class="ax">'+x.v.t.replace('витрина ','')+'</td>'+
+        '<td class="ax">'+x.r.t.replace('расчёт ','')+'</td>'+
+        '<td class="ax">'+x.i.t.replace('исполнение ','')+'</td>'+
+        '<td class="ax">'+x.c.t+'</td>'+
+        '<td class="ax">'+x.b.t.replace('бренд ','')+'</td>'+
+        '<td class="lv">'+(x.bad?'—':x.d)+'</td>'+
+        '<td>'+pb(x.predmet)+'</td>'+
+        '<td class="ax">'+x.hold+'</td>'+
+        '<td class="nm">'+x.nm+'</td>'+
+        '<td>'+badge(x.state)+'</td>'+
+        '<td style="color:var(--t2);font-size:11px">'+x.why+'</td></tr>';
+    });
+    tbl.innerHTML=h+'</tbody>';
+    st.textContent=n+' из '+ROWS.length;
+  }
+  q.addEventListener('input',draw);
+  document.querySelectorAll('.ctl .fb').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('.ctl .fb').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on'); flt=b.dataset.f; draw();
+  })});
+  document.querySelectorAll('#tabs .tab').forEach(function(t){t.addEventListener('click',function(){
+    document.querySelectorAll('#tabs .tab').forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s2){s2.classList.toggle('on',s2.id===t.dataset.t)});
+    window.scrollTo({top:0,behavior:'smooth'});
+  })});
+  draw();
+
+  // ── разбор ──
+  var tot=ROWS.length, bad=ROWS.filter(function(x){return x.bad}).length, val=tot-bad;
+  function cnt(s){return ROWS.filter(function(x){return x.state===s}).length}
+  var ok=cnt('ok'),part=cnt('part'),w1=cnt('w1'),no=cnt('no');
+  var byP={}; ROWS.filter(function(x){return !x.bad}).forEach(function(x){byP[x.predmet]=(byP[x.predmet]||0)+1});
+  var reasons={}; ROWS.filter(function(x){return x.bad}).forEach(function(x){reasons[x.bad]=(reasons[x.bad]||0)+1});
+
+  var h='<div class="co co-g"><b>Итог перебора.</b>Из '+tot+' сочетаний допустимы '+val+', отсеиваются '+bad+
+    '. Отсев идёт по четырём правилам, и ни одно из них не является запретом Системы — это либо пустое сочетание, либо избыточное.</div>';
+
+  h+='<div class="c"><h3>Причины отсева</h3><table class="tb"><thead><tr><th style="width:60%">Причина</th><th class="num">Сочетаний</th></tr></thead><tbody>';
+  Object.keys(reasons).forEach(function(k){h+='<tr><td>'+k+'</td><td class="num">'+reasons[k]+'</td></tr>'});
+  h+='</tbody></table></div>';
+
+  h+='<div class="c"><h3>Допустимые по предмету клиринга</h3><table class="tb"><thead><tr><th style="width:30%">Предмет</th><th class="num" style="width:16%">Сочетаний</th><th>Что это значит</th></tr></thead><tbody>'+
+    '<tr><td><b>Сделка</b></td><td class="num">'+(byP['сделка']||0)+'</td><td>Деньги идут через Систему, удержание 12,5 %. Больше половины всех допустимых вариантов</td></tr>'+
+    '<tr><td><b>Услуга</b></td><td class="num">'+(byP['услуга']||0)+'</td><td>Расчёт свой, исполнение от Системы. Удержания нет вовсе — только тарифы операторов</td></tr>'+
+    '<tr><td><b>Комиссия</b></td><td class="num">'+(byP['комиссия']||0)+'</td><td>Всё своё, Система только приводит покупателя. Самая лёгкая форма входа</td></tr>'+
+    '</tbody></table></div>';
+
+  h+='<div class="co co-r"><b>Состояние готовности допустимых сочетаний.</b>Работают '+ok+', частично '+part+' (агент прокси-маршрутом), '+w1+
+    ' отнесены к первой волне, '+no+' не сделаны. То есть <b>из '+val+' допустимых форм участия сегодня доступны '+(ok+part)+'</b> — меньше четверти.</div>';
+
+  var pctBad=Math.round(bad/tot*100), pctDeal=Math.round((byP['сделка']||0)/val*100);
+  h+='<div class="c"><h3>Четыре наблюдения из полного перебора</h3><ul>'+
+    '<li><b>Оси не ортогональны: отсеивается '+pctBad+' процентов.</b> Это опровергает первое впечатление от конфигуратора, где пять переключателей выглядят независимыми. На деле две пары связаны жёстко: агент без каталога пуст, белая марка без расчёта Системы бессмысленна. Вместе эти два правила дают '+(reasons['агент без каталога: подбирать не из чего']+reasons['белая марка без расчёта Системы: скрывать нечего'])+' отсева из '+bad+'.</li>'+
+    '<li><b>Отсюда следствие для интерфейса.</b> Раз связи жёсткие, конфигуратор не должен позволять их нарушить: включение агента обязано включать каталог, выбор белой марки — переводить расчёт на Систему. Сегодня переключатели независимы, и продавец может собрать пустое сочетание, о котором узнает только по отсутствию заказов.</li>'+
+    '<li><b>Три четверти допустимых вариантов ведут через сделку.</b> '+(byP['сделка']||0)+' из '+val+' — это '+pctDeal+' процентов. Форм с предметом «услуга» двенадцать, с предметом «комиссия» всего четыре. То есть пространство вариантов сильно смещено в сторону полного расчёта через Систему, а лёгкие формы входа в нём — редкость по построению, а не по недоработке.</li>'+
+    '<li><b>Форма «комиссия» — самая лёгкая и полностью недоступная.</b> Все четыре сочетания не работают. Это вход, при котором продавец не отдаёт ничего, кроме доступа к каталогу, и платит только за приведённых покупателей — ровно то, что нужно осторожному продавцу с готовой базой. Открывается одним шагом: ролью комиссии в расчёте.</li>'+
+    '</ul></div>';
+
+  h+='<div class="co co-a"><b>Что даёт эта матрица практически.</b>Она превращает разговор с продавцом из перечисления готовых пакетов в подбор по пяти вопросам. И она же показывает, какие ответы сегодня приведут в тупик: если продавец хочет считать деньги сам или выйти под своим брендом, ему пока нечего предложить, кроме обещания.</div>';
+
+  document.getElementById('analysis').innerHTML=h;
+})();
+</script>
+</body>
+</html>

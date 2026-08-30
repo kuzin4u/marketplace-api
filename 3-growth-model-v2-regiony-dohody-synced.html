@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Модель роста v2 — регионы, покупатели, 4 статьи дохода</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F3EC; --paper-line:#E4DECC;
+    --ink:#1D1B17; --ink-soft:#5B5548;
+    --ledger:#233A52; --ledger-soft:#3E5670;
+    --copper:#B07A34; --copper-soft:#E7D4B0;
+    --good:#3D6A4B; --bad:#A34A2E;
+    --card:#FCFAF4;
+    --s1:#233A52; --s2:#6E8CAE; --s3:#B07A34; --s4:#7A9E7E;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      repeating-linear-gradient(180deg, transparent, transparent 35px, var(--paper-line) 35px, var(--paper-line) 36px),
+      var(--paper);
+    color:var(--ink); font-family:'Inter',sans-serif; padding:0 0 80px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+  header{padding:56px 0 28px;border-bottom:2px solid var(--ink);margin-bottom:36px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ledger);display:flex;align-items:center;gap:10px;}
+  .eyebrow .stamp{border:1.5px solid var(--copper);color:var(--copper);padding:2px 8px;border-radius:3px;font-weight:600;}
+  h1{font-family:'PT Serif',serif;font-weight:700;font-size:36px;line-height:1.15;margin:14px 0 10px;letter-spacing:-.01em;}
+  h1 em{font-style:italic;color:var(--ledger);}
+  .lede{font-size:14.5px;color:var(--ink-soft);max-width:700px;line-height:1.55;}
+
+  .section-head{display:flex;align-items:baseline;gap:14px;margin:0 0 6px;}
+  .section-num{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--copper);font-weight:600;}
+  .section-head h2{font-family:'PT Serif',serif;font-size:22px;margin:0;font-weight:700;}
+  .section-sub{color:var(--ink-soft);font-size:13.5px;max-width:700px;margin:0 0 16px;line-height:1.5;}
+
+  .card{background:var(--card);border:1px solid var(--paper-line);border-left:4px solid var(--ledger);border-radius:4px;padding:24px 26px;margin-bottom:40px;}
+
+  /* REGION PICKS */
+  .region-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:6px;}
+  .region-card{background:#fff;border:1.5px solid var(--paper-line);border-radius:5px;padding:16px 18px;cursor:pointer;transition:.15s;}
+  .region-card.on{border-color:var(--copper);background:#FBF3E4;}
+  .region-card .r-name{font-family:'PT Serif',serif;font-weight:700;font-size:16px;margin-bottom:4px;}
+  .region-card .r-share{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--copper);margin-bottom:6px;}
+  .region-card .r-note{font-size:11.5px;color:var(--ink-soft);line-height:1.4;}
+  .region-card input{display:none;}
+
+  .cat-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+  .cat-chip{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;padding:8px 13px;border-radius:20px;
+    border:1.5px solid var(--paper-line);background:#fff;cursor:pointer;color:var(--ink-soft);
+  }
+  .cat-chip.on{border-color:var(--copper);background:var(--copper);color:#fff;}
+
+  .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:20px;margin-top:18px;}
+  .field{display:flex;flex-direction:column;gap:8px;}
+  .field label{font-size:12px;color:var(--ink-soft);font-weight:500;display:flex;justify-content:space-between;}
+  .field label .val{font-family:'IBM Plex Mono',monospace;color:var(--ink);font-weight:600;}
+  .field input[type=range]{width:100%;accent-color:var(--copper);}
+  .field .hint{font-size:10.5px;color:var(--ink-soft);opacity:.75;}
+
+  .toggle-row{display:flex;align-items:center;gap:10px;margin-top:6px;}
+  .toggle-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--copper);}
+  .toggle-row label{font-size:12.5px;color:var(--ink-soft);}
+
+  .chart-card{padding:26px 26px 18px;}
+  .chart-legend{display:flex;gap:18px;margin-bottom:12px;flex-wrap:wrap;}
+  .leg-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+  .leg-dot{width:10px;height:10px;border-radius:2px;}
+  svg{width:100%;height:auto;display:block;}
+  .axis-label{font-family:'IBM Plex Mono',monospace;font-size:10px;fill:var(--ink-soft);}
+  .grid-line{stroke:var(--paper-line);stroke-width:1;}
+  .gate-line{stroke:var(--bad);stroke-width:1.5;stroke-dasharray:2 3;}
+  .lag-line{stroke:var(--s3);stroke-width:1.2;stroke-dasharray:4 3;}
+
+  .result-row{display:flex;gap:14px;flex-wrap:wrap;border-top:1px solid var(--paper-line);padding-top:16px;margin-top:16px;}
+  .result{background:#fff;border:1px solid var(--paper-line);border-radius:4px;padding:13px 16px;min-width:155px;flex:1;}
+  .result .r-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin-bottom:5px;}
+  .result .r-value{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--ledger);}
+  .result .r-note{font-size:11px;color:var(--ink-soft);margin-top:3px;}
+
+  .streams-table{width:100%;border-collapse:collapse;margin-top:6px;font-size:13px;}
+  .streams-table th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);padding:0 10px 8px 0;border-bottom:1.5px solid var(--ink);}
+  .streams-table td{padding:10px 10px 10px 0;border-bottom:1px solid var(--paper-line);}
+  .streams-table .sdot{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px;}
+
+  .verdict{margin-top:16px;padding-top:14px;border-top:1px dashed var(--paper-line);font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .verdict b{color:var(--ink);}
+
+  footer{max-width:1080px;margin:40px auto 0;padding:0 32px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);display:flex;justify-content:space-between;}
+
+  @media (max-width:640px){ h1{font-size:26px;} }
+</style>
+</head>
+<body>
+<div style="max-width:1000px;margin:0 auto 18px;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 2 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Документ стратегического слоя (обоснование бизнес-модели), на который опирается <b>Преамбула Правил системы (ред. 2)</b>. При расхождении норма — Правила.</div>
+  <div><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Преамбула — модель роста</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 7 — Пирог (4 статьи дохода)</span></div>
+</div>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Волна 1+ <span class="stamp">регионы · покупатели · 4 статьи дохода</span></div>
+    <h1>Модель роста v2 — <em>селлеры, покупатели, доходы</em></h1>
+    <p class="lede">Регионы и категории селлеров задают ёмкость воронки. Покупатели считаются как производная от GMV и среднего чека. Доходы — по всем 4 статьям документа; статьи 3–4 включаются с задержкой в 6 месяцев от старта волны.</p>
+  </header>
+
+  <!-- REGIONS -->
+  <div class="section-head"><span class="section-num">01</span><h2>Стартовые регионы</h2></div>
+  <p class="section-sub">Данные АКИТ: 10 регионов дают 52% онлайн-продаж РФ. Выбранные регионы формируют совокупную долю рынка — она масштабирует потенциальный пул покупателей.</p>
+  <div class="card">
+    <div class="region-grid">
+      <label class="region-card on" data-share="17.7" data-seed="6">
+        <input type="checkbox" checked>
+        <div class="r-name">Москва + МО</div>
+        <div class="r-share">26,9% нац. онлайн-продаж</div>
+        <div class="r-note">Максимальная плотность селлеров и покупателей, штаб-квартира консалтинга</div>
+      </label>
+      <label class="region-card on" data-share="6.1" data-seed="4">
+        <input type="checkbox" checked>
+        <div class="r-name">Санкт-Петербург</div>
+        <div class="r-share">6,1% нац. онлайн-продаж</div>
+        <div class="r-note">Второй по плотности рынок, логистически близок к Москве</div>
+      </label>
+      <label class="region-card on" data-share="5.3" data-seed="3">
+        <input type="checkbox" checked>
+        <div class="r-name">Краснодарский край</div>
+        <div class="r-share">5,3% нац. онлайн-продаж</div>
+        <div class="r-note">Один из регионов с максимальным ростом онлайн-покупок 2025 г.</div>
+      </label>
+      <label class="region-card" data-share="3.0" data-seed="2">
+        <input type="checkbox">
+        <div class="r-name">Ростовская область</div>
+        <div class="r-share">3,0% нац. онлайн-продаж</div>
+        <div class="r-note">Резерв для Волны 2 — логистическое продолжение южного кластера</div>
+      </label>
+    </div>
+
+    <div class="cat-row" id="catRow">
+      <span class="cat-chip on" data-cat="food">Продукты питания / крафт / FMCG</span>
+      <span class="cat-chip on" data-cat="ownshop">Селлеры с собств. интернет-магазином</span>
+      <span class="cat-chip" data-cat="diy">DIY / автотовары (Волна 2)</span>
+    </div>
+    <div class="verdict" id="regionVerdict"></div>
+  </div>
+
+  <!-- PARAMETERS -->
+  <div class="section-head"><span class="section-num">02</span><h2>Параметры воронки и разгона</h2></div>
+  <div class="card">
+    <div class="field-grid">
+      <div class="field">
+        <label>Ёмкость инфраструктуры (макс. активных)<span class="val" id="v_cap">70</span></label>
+        <input type="range" id="cap" min="15" max="250" value="70" step="5">
+      </div>
+      <div class="field">
+        <label>Коэф. рекомендаций (новых / активного / мес)<span class="val" id="v_viral">0.30</span></label>
+        <input type="range" id="viral" min="0" max="1" value="0.3" step="0.05">
+      </div>
+      <div class="field">
+        <label>Активация<span class="val" id="v_activation">65%</span></label>
+        <input type="range" id="activation" min="20" max="100" value="65" step="5">
+      </div>
+      <div class="field">
+        <label>Отток (churn) в месяц<span class="val" id="v_churn">5%</span></label>
+        <input type="range" id="churn" min="0" max="20" value="5" step="1">
+      </div>
+      <div class="field">
+        <label>Разгон GMV — время до steady state<span class="val" id="v_ramp">4 мес</span></label>
+        <input type="range" id="ramp" min="1" max="9" value="4" step="1">
+      </div>
+      <div class="field">
+        <label>GMV на селлера в steady state<span class="val" id="v_gmvss">180 000 ₽/мес</span></label>
+        <input type="range" id="gmvss" min="30000" max="600000" value="180000" step="10000">
+      </div>
+      <div class="field">
+        <label>Средний чек покупателя<span class="val" id="v_check">1 100 ₽</span></label>
+        <input type="range" id="check" min="400" max="3000" value="1100" step="50">
+        <span class="hint">рыночное среднее 1385 ₽; нишевые категории обычно ниже</span>
+      </div>
+      <div class="field">
+        <label>Готовность инфраструктуры (месяц старта)<span class="val" id="v_ready">2</span></label>
+        <input type="range" id="readyMonth" min="0" max="6" value="2" step="1">
+      </div>
+    </div>
+  </div>
+
+  <!-- REVENUE STREAMS -->
+  <div class="section-head"><span class="section-num">03</span><h2>4 статьи дохода</h2></div>
+  <p class="section-sub">Статья 1 — 100% селлерам (не доход организатора). Статьи 2–4 — доход организатора; статьи 3–4 включаются через 6 месяцев после старта волны (переключаемо).</p>
+  <div class="card">
+    <div class="field-grid">
+      <div class="field">
+        <label>Статья 2 — тариф расчётного портала<span class="val" id="v_tariff">0.15%</span></label>
+        <input type="range" id="tariff" min="0.10" max="0.20" value="0.15" step="0.01">
+      </div>
+      <div class="field">
+        <label>Статья 3 — срок удержания в эскроу<span class="val" id="v_holddays">2 дн</span></label>
+        <input type="range" id="holddays" min="1" max="3" value="2" step="1">
+      </div>
+      <div class="field">
+        <label>Статья 3 — ставка овернайт (годовых)<span class="val" id="v_overnight">13%</span></label>
+        <input type="range" id="overnight" min="8" max="16" value="13" step="0.5">
+        <span class="hint">ключевая ставка ЦБ минус ~1 п.п.</span>
+      </div>
+      <div class="field">
+        <label>Статья 3 — доля организатора<span class="val" id="v_share3">50%</span></label>
+        <input type="range" id="share3" min="10" max="90" value="50" step="5">
+      </div>
+      <div class="field">
+        <label>Статья 4 — доля GMV в кредит/BNPL<span class="val" id="v_bnplshare">8%</span></label>
+        <input type="range" id="bnplshare" min="0" max="25" value="8" step="1">
+        <span class="hint">рыночный ориентир BNPL ≈8% GMV e-commerce</span>
+      </div>
+      <div class="field">
+        <label>Статья 4 — маржа кредитного продукта<span class="val" id="v_creditmargin">4%</span></label>
+        <input type="range" id="creditmargin" min="1" max="10" value="4" step="0.5">
+      </div>
+      <div class="field">
+        <label>Статья 4 — доля организатора<span class="val" id="v_share4">50%</span></label>
+        <input type="range" id="share4" min="10" max="90" value="50" step="5">
+      </div>
+      <div class="field">
+        <label>Сдвижка статей 3–4<span class="val" id="v_lag">6 мес</span></label>
+        <input type="range" id="lag" min="0" max="12" value="6" step="1">
+      </div>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="section-head"><span class="section-num">04</span><h2>Динамика на 24 месяца</h2></div>
+  <div class="card chart-card">
+    <div class="chart-legend">
+      <div class="leg-item"><span class="leg-dot" style="background:var(--s2)"></span>Ст.2 — комиссия</div>
+      <div class="leg-item"><span class="leg-dot" style="background:var(--s3)"></span>Ст.3 — проценты на средства</div>
+      <div class="leg-item"><span class="leg-dot" style="background:var(--s4)"></span>Ст.4 — кредитование</div>
+      <div class="leg-item"><span class="leg-dot" style="background:var(--bad)"></span>Гейт инфраструктуры</div>
+      <div class="leg-item"><span class="leg-dot" style="background:var(--copper)"></span>Старт статей 3–4</div>
+    </div>
+    <svg id="chart" viewBox="0 0 1000 340"></svg>
+
+    <div class="result-row">
+      <div class="result"><div class="r-label">Активных селлеров, 24 мес</div><div class="r-value" id="r_sellers">—</div></div>
+      <div class="result"><div class="r-label">GMV / мес, 24 мес</div><div class="r-value" id="r_gmv">—</div></div>
+      <div class="result"><div class="r-label">Покупателей (заказов) / мес</div><div class="r-value" id="r_buyers">—</div></div>
+      <div class="result"><div class="r-label">Совокупный доход организатора / мес</div><div class="r-value" id="r_totalrev">—</div></div>
+    </div>
+
+    <table class="streams-table">
+      <thead><tr><th>Статья</th><th>Доход / мес (24 мес)</th><th>Доля в доходе организатора</th></tr></thead>
+      <tbody>
+        <tr><td><span class="sdot" style="background:var(--s2)"></span>Ст.2 — расчёты</td><td id="s2val">—</td><td id="s2pct">—</td></tr>
+        <tr><td><span class="sdot" style="background:var(--s3)"></span>Ст.3 — проценты на средства</td><td id="s3val">—</td><td id="s3pct">—</td></tr>
+        <tr><td><span class="sdot" style="background:var(--s4)"></span>Ст.4 — кредитование</td><td id="s4val">—</td><td id="s4pct">—</td></tr>
+      </tbody>
+    </table>
+    <div class="verdict" id="verdict"></div>
+  </div>
+
+</div>
+
+<footer><span>Модель роста v2 · Распределённый маркетплейс</span><span id="footerDate"></span></footer>
+
+<script>
+function fmt(n,d=0){ if(isNaN(n)) return '—'; return n.toLocaleString('ru-RU',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function fmtShort(n){ if(n>=1e6) return fmt(n/1e6,2)+' млн ₽'; if(n>=1e3) return fmt(n/1e3,0)+' тыс ₽'; return fmt(n,0)+' ₽'; }
+
+document.querySelectorAll('.region-card').forEach(c=>{
+  c.addEventListener('click', e=>{
+    e.preventDefault();
+    c.classList.toggle('on');
+    c.querySelector('input').checked = c.classList.contains('on');
+    recalc();
+  });
+});
+document.querySelectorAll('.cat-chip').forEach(c=>{
+  c.addEventListener('click', ()=>{ c.classList.toggle('on'); recalc(); });
+});
+document.querySelectorAll('input[type=range]').forEach(el=>el.addEventListener('input', recalc));
+
+function rampFactor(age, rampMonths){
+  if(age<=0) return 0.15;
+  if(age>=rampMonths) return 1;
+  const x = age/rampMonths;
+  return 0.15 + 0.85*(x*x*(3-2*x));
+}
+
+function getRegionState(){
+  const cards = [...document.querySelectorAll('.region-card')];
+  const active = cards.filter(c=>c.classList.contains('on'));
+  const totalShare = active.reduce((s,c)=>s+parseFloat(c.dataset.share),0);
+  const seed = active.reduce((s,c)=>s+parseFloat(c.dataset.seed),0) || 3;
+  return {totalShare, seed, count: active.length};
+}
+
+function simulate(){
+  const region = getRegionState();
+  const cap = parseFloat(document.getElementById('cap').value);
+  const viral = parseFloat(document.getElementById('viral').value);
+  const activation = parseFloat(document.getElementById('activation').value)/100;
+  const churn = parseFloat(document.getElementById('churn').value)/100;
+  const ramp = parseFloat(document.getElementById('ramp').value);
+  const gmvss = parseFloat(document.getElementById('gmvss').value);
+  const check = parseFloat(document.getElementById('check').value);
+  const readyMonth = parseFloat(document.getElementById('readyMonth').value);
+
+  const tariff = parseFloat(document.getElementById('tariff').value)/100;
+  const holddays = parseFloat(document.getElementById('holddays').value);
+  const overnight = parseFloat(document.getElementById('overnight').value)/100;
+  const share3 = parseFloat(document.getElementById('share3').value)/100;
+  const bnplshare = parseFloat(document.getElementById('bnplshare').value)/100;
+  const creditmargin = parseFloat(document.getElementById('creditmargin').value)/100;
+  const share4 = parseFloat(document.getElementById('share4').value)/100;
+  const lag = parseFloat(document.getElementById('lag').value);
+
+  const streamsStartMonth = readyMonth + lag;
+
+  let cohorts = [];
+  let activeTotal = 0;
+  const series = [];
+  const months = 24;
+
+  for(let m=0;m<=months;m++){
+    if(m<readyMonth){ series.push({m,active:0,gmv:0,buyers:0,s2:0,s3:0,s4:0}); continue; }
+    let newSellers = (m===readyMonth) ? region.seed : activeTotal*viral;
+    const activated = newSellers*activation;
+    cohorts = cohorts.map(c=>({age:c.age+1,count:c.count*(1-churn)}));
+    let currentActive = cohorts.reduce((s,c)=>s+c.count,0);
+    let room = Math.max(cap-currentActive,0);
+    const admitted = Math.min(activated, room);
+    if(admitted>0.001) cohorts.push({age:0,count:admitted});
+    activeTotal = cohorts.reduce((s,c)=>s+c.count,0);
+    const gmv = cohorts.reduce((s,c)=>s+c.count*gmvss*rampFactor(c.age,ramp),0);
+    const buyers = check>0 ? gmv/check : 0;
+
+    const s2 = gmv*tariff;
+    let s3=0, s4=0;
+    if(m>=streamsStartMonth){
+      s3 = gmv*(holddays/365)*overnight*share3;
+      s4 = gmv*bnplshare*creditmargin*share4;
+    }
+    series.push({m,active:activeTotal,gmv,buyers,s2,s3,s4});
+  }
+  return {series, cap, readyMonth, streamsStartMonth, region};
+}
+
+function drawChart(sim){
+  const svg = document.getElementById('chart');
+  const W=1000,H=340,padL=70,padR=20,padT=16,padB=32;
+  const innerW=W-padL-padR, innerH=H-padT-padB;
+  const {series, readyMonth, streamsStartMonth} = sim;
+  const maxVal = Math.max(...series.map(s=>s.s2+s.s3+s.s4),1);
+  const x = i => padL + (i/(series.length-1))*innerW;
+  const y = v => padT + innerH - (v/maxVal)*innerH;
+
+  let c = '';
+  for(let g=0; g<=4; g++){
+    const yy = padT+innerH-(g/4)*innerH;
+    c += `<line class="grid-line" x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}"/>`;
+    c += `<text class="axis-label" x="${padL-8}" y="${yy+3}" text-anchor="end">${fmtShort(maxVal*g/4)}</text>`;
+  }
+  for(let m=0;m<=24;m+=4){ c += `<text class="axis-label" x="${x(m)}" y="${H-8}" text-anchor="middle">мес ${m}</text>`; }
+
+  if(readyMonth>0) c += `<line class="gate-line" x1="${x(readyMonth)}" y1="${padT}" x2="${x(readyMonth)}" y2="${padT+innerH}"/>`;
+  if(streamsStartMonth>readyMonth && streamsStartMonth<=24) c += `<line class="lag-line" x1="${x(streamsStartMonth)}" y1="${padT}" x2="${x(streamsStartMonth)}" y2="${padT+innerH}"/>`;
+
+  // stacked areas: s2 base, s3 on top, s4 on top
+  function areaPath(getTop, getBottom){
+    let p = `M ${x(0)} ${y(getBottom(series[0]))}`;
+    series.forEach((s,i)=> p += ` L ${x(i)} ${y(getBottom(s))}`);
+    for(let i=series.length-1;i>=0;i--) p += ` L ${x(i)} ${y(getTop(series[i]))}`;
+    p += ' Z';
+    return p;
+  }
+  c += `<path d="${areaPath(s=>0, s=>s.s2)}" fill="var(--s2)" fill-opacity="0.55"/>`;
+  c += `<path d="${areaPath(s=>s.s2, s=>s.s2+s.s3)}" fill="var(--s3)" fill-opacity="0.65"/>`;
+  c += `<path d="${areaPath(s=>s.s2+s.s3, s=>s.s2+s.s3+s.s4)}" fill="var(--s4)" fill-opacity="0.65"/>`;
+
+  svg.innerHTML = c;
+}
+
+function recalc(){
+  document.getElementById('v_cap').textContent = document.getElementById('cap').value;
+  document.getElementById('v_viral').textContent = parseFloat(document.getElementById('viral').value).toFixed(2);
+  document.getElementById('v_activation').textContent = document.getElementById('activation').value+'%';
+  document.getElementById('v_churn').textContent = document.getElementById('churn').value+'%';
+  document.getElementById('v_ramp').textContent = document.getElementById('ramp').value+' мес';
+  document.getElementById('v_gmvss').textContent = fmt(parseFloat(document.getElementById('gmvss').value),0)+' ₽/мес';
+  document.getElementById('v_check').textContent = fmt(parseFloat(document.getElementById('check').value),0)+' ₽';
+  document.getElementById('v_ready').textContent = document.getElementById('readyMonth').value;
+  document.getElementById('v_tariff').textContent = parseFloat(document.getElementById('tariff').value).toFixed(2)+'%';
+  document.getElementById('v_holddays').textContent = document.getElementById('holddays').value+' дн';
+  document.getElementById('v_overnight').textContent = document.getElementById('overnight').value+'%';
+  document.getElementById('v_share3').textContent = document.getElementById('share3').value+'%';
+  document.getElementById('v_bnplshare').textContent = document.getElementById('bnplshare').value+'%';
+  document.getElementById('v_creditmargin').textContent = document.getElementById('creditmargin').value+'%';
+  document.getElementById('v_share4').textContent = document.getElementById('share4').value+'%';
+  document.getElementById('v_lag').textContent = document.getElementById('lag').value+' мес';
+
+  const region = getRegionState();
+  document.getElementById('regionVerdict').innerHTML = `Выбрано регионов: <b>${region.count}</b>, совокупная доля нац. онлайн-рынка: <b>${fmt(region.totalShare,1)}%</b>. Стартовый пул селлеров Волны 1 (сумма по регионам): <b>${fmt(region.seed,0)}</b>.`;
+
+  const sim = simulate();
+  drawChart(sim);
+
+  const s24 = sim.series[24];
+  document.getElementById('r_sellers').textContent = Math.round(s24.active);
+  document.getElementById('r_gmv').textContent = fmtShort(s24.gmv);
+  document.getElementById('r_buyers').textContent = fmt(Math.round(s24.buyers),0);
+  const totalRev = s24.s2+s24.s3+s24.s4;
+  document.getElementById('r_totalrev').textContent = fmtShort(totalRev);
+
+  document.getElementById('s2val').textContent = fmtShort(s24.s2);
+  document.getElementById('s3val').textContent = fmtShort(s24.s3);
+  document.getElementById('s4val').textContent = fmtShort(s24.s4);
+  document.getElementById('s2pct').textContent = totalRev>0 ? fmt(s24.s2/totalRev*100,0)+'%' : '—';
+  document.getElementById('s3pct').textContent = totalRev>0 ? fmt(s24.s3/totalRev*100,0)+'%' : '—';
+  document.getElementById('s4pct').textContent = totalRev>0 ? fmt(s24.s4/totalRev*100,0)+'%' : '—';
+
+  let v = `К 24 месяцу — ${Math.round(s24.active)} активных селлеров в выбранных регионах, GMV ${fmtShort(s24.gmv)}/мес, ≈${fmt(Math.round(s24.buyers),0)} заказов/мес. `;
+  v += `Совокупный доход организатора — ${fmtShort(totalRev)}/мес, из них статья 2 (расчёты) — ${fmt(s24.s2/totalRev*100,0)}%, статьи 3–4 (проценты + кредитование) — ${fmt((s24.s3+s24.s4)/totalRev*100,0)}% при том, что они включились лишь с месяца ${sim.streamsStartMonth}.`;
+  document.getElementById('verdict').innerHTML = v;
+}
+
+recalc();
+document.getElementById('footerDate').textContent = new Date().toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'});
+</script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+
+<div style="max-width:1100px;margin:0 auto 18px;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 2 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Модуль ПТК, реализующий нормы <b>Правил системы (ред. 2)</b>. Общая архитектура — «Архитектура ПТК» (26). При расхождении норма — Правила.</div>
+  <div><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 4 — реестр/рейтинг</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 8 — сбалансированность</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 12 — споры</span></div>
+</div><h2 class="sr-only">Admin Panel — deep spec · Управление, мониторинг, BI · +3 модуля для маркетплейса</h2>
+<style>
+.at-btn{padding:6px 14px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text-secondary);transition:.15s;display:inline-block;margin:2px}
+.at-btn:hover{border-color:var(--border-strong)}.at-btn.on{border-color:var(--text-accent);color:var(--text-primary);background:var(--bg-accent)}
+.bl{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}
+.bl.is-new{border-color:var(--border-accent);border-width:2px}
+.bl h3{font-size:15px;font-weight:500;margin-bottom:8px}.bl h4{font-size:13px;font-weight:500;margin:10px 0 4px;color:var(--text-secondary)}
+.bl p{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{padding:6px 8px;text-align:left;font-weight:500;font-size:11px;color:var(--text-muted);border-bottom:1px solid var(--border)}
+.tb td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top}
+.tb tr.rn{background:var(--bg-accent)}
+.cb{font-family:var(--font-mono);font-size:11.5px;color:var(--text-secondary);background:var(--surface-0);border-radius:8px;padding:10px;margin-top:6px;line-height:1.7;white-space:pre-wrap;overflow-x:auto}
+.cb b{color:var(--text-accent);font-weight:500}
+.dn{font-size:12px;padding:10px 14px;border-radius:8px;background:var(--bg-accent);color:var(--text-accent);margin-bottom:12px;line-height:1.5}
+.bn{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;background:var(--bg-accent);color:var(--text-accent);margin-left:4px}
+.bk{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;background:var(--bg-success);color:var(--text-success);margin-left:4px}
+.sr{font-size:10px;color:var(--text-accent);background:var(--bg-accent);padding:1px 5px;border-radius:3px;font-weight:600}
+.wr{font-size:12px;padding:8px 12px;border-radius:6px;background:var(--bg-warning);color:var(--text-warning);margin-top:8px}
+.ok{font-size:12px;padding:8px 12px;border-radius:6px;background:var(--bg-success);color:var(--text-success);margin-top:8px}
+</style>
+
+<div class="dn"><b>Admin Panel — deep spec.</b> 11 вкладок из оригинала сохранены. +3 новых модуля: Реестр участников (ст. 4), Мониторинг операторов, Клиринг-отчёты. +фильтры маркетплейса в Deal Management, +многосторонний арбитраж в Dispute Resolution.</div>
+
+<div id="tabs" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px"></div>
+<div id="ct"></div>
+
+<script>
+var tabs=[
+  {id:"arch",l:"Архитектура"},
+  {id:"dash",l:"Дашборд (realtime)"},
+  {id:"deals",l:"Управление сделками"},
+  {id:"dispute",l:"Модерация споров"},
+  {id:"users",l:"Пользователи и KYC"},
+  {id:"partners",l:"Партнёры"},
+  {id:"finance",l:"Финансы"},
+  {id:"registry",l:"Реестр участников"},
+  {id:"monitoring",l:"Мониторинг операторов"},
+  {id:"clearing",l:"Клиринг-отчёты"},
+  {id:"config",l:"Настройки системы"},
+  {id:"roles",l:"Роли и доступ"},
+  {id:"audit",l:"Audit Log"},
+  {id:"api",l:"API"}
+];
+var cur="arch";
+function R(){
+  var h="";for(var i=0;i<tabs.length;i++){var t=tabs[i];h+='<button class="at-btn'+(t.id===cur?' on':'')+'" data-t="'+t.id+'">'+t.l+'</button>';}
+  document.getElementById("tabs").innerHTML=h;
+  document.querySelectorAll(".at-btn").forEach(function(b){b.onclick=function(){cur=this.getAttribute("data-t");R()}});
+  document.getElementById("ct").innerHTML=D[cur]||'';
+}
+var D={};
+
+D.arch='<div class="bl"><h3>Admin Panel — архитектура <span class="bk">расширена</span></h3><p>Внутреннее веб-приложение для операционной команды НСВР. Не доступен публично — только через VPN + 2FA.</p>'+
+'<div class="cb"><b>Стек:</b>\nFrontend:  React 18 + Ant Design 5 (или Retool для MVP — zero-code)\nBackend:   Node.js API (отдельный от public API Gateway)\nAuth:      SSO через Auth Service (JWT, role >= MODERATOR)\nBI:        Metabase (self-hosted), embedded через iframe\nDB:        Read-replica PostgreSQL (не пишем в primary)\nRealtime:  WebSocket (dashboard KPIs, live feed)\n\n<b>Модули (11 → 14):</b>\n├─ Dashboard           // realtime KPI\n├─ Deal Management     // поиск/фильтрация сделок\n├─ Dispute Resolution  // модерация, арбитраж\n├─ User Management     // пользователи, KYC, блокировки\n├─ Partner Management  // площадки-партнёры, API-ключи\n├─ Finance             // revenue, reconciliation, payouts\n├─ <b>Registry</b>            // НОВЫЙ: участники, тарифы, SLA (ст. 4)\n├─ <b>Operator Monitoring</b> // НОВЫЙ: SLA compliance, алерты\n├─ <b>Clearing Reports</b>    // НОВЫЙ: сплиты, статусы, recon\n├─ Config              // системные параметры\n├─ Roles & Access      // RBAC для Admin Panel\n├─ Audit Log           // immutable journal\n└─ Admin API           // все endpoints</div></div>';
+
+D.dash='<div class="bl"><h3>Дашборд — realtime KPI <span class="bk">расширен</span></h3><p>Первый экран после входа. Обновляется каждые 30 секунд через WebSocket. Период: сегодня / 7 дней / 30 дней / произвольный.</p>'+
+'<h4>Верхняя панель — 8 KPI-карточек <span class="bk">без изменений</span></h4>'+
+'<div class="cb">┌──────────┬──────────┬──────────┬──────────┐\n│ 47       │ 8,2M     │ 14,3K    │ 42       │\n│ Сделок   │ GMV ₽    │ Revenue ₽│ NPS      │\n│ ↑ 12%    │ ↑ 18%    │ ↑ 15%    │ = 0%     │\n├──────────┼──────────┼──────────┼──────────┤\n│ 312      │ 45,6M    │ 3        │ 99,8%    │\n│ Активных │ Эскроу ₽ │ Споров   │ Bank API │\n│ ↑ 8      │ + 3,2M   │ ↑ 1      │ OK       │\n└──────────┴──────────┴──────────┴──────────┘</div>'+
+'<h4>Новые KPI-карточки <span class="bn">● маркетплейс</span></h4>'+
+'<div class="cb">┌──────────┬──────────┬──────────┬──────────┐\n│ 99,7%    │ 96,2%    │ 12       │ PASSED ✓ │\n│ Clearing │ SLA      │ Активных │ Гейт     │\n│ Success  │ Compli.  │ селлеров │ статус   │\n├──────────┼──────────┼──────────┼──────────┤\n│ 3,1M     │ 247      │ 18       │ 2        │\n│ GMV маркетплейса    │ Заказов  │ SKU      │ SLA      │\n│ за 30д   │ за 30д   │ активных │ breaches │\n└──────────┴──────────┴──────────┴──────────┘</div>'+
+'<h4>6 графиков <span class="bk">сохранены</span></h4>'+
+'<div class="cb">1. GMV по дням (line chart, 30 дней, два ряда: C2C + маркетплейс)\n2. Сделки по статусам (stacked bar: COMPLETED / IN_PROGRESS / DISPUTE / ...)\n3. Конверсия воронки (funnel: impression → deal → deposit → complete)\n4. Распределение по типам (pie: SERVICE 40%, GOODS 25%, MARKETPLACE_ORDER 20%, ...)\n5. Время сделки (histogram: медиана 3.2 дня, p95 12 дней)\n6. Revenue по каналам (bar: Widget 45%, Organic 30%, Marketplace 25%)</div></div>';
+
+D.deals='<div class="bl"><h3>Управление сделками <span class="bk">расширено</span></h3><h4>Список сделок (таблица + фильтры)</h4>'+
+'<div class="cb"><b>Фильтры (sidebar):</b>\nСтатус:  [Все] [Активные] [Завершённые] [Споры] [Отменённые]\nКонтур:  [C2C] [C2B] [B2B] [<b>Маркетплейс</b>]    // НОВЫЙ фильтр\nРежим:   [Простой] [Milestone] [Залог] [Займ] [GAP] [Рамочный] [<b>SPLIT_CLEARING</b>]\nПериод:  [Сегодня] [7 дней] [30 дней] [Произвольный]\nСумма:   от [____] до [____] ₽\nПартнёр: [Авито] [FL.ru] [ЦИАН] [Профи] [Органика] [<b>Маркетплейс</b>]\n<b>Селлер:  [Все] [ФИО / ИНН селлера]</b>       // НОВЫЙ фильтр\n<b>Оператор:[Все] [Фулфилмент X] [Логистика Y]</b> // НОВЫЙ фильтр\nПоиск:   ID сделки / ФИО / телефон / ИНН\n\n<b>Таблица:</b>\nID │ Тип │ Режим │ Статус │ Сумма │ Сторона A │ Сторона B │ Создана │ Обновлена │ [→]\n\n<b>Для SPLIT_CLEARING дополнительно:</b>\n│ Селлер │ Фулфилмент │ Логистика │ Clearing status │</div>'+
+'<h4>Детальная карточка сделки <span class="bk">расширена</span></h4>'+
+'<div class="cb"><b>Карточка сделки #NSVR-2027-045892:</b>\n═══ ОБЩИЕ ═══\nТип: MARKETPLACE_ORDER  │  Режим: SPLIT_CLEARING\nСтатус: CLEARING  │  Создана: 2027-06-15 14:32\nСумма: 12 500₽  │  Комиссия: 21₽ (0.175%)\n\n═══ УЧАСТНИКИ ═══        // НОВЫЙ блок для SPLIT_CLEARING\nПокупатель: Сидоров П.А. (+7 900 ***-**-43)\nСеллер:     Масса Матере (ИП Иванов, ИНН 771234567890)\nФулфилмент: 3PL-Сервис (ООО, ИНН 7712345678)\nЛогистика:  Курьер-Экспресс (ООО, ИНН 7798765432)\n\n═══ SPLIT RULES ═══      // НОВЫЙ блок\nСеллер:     10 800₽ (86.4%)\nФулфилмент:    800₽ (6.4%)  [тариф: 200₽/ед × 4 ед]\nЛогистика:     675₽ (5.4%)  [тариф: зона-2]\nОрганизатор:    25₽ (0.2%)  [0.2% от суммы]\nИтого:      12 300₽ ← баланс эскроу (12 500 − 200 комиссия)\n\n═══ TIMELINE ═══\n14:32 DRAFT → PENDING_SIGN (auto)\n14:33 PENDING_SIGN → SIGNED (покупатель SMS OTP)\n14:35 SIGNED → DEPOSITED (банк webhook)\n14:35 DEPOSITED → FULFILLING (auto assign)\n15:10 FULFILLING → SHIPPING (фулфилмент webhook)\n16:45 SHIPPING → PENDING_ACCEPT (логистика webhook)\n17:20 PENDING_ACCEPT → CLEARING (покупатель accept)\n[ожидается] CLEARING → COMPLETED (Clearing Engine)</div></div>';
+
+D.dispute='<div class="bl"><h3>Модерация споров — детальный workflow <span class="bk">расширен</span></h3>'+
+'<h4>Очередь споров <span class="bk">без изменений</span></h4>'+
+'<div class="cb"><b>Сортировка:</b> по приоритету (сумма × время ожидания)\n🔴 Критический: сумма > 500K или ожидание > 7 дней\n🟡 Высокий:     сумма > 100K или ожидание > 3 дня\n🟢 Обычный:     всё остальное\n\n<b>Таблица очереди:</b>\nID │ 🔴 │ Сделка │ Сумма │ Инициатор │ Причина │ Открыт │ Модератор │ [Взять]</div>'+
+'<h4>Экран модерации спора (C2C) <span class="bk">без изменений</span></h4>'+
+'<div class="cb"><b>Спор #D-2847 │ Сделка №45892 │ Ремонт ванной │ 120 000₽</b>\n├── Заказчик: Петров С. │ Жалоба: «Плитка криво, затирка пятнами»\n├── Исполнитель: Иванов А. │ Ответ: «Всё по ТЗ, клиент придирается»\n├── Доказательства: 8 фото (заказчик) + 5 фото (исполнитель)\n├── ⏱ SLA: 18ч осталось │ Уровень: L1\n├── [Для заказчика] [Для исполнителя] [Частично] [Эскалировать L2]\n└── [Запросить дополнительные фото] [Назначить осмотр]</div>'+
+'<h4>Многосторонний арбитраж (маркетплейс) <span class="bn">● новый · ст. 12.4</span></h4>'+
+'<div class="cb"><b>Спор #D-5102 │ Заказ №MP-78431 │ Товар повреждён │ 12 500₽</b>\n├── Покупатель: Сидоров П. │ «Коробка мятая, товар треснул»\n├── Селлер: Масса Матере │ «Товар отправлен в целости, фото сборки»\n├── Фулфилмент: 3PL-Сервис │ «Упаковано по стандарту, акт передачи курьеру»\n├── Логистика: Курьер-Экспресс │ «Доставлен без повреждений, фото подписи»\n├── Доказательства:\n│   ├── Покупатель: 3 фото повреждения\n│   ├── Селлер: 2 фото товара до отправки\n│   ├── Фулфилмент: скан акта передачи + фото упаковки\n│   └── Логистика: фото при доставке + GPS-трек\n├── ⏱ SLA: 2 дня │ Уровень: L1 (Организатор)\n│\n├── <b>ОПРЕДЕЛЕНИЕ ВИНОВНИКА:</b>\n│   [Виновник: Селлер]      → возврат из доли селлера\n│   [Виновник: Фулфилмент]  → возврат из доли фулфилмента\n│   [Виновник: Логистика]   → возврат из доли логистики\n│   [Частичная вина: ...]   → распределённый возврат\n│   [Возврат покупателю]    → полный refund\n│\n├── [Запросить фото сборки] [Запросить акт передачи]\n├── [Запросить фото при доставке] [GPS-трек]\n└── [Эскалировать L2: юрист]</div>'+
+'<div class="wr">При определении виновника → Clearing Engine пересчитывает split_rules: доля виновника уменьшается на сумму возврата. Escrow: частичный refund покупателю + перерасчёт выплат участникам.</div></div>';
+
+D.users='<div class="bl"><h3>Пользователи и KYC <span class="bk">расширено</span></h3><h4>Поиск и фильтры <span class="bk">без изменений</span></h4>'+
+'<div class="cb"><b>Поиск:</b> телефон / email / ИНН / ФИО / user_id / ЕСИА OID\n<b>Фильтры:</b>\nKYC:    [Level 0] [Level 1] [Level 2]\nТип:    [ФЛ] [Самозанятый] [ИП] [ООО]\nСтатус: [Активен] [Заблокирован]\nСделки: от [__] до [__]\nРег-ция: период\n<b>Роли маркетплейса: [SELLER] [BUYER_MP] [FULFILLMENT_OP] [LOGISTICS_OP]</b>  // НОВЫЙ</div>'+
+'<h4>Карточка пользователя <span class="bk">сохранена</span></h4>'+
+'<div class="cb"><b>Пользователь #USR-89342</b>\n═══ ПРОФИЛЬ ═══\nИмя:     Петров Сергей Иванович\nТелефон: +7 900 ***-**-67\nEmail:   p****v@mail.ru\nKYC:     Level 2 (ЕСИА ✓, ИНН ✓)\nТип:     ИП (самозанятый)\nРоли:    USER, SELF_EMPLOYED, <b>SELLER</b>    // может иметь несколько\nСтатус:  Активен (с 15.03.2027)\n\n═══ СДЕЛКИ ═══\nВсего: 23  │  Завершённых: 19  │  Споров: 1 (проиграл)\nGMV:   1.2M₽  │  Комиссии: 2.1K₽\n\n═══ МАРКЕТПЛЕЙС ═══       // НОВЫЙ блок\nParticipant ID: PTR-67891\nМагазин: «Масса Матере»\nSKU: 18 активных\nЗаказов (30д): 47\nGMV маркетплейс (30д): 189K₽\n\n═══ ДЕЙСТВИЯ ═══\n[Заблокировать] [Сбросить KYC] [Сменить роль]\n[Impersonate] [Лог действий]\n<b>[Открыть в реестре]</b>  // НОВЫЙ: ссылка на модуль Реестр</div></div>';
+
+D.partners='<div class="bl"><h3>Управление партнёрами <span class="bk">без изменений</span></h3>'+
+'<div class="cb"><b>Партнёр: Авито</b>\n═══ КОНФИГУРАЦИЯ ═══\nPartner ID:    avito\nAPI Key:       pk_live_****...****3f7a  [Ротировать ключ]\nWebhook URL:   https://api.avito.ru/nsvr/webhook\nВиджет:        v1.4.2 (актуальная)\nТема:          light (custom Avito blue #00AAFF)\nRevenue share: 15%\nРежимы:        SIMPLE только\nСтатус:        ACTIVE\n\n═══ СТАТИСТИКА (30 дней) ═══\nImpressions: 142 000\nClicks:        5 680 (CTR 4.0%)\nСделки создано: 2 216\nСделки завершены: 1 408 (conv. 63%)\nGMV:          28.3M₽\nRevenue НСВР: 49.5K₽\nPayout партнёру: 7.4K₽\n\n═══ ЗДОРОВЬЕ ИНТЕГРАЦИИ ═══\nWidget load time: 1.2s (OK)\nAPI error rate:   0.02% (OK)\nWebhook delivery: 99.8% (OK)\nLast deploy:      2 дня назад</div></div>';
+
+D.finance='<div class="bl"><h3>Финансы <span class="bk">расширен</span></h3>'+
+'<div class="cb"><b>Дашборд финансов:</b>\n┌────────────────┬────────────────┬────────────────┐\n│ 378,6K         │ 227,2K (60%)   │ 151,4K (40%)   │\n│ Revenue YTD    │ НСВР           │ Банку          │\n├────────────────┼────────────────┼────────────────┤\n│ 41,3K          │ <b>12,8K</b>          │ <b>2,1K</b>           │\n│ Partner payouts│ <b>Clearing payouts│ Organizer rev</b> │\n└────────────────┴────────────────┴────────────────┘</div>'+
+'<h4>Reconciliation <span class="bk">расширена</span></h4>'+
+'<div class="cb"><b>Ежедневная сверка (02:00 МСК):</b>\nОпераций в банке: 47\nОпераций в НСВР:  47\nСовпало:          46 (97.9%)\nРасхождения:      1\n\nMISSING_IN_NSVR:  1 операция (webhook timeout)\n<b>PARTIAL_CLEARING: 0</b>  // НОВЫЙ тип расхождения (ст. 6.2)\n\n<b>Clearing reconciliation (НОВОЕ):</b>\n├─ Клирингов за день:        12\n├─ Успешных:                 12 (100%)\n├─ Всего split-инструкций:   48\n├─ Подтверждённых:           48 (100%)\n├─ Pending > 24h:            0  ✓\n└─ Расхождение сумм:         0  ✓</div></div>';
+
+D.registry='<div class="bl is-new"><h3>Реестр участников <span class="bn">● новый модуль · ст. 4</span></h3><p>CRUD-управление участниками Системы. Доступен: ADMIN, ORGANIZER.</p>'+
+'<h4>Список участников</h4>'+
+'<div class="cb"><b>Фильтры:</b>\nТип:    [Селлер] [Фулфилмент] [Логистика] [Склад] [Магистраль]\nСтатус: [Активен] [Приостановлен] [Выходит] [Заблокирован]\nРегион: [Москва] [СПб] [Все]\nSLA:    [OK] [Breach > 0]\n\n<b>Таблица:</b>\nID │ Название │ ИНН │ Тип │ Регион │ Тариф │ SLA % │ Рейтинг │ Статус │ [→]</div>'+
+'<h4>Карточка участника</h4>'+
+'<div class="cb"><b>Участник #PTR-12345: 3PL-Сервис (ООО)</b>\n═══ ОБЩИЕ ═══\nТип:       FULFILLMENT\nИНН:       7712345678  │  КПП: 771201001  │  ОГРН: 1177746012345\nАдрес:     г. Москва, ул. Складская, д. 15\nAPI-key:   fk_live_****  [Ротировать]\nСтатус:    ACTIVE (с 01.04.2027)\n\n═══ ТАРИФЫ (ст. 3.2) ═══\nСборка (1 ед):      200₽\nСборка (пакет 5+):  150₽/ед\nХранение:           50₽/паллетоместо/день\nВозвратная логистика: 300₽\nОбновлено: 15.06.2027 │ [Редактировать тарифы]\n\n═══ SLA (ст. 2.4) ═══\nВремя сборки:      24ч (target)  │  Факт: 18ч (avg)  │  Compliance: 97%\nДоступность API:   99.5% (target) │  Факт: 99.8%      │  OK\nТочность сборки:   99% (target)   │  Факт: 99.2%      │  OK\n[Редактировать SLA]\n\n═══ ПРИВЯЗКИ (ст. 3.3) ═══\nСеллеры: 5 привязано [Список] [Добавить]\nЛогистика: Курьер-Экспресс (автоматическая передача)\n\n═══ ДЕЙСТВИЯ ═══\n[Приостановить] [Инициировать выход (ст. 13.5)]\n[История тарифов] [История SLA] [Audit log]</div>'+
+'<h4>Гейт-панель (ст. 13.2)</h4>'+
+'<div class="cb"><b>GATE STATUS: PASSED ✓</b>\n─────────────────────────────────────────\nФулфилмент:   2 / 2 (min) ✓  [3PL-Сервис, FulfilPro]\nЛогистика:    2 / 2 (min) ✓  [Курьер-Экспресс, Доставка+]\nСклад:        1 / 1 (min) ✓  [СкладСервис]\nМагистраль:   1 / 1 (min) ✓  [ТрансЛогистик]\nБанк:         1 / 1 (min) ✓  [ПСБ]\n─────────────────────────────────────────\n→ Регистрация новых селлеров: РАЗРЕШЕНА\n→ Последняя проверка: 12.08.2026 09:00</div></div>';
+
+D.monitoring='<div class="bl is-new"><h3>Мониторинг операторов <span class="bn">● новый модуль</span></h3><p>Realtime-мониторинг SLA compliance и операционных метрик каждого оператора. Доступен: ADMIN, ORGANIZER.</p>'+
+'<h4>Dashboard операторов</h4>'+
+'<div class="cb"><b>Сводка (обновление 1 мин):</b>\n┌────────────────────┬──────┬──────┬───────┬──────────┐\n│ Оператор           │ Тип  │ SLA% │ Рейт. │ Заказов  │\n├────────────────────┼──────┼──────┼───────┼──────────┤\n│ 3PL-Сервис         │ FUL  │ 97%  │ 4.8   │ 312 (30д)│\n│ FulfilPro          │ FUL  │ 94%  │ 4.5   │ 198 (30д)│\n│ Курьер-Экспресс    │ LOG  │ 96%  │ 4.7   │ 410 (30д)│\n│ Доставка+          │ LOG  │ 91%  │ 4.2   │ 287 (30д)│\n│ СкладСервис        │ WH   │ 99%  │ 4.9   │ 510 (30д)│\n│ ТрансЛогистик      │ TRK  │ 98%  │ 4.6   │ 89 (30д) │\n└────────────────────┴──────┴──────┴───────┴──────────┘</div>'+
+'<h4>Детальный экран оператора</h4>'+
+'<div class="cb"><b>3PL-Сервис — детали (30 дней):</b>\n\n├── SLA: время сборки\n│   ├── Target: 24ч\n│   ├── Avg: 18ч  │  Median: 16ч  │  P95: 28ч\n│   ├── On-time: 302 / 312 (96.8%)\n│   └── Late: 10 (макс. опоздание: 6ч)\n│\n├── SLA: точность сборки\n│   ├── Target: 99%\n│   ├── Факт: 99.4% (310 / 312)\n│   └── Ошибки: 2 (неверная комплектация)\n│\n├── SLA: API uptime\n│   ├── Target: 99.5%\n│   ├── Факт: 99.8%\n│   └── Downtime: 1.4ч (28.06 01:00–02:24)\n│\n├── Финансы\n│   ├── Выручка (30д): 62.4K₽\n│   ├── Средний чек: 200₽\n│   └── Возвраты по вине: 3 (900₽)\n│\n└── Тренд: [Графики Metabase — SLA%, рейтинг, объём за 6 мес]</div>'+
+'<h4>Алерты</h4>'+
+'<div class="cb"><b>Правила автоматических алертов:</b>\n├── SLA compliance < 95%     → YELLOW alert → Организатору\n├── SLA compliance < 90%     → RED alert → Организатору + оператору\n├── 3 SLA breach подряд      → авто-приостановка новых заданий\n├── API downtime > 1ч        → RED alert → все\n├── Рейтинг < 4.0            → предупреждение оператору\n└── Рейтинг < 3.5 (30д)      → инициировать выход (ст. 13.5)\n\nКанал: Notification Service → Telegram (ORGANIZER) + Email + Admin Panel badge</div></div>';
+
+D.clearing='<div class="bl is-new"><h3>Клиринг-отчёты <span class="bn">● новый модуль</span></h3><p>Мониторинг Clearing Engine: статусы расщеплений, суммы, reconciliation. Доступен: ADMIN, ORGANIZER, FINANCE.</p>'+
+'<h4>Список клирингов</h4>'+
+'<div class="cb"><b>Фильтры:</b>\nСтатус:  [Все] [COMPLETED] [IN_PROGRESS] [FAILED] [RETRY]\nПериод:  [Сегодня] [7 дней] [30 дней]\nСеллер:  [Все] [ФИО / ИНН]\n\n<b>Таблица:</b>\nClearing ID │ Deal │ Сумма │ Участников │ Статус │ SLA │ Создан │ [→]\n\nCLR-001 │ MP-78431 │ 12,500₽ │ 4 │ ✅ COMPLETED │ 2ч │ 12.08 14:32 │ [→]\nCLR-002 │ MP-78502 │  8,900₽ │ 3 │ 🔄 IN_PROGRESS │ — │ 12.08 16:15 │ [→]\nCLR-003 │ MP-78219 │ 25,000₽ │ 4 │ ❌ FAILED → RETRY │ — │ 12.08 10:00 │ [→]</div>'+
+'<h4>Детальная карточка клиринга</h4>'+
+'<div class="cb"><b>Clearing #CLR-001</b>\nDeal: MP-78431  │  Сумма: 12,500₽  │  Комиссия НСВР: 200₽  │  К расщеплению: 12,300₽\n\n<b>Инструкции расщепления:</b>\n┌─────────────────┬──────┬────────┬─────────┬──────────┬──────────┐\n│ Участник        │ Роль │ Расчёт │ Сумма   │ Bank TX  │ Статус   │\n├─────────────────┼──────┼────────┼─────────┼──────────┼──────────┤\n│ Масса Матере    │ SEL  │ остаток│ 10,800₽ │ PSB-4521 │ ✅ 14:35  │\n│ 3PL-Сервис      │ FUL  │ 4×200₽ │    800₽ │ PSB-4522 │ ✅ 14:36  │\n│ Курьер-Экспресс │ LOG  │ зона-2 │    675₽ │ PSB-4523 │ ✅ 14:36  │\n│ Организатор     │ ORG  │ 0.2%   │     25₽ │ PSB-4524 │ ✅ 14:37  │\n├─────────────────┼──────┼────────┼─────────┼──────────┼──────────┤\n│ ИТОГО           │      │        │ 12,300₽ │          │ COMPLETED│\n└─────────────────┴──────┴────────┴─────────┴──────────┴──────────┘\n\nSLA: 2ч (target: 24ч)  │  Проверка: ∑ = баланс эскроу ✓  │  Audit: 4 записи</div>'+
+'<h4>Сводная аналитика клиринга</h4>'+
+'<div class="cb"><b>За 30 дней:</b>\nВсего клирингов:     247\nУспешных:            245 (99.2%)\nС retry:               2 (авто-восстановлены)\nFailed:                0\nСреднее время:       3.2ч\nМедиана:             1.8ч\nP95:                 8.4ч\n\n<b>Суммы по ролям:</b>\nСеллерам:         2,340K₽ (75.5%)\nФулфилменту:        420K₽ (13.5%)\nЛогистике:          310K₽ (10.0%)\nОрганизатору:        30K₽ (1.0%)\n\n[Графики Metabase: тренд, breakdown по ролям, SLA распределение]</div></div>';
+
+D.config='<div class="bl"><h3>Настройки системы <span class="bk">расширены</span></h3><p>Параметры, изменяемые без деплоя. В БД, кэшируются в Redis, подхватываются config watcher.</p>'+
+'<table class="tb"><thead><tr><th>Группа</th><th>Параметр</th><th>Значение</th><th>Описание</th></tr></thead><tbody>'+
+'<tr><td>Комиссии</td><td>commission_c2c</td><td>0.00175</td><td>C2C ставка</td></tr>'+
+'<tr><td>Комиссии</td><td>commission_c2b</td><td>0.00175</td><td>C2B ставка</td></tr>'+
+'<tr><td>Комиссии</td><td>commission_b2b</td><td>0.00125</td><td>B2B ставка</td></tr>'+
+'<tr><td>Таймауты</td><td>sign_timeout_hours</td><td>72</td><td>Время на подпись</td></tr>'+
+'<tr><td>Таймауты</td><td>deposit_timeout_hours</td><td>48</td><td>Время на оплату</td></tr>'+
+'<tr><td>Таймауты</td><td>accept_timeout_days</td><td>14</td><td>Авто-приёмка</td></tr>'+
+'<tr><td>KYC</td><td>max_amount_kyc1</td><td>100000</td><td>Лимит сделки KYC L1</td></tr>'+
+'<tr><td>KYC</td><td>max_monthly_kyc1</td><td>500000</td><td>Лимит/мес KYC L1</td></tr>'+
+'<tr><td>Rate limit</td><td>sms_per_hour</td><td>3</td><td>SMS-кодов/час</td></tr>'+
+'<tr><td>Rate limit</td><td>deals_per_day</td><td>50</td><td>Сделок/день на user</td></tr>'+
+'<tr class="rn"><td><b>Маркетплейс</b></td><td><b>organizer_fee_rate</b></td><td><b>0.002</b></td><td><b>Доля Организатора (ст. 6.3)</b></td></tr>'+
+'<tr class="rn"><td><b>Маркетплейс</b></td><td><b>clearing_sla_hours</b></td><td><b>24</b></td><td><b>SLA клиринга (ст. 6.4)</b></td></tr>'+
+'<tr class="rn"><td><b>Маркетплейс</b></td><td><b>gate_min_fulfillment</b></td><td><b>2</b></td><td><b>Мин. фулфилмент для гейта (ст. 13.2)</b></td></tr>'+
+'<tr class="rn"><td><b>Маркетплейс</b></td><td><b>gate_min_logistics</b></td><td><b>2</b></td><td><b>Мин. логистика для гейта (ст. 13.2)</b></td></tr>'+
+'<tr class="rn"><td><b>Маркетплейс</b></td><td><b>sla_breach_threshold</b></td><td><b>0.95</b></td><td><b>Порог SLA для yellow alert</b></td></tr>'+
+'</tbody></table></div>';
+
+D.roles='<div class="bl"><h3>Роли и доступ в Admin Panel <span class="bk">расширены</span></h3>'+
+'<table class="tb"><thead><tr><th>Роль</th><th>Dashboard</th><th>Сделки</th><th>Споры</th><th>Пользователи</th><th>Партнёры</th><th>Финансы</th><th>Реестр</th><th>Мониторинг</th><th>Config</th><th>Audit</th></tr></thead><tbody>'+
+'<tr><td>MODERATOR</td><td>Read</td><td>Read</td><td>Read+Resolve</td><td>Read</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>Own</td></tr>'+
+'<tr><td>SUPPORT</td><td>Read</td><td>Read</td><td>Read+Assign</td><td>Read+Contact</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>Own</td></tr>'+
+'<tr><td>FINANCE</td><td>Read</td><td>Read</td><td>—</td><td>—</td><td>Read+Payouts</td><td>Full</td><td>Read</td><td>Read</td><td>—</td><td>Finance</td></tr>'+
+'<tr><td>PARTNER_MGR</td><td>Read</td><td>Partner deals</td><td>—</td><td>—</td><td>Full</td><td>Partner only</td><td>—</td><td>—</td><td>—</td><td>Partner</td></tr>'+
+'<tr class="rn"><td><b>ORGANIZER</b></td><td>Full</td><td>MP deals</td><td>L1 arb.</td><td>Read</td><td>—</td><td>Clearing</td><td><b>Full</b></td><td><b>Full</b></td><td>MP only</td><td>MP</td></tr>'+
+'<tr><td>ADMIN</td><td>Full</td><td>Full</td><td>Full</td><td>Full+Block</td><td>Full</td><td>Full</td><td>Full</td><td>Full</td><td>Full</td><td>Full</td></tr>'+
+'</tbody></table></div>';
+
+D.audit='<div class="bl"><h3>Audit Log — интерфейс просмотра <span class="bk">расширен</span></h3>'+
+'<div class="cb"><b>Фильтры:</b>\nСервис:   [Все] [Deal Engine] [Escrow] [Auth] [Contract]\n          [Notification] [Widget] [Admin] [Arbitrage]\n          <b>[Clearing] [Registry] [Marketplace]</b>   // +3 новых\nДействие: [текстовый поиск: "deposit" / "block" / "clearing.completed"]\nАктор:    [System] [User ID: ___] [Moderator: ___] [Bank webhook]\n          <b>[Operator: ___] [Organizer]</b>            // НОВОЕ\nРесурс:   [Deal ID: ___] [User ID: ___] [Escrow ID: ___]\n          <b>[Participant ID: ___] [Clearing ID: ___]</b> // НОВОЕ\nПериод:   [от] [до]\nУровень:  [Все] [Критические] [Финансовые]</div>'+
+'<div class="cb"><b>Таблица:</b>\nTimestamp │ Сервис │ Действие │ Актор │ Ресурс │ Изменения │ IP\n\nПример записей клиринга:\n14:32:00 │ CLEARING │ clearing.started    │ system     │ CLR-001 │ {deal: MP-78431, amount: 12300} │ —\n14:34:55 │ CLEARING │ instruction.sent    │ system     │ CLR-001 │ {to: 3PL-Сервис, 800₽}         │ —\n14:35:02 │ ESCROW   │ split.release       │ system     │ ESC-901 │ {tx: PSB-4521, 10800₽}         │ —\n14:37:10 │ CLEARING │ clearing.completed  │ system     │ CLR-001 │ {status: COMPLETED, 2ч}        │ —</div>'+
+'<div class="cb"><b>Хранение:</b> 5 лет (partitioned by month → S3 после 12 мес)\n<b>Search:</b>   Elasticsearch (CDC → Debezium → ES)\n<b>Export:</b>   CSV / JSON (макс. 10K записей)\n<b>Access:</b>   ADMIN read-only. Никто не может delete/update.\n<b>Compliance:</b> ФЗ-152, PCI DSS req.10, 115-ФЗ</div></div>';
+
+D.api='<div class="bl"><h3>Admin API <span class="bk">расширен</span></h3><p>Аутентификация: JWT (role >= MODERATOR) + VPN IP check</p>'+
+'<div class="cb"><b>─── Дашборд ───</b>\nGET  /admin/dashboard/kpi?period=today\nGET  /admin/dashboard/charts?period=30d\nWS   /admin/dashboard/feed               // живая лента\n\n<b>─── Сделки ───</b>\nGET  /admin/deals?status=X&contour=Y&page=1\nGET  /admin/deals/:id\nGET  /admin/deals/:id/timeline\nPOST /admin/deals/:id/force-state         // аварийная смена\n\n<b>─── Споры ───</b>\nGET  /admin/disputes?priority=high\nPOST /admin/disputes/:id/assign\nPOST /admin/disputes/:id/resolve          // {decision, reason}\nPOST /admin/disputes/:id/escalate\n\n<b>─── Пользователи ───</b>\nGET  /admin/users?search=X\nGET  /admin/users/:id\nPOST /admin/users/:id/block\nPOST /admin/users/:id/impersonate\nPOST /admin/users/:id/reset-kyc\n\n<b>─── Партнёры ───</b>\nGET  /admin/partners\nGET  /admin/partners/:id\nPOST /admin/partners/:id/rotate-key\nPATCH /admin/partners/:id/config\n\n<b>─── Финансы ───</b>\nGET  /admin/finance/revenue?period=ytd\nGET  /admin/finance/reconciliation?date=YYYY-MM-DD\nGET  /admin/finance/payouts?partner=avito&period=30d\n\n<b>─── Реестр (НОВЫЙ) ───</b>\nGET    /admin/registry/participants?type=FULFILLMENT\nGET    /admin/registry/participants/:id\nPOST   /admin/registry/participants           // создание\nPATCH  /admin/registry/participants/:id        // редактирование\nPOST   /admin/registry/participants/:id/suspend\nPOST   /admin/registry/participants/:id/exit   // ст. 13.5\nGET    /admin/registry/gate-status\n\n<b>─── Мониторинг (НОВЫЙ) ───</b>\nGET  /admin/monitoring/operators\nGET  /admin/monitoring/operators/:id\nGET  /admin/monitoring/operators/:id/sla?period=30d\nGET  /admin/monitoring/alerts?status=active\n\n<b>─── Клиринг (НОВЫЙ) ───</b>\nGET  /admin/clearing?status=X&period=Y\nGET  /admin/clearing/:id\nGET  /admin/clearing/stats?period=30d\nGET  /admin/clearing/reconciliation?date=YYYY-MM-DD\n\n<b>─── Config ───</b>\nGET  /admin/config\nPATCH /admin/config/:key                    // {value, reason}\nGET  /admin/config/:key/history\n\n<b>─── Audit ───</b>\nGET  /admin/audit?service=X&action=Y&period=Z\nGET  /admin/audit/export?format=csv&filters=...</div></div>';
+
+R();
+</script>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Размещение альфы: A (демо) и B/C (живой)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --sys:#2E5B3A;--a:#1D5FBF;--bc:#8A4B12;--r:8px;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,sans-serif;font-size:15px;line-height:1.55}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px 80px}
+header.top{background:var(--paper2);border-bottom:1px solid var(--line)}
+.top-in{max-width:900px;margin:0 auto;padding:24px 24px 18px}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+h1{font-family:'IBM Plex Serif',Georgia,serif;font-size:clamp(22px,3vw,30px);margin:8px 0 6px;letter-spacing:-.02em}
+.sub{color:var(--ink2);max-width:80ch;margin:0}
+h2{font-family:'IBM Plex Serif',Georgia,serif;font-size:21px;margin:30px 0 8px;padding:6px 0 6px 12px;border-left:4px solid var(--a)}
+h2.bc{border-left-color:var(--bc)}
+h3{font-size:15.5px;margin:18px 0 6px}
+p{margin:6px 0 12px}
+.step{display:flex;gap:12px;margin:12px 0;align-items:flex-start}
+.step .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--a);color:#fff;text-align:center;line-height:26px;font-weight:600;font-size:13px}
+.step.bc .n{background:var(--bc)}
+.step .b{flex:1}
+pre{background:#0F1720;color:#E6EDF3;padding:13px 16px;border-radius:6px;overflow-x:auto;font-size:12.5px;line-height:1.55;font-family:'IBM Plex Mono',monospace;margin:8px 0}
+pre .c{color:#7A8794}
+code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:#EEF1EC;padding:1px 6px;border-radius:4px}
+.file{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:#E8EEF6;color:var(--a);padding:1px 7px;border-radius:4px;font-weight:600}
+.note{border:1px solid var(--line);border-left:3px solid var(--sys);background:var(--paper2);padding:10px 14px;border-radius:var(--r);margin:14px 0;font-size:13.5px}
+.note b{color:var(--sys)}
+.note.warn{border-left-color:#A62B2B}.note.warn b{color:#A62B2B}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 10px;border-radius:99px;margin-left:8px;vertical-align:middle}
+.pill.a{background:#EAF1FB;color:var(--a);border:1px solid #A9C6EE}
+.pill.bc{background:#FBF0E2;color:var(--bc);border:1px solid #E0B98A}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:10px 0}
+th{text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);padding:9px 11px;border-bottom:1px solid var(--line);font-weight:600;background:var(--paper)}
+td{padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+footer{border-top:1px solid var(--line);margin-top:32px;padding-top:16px;font-size:12.5px;color:var(--ink3)}
+footer a{color:var(--sys)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="eyebrow">ПТК · размещение альфа-релиза конфигуратора каналов</div>
+    <h1>Как разместить альфу</h1>
+    <p class="sub">Два трека: <b>A</b> — статичное демо на GitHub Pages (5 минут, без сервера). <b>B/C</b> — живой конфигуратор на вашем Render + Supabase. Деплой на вашей стороне (у меня нет доступа к Render/Supabase); здесь — всё готовое и пошаговая инструкция.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h2>Трек A · Демо на GitHub Pages <span class="pill a">5 минут</span></h2>
+<p>Автономный дашборд — считает всё в браузере, показывает три схемы Массы Мадре, тумблеры кликаются. Сервер не нужен.</p>
+<div class="step"><div class="n">1</div><div class="b">Возьмите файл <span class="file">alpha-demo-standalone.html</span> (в архиве размещения).</div></div>
+<div class="step"><div class="n">2</div><div class="b">Положите его в репозиторий, где живёт <span class="mono">massamadre.ru</span> (GitHub Pages) — например, переименовав в <span class="mono">demo.html</span> или в папку <span class="mono">/alpha/</span>.</div></div>
+<div class="step"><div class="n">3</div><div class="b">Закоммитьте и запушьте:
+<pre>git add demo.html
+git commit -m "alpha channels demo"
+git push</pre></div></div>
+<div class="step"><div class="n">4</div><div class="b">Открывается по адресу вашего Pages, например <span class="mono">massamadre.ru/demo.html</span>. Готово — можно показывать.</div></div>
+<div class="note"><b>Что показывает.</b> Три категории Массы Мадре с их схемами (хлеб, кондитерка, выпечка), интерактивные тумблеры каналов и fulfilment, переключатель расчёта, живой пересчёт «ранга сервиса», кнопка сброса. Явная пометка «ДЕМО — не сохраняется». Ничего не шлёт наружу.</div>
+
+<h2 class="bc">Трек B · Живой API на Render <span class="pill bc">деплой</span></h2>
+<p>Врезаем конфигуратор в боевой <span class="mono">server.js</span>, миграцию — на Supabase. После этого дашборд может читать реальную конфигурацию.</p>
+
+<h3>Шаг 1 — миграция на Supabase</h3>
+<div class="step bc"><div class="n">1</div><div class="b">В Supabase SQL Editor выполните по порядку: <span class="file">01_alpha_channels.sql</span> → <span class="file">02_seed_massamadre.sql</span> → <span class="file">03_resolver.sql</span>. Первый создаёт таблицы, второй — данные Массы Мадре, третий — функции-резолверы.
+<div class="note" style="margin-top:8px"><b>Совместимость.</b> Миграция использует <span class="mono">CREATE TABLE IF NOT EXISTS</span> — не конфликтует с существующими <span class="mono">shops/skus/participants</span>, если они уже есть. Новые таблицы: <span class="mono">channels, visibility_rules, fulfilment_rules, settlement_rules, ratchet_log</span>.</div></div></div>
+
+<h3>Шаг 2 — врезка модуля в server.js</h3>
+<div class="step bc"><div class="n">2</div><div class="b">Положите <span class="file">channels-api.js</span> рядом с <span class="mono">server.js</span>. После строки <span class="mono">app.use(express.json())</span> добавьте одну строку:
+<pre>require('./channels-api')(app, { db, dbOne });</pre>
+Это тот же приём, что с <span class="mono">auth-seller.js</span> — модуль монтируется, используя ваши хелперы <span class="mono">db/dbOne</span>.</div></div>
+
+<h3>Шаг 3 — деплой</h3>
+<div class="step bc"><div class="n">3</div><div class="b">Закоммитьте <span class="mono">channels-api.js</span> + правку <span class="mono">server.js</span>, запушьте — Render пересоберётся. Появятся эндпоинты:
+<pre>GET  /api/v1/sku/:sku_id/config       <span class="c">// эффективная конфигурация SKU</span>
+GET  /api/v1/shop/:shop_id/service-map<span class="c">// уровень по категориям</span>
+PUT  /api/v1/visibility               <span class="c">// вкл/выкл канал (3 уровня)</span>
+PUT  /api/v1/fulfilment               <span class="c">// провайдер услуги</span>
+PUT  /api/v1/settlement               <span class="c">// режим расчёта</span>
+POST /api/v1/ratchet/upgrade          <span class="c">// повышение (только вверх)</span></pre></div></div>
+
+<h3>Шаг 4 — проверка</h3>
+<div class="step bc"><div class="n">4</div><div class="b">В консоли браузера на странице вашего API (как делали L3):
+<pre>fetch('/api/v1/sku/SKU-bread-1/config').then(r=>r.json()).then(console.log)
+<span class="c">// должно вернуть каналы хлеба: своя витрина + каталог</span></pre></div></div>
+
+<h2 class="bc">Трек C · Полностью живой (тумблеры пишут) <span class="pill bc">бета</span></h2>
+<p>То же, что B, плюс дашборд не только читает, но и переключает через API.</p>
+<div class="step bc"><div class="n">5</div><div class="b">Возьмите <span class="file">alpha-dashboard-live.html</span> (переключённый на живой API, по образцу <span class="mono">vitrina-live</span>) — он читает <span class="mono">GET /shop/:id/service-map</span> и на клик тумблера шлёт <span class="mono">PUT /api/v1/visibility</span>.</div></div>
+<div class="step bc"><div class="n">6</div><div class="b">Пропишите в нём базовый URL вашего API (как в <span class="mono">vitrina-live</span>: <span class="mono">const API=...onrender.com</span>) и разместите на Pages или в ЛК.</div></div>
+<div class="note warn"><b>Прежде чем открывать запись всем.</b> <span class="mono">PUT</span>-эндпоинты сейчас без авторизации — для беты добавьте <span class="mono">requireSeller</span> (из <span class="mono">auth-seller.js</span>), чтобы селлер менял только свой магазин. Иначе конфигурацию сможет переключить кто угодно.</div>
+
+<h2 style="border-left-color:var(--ink3)">Что в каком файле</h2>
+<table>
+  <thead><tr><th>Файл</th><th>Трек</th><th>Куда</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">alpha-demo-standalone.html</td><td>A</td><td>GitHub Pages (massamadre.ru)</td></tr>
+    <tr><td class="mono">01/02/03_*.sql</td><td>B</td><td>Supabase SQL Editor</td></tr>
+    <tr><td class="mono">channels-api.js</td><td>B</td><td>рядом с server.js на Render</td></tr>
+    <tr><td class="mono">alpha-dashboard-live.html</td><td>C</td><td>Pages / ЛК, читает живой API</td></tr>
+  </tbody>
+</table>
+
+<div class="note"><b>Порядок по вашему решению.</b> Сначала A (быстрое демо), потом B (живой API), потом C (запись). Каждый трек самостоятелен: A работает без B, B — без C. Я не могу задеплоить сам (нет доступа к вашим Render/Supabase), но всё готовое собрано в архиве размещения.</div>
+
+<footer>
+  Размещение альфы конфигуратора каналов · часть пула. Код: <span class="mono">alpha-channels.zip</span> + пакет размещения. Дашборд-демо: <a href="alpha-demo-standalone.html">alpha-demo-standalone</a>. Модель: <a href="alpha-channels-dashboard.html">кабинет конфигуратора</a>, <a href="sku-visibility-seller.html">управление видимостью SKU</a>.
+</footer>
+</div>
+<div style="max-width:960px;margin:16px auto;padding:10px 16px;border-left:3px solid #2E5B3A;background:#EEF3EF;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">🔄 Сквозной прогон: <a href="e2e-walkthrough-map.html" style="color:#2E5B3A;font-weight:600">карта шагов E2E (магазин→сделка)</a></div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Этот документ сведён с двадцатью другими в <a href="33-ui-vitrina-opisanie.html" style="font-weight:600;">интегрированное описание слоя UI и витрины</a>; выведенные величины — в <a href="34-ui-vitrina-parametry.html" style="font-weight:600;">наборе параметров U</a>.</div>
+</body>
+</html>

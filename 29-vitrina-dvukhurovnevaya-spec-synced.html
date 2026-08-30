@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Двухуровневая витрина — спецификация</title>
+<style>
+:root {
+  --bg: #ffffff; --bg-2: #f8f9fb; --bg-3: #f0f2f5;
+  --tx: #1a1d23; --tx-2: #52586b; --tx-3: #8b90a0;
+  --ac: #2c5bea; --ac-bg: #edf2ff; --ac-2: #e74c3c;
+  --brd: #e2e5ec; --brd-2: #d0d4de;
+  --grn: #16a34a; --grn-bg: #ecfdf5;
+  --orn: #d97706; --orn-bg: #fffbeb;
+  --mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', monospace;
+  --sans: -apple-system, 'Inter', 'Segoe UI', sans-serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0f1117;--bg-2:#191c24;--bg-3:#22262f;--tx:#e4e6ec;--tx-2:#9ca0b0;--tx-3:#6b6f80;--ac:#5c8aff;--ac-bg:#1a2744;--ac-2:#ff6b6b;--brd:#2a2e38;--brd-2:#383d4a;--grn:#4ade80;--grn-bg:#0f2f1a;--orn:#fbbf24;--orn-bg:#2a2010}
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--tx);line-height:1.6;font-size:14px}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px}
+
+/* Header */
+.hdr{margin-bottom:24px}
+.hdr h1{font-size:22px;font-weight:700;margin-bottom:4px;letter-spacing:-.3px}
+.hdr .sub{font-size:13px;color:var(--tx-2);line-height:1.5}
+.hdr .refs{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.ref{font-size:11px;padding:3px 8px;border-radius:4px;background:var(--ac-bg);color:var(--ac);font-weight:600}
+
+/* Architecture diagram */
+.arch{background:var(--bg-2);border:1px solid var(--brd);border-radius:14px;padding:24px;margin-bottom:20px;overflow-x:auto}
+.arch pre{font-family:var(--mono);font-size:11.5px;line-height:1.8;color:var(--tx-2);white-space:pre;min-width:600px}
+.arch pre b{color:var(--ac);font-weight:600}
+.arch pre em{color:var(--grn);font-style:normal;font-weight:600}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:10}
+.tab{padding:7px 14px;border-radius:7px;border:1.5px solid var(--brd);cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--tx-2);transition:.15s}
+.tab:hover{border-color:var(--brd-2)}.tab.on{border-color:var(--ac);color:var(--ac);background:var(--ac-bg)}
+.tab .new{font-size:9px;background:var(--ac);color:#fff;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:700;vertical-align:1px}
+
+/* Content blocks */
+.pane{display:none}.pane.vis{display:block}
+.card{border:1px solid var(--brd);border-radius:12px;padding:18px;margin-bottom:12px}
+.card h3{font-size:15px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.card h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--tx-2)}
+.card p{font-size:13px;color:var(--tx-2);line-height:1.65}
+
+.badge{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:700}
+.badge.new{background:var(--ac-bg);color:var(--ac)}
+.badge.ok{background:var(--grn-bg);color:var(--grn)}
+.badge.warn{background:var(--orn-bg);color:var(--orn)}
+
+.code{font-family:var(--mono);font-size:11.5px;color:var(--tx-2);background:var(--bg-2);border-radius:8px;padding:12px 14px;margin-top:8px;line-height:1.75;white-space:pre-wrap;overflow-x:auto}
+.code b{color:var(--ac);font-weight:600}
+.code em{color:var(--grn);font-style:normal;font-weight:600}
+
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+th{padding:7px 8px;text-align:left;font-weight:600;font-size:11px;color:var(--tx-3);border-bottom:1.5px solid var(--brd);text-transform:uppercase;letter-spacing:.3px}
+td{padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--tx-2);vertical-align:top}
+tr.hl{background:var(--ac-bg)}
+
+.flow{display:flex;flex-direction:column;gap:2px;margin-top:10px}
+.flow-step{display:flex;gap:10px;align-items:flex-start}
+.flow-n{width:26px;height:26px;border-radius:50%;background:var(--ac-bg);color:var(--ac);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.flow-t{flex:1;font-size:12.5px;color:var(--tx-2);line-height:1.6;padding:3px 0}
+.flow-t b{color:var(--tx);font-weight:600}
+.flow-arrow{color:var(--tx-3);font-size:12px;text-align:center;margin:0 0 0 8px}
+
+.note{font-size:12px;padding:10px 14px;border-radius:8px;margin-top:10px;line-height:1.6}
+.note.info{background:var(--ac-bg);color:var(--ac)}
+.note.warn{background:var(--orn-bg);color:var(--orn)}
+
+.screen{border:2px dashed var(--brd);border-radius:12px;padding:16px;margin:10px 0;font-size:13px;color:var(--tx-2);line-height:1.7}
+.screen h4{font-size:14px;font-weight:600;margin-bottom:8px;color:var(--tx)}
+.screen .btn{display:inline-block;padding:6px 16px;background:var(--ac-bg);color:var(--ac);border-radius:6px;font-size:12px;font-weight:600;margin:2px}
+
+/* Channel cards */
+.channels{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:10px}
+.ch{border:1px solid var(--brd);border-radius:8px;padding:12px;text-align:center}
+.ch .icon{font-size:24px;margin-bottom:4px}
+.ch .name{font-size:13px;font-weight:600}
+.ch .desc{font-size:11px;color:var(--tx-3);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <h1>Двухуровневая витрина · Спецификация</h1>
+  <div class="sub">Товары представлены на двух уровнях из общих SKU-атомов: нижний — <b>магазин селлера</b>, верхний — <b>каталог Системы</b>. Архитектура витрины — ключевой компонент Marketplace Service.</div>
+<div style="max-width:1100px;margin:0 auto 18px;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 2 · пул документов Системы</div>
+  <div style="margin-top:10px;padding:12px 16px;background:#ede9fe;border-left:4px solid #7c3aed;border-radius:0 6px 6px 0;font-size:13px;line-height:1.6">
+    <b>Агентный слой и полный цикл.</b> Витрина работает совместно с агентом покупателя (виджет 🤖 на витрине) и инструментами селлера (join-form → wizard → sku-crud → ЛК). Полный цикл: селлер создаёт магазин через wizard → данные записываются в БД → API отдаёт их витрине и агенту → покупатель покупает через карточки (MIGRATED) или через агента (NETWORK) → заказ → клиринг. Два каталога: 🟢 каталог Системы (участники) + ⚪ каталог рынка (парсинг).<br>
+    <b>Связанные документы:</b>
+    <a href="full-cycle-seller-to-buyer.html" style="color:#5b21b6;font-weight:600;">Полный цикл: от селлера до покупателя</a> · <a href="full-cycle-seller-to-buyer-red2.html" style="color:#5b21b6;font-weight:600;">Полный цикл (ред. 2 — два сервиса)</a> · <a href="agentic-commerce-architecture.html" style="color:#5b21b6;font-weight:600;">Архитектура агентного слоя</a> ·
+    <a href="36-seller-onboarding-spec-corrected.html" style="color:#5b21b6;font-weight:600;">Селлер-онбординг</a> ·
+    <a href="34-vitrina-prototype-live-synced.html" style="color:#5b21b6;font-weight:600;">Прототип витрины</a> ·
+    <a href="pravila-agentic-articles-14-21.html" style="color:#5b21b6;font-weight:600;">Правила ст. 14–21</a>
+  </div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Документ витрины (технический слой ПТК), реализующий нормы <b>Правил системы (ред. 2)</b>. Общая архитектура — «Архитектура ПТК» (26). При расхождении норма — Правила.</div>
+  <div><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 9 — витрина/магазин/каталог/SKU</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 10 — база MIGRATED/NETWORK</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 11 — маршрутизация</span></div>
+</div>
+  <div class="refs">
+    <span class="ref">ст. 9 — витрина</span>
+    <span class="ref">ст. 10 — клиентская база</span>
+    <span class="ref">ст. 11 — маршрутизация</span>
+    <span class="ref">ст. 9.4 — SKU-атом</span>
+  </div>
+</div>
+
+<!-- Architecture overview -->
+<div class="arch">
+<pre>
+<b>ДВУХУРОВНЕВАЯ ВИТРИНА — АРХИТЕКТУРА</b>
+
+┌──────────────────────────────────────────────────────────────────┐
+│  <b>КАТАЛОГ СИСТЕМЫ</b> (верхний уровень, ст. 9.3)                     │
+│  Зонтичный бренд · Elasticsearch · Агрегация всех SKU           │
+│  Трафик: <em>сетевой приток</em> (общее достояние)                       │
+│  URL: /catalog · SEO: SSR · Schema.org: Product + AggregateOffer│
+│                                                                  │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐            │
+│  │ SKU-001  │ │ SKU-002  │ │ SKU-003  │ │ SKU-N    │            │
+│  │ Хлеб     │ │ Круассан │ │ Торт     │ │ ...      │            │
+│  │ Селлер A │ │ Селлер B │ │ Селлер A │ │ Селлер C │            │
+│  └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘            │
+│       │            │            │            │                   │
+│       └──────────┐ │ ┌──────────┘            │                   │
+│                  ▼ ▼ ▼                       ▼                   │
+├──────────────────────────────────────────────────────────────────┤
+│  <b>МАГАЗИНЫ СЕЛЛЕРОВ</b> (нижний уровень, ст. 9.2)                    │
+│                                                                  │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌────────────────┐ │
+│  │ <em>Масса Матере</em>      │  │ <em>Селлер B</em>          │  │ <em>Селлер C</em>      │ │
+│  │ Бренд: SeMaVi    │  │ Бренд: «Кондитер»│  │ Бренд: свой   │ │
+│  │ SKU: 001, 003    │  │ SKU: 002          │  │ SKU: N         │ │
+│  │ 5 каналов:       │  │ 5 каналов:        │  │ 5 каналов:     │ │
+│  │ TG·WEB·VK·MX·IG  │  │ TG·WEB·VK·MX·IG  │  │ TG·WEB·VK·MX·IG│ │
+│  │ База: мигрировавш.│  │ База: мигрировавш.│  │ База: сетевая  │ │
+│  └──────────────────┘  └──────────────────┘  └────────────────┘ │
+└──────────────────────────────────────────────────────────────────┘
+                         ▼
+           ┌──────────────────────────┐
+           │  <b>SKU-АТОМ</b> (ст. 9.4)       │
+           │  Единая карточка товара   │
+           │  Видна в обоих уровнях    │
+           │  Без дублирования         │
+           └──────────────────────────┘
+</pre>
+</div>
+
+<!-- Tabs -->
+<div class="tabs" id="tabs"></div>
+<div id="content"></div>
+
+<script>
+var T=[
+  {id:'concept',  l:'Концепция'},
+  {id:'sku',      l:'SKU-атом'},
+  {id:'shop',     l:'Магазин селлера'},
+  {id:'channels', l:'5 каналов'},
+  {id:'catalog',  l:'Каталог Системы'},
+  {id:'routing',  l:'Маршрутизация'},
+  {id:'base',     l:'Клиентская база'},
+  {id:'buyer',    l:'Путь покупателя'},
+  {id:'seller_ui',l:'UI селлера'},
+  {id:'search',   l:'Поиск и фильтры'},
+  {id:'data',     l:'Модель данных'},
+  {id:'api',      l:'API витрины'}
+];
+var cur='concept';
+
+function render(){
+  var h='';
+  T.forEach(function(t){
+    h+='<button class="tab'+(t.id===cur?' on':'')+'" data-t="'+t.id+'">'+t.l+'</button>';
+  });
+  document.getElementById('tabs').innerHTML=h;
+  document.querySelectorAll('.tab').forEach(function(b){
+    b.onclick=function(){cur=this.getAttribute('data-t');render()};
+  });
+  document.querySelectorAll('.pane').forEach(function(p){
+    p.classList.toggle('vis',p.id==='p-'+cur);
+  });
+}
+
+document.addEventListener('DOMContentLoaded',render);
+</script>
+
+<!-- ==================== CONCEPT ==================== -->
+<div class="pane vis" id="p-concept">
+<div class="card">
+  <h3>Зачем два уровня <span class="badge ok">ст. 9.1</span></h3>
+  <p>Одна витрина не может обслужить два разных субъекта: бренд селлера и бренд Системы. Магазин сохраняет бренд селлера (стимул группы 1 — «Неорганизованные»); каталог даёт агрегацию и сетевой эффект (общее достояние всех участников). SKU-атом соединяет оба уровня без дублирования товара.</p>
+
+  <h4>Принципы</h4>
+  <table>
+    <thead><tr><th>Принцип</th><th>Магазин селлера</th><th>Каталог Системы</th></tr></thead>
+    <tbody>
+      <tr><td>Владелец бренда</td><td>Селлер (собственный бренд)</td><td>Организатор (зонтичный бренд)</td></tr>
+      <tr><td>Аудитория</td><td>Мигрировавшая база + прямой трафик</td><td>Сетевой приток (общее достояние)</td></tr>
+      <tr><td>URL</td><td>/shop/{seller_slug} · отдельный домен · TG-бот</td><td>/catalog</td></tr>
+      <tr><td>SKU</td><td>Только свои товары</td><td>Все товары всех селлеров</td></tr>
+      <tr><td>Брендирование</td><td>Логотип, цвета, описание селлера</td><td>Единый UI зонтичного бренда</td></tr>
+      <tr><td>Каналы</td><td>5: Telegram, Сайт, VK, Макс, Instagram</td><td>1: нсвр.рф/catalog (или отдельный домен)</td></tr>
+      <tr><td>Регулирование трафика</td><td>Нет — это трафик селлера</td><td>Маршрутизация по ст. 11</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Связь с моделью групп селлеров</h3>
+  <table>
+    <thead><tr><th>Группа</th><th>Что получает от витрины</th><th>Ключевой стимул</th></tr></thead>
+    <tbody>
+      <tr><td><b>Гр. 1 «Неорганизованные»</b><br><span style="font-size:11px;color:var(--tx-3)">действующие компании эл.ком</span></td><td>5-канальный магазин под своим брендом; мигрировавшая база остаётся при них (ст. 10.2)</td><td>Бренд сохранён, клиенты не теряются</td></tr>
+      <tr><td><b>Гр. 2 «Разочаровавшиеся»</b><br><span style="font-size:11px;color:var(--tx-3)">ушедшие с WB/Ozon</span></td><td>Магазин + приоритетная маршрутизация из каталога (ст. 11.2) в первые 2–3 мес</td><td>Быстрый старт из сетевого притока</td></tr>
+      <tr><td><b>Гр. 3 «Новые»</b><br><span style="font-size:11px;color:var(--tx-3)">без опыта</span></td><td>Готовый магазин + видимость в каталоге через зонтичный бренд</td><td>Мгновенное доверие без затрат</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== SKU ==================== -->
+<div class="pane" id="p-sku">
+<div class="card">
+  <h3>SKU-атом <span class="badge ok">ст. 9.4</span></h3>
+  <p>Один товар существует как единая карточка-SKU и виден одновременно в магазине селлера (под его брендом) и в каталоге Системы (в общем поиске) без дублирования.</p>
+
+  <div class="code"><b>SKU — структура карточки</b>
+
+{
+  <b>sku_id</b>:          "SKU-2027-001",        // глобально уникальный
+  <b>seller_id</b>:       "PTR-12345",           // владелец-селлер (FK → Registry)
+  <b>source_type</b>:     "MIGRATED" | "NETWORK", // откуда пришёл покупатель (ст. 10)
+
+  // === Контент (управляется селлером) ===
+  <b>title</b>:           "Хлеб бородинский на закваске",
+  <b>description</b>:     "Ржано-пшеничный, 48ч ферментация...",
+  <b>images</b>:          ["url1.jpg", "url2.jpg", ...],   // до 10 фото
+  <b>category_id</b>:     "CAT-BREAD-001",       // из справочника категорий
+  <b>tags</b>:            ["без дрожжей", "крафт", "закваска"],
+
+  // === Цена и наличие ===
+  <b>price</b>:           450,                   // в рублях
+  <b>currency</b>:        "RUB",
+  <b>stock</b>:           24,                    // остаток
+  <b>stock_reserved</b>:  3,                     // в заказах (PENDING)
+  <b>unit</b>:            "шт",                  // единица измерения
+
+  // === Логистика ===
+  <b>weight_g</b>:        780,
+  <b>dimensions_mm</b>:   { l: 250, w: 120, h: 80 },
+  <b>fulfillment_id</b>:  "PTR-67891",           // привязанный фулфилмент
+  <b>warehouse_id</b>:    "WH-001",              // склад хранения
+  <b>shipping_zones</b>:  ["MSK", "MSK-OBL"],    // зоны доставки
+
+  // === Отображение в витринах ===
+  <b>visible_shop</b>:    true,                  // видим в магазине селлера
+  <b>visible_catalog</b>: true,                  // видим в каталоге Системы
+  <b>seller_brand</b>: {                         // брендирование для магазина
+    <b>name</b>:      "Масса Матере",
+    <b>logo_url</b>:  "logo.png",
+    <b>accent</b>:    "#8B4513"
+  },
+
+  // === Мета ===
+  <b>status</b>:          "ACTIVE" | "DRAFT" | "OUT_OF_STOCK" | "ARCHIVED",
+  <b>created_at</b>:      "2027-06-15T10:30:00Z",
+  <b>updated_at</b>:      "2027-08-12T14:22:00Z",
+  <b>rating</b>:          4.7,
+  <b>reviews_count</b>:   23,
+  <b>orders_count</b>:    156
+}</div>
+</div>
+
+<div class="card">
+  <h3>Правила атомарности SKU</h3>
+  <table>
+    <thead><tr><th>Правило</th><th>Описание</th></tr></thead>
+    <tbody>
+      <tr><td><b>Один SKU — один товар</b></td><td>Никакого дублирования. Карточка создаётся один раз и проецируется на оба уровня витрины</td></tr>
+      <tr><td><b>Владелец = селлер</b></td><td>Только селлер может создавать, редактировать, снимать с публикации свои SKU</td></tr>
+      <tr><td><b>visible_shop / visible_catalog</b></td><td>Два независимых флага. Селлер может скрыть товар из каталога (оставить только в магазине) — но не наоборот</td></tr>
+      <tr><td><b>Цена единая</b></td><td>Одна цена для обоих витрин. Нет «цены для каталога» — защита доверия покупателя</td></tr>
+      <tr><td><b>Контент единый</b></td><td>Фото, описание, характеристики — одни и те же. Но в магазине — под брендом селлера, в каталоге — под зонтичным</td></tr>
+      <tr><td><b>Stock единый</b></td><td>Один остаток, одно резервирование. Откуда бы ни пришёл заказ — списание из одного стока</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== SHOP ==================== -->
+<div class="pane" id="p-shop">
+<div class="card">
+  <h3>Магазин селлера <span class="badge ok">ст. 9.2</span></h3>
+  <p>Нижний уровень витрины. Витрина под собственным брендом селлера, работающая на 5 каналах. Обслуживает собственную и мигрировавшую базу (ст. 10).</p>
+
+  <h4>Что получает селлер</h4>
+  <div class="code"><b>Магазин = Shop Entity</b>
+
+{
+  <b>shop_id</b>:         "SHOP-massamadre",
+  <b>seller_id</b>:       "PTR-12345",           // FK → Registry
+  <b>slug</b>:            "massamadre",           // URL: /shop/massamadre
+
+  // === Бренд ===
+  <b>brand</b>: {
+    <b>name</b>:      "Масса Матере",
+    <b>tagline</b>:   "Хлеб на настоящей закваске",
+    <b>logo_url</b>:  "https://cdn.../massamadre-logo.png",
+    <b>cover_url</b>: "https://cdn.../massamadre-cover.jpg",
+    <b>accent_color</b>: "#8B4513",              // цвет бренда
+    <b>description</b>: "Семейная пекарня SeMaVi..."
+  },
+
+  // === Каналы (ст. 9.2: 5 каналов) ===
+  <b>channels</b>: {
+    <b>telegram</b>:  { enabled: true,  bot_username: "massamadre_bot", ... },
+    <b>website</b>:   { enabled: true,  domain: "massamadre.ru", ... },
+    <b>vk</b>:        { enabled: true,  group_id: "massamadre", ... },
+    <b>max</b>:       { enabled: false, ... },
+    <b>instagram</b>: { enabled: true,  username: "massamadre", ... }
+  },
+
+  // === Статистика ===
+  <b>sku_count</b>:       18,
+  <b>orders_30d</b>:      47,
+  <b>gmv_30d</b>:         189000,
+  <b>rating</b>:          4.8,
+  <b>reviews_count</b>:   89,
+
+  // === Клиентская база ===
+  <b>customer_base</b>: {
+    <b>migrated</b>:   312,    // мигрировавшие с селлером (ст. 10.2)
+    <b>network</b>:    85,     // пришли из каталога
+    <b>total</b>:      397
+  }
+}</div>
+</div>
+
+<div class="card">
+  <h3>Функции магазина</h3>
+  <table>
+    <thead><tr><th>Функция</th><th>Описание</th><th>Ответственный</th></tr></thead>
+    <tbody>
+      <tr><td><b>Каталог товаров</b></td><td>Отображение SKU селлера с фильтрами, категориями, поиском</td><td>Marketplace Service</td></tr>
+      <tr><td><b>Страница товара</b></td><td>Фото, описание, цена, остаток, отзывы, кнопка «В корзину»</td><td>Marketplace Service</td></tr>
+      <tr><td><b>Корзина и оформление</b></td><td>Сборка заказа → Deal Engine (mode=SPLIT_CLEARING)</td><td>Deal Engine + Escrow</td></tr>
+      <tr><td><b>Отзывы</b></td><td>Оценка + текст после получения. Привязаны к SKU (видны в обоих витринах)</td><td>Marketplace Service</td></tr>
+      <tr><td><b>Брендирование</b></td><td>Логотип, обложка, цвет, описание — кастомизация витрины</td><td>Селлер (через ЛК)</td></tr>
+      <tr><td><b>Управление ассортиментом</b></td><td>CRUD SKU, цены, остатки, фото — через ЛК или API</td><td>Селлер</td></tr>
+      <tr><td><b>Аналитика</b></td><td>Просмотры, конверсия, GMV, топ товаров — дашборд в ЛК</td><td>Marketplace Service</td></tr>
+      <tr><td><b>Мини-CRM</b></td><td>Список покупателей: мигрировавшие / сетевые, повторные покупки</td><td>Marketplace Service</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== CHANNELS ==================== -->
+<div class="pane" id="p-channels">
+<div class="card">
+  <h3>5 каналов магазина <span class="badge ok">ст. 9.2</span></h3>
+  <p>Каждый магазин селлера присутствует на 5 каналах. Все каналы работают с единым стоком и единой корзиной. Селлер включает/выключает каналы, но хотя бы один обязателен.</p>
+
+  <div class="channels">
+    <div class="ch"><div class="icon">📱</div><div class="name">Telegram</div><div class="desc">Бот + Mini App<br>Основной канал</div></div>
+    <div class="ch"><div class="icon">🌐</div><div class="name">Сайт</div><div class="desc">Субдомен или свой<br>SEO-оптимизация</div></div>
+    <div class="ch"><div class="icon">💬</div><div class="name">VK</div><div class="desc">Магазин в VK<br>VK Mini Apps</div></div>
+    <div class="ch"><div class="icon">📧</div><div class="name">Макс</div><div class="desc">Бот для VK Мессенджер<br>(ex-ICQ)</div></div>
+    <div class="ch"><div class="icon">📷</div><div class="name">Instagram</div><div class="desc">Shopping tags<br>Ссылки из Stories</div></div>
+  </div>
+
+  <h4>Детализация по каналам</h4>
+  <table>
+    <thead><tr><th>Канал</th><th>Технология</th><th>Витрина</th><th>Заказ</th><th>Оплата</th></tr></thead>
+    <tbody>
+      <tr><td><b>Telegram</b></td><td>Bot API + Mini App (WebApp)</td><td>Inline-каталог + Mini App для полной витрины</td><td>Корзина в Mini App → API → Deal Engine</td><td>Ссылка на платёжную страницу банка</td></tr>
+      <tr><td><b>Сайт</b></td><td>SSR (Next.js) или статика (GitHub Pages)</td><td>Полная витрина: категории, поиск, фильтры</td><td>Корзина → API → Deal Engine</td><td>Redirect на банк / SberPay</td></tr>
+      <tr><td><b>VK</b></td><td>VK Mini Apps + VK Pay</td><td>Каталог в Mini App, товары в сообществе</td><td>Корзина Mini App → API</td><td>VK Pay или redirect</td></tr>
+      <tr><td><b>Макс</b></td><td>Bot API (бывший ICQ New)</td><td>Inline-каталог, карточки товаров</td><td>Диалоговый заказ → API</td><td>Ссылка на оплату</td></tr>
+      <tr><td><b>Instagram</b></td><td>Shopping API + Link in Bio</td><td>Посты с тегами товаров</td><td>Ссылка на сайт-витрину</td><td>Через сайт-витрину</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Общая архитектура каналов</h3>
+  <div class="code"><b>Все 5 каналов → единый Marketplace API</b>
+
+┌─────────────┐
+│  Telegram    │──┐
+│  Mini App    │  │
+├─────────────┤  │
+│  Сайт       │  │     ┌────────────────────────┐
+│  Next.js    │──┤────→│  <b>Marketplace API</b>        │
+├─────────────┤  │     │  ├─ GET  /shop/{slug}   │
+│  VK         │  │     │  ├─ GET  /sku/{id}      │
+│  Mini App   │──┤     │  ├─ POST /cart/add      │
+├─────────────┤  │     │  ├─ POST /orders        │──→ <em>Deal Engine</em>
+│  Макс       │  │     │  └─ GET  /orders/{id}   │──→ <em>Escrow</em>
+│  Bot        │──┤     └────────────────────────┘
+├─────────────┤  │              │
+│  Instagram  │  │              ▼
+│  Shopping   │──┘     ┌────────────────────────┐
+└─────────────┘        │  <b>Единый сток / корзина</b>  │
+                       │  PostgreSQL + Redis     │
+                       └────────────────────────┘
+
+<b>Принцип:</b> UI различается (бот, Mini App, SSR),
+           бизнес-логика — одна. Заказ из Telegram
+           и заказ с сайта — одинаковая сделка в
+           Deal Engine.</div>
+</div>
+
+<div class="card">
+  <h3>Пилот: Масса Матере (Волна 0)</h3>
+  <p>Первая реализация на собственных активах. 3 активных канала → 5 к Волне 1.</p>
+  <table>
+    <thead><tr><th>Канал</th><th>Статус Волна 0</th><th>План Волна 1</th></tr></thead>
+    <tbody>
+      <tr><td>Telegram</td><td><span class="badge ok">запущен</span> massamadre_bot</td><td>+ Mini App витрина</td></tr>
+      <tr><td>Сайт</td><td><span class="badge ok">запущен</span> massamadre.ru (GitHub Pages)</td><td>→ SSR витрина с корзиной</td></tr>
+      <tr><td>VK</td><td><span class="badge warn">подготовка</span></td><td>Mini App + сообщество</td></tr>
+      <tr><td>Макс</td><td><span class="badge warn">отложен</span></td><td>Бот при наличии аудитории</td></tr>
+      <tr><td>Instagram</td><td><span class="badge ok">контент</span> Reels-воронка</td><td>+ Shopping tags</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== CATALOG ==================== -->
+<div class="pane" id="p-catalog">
+<div class="card">
+  <h3>Каталог Системы <span class="badge ok">ст. 9.3</span></h3>
+  <p>Верхний уровень витрины. Агрегирует SKU всех селлеров, принимает сетевой трафик зонтичного бренда. Является общим достоянием участников.</p>
+
+  <h4>Компоненты каталога</h4>
+  <div class="code"><b>Каталог Системы — стек:</b>
+
+Search engine:  <b>Elasticsearch 8.x</b>
+  ├─ Full-text search (русская морфология, snowball)
+  ├─ Faceted search (категории, цена, рейтинг, регион)
+  ├─ Autocomplete (prefix + fuzzy matching)
+  └─ Synonyms ("хлеб" ↔ "батон" ↔ "буханка")
+
+Frontend:       <b>Next.js SSR</b> (/catalog)
+  ├─ SSR для SEO (каждая категория = индексируемая страница)
+  ├─ Schema.org: Product + AggregateOffer
+  └─ Filters: категория, цена, рейтинг, селлер, наличие
+
+Data sync:      <b>CDC (Change Data Capture)</b>
+  PostgreSQL → Debezium → Kafka → Elasticsearch
+  Задержка: < 5 сек от изменения SKU до появления в поиске
+
+Кэширование:    <b>Redis</b>
+  ├─ Популярные запросы: 5 мин TTL
+  ├─ Категории: 15 мин TTL
+  └─ SKU-карточка: 1 мин TTL (инвалидация по event)</div>
+
+  <h4>Отличие от магазина</h4>
+  <table>
+    <thead><tr><th>Аспект</th><th>Магазин селлера</th><th>Каталог Системы</th></tr></thead>
+    <tbody>
+      <tr><td>SKU</td><td>Только свои</td><td>Все селлеры, все SKU с visible_catalog=true</td></tr>
+      <tr><td>Бренд</td><td>Бренд селлера (логотип, цвет, обложка)</td><td>Зонтичный бренд Системы</td></tr>
+      <tr><td>Поиск</td><td>По товарам одного селлера</td><td>По всем товарам + фильтр по селлеру</td></tr>
+      <tr><td>URL</td><td>/shop/{slug} или свой домен</td><td>/catalog</td></tr>
+      <tr><td>Покупатель</td><td>source_type = MIGRATED</td><td>source_type = NETWORK</td></tr>
+      <tr><td>Маршрутизация</td><td>Нет (трафик селлера)</td><td>Да, по ст. 11 (с приоритетом гр. 2)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Страница каталога — wireframe</h3>
+  <div class="screen">
+    <h4>/catalog</h4>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div style="flex:0 0 200px">
+        <b>Фильтры (sidebar)</b><br><br>
+        📁 Категория<br>
+        &nbsp;&nbsp;☑ Хлеб и выпечка<br>
+        &nbsp;&nbsp;☐ Кондитерские<br>
+        &nbsp;&nbsp;☐ Фермерские продукты<br><br>
+        💰 Цена: [100] — [5000] ₽<br><br>
+        ⭐ Рейтинг: от [4.0]<br><br>
+        📍 Регион: [Москва ▾]<br><br>
+        🏪 Селлер: [Все ▾]<br><br>
+        ☑ Только в наличии
+      </div>
+      <div style="flex:1;min-width:300px">
+        <b>🔍 Поиск:</b> [хлеб на закваске_____________] <span class="btn">[Найти]</span><br><br>
+        <b>Сортировка:</b> [По популярности ▾] [По цене ↑] [По рейтингу] [Новинки]<br><br>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">
+          <div style="border:1px dashed var(--brd);border-radius:8px;padding:10px;font-size:11px">
+            📷 [фото]<br>
+            <b>Хлеб бородинский</b><br>
+            450 ₽ · ⭐ 4.7<br>
+            🏪 Масса Матере<br>
+            <span class="btn" style="font-size:10px">[В корзину]</span>
+          </div>
+          <div style="border:1px dashed var(--brd);border-radius:8px;padding:10px;font-size:11px">
+            📷 [фото]<br>
+            <b>Круассан миндаль</b><br>
+            280 ₽ · ⭐ 4.9<br>
+            🏪 Кондитер Про<br>
+            <span class="btn" style="font-size:10px">[В корзину]</span>
+          </div>
+          <div style="border:1px dashed var(--brd);border-radius:8px;padding:10px;font-size:11px">
+            📷 [фото]<br>
+            <b>Торт медовик</b><br>
+            1 800 ₽ · ⭐ 4.6<br>
+            🏪 Масса Матере<br>
+            <span class="btn" style="font-size:10px">[В корзину]</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== ROUTING ==================== -->
+<div class="pane" id="p-routing">
+<div class="card">
+  <h3>Маршрутизация покупателей <span class="badge ok">ст. 11</span></h3>
+  <p>Организатор маршрутизирует покупателей из каталога (сетевой приток) между селлерами. Маршрутизация касается только каталога — в магазине селлера маршрутизации нет.</p>
+
+  <h4>Алгоритм маршрутизации</h4>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-n">1</div><div class="flow-t"><b>Запрос покупателя:</b> поиск «хлеб на закваске» в каталоге. source_type = NETWORK</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">2</div><div class="flow-t"><b>Elasticsearch:</b> full-text search → набор SKU из разных магазинов (Масса Матере, Пекарня Х, ...)</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">3</div><div class="flow-t"><b>Фильтрация:</b> наличие на складе (stock > 0), зона доставки (shipping_zones ∩ buyer_zone), статус селлера (ACTIVE)</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">4</div><div class="flow-t"><b>Ранжирование (scoring):</b>
+<br>score = w1×relevance + w2×rating + w3×price_rank + w4×<b>priority_boost</b> + w5×geo_proximity
+<br>где priority_boost > 0 для гр. 2 в первые 2–3 мес (ст. 11.2)</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">5</div><div class="flow-t"><b>Выдача:</b> отсортированный список SKU. Покупатель видит товары от разных селлеров в порядке score</div></div>
+  </div>
+
+  <h4>Приоритетная маршрутизация (ст. 11.2)</h4>
+  <div class="code"><b>priority_boost</b> для группы 2 («Разочаровавшиеся»):
+
+Условия активации:
+  - seller.group == "DISAPPOINTED"
+  - seller.joined_at + 90 дней > now()     // первые 2–3 мес
+  - <b>запрос идёт из каталога</b> (source_type = NETWORK)
+
+Множитель: +0.3 к нормализованному score (0..1)
+Эффект: SKU гр. 2 поднимаются в выдаче, но не блокируют других
+
+<b>Защита (ст. 10.3):</b>
+  - Приоритет ТОЛЬКО из сетевого притока
+  - Мигрировавшая база другого селлера НЕ перераспределяется
+  - Покупатель, пришедший в магазин селлера A напрямую,
+    никогда не маршрутизируется к селлеру B</div>
+</div>
+</div>
+
+<!-- ==================== BASE ==================== -->
+<div class="pane" id="p-base">
+<div class="card">
+  <h3>Клиентская база и разграничение <span class="badge ok">ст. 10</span></h3>
+
+  <h4>Два типа покупателей</h4>
+  <table>
+    <thead><tr><th></th><th>Мигрировавшая база (MIGRATED)</th><th>Сетевой приток (NETWORK)</th></tr></thead>
+    <tbody>
+      <tr><td><b>Определение</b></td><td>Клиенты, приведённые селлером</td><td>Покупатели, привлечённые брендом Системы (через каталог)</td></tr>
+      <tr><td><b>Принадлежность</b></td><td>Привязаны к селлеру (ст. 10.2)</td><td>Общее достояние всех участников (ст. 10.1)</td></tr>
+      <tr><td><b>Где живут</b></td><td>В магазине селлера</td><td>В каталоге → маршрутизируются</td></tr>
+      <tr><td><b>Перераспределение</b></td><td><b>Нет</b> — защищены от перераспределения</td><td><b>Да</b> — по правилам маршрутизации (ст. 11)</td></tr>
+      <tr><td><b>Пометка</b></td><td>source_type = MIGRATED на заказе</td><td>source_type = NETWORK на заказе</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Как определяется source_type</h4>
+  <div class="code"><b>Логика определения source_type при создании заказа:</b>
+
+if order.entry_point == "SHOP":
+    // Покупатель пришёл в магазин селлера напрямую
+    order.source_type = "MIGRATED"
+
+elif order.entry_point == "CATALOG":
+    // Покупатель пришёл из каталога Системы
+    order.source_type = "NETWORK"
+
+elif order.entry_point == "CHANNEL":
+    // Покупатель пришёл через канал селлера (TG, VK, IG)
+    order.source_type = "MIGRATED"
+
+elif order.entry_point == "REFERRAL" and referrer == seller:
+    // Прямая ссылка от селлера
+    order.source_type = "MIGRATED"
+
+<b>Важно:</b>
+- source_type фиксируется на ПЕРВОМ заказе покупателя
+- При повторном заказе у ТОГО ЖЕ селлера — тип сохраняется
+- При заказе у ДРУГОГО селлера через каталог — NETWORK
+- Мигрировавший покупатель НЕ «переходит» к другому селлеру
+  даже если купил у него через каталог</div>
+
+  <div class="note info">
+    <b>Зачем разграничение (норма К4).</b> Разграничение защищает доверие участника, приводящего своих клиентов: он не теряет их в пользу других. Иначе исчезает стимул наполнять общую базу.
+  </div>
+</div>
+</div>
+
+<!-- ==================== BUYER ==================== -->
+<div class="pane" id="p-buyer">
+<div class="card">
+  <h3>Путь покупателя — два сценария</h3>
+
+  <h4>Сценарий A: покупка через магазин селлера</h4>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-n">1</div><div class="flow-t"><b>Точка входа:</b> прямая ссылка, TG-бот, VK, Instagram, сайт селлера</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">2</div><div class="flow-t"><b>Витрина:</b> магазин под брендом селлера → каталог его SKU</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">3</div><div class="flow-t"><b>Товар:</b> страница SKU (фото, описание, цена, отзывы) → [В корзину]</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">4</div><div class="flow-t"><b>Корзина:</b> товары одного селлера → адрес доставки → [Оформить]</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">5</div><div class="flow-t"><b>Авторизация:</b> SMS OTP (если не авторизован)</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">6</div><div class="flow-t"><b>Оплата:</b> → Deal Engine (mode=SPLIT_CLEARING) → Эскроу</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">7</div><div class="flow-t"><b>Исполнение:</b> Фулфилмент (сборка) → Логистика (доставка)</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">8</div><div class="flow-t"><b>Получение:</b> [Подтвердить получение] → Клиринг → splitRelease</div></div>
+  </div>
+  <div class="note info">source_type = <b>MIGRATED</b>. Покупатель привязан к селлеру. Не маршрутизируется.</div>
+
+  <h4>Сценарий B: покупка через каталог Системы</h4>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-n">1</div><div class="flow-t"><b>Точка входа:</b> /catalog → поиск «хлеб» → результаты от разных селлеров</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">2</div><div class="flow-t"><b>Маршрутизация (ст. 11):</b> ранжирование SKU, приоритет гр. 2</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">3</div><div class="flow-t"><b>Выбор:</b> покупатель кликает SKU → карточка товара с указанием селлера</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">4</div><div class="flow-t"><b>Корзина:</b> может содержать товары от разных селлеров → split по селлерам</div></div>
+    <div class="flow-arrow">↓</div>
+    <div class="flow-step"><div class="flow-n">5</div><div class="flow-t"><b>Далее:</b> авторизация → оплата → фулфилмент → доставка → подтверждение → клиринг (как в сценарии A)</div></div>
+  </div>
+  <div class="note info">source_type = <b>NETWORK</b>. Покупатель — общее достояние. Маршрутизируется.</div>
+</div>
+
+<div class="card">
+  <h3>Мульти-селлер корзина (каталог)</h3>
+  <p>В каталоге покупатель может добавить товары от разных селлеров. Каждый селлер — отдельный заказ (Deal) в Deal Engine. Одна оплата → N сделок.</p>
+  <div class="code"><b>Корзина каталога:</b>
+┌───────────────────────────────────────────────┐
+│  🛒 Корзина (3 товара от 2 селлеров)          │
+├───────────────────────────────────────────────┤
+│  <em>Масса Матере:</em>                               │
+│    Хлеб бородинский ×2       900₽             │
+│    Круассан шоколадный ×1    320₽             │
+│    Итого селлер:           1 220₽             │
+├───────────────────────────────────────────────┤
+│  <em>Пекарня Сергеева:</em>                            │
+│    Торт наполеон ×1        2 400₽             │
+│    Итого селлер:           2 400₽             │
+├───────────────────────────────────────────────┤
+│  <b>Итого:                   3 620₽</b>             │
+│  Доставка:                   350₽             │
+│  Комиссия НСВР:                6₽             │
+│                                               │
+│  [Оформить заказ →]                           │
+└───────────────────────────────────────────────┘
+
+→ Создаются 2 Deal (mode=SPLIT_CLEARING):
+  Deal 1: Масса Матере (1 220₽) + фулфилмент + логистика
+  Deal 2: Пекарня Сергеева (2 400₽) + фулфилмент + логистика
+→ Одна платёжная сессия банка на 3 970₽</div>
+</div>
+</div>
+
+<!-- ==================== SELLER UI ==================== -->
+<div class="pane" id="p-seller_ui">
+<div class="card">
+  <h3>Личный кабинет селлера</h3>
+  <p>Интерфейс управления магазином. Стилизация под формат кабинета Ozon/WB (знакомый формат для гр. 2).</p>
+
+  <h4>Экраны ЛК</h4>
+  <table>
+    <thead><tr><th>Экран</th><th>Функции</th><th>Сравнение с Ozon/WB</th></tr></thead>
+    <tbody>
+      <tr><td><b>Дашборд</b></td><td>GMV, заказы, конверсия, топ товаров, алерты</td><td>Аналогично «Аналитика» в Ozon Seller</td></tr>
+      <tr><td><b>Товары</b></td><td>CRUD SKU: фото, описание, цена, остатки, категории</td><td>«Товары → Добавить» в Ozon</td></tr>
+      <tr><td><b>Заказы</b></td><td>Список заказов, статусы, трекинг, клиринг</td><td>«Заказы» в WB Seller</td></tr>
+      <tr><td><b>Магазин</b></td><td>Брендирование: логотип, обложка, описание, цвет</td><td>Нет аналога (на MP селлер = набор SKU)</td></tr>
+      <tr><td><b>Каналы</b></td><td>Вкл/выкл 5 каналов, настройки TG-бота, домена</td><td>Нет аналога</td></tr>
+      <tr><td><b>Покупатели</b></td><td>Мини-CRM: мигрировавшие / сетевые, повторные</td><td>Нет аналога (на MP база = маркетплейса)</td></tr>
+      <tr><td><b>Финансы</b></td><td>Выручка, клиринг-отчёты, баланс, вывод</td><td>«Финансы → Расчёты» в Ozon</td></tr>
+      <tr><td><b>Отзывы</b></td><td>Входящие, ответы, рейтинг по SKU</td><td>«Отзывы» в Ozon Seller</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>Преимущества перед Ozon/WB кабинетом</h3>
+  <div class="code"><b>Что получает селлер и чего нет на маркетплейсах:</b>
+
+✓ 100% выручки (vs 15–55% комиссия Ozon/WB)
+✓ Собственный бренд (магазин, логотип, каналы)
+✓ Своя клиентская база (мигрировавшая не перераспределяется)
+✓ 5 каналов продаж (vs зависимость от одной площадки)
+✓ Фиксированные правила (vs штрафы и изменения задним числом)
+✓ Выплата 1–3 дня (vs недели ожидания)
+✓ Нет штрафов за упаковку / габариты / склад
+✓ Свобода выбора фулфилмента (Волна 2)</div>
+</div>
+</div>
+
+<!-- ==================== SEARCH ==================== -->
+<div class="pane" id="p-search">
+<div class="card">
+  <h3>Поиск и фильтрация</h3>
+
+  <h4>Elasticsearch индекс: sku_catalog</h4>
+  <div class="code"><b>Mapping:</b>
+{
+  "sku_id":       { "type": "keyword" },
+  "seller_id":    { "type": "keyword" },
+  "shop_slug":    { "type": "keyword" },
+  "title":        { "type": "text", "analyzer": "russian_morphology" },
+  "description":  { "type": "text", "analyzer": "russian_morphology" },
+  "category_id":  { "type": "keyword" },
+  "tags":         { "type": "keyword" },     // массив
+  "price":        { "type": "float" },
+  "stock":        { "type": "integer" },
+  "rating":       { "type": "float" },
+  "reviews_count":{ "type": "integer" },
+  "orders_count": { "type": "integer" },
+  "weight_g":     { "type": "integer" },
+  "shipping_zones":{ "type": "keyword" },    // массив
+  "seller_group": { "type": "keyword" },     // 1/2/3 для маршрутизации
+  "seller_joined":{ "type": "date" },        // для priority_boost
+  "visible_catalog":{ "type": "boolean" },
+  "status":       { "type": "keyword" },
+  "geo_location": { "type": "geo_point" },   // координаты склада
+  "created_at":   { "type": "date" },
+  "updated_at":   { "type": "date" }
+}
+
+<b>Analyzer: russian_morphology</b>
+  tokenizer: standard
+  filter: [lowercase, russian_stop, russian_stemmer, synonym_filter]
+
+<b>Synonyms:</b>
+  хлеб, батон, буханка, каравай
+  торт, пирожное, десерт
+  закваска, sourdough, левен</div>
+
+  <h4>Запрос поиска с маршрутизацией</h4>
+  <div class="code"><b>Elasticsearch query (с priority_boost):</b>
+
+POST /sku_catalog/_search
+{
+  "query": {
+    "function_score": {
+      "query": {
+        "bool": {
+          "must": [
+            { "multi_match": {
+                "query": "хлеб на закваске",
+                "fields": ["title^3", "description", "tags^2"]
+            }},
+            { "term": { "visible_catalog": true }},
+            { "term": { "status": "ACTIVE" }},
+            { "range": { "stock": { "gt": 0 }}}
+          ],
+          "filter": [
+            { "terms": { "shipping_zones": ["MSK"] }}
+          ]
+        }
+      },
+      "functions": [
+        { "field_value_factor": {
+            "field": "rating", "factor": 0.1, "modifier": "log1p"
+        }},
+        { "field_value_factor": {
+            "field": "orders_count", "factor": 0.01, "modifier": "log1p"
+        }},
+        <b>// Priority boost (ст. 11.2)</b>
+        { "script_score": {
+            "script": "if (doc['seller_group'].value == '2' &&
+                          doc['seller_joined'].value.millis >
+                          Instant.now().minus(90, ChronoUnit.DAYS).toEpochMilli())
+                        return 1.3; else return 1.0;"
+        }}</b>
+      ],
+      "score_mode": "multiply"
+    }
+  }
+}</div>
+</div>
+</div>
+
+<!-- ==================== DATA ==================== -->
+<div class="pane" id="p-data">
+<div class="card">
+  <h3>Модель данных витрины</h3>
+  <div class="code"><b>PostgreSQL schema: marketplace_db</b>
+
+<em>── SKU ──</em>
+<b>skus</b>
+  id:               UUID (PK)
+  seller_id:        UUID (FK → registry.participants)
+  shop_id:          UUID (FK → shops)
+  title:            VARCHAR(200)
+  description:      TEXT
+  category_id:      UUID (FK → categories)
+  tags:             TEXT[]
+  price:            DECIMAL(12,2)
+  currency:         VARCHAR(3) DEFAULT 'RUB'
+  stock:            INT DEFAULT 0
+  stock_reserved:   INT DEFAULT 0
+  unit:             VARCHAR(20) DEFAULT 'шт'
+  weight_g:         INT
+  dimensions_mm:    JSONB  -- {l, w, h}
+  images:           TEXT[] -- до 10 URLs
+  fulfillment_id:   UUID (FK → registry.participants)
+  warehouse_id:     UUID?
+  shipping_zones:   TEXT[]
+  visible_shop:     BOOLEAN DEFAULT true
+  visible_catalog:  BOOLEAN DEFAULT true
+  status:           ENUM('DRAFT','ACTIVE','OUT_OF_STOCK','ARCHIVED')
+  rating:           DECIMAL(2,1) DEFAULT 0
+  reviews_count:    INT DEFAULT 0
+  orders_count:     INT DEFAULT 0
+  created_at:       TIMESTAMPTZ
+  updated_at:       TIMESTAMPTZ
+
+<em>── Магазин ──</em>
+<b>shops</b>
+  id:               UUID (PK)
+  seller_id:        UUID (FK → registry.participants) UNIQUE
+  slug:             VARCHAR(50) UNIQUE  -- URL slug
+  brand_name:       VARCHAR(100)
+  brand_tagline:    VARCHAR(200)
+  brand_logo_url:   TEXT
+  brand_cover_url:  TEXT
+  brand_accent:     VARCHAR(7)  -- hex color
+  brand_description:TEXT
+  status:           ENUM('ACTIVE','SUSPENDED','CLOSED')
+  created_at:       TIMESTAMPTZ
+  updated_at:       TIMESTAMPTZ
+
+<em>── Каналы ──</em>
+<b>shop_channels</b>
+  id:               UUID (PK)
+  shop_id:          UUID (FK → shops)
+  channel_type:     ENUM('TELEGRAM','WEBSITE','VK','MAX','INSTAGRAM')
+  enabled:          BOOLEAN DEFAULT false
+  config:           JSONB  -- {bot_token, domain, group_id, etc}
+  created_at:       TIMESTAMPTZ
+
+<em>── Категории ──</em>
+<b>categories</b>
+  id:               UUID (PK)
+  parent_id:        UUID? (FK → self)  -- дерево
+  name:             VARCHAR(100)
+  slug:             VARCHAR(100) UNIQUE
+  icon:             VARCHAR(50)
+  sort_order:       INT
+  is_active:        BOOLEAN DEFAULT true
+
+<em>── Отзывы ──</em>
+<b>reviews</b>
+  id:               UUID (PK)
+  sku_id:           UUID (FK → skus)
+  buyer_id:         UUID (FK → users)
+  order_id:         UUID (FK → orders)
+  rating:           INT (1–5)
+  text:             TEXT
+  images:           TEXT[]
+  seller_reply:     TEXT?
+  status:           ENUM('PENDING','PUBLISHED','HIDDEN')
+  created_at:       TIMESTAMPTZ
+
+<em>── Заказы (витрина → Deal Engine) ──</em>
+<b>orders</b>
+  id:               UUID (PK)
+  deal_id:          UUID? (FK → Deal Engine)
+  buyer_id:         UUID (FK → users)
+  seller_id:        UUID (FK → registry.participants)
+  shop_id:          UUID (FK → shops)
+  entry_point:      ENUM('SHOP','CATALOG','CHANNEL','REFERRAL')
+  source_type:      ENUM('MIGRATED','NETWORK')
+  items:            JSONB[]  -- [{sku_id, qty, price}]
+  total_amount:     DECIMAL(12,2)
+  shipping_address: JSONB
+  status:           ENUM('PENDING','PAID','FULFILLING','SHIPPING',
+                         'DELIVERED','COMPLETED','CANCELLED','DISPUTE')
+  created_at:       TIMESTAMPTZ
+  updated_at:       TIMESTAMPTZ
+
+<em>── Покупательская база ──</em>
+<b>customer_bindings</b>
+  id:               UUID (PK)
+  buyer_id:         UUID
+  seller_id:        UUID
+  source_type:      ENUM('MIGRATED','NETWORK')
+  first_order_at:   TIMESTAMPTZ
+  orders_count:     INT DEFAULT 1
+  total_gmv:        DECIMAL(12,2)</div>
+</div>
+</div>
+
+<!-- ==================== API ==================== -->
+<div class="pane" id="p-api">
+<div class="card">
+  <h3>API витрины (Marketplace Service)</h3>
+  <div class="code"><b>// ═══ PUBLIC API (покупатель, без auth для browsing) ═══</b>
+
+<em>── Каталог Системы ──</em>
+GET  /api/v1/catalog/search?q=хлеб&zone=MSK&sort=rating&page=1
+GET  /api/v1/catalog/categories
+GET  /api/v1/catalog/categories/{slug}
+GET  /api/v1/catalog/autocomplete?q=хле
+
+<em>── Магазин селлера ──</em>
+GET  /api/v1/shop/{slug}                  // профиль магазина
+GET  /api/v1/shop/{slug}/products?cat=X&page=1
+GET  /api/v1/shop/{slug}/reviews
+
+<em>── SKU ──</em>
+GET  /api/v1/sku/{id}                     // карточка товара
+GET  /api/v1/sku/{id}/reviews
+
+<em>── Корзина (auth required) ──</em>
+POST /api/v1/cart/add        { sku_id, qty, entry_point }
+GET  /api/v1/cart
+PATCH /api/v1/cart/{item_id} { qty }
+DELETE /api/v1/cart/{item_id}
+
+<em>── Заказ (auth required) ──</em>
+POST /api/v1/orders          { cart_id, shipping_address }
+  → создаёт N Deal (по селлерам), инициирует эскроу
+GET  /api/v1/orders
+GET  /api/v1/orders/{id}
+POST /api/v1/orders/{id}/confirm-receipt
+POST /api/v1/orders/{id}/dispute
+
+
+<b>// ═══ SELLER API (auth: SELLER role) ═══</b>
+
+<em>── Управление SKU ──</em>
+GET    /api/v1/seller/products
+POST   /api/v1/seller/products           { title, description, ... }
+PATCH  /api/v1/seller/products/{id}      { price, stock, ... }
+DELETE /api/v1/seller/products/{id}
+POST   /api/v1/seller/products/{id}/images   (multipart)
+
+<em>── Магазин ──</em>
+GET    /api/v1/seller/shop
+PATCH  /api/v1/seller/shop               { brand_name, logo, ... }
+
+<em>── Каналы ──</em>
+GET    /api/v1/seller/channels
+PATCH  /api/v1/seller/channels/{type}    { enabled, config }
+
+<em>── Заказы ──</em>
+GET    /api/v1/seller/orders
+GET    /api/v1/seller/orders/{id}
+
+<em>── Покупатели ──</em>
+GET    /api/v1/seller/customers?source_type=MIGRATED
+GET    /api/v1/seller/customers/stats
+
+<em>── Финансы ──</em>
+GET    /api/v1/seller/finance/summary?period=30d
+GET    /api/v1/seller/finance/clearings
+GET    /api/v1/seller/finance/payouts
+
+<em>── Отзывы ──</em>
+GET    /api/v1/seller/reviews
+POST   /api/v1/seller/reviews/{id}/reply  { text }
+
+<em>── Аналитика ──</em>
+GET    /api/v1/seller/analytics/dashboard?period=30d
+GET    /api/v1/seller/analytics/products   // топ товаров
+GET    /api/v1/seller/analytics/funnel     // воронка
+
+<b>// ═══ ADMIN/ORGANIZER API ═══</b>
+
+GET    /api/v1/admin/marketplace/shops
+GET    /api/v1/admin/marketplace/sku?seller=X
+GET    /api/v1/admin/marketplace/orders?source_type=NETWORK
+PATCH  /api/v1/admin/marketplace/routing-config   // веса маршрутизации
+GET    /api/v1/admin/marketplace/gate-status</div>
+</div>
+</div>
+
+</div><!-- /wrap -->
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Этот документ сведён с двадцатью другими в <a href="33-ui-vitrina-opisanie.html" style="font-weight:600;">интегрированное описание слоя UI и витрины</a>; выведенные величины — в <a href="34-ui-vitrina-parametry.html" style="font-weight:600;">наборе параметров U</a>.</div>
+</body>
+</html>

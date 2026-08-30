@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 · Registry Service · Спецификация</title>
+<style>
+:root{--bg:#fff;--bg2:#f8f9fb;--bg3:#f1f3f6;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--ac:#1e40af;--acbg:#dbeafe;--grn:#16a34a;--grnbg:#dcfce7;--orn:#d97706;--ornbg:#fef3c7;--red:#dc2626;--redbg:#fee2e2;--pur:#7c3aed;--purbg:#ede9fe;--cyn:#0891b2;--cynbg:#ecfeff;--brd:#e2e8f0;--mono:'SF Mono','JetBrains Mono',monospace;--sans:-apple-system,'Inter','Segoe UI',sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--bg2:#181b24;--bg3:#1f232e;--tx:#e4e6ec;--tx2:#9ca0b0;--tx3:#6b6f80;--ac:#5c8aff;--acbg:#1a2744;--grn:#4ade80;--grnbg:#0f2f1a;--orn:#fbbf24;--ornbg:#2a2010;--red:#f87171;--redbg:#2f1212;--pur:#c084fc;--purbg:#2a1744;--cyn:#22d3ee;--cynbg:#0a2a2e;--brd:#2a2e38}}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--sans);background:var(--bg);color:var(--tx);font-size:13px;line-height:1.6}
+.w{max-width:1100px;margin:0 auto;padding:24px 20px}.hdr{margin-bottom:24px;padding-bottom:18px;border-bottom:1.5px solid var(--brd)}.hdr h1{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px}.hdr .sub{color:var(--tx2);font-size:13px}
+.nav{display:flex;gap:4px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:10;margin-bottom:14px;border-bottom:1px solid var(--brd)}.nb{padding:6px 12px;border-radius:6px;border:1.5px solid var(--brd);cursor:pointer;font-size:12px;font-weight:500;background:transparent;color:var(--tx2);transition:.15s}.nb:hover{border-color:#999}.nb.on{border-color:var(--ac);color:var(--ac);background:var(--acbg)}
+.pn{display:none}.pn.vis{display:block}.cd{border:1px solid var(--brd);border-radius:12px;padding:18px;margin-bottom:12px}.cd h3{font-size:15px;font-weight:600;margin-bottom:8px}.cd h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--tx2)}.cd p{font-size:13px;color:var(--tx2);line-height:1.65;margin-bottom:6px}
+.dm{font-family:var(--mono);font-size:11px;color:var(--tx2);background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:14px 16px;margin-top:8px;line-height:1.8;white-space:pre;overflow-x:auto}.dm b{color:var(--ac);font-weight:600}.dm em{color:var(--grn);font-style:normal;font-weight:600}.dm i{color:var(--orn);font-style:normal;font-weight:600}.dm u{color:var(--pur);text-decoration:none;font-weight:600}.dm s{color:var(--red);text-decoration:none;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}th{padding:7px 8px;text-align:left;font-weight:600;font-size:10px;color:var(--tx3);border-bottom:1.5px solid var(--brd);text-transform:uppercase;letter-spacing:.3px}td{padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--tx2);vertical-align:top}
+.note{font-size:12px;padding:10px 14px;border-radius:8px;margin-top:10px;line-height:1.6}.note.info{background:var(--acbg);color:var(--ac)}.note.warn{background:var(--ornbg);color:var(--orn)}.note.ok{background:var(--grnbg);color:var(--grn)}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>10 · Registry Service</h1>
+  <div class="sub">Go · Реестр участников, тарифы, привязки, SLA, гейт · ст. 4, 3.2, 3.3, 13.2</div>
+</div>
+
+<div class="nav" id="nav"></div>
+<div id="ct"></div>
+
+<script>
+var T=[
+  {id:'role',    l:'Роль в ПТК'},
+  {id:'entities',l:'Сущности реестра'},
+  {id:'tariffs', l:'Тарифы (ст. 3.2)'},
+  {id:'bindings',l:'Привязки (ст. 3.3)'},
+  {id:'onboard', l:'Приёмка в реестр'},
+  {id:'gate',    l:'Гейт готовности (ст. 13.2)'},
+  {id:'api',     l:'API (gRPC + REST)'},
+  {id:'data',    l:'Модель данных'},
+  {id:'impl',    l:'Реализация по спринтам'}
+];
+var cur='role';
+function R(){var h='';T.forEach(function(t){h+='<button class="nb'+(t.id===cur?' on':'')+'" data-t="'+t.id+'">'+t.l+'</button>';});document.getElementById('nav').innerHTML=h;document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){cur=this.getAttribute('data-t');R();}});document.querySelectorAll('.pn').forEach(function(p){p.classList.toggle('vis',p.id==='p-'+cur);});}
+document.addEventListener('DOMContentLoaded',R);
+</script>
+
+<!-- ==================== РОЛЬ ==================== -->
+<div class="pn vis" id="p-role">
+<div class="cd">
+  <h3>Роль в архитектуре ПТК</h3>
+  <p>Registry — «телефонная книга» Системы. Хранит: кто участвует (participants), что предлагает (tariffs), с кем работает (bindings), и готов ли (gate). Все остальные сервисы обращаются к Registry за данными участников.</p>
+
+  <div class="dm"><b>МЕСТО В АРХИТЕКТУРЕ</b>
+
+  ┌──────────────────────────────────────────────────────┐
+  │              <b>REGISTRY SERVICE (10)</b>                   │
+  │                                                      │
+  │  participants:  кто (селлеры, операторы, банки)       │
+  │  tariffs:       что предлагает (оферта, ст. 3.2)     │
+  │  bindings:      с кем работает (привязка, ст. 3.3)   │
+  │  gate:          готов ли (гейт, ст. 13.2)            │
+  │  sla:           SLA по ролям (ст. 2.4)               │
+  └──────┬───────────┬────────────┬──────────────────────┘
+         │           │            │
+     ┌───▼───┐  ┌────▼────┐  ┌───▼───────┐
+     │Clear. │  │Market.  │  │Deal Engine │
+     │Eng.(09)│ │Svc.(11) │  │(01)        │
+     │        │ │         │  │            │
+     │тарифы  │ │участники│  │seller_id   │
+     │для split│ │для SKU  │  │для Deal    │
+     └────────┘ └─────────┘  └────────────┘
+
+<b>Язык:</b> Go
+<b>Протокол:</b> gRPC (внутренний), REST (admin, ЛК)
+<b>БД:</b> PostgreSQL (participants, tariffs, bindings)
+<b>Потребители:</b> все остальные сервисы ПТК
+<b>Статьи Правил:</b> ст. 4 (реестр), ст. 3.2 (тарифы), ст. 3.3 (привязки), ст. 13 (вступление/выход)</div>
+</div>
+</div>
+
+<!-- ==================== СУЩНОСТИ ==================== -->
+<div class="pn" id="p-entities">
+<div class="cd">
+  <h3>Сущности реестра</h3>
+  <table>
+    <thead><tr><th>Сущность</th><th>Роли</th><th>Поля</th><th>Статусы</th></tr></thead>
+    <tbody>
+      <tr><td><b>Participant</b></td><td>SELLER, FULFILLMENT, LOGISTICS, TRUNK, WAREHOUSE, ORGANIZER, BANK</td><td>id, inn, name, legal_type, role, region, rating, seller_group, contact_phone, contact_email</td><td>PENDING → ACTIVE → SUSPENDED → EXITED</td></tr>
+      <tr><td><b>Tariff</b></td><td>Все кроме ORGANIZER (тариф зафиксирован в Правилах)</td><td>id, participant_id, service_type, unit, rate, valid_from, valid_to, notify_days</td><td>ACTIVE → SUPERSEDED (при изменении)</td></tr>
+      <tr><td><b>Binding</b></td><td>SELLER → набор операторов</td><td>id, seller_id, fulfillment_id, logistics_id, trunk_id, warehouse_id</td><td>active = true/false</td></tr>
+      <tr><td><b>SLA</b></td><td>Все</td><td>participant_id, metric, target_value, measurement_period</td><td>—</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== ТАРИФЫ ==================== -->
+<div class="pn" id="p-tariffs">
+<div class="cd">
+  <h3>Тарифы: оферта в реестре (ст. 3.2)</h3>
+  <p>Каждый участник (кроме Организатора) публикует тарифы самостоятельно. Тариф = публичная оферта внутри Системы: «готов оказать услугу X за Y рублей».</p>
+
+  <div class="dm"><b>ПРАВИЛА ТАРИФОВ</b>
+
+  1. <em>Кто назначает:</em> сам участник (не Организатор)
+  2. <em>Формат:</em> service_type + unit + rate (ст. 3.2)
+  3. <em>Публичность:</em> видны всем селлерам при выборе оператора
+  4. <em>Изменение:</em> уведомление за notify_days (мин. 14 дней)
+  5. <em>Незадним числом:</em> заказы, принятые до изменения → по старому тарифу
+  6. <em>История:</em> все версии хранятся (valid_from → valid_to)
+
+<b>ТИПЫ ТАРИФОВ:</b>
+  ┌──────────────────────────┬──────────────────┬───────────┐
+  │ service_type             │ unit             │ пример    │
+  ├──────────────────────────┼──────────────────┼───────────┤
+  │ ASSEMBLY                 │ PER_ITEM         │ 200₽/ед   │
+  │ ASSEMBLY_BULK            │ PER_ITEM         │ 150₽/ед   │
+  │ STORAGE                  │ PER_PALLET_DAY   │ 50₽       │
+  │ RETURN_HANDLING          │ PER_ITEM         │ 300₽      │
+  │ DELIVERY_ZONE_1          │ PER_ORDER        │ 350₽      │
+  │ DELIVERY_ZONE_2          │ PER_ORDER        │ 500₽      │
+  │ DELIVERY_ZONE_3          │ PER_ORDER        │ 800₽      │
+  │ TRUNK_MSK_SPB            │ PER_PALLET       │ 1500₽     │
+  │ TRUNK_MSK_KRD            │ PER_PALLET       │ 2200₽     │
+  │ ACCEPTANCE               │ PER_PALLET       │ 100₽      │
+  │ ORGANIZER_FEE            │ PERCENT          │ 0.2%      │
+  └──────────────────────────┴──────────────────┴───────────┘
+
+<b>API тарифов:</b>
+  GET  /api/v1/tariffs?participant_id=X    — тарифы участника
+  GET  /api/v1/tariffs?role=FULFILLMENT    — все тарифы роли (для выбора)
+  POST /api/v1/tariffs                     — создать/обновить тариф
+  GET  /api/v1/tariffs/{id}/history        — история изменений</div>
+</div>
+</div>
+
+<!-- ==================== ПРИВЯЗКИ ==================== -->
+<div class="pn" id="p-bindings">
+<div class="cd">
+  <h3>Привязки: селлер ↔ операторы (ст. 3.3)</h3>
+  <div class="dm"><b>ПРИВЯЗКА (BINDING)</b>
+
+  При настройке магазина (wizard, задача 1.1):
+    1. Селлер видит список операторов по каждой роли
+    2. Для каждой роли показаны: название, тарифы, SLA, рейтинг
+    3. Селлер выбирает (или система назначает из гейта)
+    4. Binding записывается в реестр
+
+  <b>Структура:</b>
+  {
+    seller_id:      "PTR-12345",
+    fulfillment_id: "PTR-67891",    // 3PL-Сервис
+    logistics_id:   "PTR-88901",    // Курьер-Экспресс
+    trunk_id:       null,            // нет (один регион)
+    warehouse_id:   null,            // null = фулфилмент совмещает
+    active:         true,
+    bound_at:       "2027-07-01"
+  }
+
+  <b>Смена оператора (ст. 3.3.2):</b>
+    1. Селлер в ЛК нажимает «Сменить фулфилмент»
+    2. Видит список: другой оператор, тариф 180₽/ед, SLA 12ч
+    3. Выбирает → текущий binding.active = false
+    4. Новый binding.active = true
+    5. Заказы в обработке → по старому
+    6. Новые → по новому
+    7. <em>Нового договора НЕ нужно</em>
+
+  <b>Ограничения:</b>
+    • 1 активный binding на роль на селлера
+    • Нельзя привязать SUSPENDED/EXITED участника
+    • Волна 0–1: автоназначение (ближайший из гейта)
+    • Волна 2+: свободный выбор из ≥2 операторов</div>
+</div>
+</div>
+
+<!-- ==================== ПРИЁМКА ==================== -->
+<div class="pn" id="p-onboard">
+<div class="cd">
+  <h3>Приёмка в реестр (ст. 4, 13.1)</h3>
+  <div class="dm"><b>ПРИЁМКА УЧАСТНИКА</b>
+
+  <b>Для селлера (ст. 13.1.1):</b>
+  1. Форма /join: ИНН + телефон
+  2. ФНС API → KYC Level 1
+  3. Click-wrap акцепт (ст. 2.7)
+  4. Registry.CreateParticipant:
+     { role: SELLER, status: ACTIVE, seller_group: 1|2|3 }
+  5. → Wizard → Магазин → Товары → Go Live
+
+  <b>Для оператора (фулфилмент, логистика):</b>
+  1. Заявка через Admin Panel (или API)
+  2. KYC Level 2 (проверка ИНН + учредители + лицензии)
+  3. Договор присоединения (КЭП для ООО)
+  4. Публикация тарифов в реестре
+  5. SLA-соглашение (приложение)
+  6. Registry.CreateParticipant:
+     { role: FULFILLMENT, status: ACTIVE }
+  7. Тестовый прогон (webhook, API интеграция)
+  8. → Готов к привязке
+
+  <b>Для банка:</b>
+  1. Переговоры (Организатор ↔ Банк)
+  2. Договор на эскроу API
+  3. Тестовая интеграция (sandbox)
+  4. Registry.CreateParticipant:
+     { role: BANK, status: ACTIVE }
+  5. → BankAdapter подключён в Clearing Engine</div>
+</div>
+</div>
+
+<!-- ==================== ГЕЙТ ==================== -->
+<div class="pn" id="p-gate">
+<div class="cd">
+  <h3>Гейт готовности (ст. 13.2)</h3>
+  <p>Перед запуском привлечения селлеров (Волна 1) — проверка: все инфраструктурные роли закрыты.</p>
+
+  <div class="dm"><b>ГЕЙТ: УСЛОВИЯ ПРОХОЖДЕНИЯ</b>
+
+  Registry.CheckGate() → GateResult
+
+  Условия:
+  ┌─────────────────────────────────────────────────────────────┐
+  │ Роль             │ Мин. участников │ Статус     │ Проверка  │
+  ├──────────────────┼─────────────────┼────────────┼───────────┤
+  │ FULFILLMENT      │ ≥ 1 (идеал: 2) │ ACTIVE     │ ✓/✗      │
+  │ LOGISTICS        │ ≥ 1             │ ACTIVE     │ ✓/✗      │
+  │ ORGANIZER        │ = 1             │ ACTIVE     │ ✓/✗      │
+  │ BANK (Трек B)    │ ≥ 1             │ ACTIVE     │ ✓/✗      │
+  └──────────────────┴─────────────────┴────────────┴───────────┘
+
+  + У каждого ACTIVE участника:
+    • Опубликованы тарифы (≥ 1 tariff)
+    • SLA подписан
+    • Webhook / API протестирован
+
+  Результат:
+    GATE_PASSED:  все роли закрыты → можно привлекать
+    GATE_PARTIAL: Трек A (без банка) → можно, но без эскроу
+    GATE_BLOCKED: нет фулфилмента/логистики → нельзя
+
+  <b>Корректив К2 (ст. 13.2):</b>
+  Два фулфилмент-оператора с первого дня — для переговорной позиции.
+  Gate PASSED при ≥1, но RECOMMENDED при ≥2.</div>
+</div>
+</div>
+
+<!-- ==================== API ==================== -->
+<div class="pn" id="p-api">
+<div class="cd">
+  <h3>API</h3>
+
+  <h4>gRPC (внутренний)</h4>
+  <div class="dm"><b>// registry.proto</b>
+
+service RegistryService {
+  rpc GetParticipant(ParticipantRequest) returns (Participant);
+  rpc ListParticipants(ListFilter) returns (ParticipantList);
+  rpc GetBinding(BindingRequest) returns (Binding);
+  rpc GetTariffs(TariffRequest) returns (TariffList);
+  rpc CheckGate(GateRequest) returns (GateResult);
+}</div>
+
+  <h4>REST (admin, ЛК, форма /join)</h4>
+  <table>
+    <thead><tr><th>Метод</th><th>Endpoint</th><th>Кто</th><th>Что</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td>/api/v1/participants</td><td>Форма /join, Admin</td><td>Создать участника</td></tr>
+      <tr><td>GET</td><td>/api/v1/participants/{id}</td><td>Все</td><td>Данные участника</td></tr>
+      <tr><td>PATCH</td><td>/api/v1/participants/{id}</td><td>Admin</td><td>Обновить статус/данные</td></tr>
+      <tr><td>GET</td><td>/api/v1/participants?role=FULFILLMENT&region=MSK</td><td>ЛК (выбор оператора)</td><td>Список операторов для привязки</td></tr>
+      <tr><td>POST</td><td>/api/v1/bindings</td><td>Wizard, ЛК</td><td>Создать/сменить привязку</td></tr>
+      <tr><td>GET</td><td>/api/v1/bindings?seller_id=X</td><td>Clearing Engine</td><td>Текущая привязка</td></tr>
+      <tr><td>GET/POST</td><td>/api/v1/tariffs</td><td>ЛК оператора, Admin</td><td>CRUD тарифов</td></tr>
+      <tr><td>GET</td><td>/api/v1/gate</td><td>Admin</td><td>Статус гейта готовности</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== ДАННЫЕ ==================== -->
+<div class="pn" id="p-data">
+<div class="cd">
+  <h3>Модель данных</h3>
+  <div class="dm"><b>ТАБЛИЦЫ REGISTRY SERVICE</b>
+
+  <em>Все уже в schema 01_schema.sql:</em>
+  • participants (ст. 4)
+  • participant_tariffs (ст. 3.2)
+  • infra_bindings (ст. 3.3.1)
+
+  <i>Новые (для полной версии):</i>
+  • participant_sla
+    ├── participant_id TEXT FK
+    ├── metric TEXT (fulfillment_time, delivery_time, defect_rate)
+    ├── target_value NUMERIC
+    ├── measurement_period TEXT (7d, 30d)
+    └── created_at TIMESTAMPTZ
+
+  • participant_documents
+    ├── participant_id TEXT FK
+    ├── doc_type TEXT (CONTRACT, SLA, KYC, CERTIFICATE)
+    ├── file_url TEXT
+    ├── signed_at TIMESTAMPTZ
+    ├── valid_to DATE
+    └── status TEXT (VALID, EXPIRED, REVOKED)
+
+  • gate_checks
+    ├── id TEXT PK
+    ├── checked_at TIMESTAMPTZ
+    ├── result TEXT (PASSED, PARTIAL, BLOCKED)
+    ├── details JSONB (per-role status)
+    └── checked_by TEXT</div>
+</div>
+</div>
+
+<!-- ==================== РЕАЛИЗАЦИЯ ==================== -->
+<div class="pn" id="p-impl">
+<div class="cd">
+  <h3>Реализация по спринтам</h3>
+  <table>
+    <thead><tr><th>Спринт</th><th>Что реализовано</th><th>Где</th><th>Что упрощено</th></tr></thead>
+    <tbody>
+      <tr><td><b>0</b></td><td>participants, tariffs, bindings — таблицы</td><td>01_schema.sql</td><td>Полные таблицы (без SLA, documents, gate_checks)</td></tr>
+      <tr><td><b>0</b></td><td>CRUD participants + tariffs + bindings</td><td>server.js (REST endpoints)</td><td>Не отдельный сервис. Нет gRPC. Нет KYC Level 2</td></tr>
+      <tr><td><b>0</b></td><td>Seed: Масса Матере + 2 тестовых оператора + 8 тарифов</td><td>02_seed_massamadre.sql</td><td>Hardcoded, не через API</td></tr>
+      <tr><td><b>1</b></td><td>Wizard: автоназначение фулфилмента из binding</td><td>wizard-create-shop.html</td><td>Фиксированный оператор (из гейта)</td></tr>
+      <tr><td><b>1</b></td><td>ЛК: раздел «Операторы» — просмотр привязки и тарифов</td><td>seller-cabinet.html</td><td>Статические данные, кнопка «Сменить» — заглушка</td></tr>
+      <tr><td><b>2</b></td><td>Форма /join: создание participant через API</td><td>join-form.html + server.js</td><td>KYC Level 1 (ИНН + телефон), без Level 2</td></tr>
+      <tr><td><b>2</b></td><td>Реальная смена оператора в ЛК</td><td>server.js PATCH /bindings</td><td>Без проверки SLA нового оператора</td></tr>
+      <tr><td><b>3+</b></td><td>Отдельный Go-сервис</td><td>registry-service/ (свой repo)</td><td>Полная реализация: gRPC, KYC Level 2, SLA, gate, documents</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+</div>
+</body>
+</html>

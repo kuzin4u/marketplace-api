@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Слой селлеров Системы · описание и параметры</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1240px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--gn);margin-bottom:14px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--gn);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.ctl{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--bd);margin-bottom:14px}
+.ctl .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ctl input{flex:1;min-width:170px;padding:6px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12.5px;font-family:inherit;background:var(--card)}
+.fb{padding:4px 11px;font-size:11px;border:1px solid var(--bd);background:var(--card);border-radius:20px;cursor:pointer;color:var(--t2);font-family:inherit}
+.fb:hover{border-color:var(--gn);color:var(--t1)}.fb.on{background:var(--gn);border-color:var(--gn);color:#fff;font-weight:600}
+.fb:focus-visible{outline:2px solid var(--gn);outline-offset:2px}
+.stat{font-size:11px;color:var(--t3);margin-left:auto}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;margin-top:8px}
+.tab{padding:5px 11px;font-size:11px;color:var(--t3);cursor:pointer;border:none;background:none;font-family:inherit;border-radius:5px}
+.tab:hover{color:var(--t1);background:var(--card)}.tab.on{background:var(--gn2);color:var(--gn);font-weight:600}
+.sec{display:none}.sec.on{display:block}
+.st{font-size:15px;font-weight:600;margin:16px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.blk{background:var(--card);border:1px solid var(--bd);border-radius:8px;margin-bottom:10px;overflow:hidden}
+.blk .txt{padding:13px 17px}
+.blk .txt h3{font-size:13.5px;font-weight:600;margin-bottom:5px}
+.blk .txt p,.blk .txt li{font-size:12.5px;color:var(--t2)}
+.blk .txt ul{padding-left:16px;margin:4px 0}
+.pars{border-top:1px dashed var(--bd);background:#fbfaf7;padding:9px 17px}
+.pars .lbl{font-size:9.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.par{display:grid;grid-template-columns:58px 1fr 1.15fr 92px;gap:8px;padding:5px 0;border-bottom:1px solid #ecebe4;align-items:baseline}
+.par:last-child{border-bottom:none}
+@media(max-width:760px){.par{grid-template-columns:52px 1fr;gap:3px 8px}.par .v,.par .s{grid-column:2}}
+.par .k{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--gn);font-weight:700}
+.par .n{font-size:12px;color:var(--t1);font-weight:500}
+.par .v{font-family:ui-monospace,monospace;font-size:11.5px;color:var(--t2)}
+.par .v i{font-style:normal;color:var(--t3);font-size:10.5px;display:block}
+.par .s{text-align:right}
+@media(max-width:760px){.par .s{text-align:left}}
+.b{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;white-space:nowrap}
+.b-norm{background:var(--pr2);color:var(--pr)}.b-spec{background:var(--ac2);color:var(--ac)}
+.b-real{background:var(--gn2);color:var(--gn)}.b-hyp{background:var(--wr2);color:var(--wr)}
+.b-conf{background:var(--rd2);color:var(--rd)}
+.b-1{background:var(--ac2);color:var(--ac)}.b-2{background:var(--co2);color:var(--co)}.b-3{background:var(--pr2);color:var(--pr)}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:6px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:10.5px}
+.tb td{padding:6px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.tb .num{text-align:right;font-family:ui-monospace,monospace}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.conf{border:1px solid var(--bd);border-left:4px solid var(--rd);border-radius:6px;background:var(--card);padding:12px 15px;margin-bottom:8px}
+.conf h4{font-size:13px;font-weight:600;margin-bottom:4px}
+.conf p{font-size:12.5px;color:var(--t2);margin-bottom:4px}
+.conf .opt{font-size:12px;background:var(--bg);border-radius:4px;padding:7px 10px;margin-top:4px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px}
+@media(max-width:860px){.g3{grid-template-columns:1fr}}
+.ab{border:1px solid var(--bd);border-radius:6px;padding:12px;background:var(--card)}
+.ab h4{font-size:12.5px;font-weight:600;margin-bottom:4px}.ab p{font-size:12px;color:var(--t2)}
+.ab.g1{border-left:3px solid var(--ac)}.ab.g2{border-left:3px solid var(--co)}.ab.g3{border-left:3px solid var(--pr)}
+.flow{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:8px 0;font-size:11px}
+.fn{padding:5px 10px;border-radius:5px;background:var(--bg);border:1px solid var(--bd);color:var(--t2)}
+.fn.new{background:var(--gn2);border-color:var(--gn);color:var(--gn);font-weight:600}
+.fa{color:var(--t3)}
+.hit{background:#fff8e6!important}
+a{color:#2a6cb6}
+@media print{.ctl{position:static}.sec{display:block!important}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Слой селлеров Системы · описание и параметры в одном документе</h1>
+  <p>Кто приходит, чем их привлекают, как подключаются, что настраивают и как меняется их экономика. Каждая величина стоит под утверждением, из которого следует.</p>
+  <div class="meta">23 августа 2026 · 64 параметра при 7 разделах · 9 противоречий на решение · 33 значения имеют статус оценки · Сведено из десяти источников</div>
+<div style="max-width:1240px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Источники: <a href="seller-sources-customer-base-synced.html" style="font-weight:600;">источники селлеров</a>, <a href="6_3-seller-acquisition-full-synced.html" style="font-weight:600;">привлечение</a>, <a href="6_2-offer-mechanics-dynamics-synced.html" style="font-weight:600;">механика офферов</a>, <a href="36-seller-onboarding-spec-corrected.html" style="font-weight:600;">подключение · полная процедура</a>, <a href="37-seller-onboarding-fast-corrected.html" style="font-weight:600;">подключение за день</a>, <a href="14-pnl-sistema-vs-marketplace-b-synced.html" style="font-weight:600;">сравнение экономики</a>, <a href="17-split-mode-peretok-doli-synced.html" style="font-weight:600;">переток доли</a>, <a href="18-unit-pnl-peretok-doli-synced.html" style="font-weight:600;">юнит-экономика</a>, <a href="sku-visibility-seller.html" style="font-weight:600;">видимость товара</a>, <a href="10-mehanizm-sbora-bazy-i-sellerov.html" style="font-weight:600;">механизм сбора базы</a>. Раздельные версии: <a href="30-sellery-opisanie.html" style="font-weight:600;">описание</a>, <a href="31-sellery-parametry.html" style="font-weight:600;">набор C</a>. Смежные слои: <a href="28-servis-edinyi.html" style="font-weight:600;">сервисный</a>, <a href="29-operacii-edinyi.html" style="font-weight:600;">операционный</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="co co-a" style="margin-bottom:10px"><b>Четвёртый слой.</b>UI и витрина в том же формате — <a href="35-ui-vitrina-edinyi.html">описание и параметры</a>.</div>
+<div class="ctl">
+  <div class="row">
+    <input id="q" type="search" placeholder="Поиск по тексту, параметру, коду…" autocomplete="off">
+    <button class="fb on" data-m="both">Описание и параметры</button>
+    <button class="fb" data-m="txt">Только описание</button>
+    <button class="fb" data-m="par">Только параметры</button>
+    <button class="fb" data-m="conf">Только спорное</button>
+    <button class="fb" data-m="hyp">Только гипотезы</button>
+    <span class="stat" id="stat"></span>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-t="s1">1 · Три источника</button>
+    <button class="tab" data-t="s2">2 · Офферы и воронка</button>
+    <button class="tab" data-t="s3">3 · Подключение</button>
+    <button class="tab" data-t="s4">4 · Каналы</button>
+    <button class="tab" data-t="s5">5 · Экономика</button>
+    <button class="tab" data-t="s6">6 · Переток доли</button>
+    <button class="tab" data-t="s7">7 · Противоречия</button>
+  </div>
+</div>
+
+<!-- ═══ 1 ═══ -->
+<div class="sec on" id="s1">
+<div class="st">1 · Три источника с разным капиталом доверия</div>
+
+<div class="blk">
+<div class="txt"><h3>Делит не размер продавца, а наличие базы на входе</h3>
+<p>От этого зависит, кто наполняет общую клиентскую базу Системы, а кто её только использует. Признак задаёт и офферы, и порядок привлечения, и скорость выхода на устойчивый оборот.</p>
+<div class="g3" style="margin-top:8px">
+<div class="ab g1"><h4><span class="b b-1">1</span> Неорганизованные</h4><p>Действующие компании вне площадок. Единственная группа с собственной базой на входе. Оффер: вступление ничего не меняет в работе, только добавляет защиту, которой не было.</p></div>
+<div class="ab g2"><h4><span class="b b-2">2</span> Разочаровавшиеся</h4><p>Ушедшие с площадок из-за экономики. База нулевая — покупатель принадлежал платформе. Есть готовые процессы. Оффер: вы уже умеете продавать, осталось вернуть забранное.</p></div>
+<div class="ab g3"><h4><span class="b b-3">3</span> Новые</h4><p>Из смежного офлайна и с нуля. Самая медленная активация, самая высокая лояльность — нет альтернативного канала, который жалко делить. Оффер: первая продажа — ваш единственный риск.</p></div>
+</div></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">C-01</span><span class="n">Источников селлеров</span><span class="v">3 группы<i>признак деления — база на входе</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-02</span><span class="n">База микро-продавца гр. 1</span><span class="v">около 800 покупателей</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-03</span><span class="n">База среднего бренда гр. 1</span><span class="v">около 4 000 покупателей</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-04</span><span class="n">База гр. 2 на входе</span><span class="v">0<i>покупатель принадлежал площадке</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-05</span><span class="n">Офлайн-база гр. 3</span><span class="v">около 150 человек</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>База Системы растёт из двух потоков</h3>
+<p>Мигрировавшая база первой группы плюс сетевой приток от всех трёх. Мигрировавшая — собственная база продавца, умноженная на растущую долю миграции. Сетевой приток — оборот группы, делённый на средний чек, за вычетом уже мигрировавшей части, чтобы не задваивать.</p>
+<p style="margin-top:6px">Разгон различается втрое: первая группа выходит на устойчивый оборот быстрее всех — спрос есть с первого дня; вторая средне — опыт есть, базы нет; третья медленнее всех — учится с нуля.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="conf"><span class="k">C-06</span><span class="n">Доля миграции базы</span><span class="v">20–40 % за 3 мес → 60–70 % к 9–12 · формула 20 → 70 % к 12 мес</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+<div class="par" data-s="conf"><span class="k">C-07</span><span class="n">Средний чек покупателя</span><span class="v">1 100 ₽ · рыночный ориентир 1 385 ₽</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-08</span><span class="n">Оборот гр. 1.1</span><span class="v">180 000 ₽ в месяц<i>микро-продавец</i></span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-09</span><span class="n">Оборот гр. 1.2</span><span class="v">900 000 ₽ в месяц<i>средний бренд</i></span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-10</span><span class="n">Оборот гр. 2.1</span><span class="v">700 000 ₽ в месяц<i>экс-крупный</i></span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-11</span><span class="n">Оборот гр. 2.2</span><span class="v">250 000 ₽ в месяц<i>экс-средний</i></span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-12</span><span class="n">Оборот гр. 3</span><span class="v">90 000 ₽ в месяц</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-13</span><span class="n">Коэффициент рекомендаций</span><span class="v">0,25<i>сарафанный прирост</i></span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-14</span><span class="n">Отток продавцов</span><span class="v">5 % в месяц</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-15</span><span class="n">Разгон до устойчивого оборота</span><span class="v">гр. 1 — 2 · гр. 2 — 4 · гр. 3 — 6 месяцев</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Рыночный контекст задаёт размер задачи</h3>
+<p>Отток с площадок за год — около четверти продавцов. Электронная коммерция вне площадок растёт на 18 % за полугодие среди малых предприятий. На части категорий удержание площадки с апреля 2026 превысило половину цены товара. Основной пул второй группы — ушедшие с двух крупнейших площадок, на которые приходится около 80 % онлайн-заказов страны.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="hyp"><span class="k">C-24</span><span class="n">Отток с площадок</span><span class="v">24,5 % за год<i>размер целевого пула гр. 2</i></span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-25</span><span class="n">Рост коммерции вне площадок</span><span class="v">18 % за полугодие</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-26</span><span class="n">Доля двух площадок</span><span class="v">около 80 % онлайн-заказов</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+</div></div>
+</div>
+
+<!-- ═══ 2 ═══ -->
+<div class="sec" id="s2">
+<div class="st">2 · Офферы превращаются в селлеров через воронку</div>
+
+<div class="blk">
+<div class="txt"><h3>Три группы конвертируются с разной скоростью</h3>
+<p>Логика различий заложена в самих значениях: у второй группы высокий отклик — решение уйти принято; у первой низкий отклик, но высокая активация — успешные приходят с оборотом; у третьей средний отклик и низкая активация — многие не доводят до первой продажи.</p>
+<table class="tb">
+<thead><tr><th style="width:28%">Этап</th><th class="num">Разочаровавшиеся</th><th class="num">Неорганизованные</th><th class="num">Новые</th></tr></thead>
+<tbody>
+<tr><td>Отклик от охвата</td><td class="num">8 %</td><td class="num">3 %</td><td class="num">5 %</td></tr>
+<tr><td>Регистрация от отклика</td><td class="num">55 %</td><td class="num">45 %</td><td class="num">50 %</td></tr>
+<tr><td>Активация</td><td class="num">60 %</td><td class="num">90 %</td><td class="num">35 %</td></tr>
+<tr><td>Удержание через 3 мес</td><td class="num">80 %</td><td class="num">92 %</td><td class="num">70 %</td></tr>
+</tbody></table>
+<p style="margin-top:6px"><b>Честная оговорка источников.</b> Размеры пулов взяты из рыночных данных, но коэффициенты конверсии — гипотезы, проверяемые на пилоте. Модель показывает не прогноз, а структуру и относительную скорость групп.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="hyp"><span class="k">C-16</span><span class="n">Отклик от охвата</span><span class="v">8 % · 3 % · 5 %</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-17</span><span class="n">Регистрация от отклика</span><span class="v">55 % · 45 % · 50 %</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-18</span><span class="n">Активация</span><span class="v">гр. 1 — 90 % · гр. 2 — 60 % · гр. 3 — 35 %</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-19</span><span class="n">Удержание через 3 месяца</span><span class="v">92 % · 80 % · 70 %</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Три волны, а не один старт</h3>
+<p>Разочаровавшиеся конвертируются сразу — решение принято. Неорганизованные подключаются позже, по мере выстраивания доверия. Новые разгоняются последними, уже на готовой инфраструктуре. Отсюда порядок тактов: копить случаи со второй группой, затем идти к первой, а третью звать по достижении порога общей базы — иначе новичкам некому продавать.</p>
+<p style="margin-top:6px"><b>Почему приоритет трафика достаётся второй группе.</b> У неё нулевая база при готовых процессах. Приоритет в выдаче первые месяцы компенсирует отсутствие покупателей и не отбирает ничего у первой группы, пришедшей со своей базой.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="hyp"><span class="k">C-20</span><span class="n">Задержка старта групп</span><span class="v">гр. 1 — 3 мес · гр. 3 — 6 мес</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="norm"><span class="k">C-23</span><span class="n">Приоритет трафика гр. 2</span><span class="v">первые 2–3 месяца<i>компенсация за отсутствие базы</i></span><span class="s"><span class="b b-norm">норма</span></span></div>
+</div></div>
+</div>
+
+<!-- ═══ 3 ═══ -->
+<div class="sec" id="s3">
+<div class="st">3 · Подключение: две модели одной процедуры</div>
+
+<div class="blk">
+<div class="txt"><h3>Из 48 часов сорок семь — ожидание, а не работа</h3>
+<p>Полная спецификация задаёт целевые двое суток от заявки до первой продажи и разбивает путь на семь шагов. Документ ускорения показывает, что активное время продавца при этом меньше сорока минут: договор ждёт до трёх суток, модерация до двух, тестовый заказ полчаса.</p>
+<p style="margin-top:6px"><b>Главное препятствие — не технология, а разрыв внимания.</b> Продавец уходит почитать договор, подготовить фото, настроить потом. Каждый разрыв даёт половину вероятности, что он не вернётся. Решение — не дать уйти: весь путь за одну сессию.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="conf"><span class="k">C-27</span><span class="n">Целевое время подключения</span><span class="v">48 часов заявка → продажа · 25 минут активного времени</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-28</span><span class="n">Активное время в старой модели</span><span class="v">около 35 минут<i>разложено по семи шагам</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-30</span><span class="n">Цена разрыва внимания</span><span class="v">50 % вероятности невозврата<i>обоснование непрерывной сессии</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Три фазы вместо семи шагов</h3>
+<div class="flow"><span class="fn new">идентификация · 3 мин</span><span class="fa">→ без паузы →</span><span class="fn new">магазин и товары · 15–20 мин</span><span class="fa">→ без паузы →</span><span class="fn new">активация · 2 мин</span></div>
+<p><b>Первая фаза:</b> два поля — идентификатор и телефон. Параллельно проверка по государственному реестру подтягивает наименование, форму и адрес, приходит код подтверждения, договор принимается отметкой, участник заводится в реестре, группа определяется одним встроенным вопросом.</p>
+<p style="margin-top:6px"><b>Вторая:</b> магазин уже создан по умолчаниям, продавец загружает товары — единственное действие, требующее его участия. Параллельно создаются бот и адрес, проходит автоматическая проверка.</p>
+<p style="margin-top:6px"><b>Третья:</b> одна кнопка, товары публикуются немедленно, модерация фоном.</p>
+<p style="margin-top:6px"><b>Принцип «спрашивай только то, чего нельзя угадать».</b> Название — из реестра, логотип — из первой буквы и цвета, адрес — транслитерацией, описание — по категории, цвет — по категории товара, фулфилмент — автоназначением из гейта. Всё, что не влияет на работоспособность, настраивается после запуска.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="conf"><span class="k">C-29</span><span class="n">Шагов и фаз</span><span class="v">7 последовательных · 3 параллельные</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+<div class="par" data-s="conf"><span class="k">C-38</span><span class="n">Полей в форме заявки</span><span class="v">6 в полной · 2 в ускоренной</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-39</span><span class="n">Определение группы</span><span class="v">один встроенный вопрос<i>задаёт стимулы и приоритет</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="conf"><span class="k">C-35</span><span class="n">Создание магазина</span><span class="v">до 10 минут · автоматически по умолчаниям</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Договор и модерация — где расходятся модели</h3>
+<p>Полная процедура: договор формируется из шаблона за секунды, подписывается кодом для физических лиц и усиленной подписью для организаций, на подписание отводится до трёх суток. Модерация первых товаров идёт параллельно со сроком до четырёх часов.</p>
+<p style="margin-top:6px">Модель ускорения: договор принимается отметкой при регистрации, документ формируется после и уходит на почту. Товары публикуются вперёд проверки, модерация фоном.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">C-31</span><span class="n">Заявка и проверка</span><span class="v">до 15 минут</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="conf"><span class="k">C-32</span><span class="n">Договор</span><span class="v">подпись кодом до 2 часов · принятие отметкой мгновенно</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-33</span><span class="n">Срок на подписание</span><span class="v">72 часа<i>в ускоренной модели не применяется</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-34</span><span class="n">Формирование договора</span><span class="v">2 секунды из шаблона</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-36</span><span class="n">Первый товар в каталоге</span><span class="v">до 30 минут<i>против 2–4 часов на площадке</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="conf"><span class="k">C-37</span><span class="n">Модерация первых товаров</span><span class="v">до 4 часов параллельно · публикация вперёд проверки</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Конверсия воронки и место отсева</h3>
+<p>Целевая доводимость — 55 % заявок до работающего магазина. Наибольший отсев на заявке: около трети уходит с мыслью «потом посмотрю». Затем загрузка товаров — пятая часть теряется на отсутствии фото и сложной форме. Затем договор — около 15 % хотят почитать условия. Именно эти три места и лечит трёхфазная модель.</p>
+<p style="margin-top:6px"><b>Отличие от площадок не в скорости регистрации.</b> Там продавец получает витрину в чужом магазине, где его товар тонет среди миллионов. Здесь — собственный магазин с брендом плюс место в общем каталоге, то есть два потока покупателей с первого дня.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">C-21</span><span class="n">Целевая конверсия подключения</span><span class="v">55 % заявок до работающего магазина</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-22</span><span class="n">Отсев по этапам</span><span class="v">заявка 30 % · товары 20 % · договор 15 %</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-40</span><span class="n">Сравнение с площадками</span><span class="v">регистрация 1–7 дней · полный цикл 3–21 день</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+</div></div>
+</div>
+
+<!-- ═══ 4 ═══ -->
+<div class="sec" id="s4">
+<div class="st">4 · Каналы вместо флагов</div>
+
+<div class="blk">
+<div class="txt"><h3>Продавец думает «где продаётся моя булка», а не признаками видимости</h3>
+<p>Все каналы открыты всегда — Система не ограничивает меню, а даёт полный доступ и удобное управление. Рядом с каждым тумблером стоит его экономика, чтобы выбор был осознанным, а не гаданием.</p>
+<table class="tb">
+<thead><tr><th style="width:26%">Канал</th><th style="width:24%">Экономика</th><th>Что даёт</th></tr></thead>
+<tbody>
+<tr><td>Моя витрина</td><td>ничего Системе</td><td>Только собственный трафик</td></tr>
+<tr><td>Каталог Системы</td><td>удержание со сделки</td><td>Охват покупателей Системы</td></tr>
+<tr><td>Агент</td><td>удержание со сделки</td><td>Подбор под запрос приводит покупателя</td></tr>
+<tr><td>По прямой ссылке</td><td>приватно</td><td>Только тем, кому дал ссылку</td></tr>
+<tr><td>Внешние площадки</td><td>по их правилам</td><td>Продавец не обязан уходить</td></tr>
+</tbody></table></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">C-41</span><span class="n">Каналов продажи</span><span class="v">5<i>все открыты всегда</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-42</span><span class="n">Экономика каналов</span><span class="v">своя витрина бесплатна; каталог и агент — удержание</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Три уровня управления и одно ограничение</h3>
+<p>Умолчание на магазин — новый товар наследует автоматически. Массовая настройка по категории. Точечная на отдельный товар, переопределяющая умолчание. Приоритет: товар важнее группы, группа важнее магазина. Продавец с четырьмя товарами настроит вручную, продавец с четырьмя тысячами — правилом плюс исключения.</p>
+<p style="margin-top:6px"><b>Храповик — единственное ограничение, и оно касается сделки, а не конфигурации.</b> В момент операции уровень можно срочно повысить, добрав Систему; ниже сконфигурированного опуститься нельзя. Само повышение разовое и конфигурацию не меняет, а понизить конфигурацию продавец вправе в любой момент — это подействует на следующие заказы.</p>
+<p style="margin-top:6px"><b>Настройка — это два разных сервиса.</b> Конфигурация заранее хранит правило и применяет ко всем заказам, тариф базовый. Конфигурация при сделке меняет уровень под конкретную сделку в реальном времени, тариф премиальный. Прямое применение формы сервиса: две записи реестра с разными точками в потоке.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">C-43</span><span class="n">Уровней управления</span><span class="v">3: магазин · группа · товар<i>частное важнее общего</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="norm"><span class="k">C-44</span><span class="n">Храповик уровня</span><span class="v">только повышение при сделке</span><span class="s"><span class="b b-norm">норма</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-45</span><span class="n">Сервисов конфигурации</span><span class="v">2: заранее базовый · при сделке премиум</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+</div>
+
+<!-- ═══ 5 ═══ -->
+<div class="sec" id="s5">
+<div class="st">5 · Экономика селлера «яблоки к яблокам»</div>
+
+<div class="blk">
+<div class="txt"><h3>Сравнение корректно, только когда строки одинаковы</h3>
+<p>Удержание площадки разбито на реальные компоненты, логистика вынесена отдельной строкой в обоих каналах. Разница создаётся не тарифом расчётов — он ничтожен рядом с комиссией площадки, — а тем, что <b>базовая комиссия и скрытые списания отсутствуют как класс</b>. Логистика при этом одинакова и в сравнении не участвует.</p>
+<table class="tb">
+<thead><tr><th style="width:40%">Статья</th><th class="num" style="width:16%">Значение</th><th>Пояснение</th></tr></thead>
+<tbody>
+<tr><td colspan="3" style="background:var(--bg);font-weight:700;font-size:10.5px">Площадка</td></tr>
+<tr><td>Базовая комиссия категории</td><td class="num">25 %</td><td>По рынку 18–43 % в зависимости от категории</td></tr>
+<tr><td>Логистика площадки</td><td class="num">10 %</td><td>Доставка до покупателя, от оборота</td></tr>
+<tr><td>Хранение, приёмка, эквайринг</td><td class="num">5 %</td><td>Скрытые списания и минимальная реклама</td></tr>
+<tr><td colspan="3" style="background:var(--bg);font-weight:700;font-size:10.5px">Система</td></tr>
+<tr><td>Тариф расчётов на старте</td><td class="num">0,2 %</td><td>Инфраструктура минимальна</td></tr>
+<tr><td>Тариф расчётов через два года</td><td class="num">0,5 %</td><td>Растёт по мере развития</td></tr>
+<tr><td>Логистика и склад участников</td><td class="num">10 %</td><td>Та же услуга — сопоставимо</td></tr>
+<tr><td>Эквайринг покупателя</td><td class="num">2,0 %</td><td>Ставка интернет-эквайринга</td></tr>
+</tbody></table>
+<p style="margin-top:6px"><b>Условие честности.</b> Валовая маржа принята в 45 %, оборот среднего продавца — полмиллиона в месяц, крупного — пять. При другой марже соотношение меняется, поэтому сравнение имеет смысл только на числах конкретного продавца.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="hyp"><span class="k">C-46</span><span class="n">Валовая маржа продавца</span><span class="v">45 %</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-47</span><span class="n">Оборот среднего и крупного</span><span class="v">500 тыс и 5 млн ₽ в месяц</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-48</span><span class="n">Базовая комиссия площадки</span><span class="v">25 %; по рынку 18–43 %</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-49</span><span class="n">Логистика площадки</span><span class="v">10 % оборота</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-50</span><span class="n">Скрытые списания площадки</span><span class="v">5 %<i>отсутствуют в Системе как класс</i></span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-51</span><span class="n">Тариф расчётов Системы</span><span class="v">0,2 % → 0,5 % через два года</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="conf"><span class="k">C-52</span><span class="n">Совокупное удержание Системы</span><span class="v">12,5 %: расчёты, логистика, эквайринг<i>другая форма записи той же экономики</i></span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-53</span><span class="n">Логистика в Системе</span><span class="v">10 % оборота</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-54</span><span class="n">Эквайринг покупателя</span><span class="v">2,0 %</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-55</span><span class="n">Доля выручки от трафика площадки</span><span class="v">50 %<i>теряется при полном переходе</i></span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-56</span><span class="n">Восстановление трафика за два года</span><span class="v">60 % потерянного</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+</div></div>
+</div>
+
+<!-- ═══ 6 ═══ -->
+<div class="sec" id="s6">
+<div class="st">6 · Переток доли вместо перехода</div>
+
+<div class="blk">
+<div class="txt"><h3>Продавец не уходит, а добавляет канал</h3>
+<p>Он перекладывает долю оборота постепенно, видя разницу на каждой выплате. Главный тормоз прежних моделей — потеря трафика площадки весом около половины выручки — здесь исчезает: продавец ничего не теряет, он добавляет. Решение меняется с «или-или», что страшно, на «и-и», что без риска.</p>
+<p style="margin-top:6px">Кривая доли только растёт — провала нет, потому что риска нет. Площадка становится живой рекламой Системы: чем дольше работаешь параллельно, тем очевиднее, где выгоднее.</p>
+<table class="tb">
+<thead><tr><th style="width:32%">Параметр</th><th class="num">Неорганизованные</th><th class="num">Разочаровавшиеся</th><th class="num">Новые</th></tr></thead>
+<tbody>
+<tr><td>Стартовая доля в Системе</td><td class="num">15 %</td><td class="num">10 %</td><td class="num">30 %</td></tr>
+<tr><td>Потолок доли</td><td class="num">60 %</td><td class="num">85 %</td><td class="num">70 %</td></tr>
+</tbody></table>
+<p style="margin-top:6px">Первые легко добавляют — своя база; вторые пробуют осторожно, без ва-банк; третьи начинают сразу в двух каналах. Потолок отражает готовность: первые оставляют часть на площадке ради охвата, вторые готовы уйти почти полностью.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="hyp"><span class="k">C-57</span><span class="n">Стартовая доля в Системе</span><span class="v">15 % · 10 % · 30 %</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-58</span><span class="n">Потолок доли</span><span class="v">60 % · 85 % · 70 %</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-59</span><span class="n">Стимул на рубль</span><span class="v">27 процентных пунктов маржи<i>видим на каждой выплате</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-60</span><span class="n">Скорость перетока</span><span class="v">50 %<i>реакция на стимул</i></span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-61</span><span class="n">Трение доверия</span><span class="v">30 %<i>осторожность, риск «не взлетит»</i></span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="hyp"><span class="k">C-62</span><span class="n">Прирост оборота от второго канала</span><span class="v">15 %<i>Система добавляет продажи, не только замещает</i></span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+<div class="par" data-s="spec"><span class="k">C-63</span><span class="n">Горизонт модели</span><span class="v">24 месяца</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Риск застревания и средство против него</h3>
+<p>Продавец может держать Систему страховочным мелким каналом и не наращивать долю. Предложенное лечение — привязка сетевого трафика к доле оборота: больше трафика тем, кто проводит через Систему больше. Это тот же принцип, что сетевой баланс в механизме сбора базы, только выраженный через оборот, а не через приведённых покупателей.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">C-64</span><span class="n">Средство против застревания</span><span class="v">привязка сетевого трафика к доле оборота</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+</div>
+
+<!-- ═══ 7 ═══ -->
+<div class="sec" id="s7">
+<div class="st">7 · Девять противоречий — на решение</div>
+<div class="co co-r"><b>Природа расхождений этого слоя.</b>В сервисном спорят единицы измерения, в операционном — редакции во времени. Здесь спорят <b>две полные модели одного процесса</b>: тщательная и быстрая. Обе описаны детально и внутренне непротиворечивы. Это не ошибка, а незакрытый выбор — и он касается не цифры, а того, какую систему строим: с проверкой на входе или с проверкой следом.</div>
+
+<div class="conf"><h4>C-27 и C-29 · Время и структура подключения</h4>
+<p>48 часов от заявки до первой продажи в семи шагах против 25 минут активного времени в трёх параллельных фазах. Из 48 часов 47 — ожидание.</p>
+<div class="opt"><b>Варианты:</b> измерять активное время, календарное считать производным · сохранить обе метрики как разные обязательства: магазин за 25 минут и первая продажа в течение суток · признать семишаговую модель исторической.</div></div>
+
+<div class="conf"><h4>C-32 · Модель договора</h4>
+<p>Подпись кодом с ожиданием до 72 часов, с разделением на простую и усиленную по форме участника, против принятия отметкой при регистрации с последующей отправкой документа.</p>
+<div class="opt"><b>Варианты:</b> принятие отметкой для всех с обязательством предоставить усиленную подпись в срок · подпись кодом для организаций, отметка для самозанятых и физических лиц.</div></div>
+
+<div class="conf"><h4>C-37 · Модерация товара</h4>
+<p>Модерация первых товаров со сроком до четырёх часов параллельно с остальными шагами против публикации вперёд проверки с фоновой модерацией.</p>
+<div class="opt"><b>Варианты:</b> публикация вперёд с ручной проверкой первых трёх товаров нового продавца — сочетание обеих моделей · выбрать одну.</div></div>
+
+<div class="conf"><h4>C-35 и C-38 · Форма заявки и создание магазина</h4>
+<p>Шесть полей заявки и мастер настройки магазина до десяти минут против двух полей и автоматического создания по умолчаниям из государственного реестра.</p>
+<div class="opt"><b>Варианты:</b> два поля с возможностью уточнить остальное потом — прямое следствие правила «спрашивай только то, чего нельзя угадать» · сохранить расширенную форму для организаций.</div></div>
+
+<div class="conf"><h4>C-52 · Форма записи удержания</h4>
+<p>0,2 % на старте и 0,5 % через два года в раздельной форме, где логистика и эквайринг вынесены отдельно, против 12,5 % как совокупной величины «расчёты плюс логистика плюс эквайринг».</p>
+<div class="opt"><b>Варианты:</b> различать в терминах — тариф расчётов и совокупное удержание две разные величины, обе верны · привести все документы к раздельной форме, поскольку она честнее при сравнении с площадкой.</div></div>
+
+<div class="conf"><h4>C-07 · Средний чек и размер продавца</h4>
+<p>1 100 ₽ в механике роста при рыночном ориентире 1 385 ₽; при этом обороты продавцов заданы в рублях, а не в заказах. При чеке 1 100 ₽ полмиллиона оборота означают около 450 заказов в месяц.</p>
+<div class="opt"><b>Варианты:</b> закрепить чек как параметр категории, а не Системы — для хлеба и электроники он различается кратно · задавать сегменты продавцов через число заказов вместо оборота.</div></div>
+
+<div class="conf"><h4>C-06 · Доля миграции базы</h4>
+<p>20–40 % в первые три месяца с ростом до 60–70 % к девятому–двенадцатому против формулы «20 % → 70 % к двенадцатому месяцу». Различие в форме записи и в сроке достижения потолка.</p>
+<div class="opt"><b>Варианты:</b> принять кривую с явными точками по месяцам вместо диапазонов · пометить обе как гипотезы до первого продавца первой группы — проверяется одним наблюдением.</div></div>
+
+<div class="co co-a" style="margin-top:12px"><b>Треть параметров слоя — оценки.</b>Тридцать три из шестидесяти четырёх: гипотезы о поведении рынка и людей, которые нельзя проверить разбором документов. Они проверяются одним наблюдением — первым продавцом каждой группы, доведённым до первой выплаты. Фильтр «только гипотезы» показывает их отдельным списком.</div>
+</div>
+
+</div>
+<script>
+(function(){
+  var tabs=document.querySelectorAll('#tabs .tab');
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.t)});
+    window.scrollTo({top:0,behavior:'smooth'});
+  })});
+  var mode='both', q=document.getElementById('q'), st=document.getElementById('stat');
+  var pars=[].slice.call(document.querySelectorAll('.par'));
+  var txts=[].slice.call(document.querySelectorAll('.blk .txt'));
+  var boxes=[].slice.call(document.querySelectorAll('.pars'));
+  var confs=[].slice.call(document.querySelectorAll('.conf'));
+  function apply(){
+    var s=(q.value||'').trim().toLowerCase();
+    var only=(mode==='conf'||mode==='hyp');
+    txts.forEach(function(t){t.style.display=(mode==='par'||only)?'none':''});
+    boxes.forEach(function(b){b.style.display=(mode==='txt')?'none':''});
+    var n=0;
+    pars.forEach(function(p){
+      var okM=!only||p.dataset.s===mode;
+      var okQ=!s||p.textContent.toLowerCase().indexOf(s)>-1;
+      var v=okM&&okQ; p.style.display=v?'':'none';
+      p.classList.toggle('hit', !!s&&okQ); if(v)n++;
+    });
+    document.querySelectorAll('.blk').forEach(function(b){
+      var vis=[].slice.call(b.querySelectorAll('.par')).some(function(p){return p.style.display!=='none'});
+      var tx=b.querySelector('.txt');
+      var hasTxt=tx&&tx.style.display!=='none';
+      var txtMatch=!s||(tx&&tx.textContent.toLowerCase().indexOf(s)>-1);
+      b.style.display=(vis||(hasTxt&&txtMatch))?'':'none';
+    });
+    confs.forEach(function(c){c.style.display=(!s||c.textContent.toLowerCase().indexOf(s)>-1)?'':'none'});
+    st.textContent=n+' из '+pars.length+' параметров';
+  }
+  q.addEventListener('input',apply);
+  document.querySelectorAll('.ctl .fb').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('.ctl .fb').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on'); mode=b.dataset.m; apply();
+  })});
+  apply();
+})();
+</script>
+</body>
+</html>

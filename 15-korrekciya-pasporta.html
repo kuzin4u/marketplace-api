@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Коррекция паспорта параметров · пересмотр значений и двадцать семь новых</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:26px 0 18px;border-bottom:2px solid var(--ac);margin-bottom:18px}
+.hdr h1{font-size:20px;font-weight:700;color:var(--ac);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:18px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:7px 13px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;white-space:nowrap;background:none;font-family:inherit}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.tab:focus-visible{outline:2px solid var(--ac);outline-offset:-2px}
+.sec{display:none}.sec.on{display:block}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}
+.c ul{padding-left:16px;margin:4px 0 6px}.c li{margin-bottom:3px}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:11px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
+.b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:3px;white-space:nowrap}
+.b-dec{background:var(--rd2);color:var(--rd)}
+.b-prop{background:var(--wr2);color:var(--wr)}
+.b-real{background:var(--gn2);color:var(--gn)}
+.b-norm{background:var(--pr2);color:var(--pr)}
+.b-fix{background:var(--co2);color:var(--co)}
+.co{padding:12px 16px;border-radius:6px;margin-bottom:10px;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.st{font-size:15px;font-weight:600;margin-bottom:12px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.old{color:var(--t3);text-decoration:line-through}
+.new{color:var(--co);font-weight:600}
+.bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.fb{padding:4px 10px;font-size:11px;border:1px solid var(--bd);background:var(--card);border-radius:20px;cursor:pointer;color:var(--t2);font-family:inherit}
+.fb:hover{border-color:var(--ac);color:var(--t1)}.fb.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+.stat{font-size:11px;color:var(--t3);margin-left:auto}
+.grp{background:var(--bg);font-weight:700;font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.04em}
+/* калькулятор */
+.calc{background:#1c1c1a;border-radius:8px;padding:16px;color:#e8e6df;margin-top:10px}
+.calc h4{font-size:13px;color:#fff;margin-bottom:2px}
+.calc .sub{font-size:11px;color:#9c998e;margin-bottom:12px}
+.cg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 14px;margin-bottom:12px}
+@media(max-width:820px){.cg{grid-template-columns:1fr 1fr}}
+.cf label{font-size:11px;color:#b8b5a9;display:block;margin-bottom:3px}
+.cf input,.cf select{width:100%;background:#2c2c29;color:#e8e6df;border:1px solid #45443f;border-radius:4px;padding:6px 8px;font-size:12px;font-family:inherit}
+.cmp{width:100%;border-collapse:collapse;font-size:11.5px;font-family:ui-monospace,monospace}
+.cmp th{text-align:right;padding:6px 7px;color:#9c998e;font-size:10px;border-bottom:1px solid #45443f}
+.cmp th:first-child{text-align:left}
+.cmp td{padding:5px 7px;border-bottom:1px solid #333330;text-align:right}
+.cmp td:first-child{text-align:left;color:#b8b5a9}
+.cmp tr.tot td{border-top:1px solid #45443f;font-weight:700;color:#8fe3c6;font-size:13px}
+.cmp tr.pct td{color:#f2c27a}
+.cmp .zero{color:#6e6b62}
+.note{margin-top:12px;padding:10px 12px;border-radius:5px;background:#262623;font-size:12px;line-height:1.5;color:#c9c6ba}
+.note b{color:#fff}
+a{color:#2a6cb6}
+@media print{.tabs,.bar{display:none}.sec{display:block!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Коррекция паспорта параметров<br>Пересмотр шести значений и двадцать семь новых</h1>
+  <p>По итогам сверки описания с документами пула. Шесть величин уточнены или пересмотрены, двадцать семь добавлены под подсистемы, которые пул описывает, а паспорт не покрывал. Отдельно пересобрано сравнение с площадкой на симметричной базе.</p>
+  <div class="meta">23 августа 2026 · Паспорт после коррекции: 122 параметра · Новые коды P-96…P-122</div>
+<div style="max-width:1200px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Паспорт: <a href="12-opisanie-sistemy-i-pasport-parametrov.html" style="font-weight:600;">P-01…P-50</a>, <a href="13-pasport-rasshirenie-platelshchik-scenarii.html" style="font-weight:600;">P-51…P-95</a>, <a href="14-kak-rabotaet-sistema.html" style="font-weight:600;">сквозное описание</a>. Источники новых параметров: <a href="01_deal_engine_fsm-synced.html" style="font-weight:600;">Deal Engine FSM</a>, <a href="08_webapp_arbitrage-synced.html" style="font-weight:600;">Arbitrage Service</a>, <a href="04_notification_widget_admin-synced.html" style="font-weight:600;">Notification и Widget</a>, <a href="07_contract_builder_deep-synced.html" style="font-weight:600;">Contract Builder</a>, <a href="massamadre-settlement-mechanisms.html" style="font-weight:600;">три механизма расчёта</a>, <a href="external-shop-integration.html" style="font-weight:600;">внешний магазин</a>, <a href="14-pnl-sistema-vs-marketplace-b-synced.html" style="font-weight:600;">P&amp;L сравнение</a>, <a href="infra-cost-copay-model.html" style="font-weight:600;">взнос на инфраструктуру</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="co co-p" style="margin-bottom:12px;background:#edecfe;border-left:3px solid #4a3faa;color:#2e2670;padding:12px 16px;border-radius:6px;font-size:12.5px"><b style="display:block;margin-bottom:2px">Рамка изменяемости.</b>Какие из этих величин меняются только изменением Правил, а какие могут вычисляться и обучаться — <a href="18-dva-kontura-sistemy.html">«Два контура Системы»</a>, проект статьи 22.</div>
+<div style="margin-bottom:12px;background:#fce9e9;border-left:3px solid #9b2c2c;color:#6e1e1e;padding:12px 16px;border-radius:6px;font-size:12.5px;line-height:1.5"><b style="display:block;margin-bottom:2px">Два пересмотра этого документа отменены.</b>Ревизия непрочитанных документов пула показала, что тариф сборки 200 ₽ за единицу — канонический тариф реестра участников, а сквозной пример базовых отношений был исправлен неверно: правильные числа — 817,16 ₽ продавцу при итоге 1 770,00 ₽. См. <a href="23-reviziya-13-dokumentov.html">ревизию тринадцати документов</a>.</div>
+<div class="co co-a" style="margin-bottom:12px"><b>Сводные матрицы.</b>Функционал и параметры по всем девяти итерациям, с пометками наличия и значений — <a href="19-svodnye-tablicy-iteracij.html">«Сводные таблицы итераций»</a>.</div>
+<div class="co co-a" style="margin-bottom:12px"><b>Итог по всем итерациям.</b>Сводный разбор девяти проходов, дрейфа значений и выбор рабочего набора — <a href="17-analiz-iteracij-vybor-nabora.html">«Анализ итераций и выбор набора»</a>. Рекомендуемый набор: канальная лестница удержания.</div>
+<div class="co co-g" style="margin-bottom:14px"><b>Применение.</b>Как система работает по скорректированному паспорту — <a href="16-kak-rabotaet-sistema-polnoe.html">полное описание</a>, включая мультиселлерный заказ и три режима расчёта.</div>
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab">Пересмотр значений</button>
+  <button class="tab" data-t="s2" role="tab">Сравнение начистоту</button>
+  <button class="tab" data-t="s3" role="tab">Новые параметры · 27</button>
+  <button class="tab" data-t="s4" role="tab">Состояние паспорта</button>
+</div>
+
+<!-- ═══ 1 ═══ -->
+<div class="sec on" id="s1">
+<div class="st">Шесть величин, которые меняются</div>
+
+<div class="c">
+<h3><span class="mono">P-07</span> · Удержание площадки для сравнения <span class="b b-fix">пересмотр</span></h3>
+<p>Было: <span class="old">около 40 %</span>. Стало: <span class="new">37,5 % у Wildberries и 45 % у Ozon от цены, уплаченной покупателем, плюс обратная логистика по факту возвратов</span> — с обязательной оговоркой о базе сравнения.</p>
+<p style="margin-top:6px">Причина не в самих процентах, а в том, что <b>сравнение было несимметричным</b>. У площадки логистика входит в удержание с продавца. У нас доставку платит покупатель, и в удержание она не входит. Сопоставлять 12,5 % с 40 % в такой постановке нельзя: у одной стороны в числе есть доставка, у другой нет. Пересобранное сравнение — на следующей вкладке.</p>
+</div>
+
+<div class="c">
+<h3><span class="mono">P-04</span> · Потолок удержания <span class="b b-fix">уточнение</span></h3>
+<p>Было: <span class="old">около 15 % оборота</span> без указания, к чему относится. Стало: <span class="new">потолок относится к удержанию Системы — сбор Организатора и фонд поддержки — и не включает оплату сторонним операторам</span>.</p>
+<p style="margin-top:6px">Иначе полный фулфилмент формально нарушает норму, хотя деньги логиста и склада — не удержание, а плата за выполненную работу. Это снимает противоречие К2 без пересмотра цифр.</p>
+</div>
+
+<div class="c">
+<h3><span class="mono">P-17</span> · Сборка заказа <span class="b b-fix">пересмотр</span></h3>
+<p>Было: <span class="old">20–50 ₽ за заказ либо 200 ₽ за единицу — конфликт</span>. Стало: <span class="new">20–50 ₽ за заказ как базовый тариф; 200 ₽ за единицу — только для крупногабаритного товара, отдельной строкой реестра</span>.</p>
+<p style="margin-top:6px">Прогон показал: при 200 ₽ за единицу удержание доходит до 42,5 % на среднем чеке и 67 % на малом. Как общий тариф это уничтожает оффер; как отдельный тариф для крупногабарита — нормально.</p>
+</div>
+
+<div class="c">
+<h3><span class="mono">P-43</span> · Шкала уровней вовлечения <span class="b b-fix">решение</span></h3>
+<p>Было: <span class="old">две встречные нумерации</span>. Предлагается принять: <span class="new">шкалу журнала повышений, где большее число означает более глубокое вовлечение</span>, и перенумеровать линейку в документах.</p>
+<p style="margin-top:6px">Основание простое: шкала журнала уже закреплена ограничением в таблице и записана в данных. Менять данные дороже, чем текст, а цена промедления здесь — не спор, а испорченные записи.</p>
+</div>
+
+<div class="c">
+<h3><span class="mono">P-41</span> · Роли расщепления <span class="b b-fix">уточнение</span></h3>
+<p>Было: <span class="old">девять по разбору против четырёх в коде</span> без перечня. Стало: <span class="new">перечень фиксирован — продавец, исполнение, логистика, Организатор, фонд сети, комиссия за трафик, страхование, финансы, заморозка по спору</span>. Первые четыре реализованы, пять открываются переводом расчёта на реестр как данные.</p>
+</div>
+
+<div class="c">
+<h3><span class="mono">P-18</span> · Доставка последней мили <span class="b b-fix">уточнение</span></h3>
+<p>Было: <span class="old">три несогласованных диапазона</span>. Стало: <span class="new">тариф устанавливает логист; в расчётах Системы применяется тариф выбранного продавцом оператора, диапазон 175–350 ₽ по зоне 1</span>. Плательщик — покупатель, но при сравнении с площадкой доставка учитывается с обеих сторон.</p>
+</div>
+
+<div class="co co-a" style="margin-top:12px"><b>Что осталось нерешённым намеренно.</b>Целевое удержание в 12,5 % и действующий сбор в 0,2 % остаются двумя разными величинами с разным статусом: первая — проектное решение, вторая — работающая настройка. Свести их в одну можно только вместе с решением о моменте перехода, а это вопрос не паспорта, а стратегии.</div>
+</div>
+
+<!-- ═══ 2 СРАВНЕНИЕ ═══ -->
+<div class="sec" id="s2">
+<div class="st">Сравнение с площадкой на симметричной базе</div>
+<div class="co co-r"><b>В чём была ошибка.</b>Все офферы пула строятся на сопоставлении «12,5 % против 40 %». Но 40 % площадки включают логистику, хранение и обязательное продвижение, а наши 12,5 % — только удержание Системы: доставку платит покупатель, фулфилмент считается отдельно. При такой постановке разрыв завышен примерно вдвое, и первый же продавец, который сядет считать сам, это обнаружит. Ниже — расчёт от одной и той же цены, уплаченной покупателем, со всеми расходами по обе стороны.</div>
+
+<div class="calc">
+  <h4>Что остаётся продавцу с одного заказа</h4>
+  <div class="sub">Задаётся цена, которую платит покупатель, — она одинакова во всех трёх колонках. Все расходы канала вычитаются из неё, включая доставку.</div>
+  <div class="cg">
+    <div class="cf"><label for="price">Платит покупатель, ₽</label><input type="number" id="price" value="1770" step="10" min="200"></div>
+    <div class="cf"><label for="qty">Единиц в заказе</label><input type="number" id="qty" value="3" min="1"></div>
+    <div class="cf"><label for="dlv">Доставка, ₽</label><input type="number" id="dlv" value="350" step="10" min="0"></div>
+    <div class="cf"><label for="take">Удержание Системы</label>
+      <select id="take"><option value="0.002">действующий сбор 0,2 %</option><option value="0.125">целевое 12,5 %</option></select></div>
+  </div>
+
+  <table class="cmp" id="cm">
+    <thead><tr><th>Статья расхода</th><th>Wildberries</th><th>Ozon</th><th>Система</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <div class="note" id="nt"></div>
+</div>
+
+<div class="c" style="margin-top:12px">
+<h3>Что показывает честный расчёт</h3>
+<ul>
+<li><b>Разрыв реален, но меньше заявленного.</b> На симметричной базе он составляет от десяти до двадцати процентных пунктов вместо двадцати семи — в зависимости от того, действует ли целевое удержание.</li>
+<li><b>Преимущество не там, где его искали.</b> Оно не в отсутствии удержания как такового, а в отсутствии трёх статей: комиссии в пятую часть оборота, обязательного продвижения и штрафов. Именно они, а не логистика, создают разницу.</li>
+<li><b>Логистика — наше слабое место.</b> У площадки доставка дешевле за счёт объёма. Пока объёма нет, наша доставка дороже, и это съедает часть преимущества. Значит довод «дешевле» надёжнее всего звучит там, где продавец возит сам, — а это как раз локальные производители.</li>
+<li><b>Что делать с офферами.</b> Заменить сопоставление «12,5 против 40» на расчёт от конкретного заказа продавца. Он честнее и, как ни странно, убедительнее: цифра, которую можно проверить на своих числах, весит больше красивой пропорции.</li>
+</ul>
+</div>
+</div>
+
+<!-- ═══ 3 НОВЫЕ ═══ -->
+<div class="sec" id="s3">
+<div class="st">Двадцать семь параметров под подсистемы, которых не было в паспорте</div>
+<div class="bar">
+  <button class="fb on" data-f="all">Все</button>
+  <button class="fb" data-f="dec">требует решения</button>
+  <button class="fb" data-f="prop">предложено</button>
+  <button class="fb" data-f="norm">из документов пула</button>
+  <span class="stat" id="stat"></span>
+</div>
+
+<table class="tb" id="np">
+<thead><tr><th style="width:52px">Код</th><th style="width:23%">Параметр</th><th style="width:27%">Значение</th><th style="width:92px">Статус</th><th>Основание</th></tr></thead>
+<tbody>
+<tr><td colspan="5" class="grp">Жизненный цикл сделки</td></tr>
+<tr data-s="norm"><td class="mono">P-96</td><td>Состояния сделки</td><td>15 состояний, 21 событие; режим расщеплённого клиринга включается только для маркетплейсной сделки</td><td><span class="b b-norm">из пула</span></td><td>Deal Engine описывает автомат; в описании конвейера его не было</td></tr>
+<tr data-s="prop"><td class="mono">P-97</td><td>Таймаут ожидания оплаты</td><td>30 минут, затем заказ отменяется и резерв возвращается</td><td><span class="b b-prop">предложено</span></td><td>Без него неоплаченные заказы держат остаток бесконечно</td></tr>
+<tr data-s="prop"><td class="mono">P-98</td><td>Таймаут приёма в сборку</td><td>24 часа без подтверждения оператора — сигнал Организатору</td><td><span class="b b-prop">предложено</span></td><td>Первый признак отказа оператора; без него узнаём от покупателя</td></tr>
+<tr data-s="prop"><td class="mono">P-99</td><td>Таймаут доставки</td><td>срок по зоне плюс двое суток — автоматическая эскалация</td><td><span class="b b-prop">предложено</span></td><td>Граница между задержкой и спором</td></tr>
+<tr data-s="dec"><td class="mono">P-100</td><td>Режим эскроу по умолчанию</td><td>расщеплённый клиринг для всех сделок с участием операторов</td><td><span class="b b-dec">решение</span></td><td>Из семи режимов нужно выбрать умолчание для маркетплейса</td></tr>
+
+<tr><td colspan="5" class="grp">Спор и арбитраж</td></tr>
+<tr data-s="prop"><td class="mono">P-101</td><td>Уровни и сроки эскалации</td><td>покупатель с продавцом 3 дня, с участием оператора 5 дней, решение Организатора 10 дней</td><td><span class="b b-prop">предложено</span></td><td>Арбитраж описан как многосторонний, сроки не заданы</td></tr>
+<tr data-s="dec"><td class="mono">P-102</td><td>Кто оплачивает разбирательство</td><td>предлагается: проигравшая сторона; при обоюдной вине поровну</td><td><span class="b b-dec">решение</span></td><td>Без этого арбитраж бесплатен и им будут злоупотреблять</td></tr>
+<tr data-s="prop"><td class="mono">P-103</td><td>Срок представления доказательств</td><td>3 дня с момента открытия спора</td><td><span class="b b-prop">предложено</span></td><td>Хранилище доказательств описано, срок нет</td></tr>
+<tr data-s="prop"><td class="mono">P-104</td><td>Пересчёт клиринга после решения</td><td>обязателен, отдельной проводкой со ссылкой на исходную</td><td><span class="b b-prop">предложено</span></td><td>Решение спора меняет расщепление; правка исходной проводки недопустима</td></tr>
+
+<tr><td colspan="5" class="grp">Уведомления и документы</td></tr>
+<tr data-s="prop"><td class="mono">P-105</td><td>Обязательные события уведомления</td><td>заказ создан, передан в сборку, отправлен, доставлен, подтверждён, выплата, спор</td><td><span class="b b-prop">предложено</span></td><td>Конвейер держится на событиях, о которых участник должен узнать</td></tr>
+<tr data-s="prop"><td class="mono">P-106</td><td>Срок доставки уведомления</td><td>60 секунд, до трёх повторов</td><td><span class="b b-prop">предложено</span></td><td>Иначе уведомление превращается в отчёт постфактум</td></tr>
+<tr data-s="prop"><td class="mono">P-107</td><td>Акт расщепления</td><td>формируется по каждой сделке, хранится 3 года, изменению не подлежит</td><td><span class="b b-prop">предложено</span></td><td>Юридическое основание выплаты нескольким получателям</td></tr>
+<tr data-s="dec"><td class="mono">P-108</td><td>Договор продавца с оператором</td><td>предлагается: присоединением через Систему, без отдельных переговоров</td><td><span class="b b-dec">решение</span></td><td>Иначе каждый продавец договаривается с каждым оператором сам — и вся идея конвейера рушится</td></tr>
+
+<tr><td colspan="5" class="grp">Мультиселлерный заказ</td></tr>
+<tr data-s="dec"><td class="mono">P-109</td><td>Корзина из разных магазинов</td><td>предлагается: допускается; заказ дробится на подзаказы по продавцам</td><td><span class="b b-dec">решение</span></td><td>Общий каталог по смыслу даёт такую корзину, а расчёт сегодня знает одного продавца на заказ</td></tr>
+<tr data-s="prop"><td class="mono">P-110</td><td>Эскроу мультизаказа</td><td>один платёж покупателя, раздельное раскрытие по каждому подзаказу</td><td><span class="b b-prop">предложено</span></td><td>Один продавец отгрузил, другой задержал — деньги первого не должны ждать</td></tr>
+<tr data-s="prop"><td class="mono">P-111</td><td>Доставка при нескольких отправлениях</td><td>считается по отправлению; покупателю показывается суммарно</td><td><span class="b b-prop">предложено</span></td><td>Иначе покупатель видит одну цену, а расход вдвое выше</td></tr>
+<tr data-s="prop"><td class="mono">P-112</td><td>Отмена части мультизаказа</td><td>не затрагивает остальные подзаказы</td><td><span class="b b-prop">предложено</span></td><td>Продавец не отвечает за действия соседа по корзине</td></tr>
+
+<tr><td colspan="5" class="grp">Режимы расчёта</td></tr>
+<tr data-s="norm"><td class="mono">P-113</td><td>Режим «самостоятельно»</td><td>Система оказывает только услуги; расчёт с продавцом за период</td><td><span class="b b-norm">из пула</span></td><td>Один из трёх механизмов; нужен группе 1 с собственным приёмом платежей</td></tr>
+<tr data-s="norm"><td class="mono">P-114</td><td>Режим «по выбору в заказе»</td><td>покупатель выбирает на чекауте; умолчание — расчёт через Систему</td><td><span class="b b-norm">из пула</span></td><td>Третий механизм; не реализуем, пока заказ не читает режим</td></tr>
+<tr data-s="prop"><td class="mono">P-115</td><td>Периодичность расчёта при самостоятельном режиме</td><td>раз в неделю</td><td><span class="b b-prop">предложено</span></td><td>Услуги оказаны, оплата собирается сводом, а не по каждой сделке</td></tr>
+
+<tr><td colspan="5" class="grp">Клиентская база и атрибуция</td></tr>
+<tr data-s="dec"><td class="mono">P-116</td><td>Срок жизни привязки покупателя к продавцу</td><td>предлагается: 12 месяцев с последней покупки</td><td><span class="b b-dec">решение</span></td><td>Самый важный из пропущенных: от него зависят права на базу, сетевой баланс и вся экономика приведённого трафика</td></tr>
+<tr data-s="prop"><td class="mono">P-117</td><td>Окно атрибуции агентного касания</td><td>30 дней от первого обращения к агенту</td><td><span class="b b-prop">предложено</span></td><td>Определяет, чьим считается покупатель, пришедший через агента</td></tr>
+<tr data-s="prop"><td class="mono">P-118</td><td>Переход покупателя в сетевые</td><td>после первой покупки у другого продавца, необратимо</td><td><span class="b b-prop">предложено</span></td><td>Основание сетевого баланса и платы за приведённого</td></tr>
+
+<tr><td colspan="5" class="grp">Периодические начисления и поверхности</td></tr>
+<tr data-s="prop"><td class="mono">P-119</td><td>Период начисления взноса на инфраструктуру</td><td>календарный месяц</td><td><span class="b b-prop">предложено</span></td><td>Начисление вне заказа; в описании конвейера такого цикла не было вовсе</td></tr>
+<tr data-s="norm"><td class="mono">P-120</td><td>База взноса</td><td>потребление — число заказов, объём хранения; оборот базой быть не может</td><td><span class="b b-norm">из пула</span></td><td>Запрет процента с оборота уже стоит ограничением в данных</td></tr>
+<tr data-s="dec"><td class="mono">P-121</td><td>Подписка white-label</td><td>требует решения: фиксированная помесячная плата, размер не определён</td><td><span class="b b-dec">решение</span></td><td>Сервис описан во всех документах, цены нет ни в одном</td></tr>
+<tr data-s="prop"><td class="mono">P-122</td><td>Виджет на внешней площадке</td><td>бесплатно, в составе удержания сделки</td><td><span class="b b-prop">предложено</span></td><td>Поверхность привлечения; отдельная плата за неё противоречит логике роста</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ═══ 4 ═══ -->
+<div class="sec" id="s4">
+<div class="st">Паспорт после коррекции</div>
+<table class="tb">
+<thead><tr><th style="width:24%">Раздел</th><th style="width:12%">Кодов</th><th>Состояние</th></tr></thead>
+<tbody>
+<tr><td>Экономика расчёта</td><td>P-01…P-13</td><td>Два уточнены, конфликтов не осталось. Целевое и действующее удержание разведены как разные величины</td></tr>
+<tr><td>Тарифы исполнения</td><td>P-14…P-22</td><td>Сборка и доставка пересмотрены. Все значения остаются гипотезами до договоров с операторами</td></tr>
+<tr><td>Выдача и каталог</td><td>P-23…P-32</td><td>Без изменений; часть реализована в коде</td></tr>
+<tr><td>Подключение</td><td>P-33…P-37</td><td>Без изменений</td></tr>
+<tr><td>Расчёт и выплаты</td><td>P-38…P-43</td><td>Перечень ролей зафиксирован, шкала уровней предложена к решению</td></tr>
+<tr><td>Рост</td><td>P-44…P-50</td><td>Сравнение с площадкой пересобрано на симметричной базе</td></tr>
+<tr><td>Плательщик услуг</td><td>P-51…P-63</td><td>Без изменений</td></tr>
+<tr><td>Краевые правила сделки</td><td>P-64…P-78</td><td>Без изменений</td></tr>
+<tr><td>Эксплуатация и юридика</td><td>P-79…P-95</td><td>Без изменений</td></tr>
+<tr><td><b>Новое:</b> цикл сделки, спор, уведомления, мультизаказ, режимы расчёта, атрибуция, периодические начисления</td><td>P-96…P-122</td><td>Двадцать семь параметров; из них семь требуют решения</td></tr>
+</tbody>
+</table>
+
+<div class="st" style="margin-top:18px">Девятнадцать решений, накопившихся к этому моменту</div>
+<div class="c">
+<p>К двенадцати из предыдущего расширения добавились семь: умолчание режима эскроу, плательщик разбирательства, порядок договора продавца с оператором, допустимость мультиселлерной корзины, срок жизни привязки покупателя, цена подписки white-label и шкала уровней вовлечения.</p>
+<p style="margin-top:6px">Три из них меняют схему данных, поэтому стоят раньше остальных: <b>мультиселлерная корзина</b> <span class="mono">P-109</span> — заказ либо знает одного продавца, либо дробится на подзаказы, и переделать это позже дороже всего; <b>срок жизни привязки покупателя</b> <span class="mono">P-116</span> — определяет, что вообще считать клиентской базой; <b>шкала уровней</b> <span class="mono">P-43</span> — иначе накопятся записи по двум встречным нумерациям.</p>
+</div>
+
+<div class="co co-a"><b>Продолжение паспорта.</b>Вторая сверка описания с пулом выявила незакрытый слой — управление, членство и надзор. Тринадцать параметров P-123…P-135 (реестр и гейт участников, рейтинг оператора, мандат агента, журнал согласий, разделение полномочий Организатора, приостановление и исключение) введены в разделе 9 документа <a href="16-kak-rabotaet-sistema-polnoe.html">«Как работает Система · полное описание»</a>. Итого в паспорте 135 параметров.</div>
+<div class="co co-w"><b>Чего в паспорте по-прежнему нет и не может быть.</b>Параметров внешних договоров: что именно гарантирует банк, какой срок держит оператор, что покрывает страховщик. Они появятся только вместе с подписанными договорами, и до тех пор любая величина, зависящая от них, остаётся гипотезой — включая все тарифы исполнения.</div>
+
+<div class="co co-g"><b>Что даёт коррекция практически.</b>Исчез главный риск оффера: продавец, проверяющий наши цифры на своём заказе, теперь получит тот же результат, что показываем мы. Разрыв с площадкой оказался меньше заявленного, но проверяемым — а проверяемая разница убеждает лучше красивой пропорции, которая рассыпается при первой же проверке.</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var tabs=document.querySelectorAll('#tabs .tab');
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.t)});
+    window.scrollTo({top:0,behavior:'smooth'});
+  })});
+
+  var rows=[].slice.call(document.querySelectorAll('#np tbody tr[data-s]'));
+  function apply(f){
+    var n=0;
+    rows.forEach(function(r){var v=(f==='all'||r.dataset.s===f);r.style.display=v?'':'none';if(v)n++});
+    document.getElementById('stat').textContent=n+' из '+rows.length;
+  }
+  document.querySelectorAll('.bar .fb').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('.bar .fb').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on'); apply(b.dataset.f);
+  })});
+  apply('all');
+
+  // ── симметричное сравнение ──
+  var MP={
+    wb:{comm:.19,log:.11,stor:.02,acq:0,promo:.04,pen:.015,back:350},
+    oz:{comm:.22,log:.12,stor:.025,acq:.015,promo:.05,pen:.02,back:350}
+  };
+  var RET=0.08, FF_UNIT={intake:15,pack:25,pick:35,store:8};
+  function m(x){return (Math.round(x*100)/100).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+  function calc(){
+    var P=+document.getElementById('price').value||0,
+        q=+document.getElementById('qty').value||1,
+        D=+document.getElementById('dlv').value||0,
+        take=+document.getElementById('take').value;
+    var goods=Math.max(0,P-D);
+    var ff=FF_UNIT.intake+FF_UNIT.pack+FF_UNIT.pick+FF_UNIT.store;
+    var acqS=goods*0.00175;
+    var sysHold=goods*take;
+    var retS=20*RET;
+
+    var cols=[];
+    ['wb','oz'].forEach(function(k){
+      var t=MP[k], r={};
+      r.comm=P*t.comm; r.log=P*t.log; r.stor=P*t.stor; r.acq=P*t.acq;
+      r.promo=P*t.promo; r.pen=P*t.pen; r.back=t.back*RET; r.ff=0; r.sys=0;
+      r.total=r.comm+r.log+r.stor+r.acq+r.promo+r.pen+r.back;
+      r.net=P-r.total; cols.push(r);
+    });
+    var s={comm:0,log:D,stor:0,acq:acqS,promo:0,pen:0,back:retS,ff:ff,sys:sysHold};
+    s.total=D+acqS+retS+ff+sysHold; s.net=P-s.total; cols.push(s);
+
+    var LINES=[
+      ['Комиссия площадки','comm'],['Удержание Системы','sys'],['Логистика и доставка','log'],
+      ['Фулфилмент','ff'],['Хранение','stor'],['Эквайринг','acq'],
+      ['Обязательное продвижение','promo'],['Штрафы и удержания','pen'],['Обратная логистика','back']
+    ];
+    var tb=document.querySelector('#cm tbody'); tb.innerHTML='';
+    LINES.forEach(function(L){
+      var tr=document.createElement('tr');
+      var cells=cols.map(function(c){
+        var v=c[L[1]]||0;
+        return '<td class="'+(v===0?'zero':'')+'">'+(v===0?'—':m(v))+'</td>';
+      }).join('');
+      tr.innerHTML='<td>'+L[0]+'</td>'+cells; tb.appendChild(tr);
+    });
+    var tr1=document.createElement('tr'); tr1.className='tot';
+    tr1.innerHTML='<td>Остаётся продавцу</td>'+cols.map(function(c){return '<td>'+m(c.net)+'</td>'}).join('');
+    tb.appendChild(tr1);
+    var tr2=document.createElement('tr'); tr2.className='pct';
+    tr2.innerHTML='<td>Доля расходов канала</td>'+cols.map(function(c){return '<td>'+(P?(c.total/P*100).toFixed(1).replace('.',','):'0')+' %</td>'}).join('');
+    tb.appendChild(tr2);
+
+    var best=Math.max(cols[0].net,cols[1].net);
+    var diff=cols[2].net-best;
+    var pp=P?((cols[0].total/P)-(cols[2].total/P))*100:0;
+    var pp2=P?((cols[1].total/P)-(cols[2].total/P))*100:0;
+    document.getElementById('nt').innerHTML=
+      '<b>Разница на этом заказе: '+m(diff)+' ₽ в пользу Системы</b> — это '+
+      pp.toFixed(1).replace('.',',')+' процентных пункта против Wildberries и '+
+      pp2.toFixed(1).replace('.',',')+' против Ozon, а не двадцать семь, как получается при сравнении удержания Системы с полным удержанием площадки. '+
+      'Основной вклад дают комиссия, обязательное продвижение и штрафы; доставка у нас, наоборот, дороже, пока нет объёма.';
+  }
+  ['price','qty','dlv','take'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',calc);
+    document.getElementById(id).addEventListener('change',calc);
+  });
+  calc();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Реестр девяти вариантов: ориентация, отличия, вектор</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--ac);margin-bottom:16px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--ac);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:16px;overflow-x:auto}
+.tab{padding:7px 14px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;white-space:nowrap;background:none;font-family:inherit}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.tab:focus-visible{outline:2px solid var(--ac);outline-offset:-2px}
+.sec{display:none}.sec.on{display:block}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}.c ul{padding-left:16px;margin:4px 0}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.co-p{background:var(--pr2);border-left:3px solid var(--pr);color:#2e2670}
+.st{font-size:15px;font-weight:600;margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:11px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+/* карточка варианта */
+.vc{background:var(--card);border:1px solid var(--bd);border-left-width:4px;border-radius:8px;padding:13px 17px;margin-bottom:9px}
+.vc h4{font-size:13.5px;font-weight:700;margin-bottom:2px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}
+.vc .or{font-size:11px;font-weight:700;padding:1px 8px;border-radius:3px;background:var(--ac2);color:var(--ac);text-transform:uppercase;letter-spacing:.04em}
+.vc .lead{font-size:12.5px;color:var(--t1);margin:5px 0 7px;font-weight:500}
+.vc dl{display:grid;grid-template-columns:118px 1fr;gap:3px 10px;font-size:12px;color:var(--t2)}
+.vc dt{color:var(--t3);font-size:11px;text-transform:uppercase;letter-spacing:.03em;padding-top:1px}
+.vc.v1{border-left-color:#7a6fb8}.vc.v2{border-left-color:#7a6fb8}
+.vc.v3{border-left-color:var(--gn)}.vc.v4{border-left-color:var(--co)}
+.vc.v5{border-left-color:var(--ac)}.vc.v6{border-left-color:var(--wr)}
+.vc.v7{border-left-color:var(--wr)}.vc.v8{border-left-color:var(--rd)}
+.vc.v9{border-left-color:var(--pr)}
+/* график */
+.chart{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px}
+.lg{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--t2);margin-top:8px}
+.lg i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:3px}
+.axes{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.axb{padding:4px 10px;font-size:11px;border:1px solid var(--bd);background:var(--card);border-radius:20px;cursor:pointer;color:var(--t2);font-family:inherit}
+.axb.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+a{color:#2a6cb6}
+@media print{.tabs{display:none}.sec{display:block!important;page-break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Реестр девяти вариантов<br>Ориентация, отличия и единый вектор изменений</h1>
+  <p>Каждый вариант решал свою задачу, и различия между ними — не разночтения, а разная направленность. Здесь для каждого названа ориентация, показано, чем он отличается от соседей, и проверено, складываются ли девять проходов в одно движение.</p>
+  <div class="meta">23 августа 2026 · Опирается на <a href="20-matrica-variantov.html">матрицу вариантов</a> и <a href="21-iteracionnaya-model-po-variantam.html">исполняемую модель</a></div>
+<div style="max-width:1180px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Варианты: <a href="service-registry-full-analysis.html" style="font-weight:600;">В-1</a> · <a href="pipeline-model-interactive.html" style="font-weight:600;">В-2</a> · <a href="9-ptk-marketplace-arch-part2.html" style="font-weight:600;">В-3</a> · <a href="10-mehanizm-sbora-bazy-i-sellerov.html" style="font-weight:600;">В-4</a> · <a href="11-arhitektura-realizacii-obektov.html" style="font-weight:600;">В-5</a> · <a href="12-opisanie-sistemy-i-pasport-parametrov.html" style="font-weight:600;">В-6</a> · <a href="13-pasport-rasshirenie-platelshchik-scenarii.html" style="font-weight:600;">В-7</a> · <a href="15-korrekciya-pasporta.html" style="font-weight:600;">В-8</a> · <a href="16-kak-rabotaet-sistema-polnoe.html" style="font-weight:600;">В-9</a>. Разборы: <a href="17-analiz-iteracij-vybor-nabora.html" style="font-weight:600;">анализ итераций</a>, <a href="19-svodnye-tablicy-iteracij.html" style="font-weight:600;">сводные таблицы</a>, <a href="18-dva-kontura-sistemy.html" style="font-weight:600;">два контура</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab">Реестр вариантов</button>
+  <button class="tab" data-t="s2" role="tab">Три оси движения</button>
+  <button class="tab" data-t="s3" role="tab">Единый вектор</button>
+  <button class="tab" data-t="s4" role="tab">Что вектор предсказывает</button>
+</div>
+
+<!-- ═══ 1 ═══ -->
+<div class="sec on" id="s1">
+
+<div class="vc v1"><h4>В-1 · Реестр сервисов <span class="or">ориентация: полнота</span></h4>
+<div class="lead">Собрать всё, что Система должна уметь, и назвать цену каждому.</div>
+<dl>
+<dt>Отличие</dt><dd>Единственный вариант, который задаёт <b>состав</b>: двадцать восемь сервисов по семи фазам, у каждого тариф, предмет расчёта и роль. Остальные восемь работают внутри этого состава.</dd>
+<dt>Внёс</dt><dd>Форму сервиса из пяти полей, тарифные диапазоны исполнения, девять ролей расщепления, совокупное удержание 12,5 %.</dd>
+<dt>Не задал</dt><dd>Кто за что платит, что делать в краевых случаях, как величина обосновывается.</dd>
+<dt>Цена</dt><dd>Полнота без обоснования: величины названы, но неизвестно, откуда взяты и что происходит при их изменении.</dd>
+</dl></div>
+
+<div class="vc v2"><h4>В-2 · Модель конвейера <span class="or">ориентация: исполнимость</span></h4>
+<div class="lead">Проверить, считается ли описанное вообще, — и сделать расчёт видимым.</div>
+<dl>
+<dt>Отличие</dt><dd>Первый вариант, где параметры не описаны, а <b>исполняются</b>. Реестр становится массивом, расчёт — проходом по нему, профили — редактируемыми наборами.</dd>
+<dt>Внёс</dt><dd>Операторов по три в каждой роли с разными тарифами, шесть профилей продавца, клиринг за период, сравнение с площадками.</dd>
+<dt>Не задал</dt><dd>Краевые правила, происхождение значений; часть тарифов разошлась с реестром незамеченной.</dd>
+<dt>Цена</dt><dd>Исполнимость без сверки: считает убедительно, но не с чем сравнить.</dd>
+</dl></div>
+
+<div class="vc v3"><h4>В-3 · Аудит кода <span class="or">ориентация: правдивость</span></h4>
+<div class="lead">Узнать, что происходит на самом деле, а не что написано в документах.</div>
+<dl>
+<dt>Отличие</dt><dd>Единственный вариант, чей источник — не замысел, а <b>работающая система</b>. Все его значения проверяемы запросом.</dd>
+<dt>Внёс</dt><dd>Подтверждённые веса выдачи и бусты групп, сбор Организатора 0,2 %, инвариант сходимости, восемь расхождений кода с замыслом.</dd>
+<dt>Не задал</dt><dd>Ничего сверх того, что уже написано: аудит не проектирует.</dd>
+<dt>Цена</dt><dd>Внёс путаницу, поставив 0,2 % рядом с 12,5 % без объяснения, — она держалась три прохода.</dd>
+</dl></div>
+
+<div class="vc v4"><h4>В-4 · Механизм сбора базы <span class="or">ориентация: рост</span></h4>
+<div class="lead">Ответить, откуда возьмутся продавцы и покупатели, если купить их нельзя.</div>
+<dl>
+<dt>Отличие</dt><dd>Единственный вариант, смотрящий <b>наружу</b>: остальные описывают устройство, этот — привлечение. Расчёт заказа он не касается вовсе.</dd>
+<dt>Внёс</dt><dd>Горизонт три года, доли миграции базы, комиссию за приведённого, сетевой баланс, ценовую метку.</dd>
+<dt>Не задал</dt><dd>Ни одного тарифа и ни одной ставки расчёта.</dd>
+<dt>Цена</dt><dd>Все его величины — гипотезы, непроверяемые до пилота. Это не изъян, а природа предмета.</dd>
+</dl></div>
+
+<div class="vc v5"><h4>В-5 · Архитектура реализации <span class="or">ориентация: устройство</span></h4>
+<div class="lead">Сделать так, чтобы новый сервис не требовал правки ядра.</div>
+<dl>
+<dt>Отличие</dt><dd>Единственный вариант, который <b>принципиально не назначает значений</b>: он меняет способ их хранения. Параметр перестаёт быть числом в тексте и становится полем таблицы.</dd>
+<dt>Внёс</dt><dd>Реестр как данные, расчёт как интерпретатор, снимок конфигурации заказа, объяснимость каждой доли.</dd>
+<dt>Не задал</dt><dd>Ничего числового — и это осознанно.</dd>
+<dt>Цена</dt><dd>Требует переписывания расчёта, которое до сих пор не сделано; до тех пор его вклад остаётся замыслом.</dd>
+</dl></div>
+
+<div class="vc v6"><h4>В-6 · Паспорт P-01…50 <span class="or">ориентация: прослеживаемость</span></h4>
+<div class="lead">Для каждой величины назвать источник, статус и место применения.</div>
+<dl>
+<dt>Отличие</dt><dd>Первый вариант, где важно не значение, а его <b>происхождение</b>. Появляются статусы: норма, проект, реализовано, гипотеза, конфликт.</dd>
+<dt>Внёс</dt><dd>Пятьдесят параметров с источниками, шесть названных противоречий, разведение целевого удержания и действующего сбора.</dd>
+<dt>Не задал</dt><dd>Плательщика услуг — и потому главное противоречие пула в паспорте не отобразилось.</dd>
+<dt>Цена</dt><dd>Систематизировал неполные строки: у параметра было только значение, что и позволило противоречию спрятаться.</dd>
+</dl></div>
+
+<div class="vc v7"><h4>В-7 · Расширение P-51…95 <span class="or">ориентация: однозначность</span></h4>
+<div class="lead">Сделать так, чтобы один и тот же заказ считался единственным способом.</div>
+<dl>
+<dt>Отличие</dt><dd>Вариант добавил <b>измерение, а не значения</b>: у каждой услуги появился плательщик. Это сняло противоречие между реестром и кодом без пересмотра цифр — оба были правы про свою половину списка.</dd>
+<dt>Внёс</dt><dd>Плательщика по тринадцати услугам, округление, приоритет при нехватке, порог заказа, сроки подтверждения, стенд из пяти контрольных сделок.</dd>
+<dt>Не задал</dt><dd>Ролей сверх четырёх: пять сервисов остались неоплачиваемыми.</dd>
+<dt>Цена</dt><dd>Утверждение о минусе на малом чеке оказалось сильнее расчёта — поправлено следующим проходом.</dd>
+</dl></div>
+
+<div class="vc v8"><h4>В-8 · Коррекция P-96…122 <span class="or">ориентация: честность</span></h4>
+<div class="lead">Проверить собственные утверждения на симметричность и исправить те, что не выдержали.</div>
+<dl>
+<dt>Отличие</dt><dd>Единственный вариант, который <b>отменяет прежние значения</b>, а не добавляет новые. Шесть пересмотров, включая базу сравнения с площадкой, державшуюся семь проходов.</dd>
+<dt>Внёс</dt><dd>Симметричное сравнение, потолок как удержание Системы, тариф сборки за заказ, перечень девяти ролей, цикл сделки, мультизаказ, три режима расчёта.</dd>
+<dt>Не задал</dt><dd>Различения ставки по каналу — единая ставка облагает и приведённого Системой покупателя, и своего.</dd>
+<dt>Цена</dt><dd>При переписывании описания выпал раздел о выдаче — регресс, замеченный только следующей сверкой.</dd>
+</dl></div>
+
+<div class="vc v9"><h4>В-9 · Надзор P-123…135 <span class="or">ориентация: неотменяемость</span></h4>
+<div class="lead">Закрепить то, что не должен иметь права менять сам Организатор.</div>
+<dl>
+<dt>Отличие</dt><dd>Единственный вариант, который <b>ограничивает не участника, а Систему</b>. Все прочие описывали, что можно делать; этот — чего нельзя даже тому, кто всем управляет.</dd>
+<dt>Внёс</dt><dd>Реестр агентов и мандат, неизменяемый журнал согласий, гейт и рейтинг оператора, разделение полномочий, приостановление и исключение, изменение весов только через Правила.</dd>
+<dt>Не задал</dt><dd>Расчёта — он наследован от предыдущего варианта без изменений.</dd>
+<dt>Цена</dt><dd>Ни одна из его норм сегодня не реализована: это чистое ограничение на будущее.</dd>
+</dl></div>
+
+<div class="co co-a"><b>Что видно из ориентаций.</b>Девять вариантов — не девять попыток сделать одно и то же лучше. Это девять разных вопросов: что должно быть, считается ли это, что есть на самом деле, откуда возьмутся люди, как это хранить, откуда взялись цифры, однозначны ли они, честны ли они и чего нельзя менять. Поэтому сравнивать их «который лучше» бессмысленно — правильный вопрос в том, складываются ли они в одно движение.</div>
+</div>
+
+<!-- ═══ 2 ═══ -->
+<div class="sec" id="s2">
+<div class="st">Три оси, по которым шло движение</div>
+<p style="font-size:12.5px;color:var(--t2)">Оценки проставлены по перечисленным ниже признакам, а не измерены. Их назначение — показать форму кривых, а не точные величины.</p>
+
+<div class="chart">
+  <div class="axes" id="axes"></div>
+  <svg id="ch" viewBox="0 0 760 260" style="width:100%;height:auto" role="img" aria-label="Три оси изменений по вариантам"></svg>
+  <div class="lg">
+    <span><i style="background:#1e5fa0"></i>определённость расчёта</span>
+    <span><i style="background:#9b2c2c"></i>свобода Организатора</span>
+    <span><i style="background:#a06b12"></i>сложность набора</span>
+  </div>
+</div>
+
+<div class="c" style="margin-top:12px">
+<h3>Как читаются признаки</h3>
+<table class="tb">
+<thead><tr><th style="width:26%">Ось</th><th style="width:34%">Что считается признаком роста</th><th>Форма кривой</th></tr></thead>
+<tbody>
+<tr><td><b>Определённость расчёта</b></td><td>Задан плательщик, заданы краевые правила, расчёт даёт единственный результат, есть проверка сходимости</td><td>Растёт рывком на седьмом варианте — там появилось измерение плательщика — и выходит на предел</td></tr>
+<tr><td><b>Свобода Организатора</b></td><td>Сколько величин он вправе изменить собственным решением, не меняя Правил</td><td>Падает монотонно; резкий обрыв на девятом, где изменение весов вынесено в Правила</td></tr>
+<tr><td><b>Сложность набора</b></td><td>Число параметров, которые нужно знать, чтобы посчитать заказ</td><td>Растёт непрерывно с двадцати до ста тридцати пяти и не снижается ни разу</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="co co-w"><b>Третья кривая — плата за первые две.</b>Определённость и неотменяемость достались ценой сложности, которая выросла почти в семь раз и ни разу не уменьшилась. Это не порок: чтобы расчёт был однозначным, нужно назвать все случаи. Но это означает, что порог входа в проект вырос — и что упрощение когда-нибудь придётся сделать отдельной задачей, потому что само оно не произойдёт.</div>
+</div>
+
+<!-- ═══ 3 ═══ -->
+<div class="sec" id="s3">
+<div class="st">Единый вектор: от описания к ограничению</div>
+
+<div class="co co-p"><b>Формулировка.</b>Девять вариантов складываются в одно движение — <b>от перечисления возможностей к сужению произвола</b>. Каждый следующий проход не столько добавлял, что система умеет, сколько отнимал право трактовать её по-разному. Сначала был отнят произвол трактовки, затем произвол расчёта, затем произвол Организатора.</div>
+
+<table class="tb">
+<thead><tr><th style="width:14%">Этап</th><th style="width:24%">Какой произвол снят</th><th style="width:14%">Варианты</th><th>Чем именно</th></tr></thead>
+<tbody>
+<tr><td><b>Первый</b></td><td>Произвол трактовки</td><td>В-1 → В-3</td><td>Названы состав, цена и роль каждого сервиса; выяснено, что из этого работает. Стало невозможно спорить о том, что вообще есть в системе</td></tr>
+<tr><td><b>Второй</b></td><td>Произвол значения</td><td>В-5 → В-6</td><td>У величины появились источник и статус. Стало невозможно назначить цифру без указания, откуда она и что её меняет</td></tr>
+<tr><td><b>Третий</b></td><td>Произвол расчёта</td><td>В-7 → В-8</td><td>Плательщик, округление, приоритет, порог, симметричная база сравнения. Стало невозможно посчитать один заказ двумя способами</td></tr>
+<tr><td><b>Четвёртый</b></td><td>Произвол Организатора</td><td>В-9</td><td>Веса и ставка меняются только Правилами, полномочия разделены, журнал согласий неизменяем. Стало невозможно поменять условия тому, кто от изменения выигрывает</td></tr>
+</tbody>
+</table>
+
+<div class="co co-g" style="margin-top:12px"><b>Почему это именно вектор, а не последовательность улучшений.</b>У всех четырёх этапов одна форма: берётся место, где решение принимал человек по своему усмотрению, и заменяется на правило либо на структурный запрет. Причём наиболее устойчивыми оказались те решения, где запрет получил <b>материальный носитель</b> — ограничение в таблице, отсутствующее поле, строку с датой. Двадцать восемь параметров из сорока шести не менялись ни разу именно поэтому.</div>
+
+<div class="co co-r"><b>И встречное движение, которого не было.</b>Ни один вариант не расширил свободу и не упростил набор. Это стоит зафиксировать как факт, а не как достоинство: система, которая только сужается, рано или поздно становится негибкой для тех, ради кого строилась. Пока противовес один — гибкость продавца, заявленная требованием и защищённая тем, что храповик запрещает только уводить сделку у пришедшего покупателя. Свобода Организатора сокращена; свобода участника — нет.</div>
+
+<div class="st" style="margin-top:16px">Три частных вектора внутри общего</div>
+<div class="c">
+<ul>
+<li><b>От момента к процессу.</b> Заказ был точкой расчёта, стал автоматом состояний со сроками на каждом переходе. Побочно это вскрыло, что без автоподтверждения выплата за один-три дня недостижима.</li>
+<li><b>От единой ставки к дифференцированной.</b> Двенадцать с половиной процентов со всего → разведение целевой и действующей → ставка по каналу. Логика та же: плата должна соответствовать сделанному, а не быть единой из соображений простоты.</li>
+<li><b>От документа к слою.</b> Величины жили в текстах, потом собрались в паспорт, теперь предлагается вынести их в отдельный слой, а документы сделать представлениями. Это продолжение того же сужения: у величины остаётся одно место, где она записана.</li>
+</ul>
+</div>
+</div>
+
+<!-- ═══ 4 ═══ -->
+<div class="sec" id="s4">
+<div class="st">Что вектор предсказывает — и где он должен остановиться</div>
+
+<div class="c">
+<h3>Если движение продолжится по той же логике</h3>
+<table class="tb">
+<thead><tr><th style="width:28%">Следующий шаг</th><th style="width:26%">Какой произвол снимает</th><th>Готовность</th></tr></thead>
+<tbody>
+<tr><td><b>Расчёт как проход по реестру</b></td><td>Произвол разработчика: сегодня новая роль — правка ядра, а значит решение принимает тот, кто пишет код</td><td>Описан, не сделан. Ключевой шаг из всех оставшихся</td></tr>
+<tr><td><b>Параметры отдельным слоем</b></td><td>Произвол составителя документа: величина перестаёт существовать в нескольких местах одновременно</td><td>Сформулирован, требует инструмента</td></tr>
+<tr><td><b>Разделение контуров</b></td><td>Произвол настройки: то, что распределяет, нельзя обучать и подкручивать</td><td>Оформлено проектом статьи 22</td></tr>
+<tr><td><b>Измерения вместо гипотез</b></td><td>Произвол оценки: тарифы операторов и доли миграции заменяются фактами</td><td>Требует пилота и договоров — единственное, чего нельзя сделать разбором</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="co co-w"><b>Где вектор должен остановиться.</b>Сужение произвола полезно ровно до границы, за которой начинается произвол участника — то, ради чего система и строится. Продавец должен сохранять право выбрать оператора, установить свою цену, торговать на стороне и уйти, забрав покупателей. Каждое из этих прав выглядит как «неопределённость», которую хочется устранить следующим проходом. Устранять их нельзя: именно они отличают нас от площадки, где всё определено и потому всё принадлежит платформе.</div>
+
+<div class="co co-a"><b>Практический признак остановки.</b>Если очередное уточнение отнимает решение у продавца, а не у Организатора и не у составителя документов — вектор прошёл свою границу. Проверять это стоит на каждом следующем параметре, и вопрос формулируется просто: чью свободу сокращает эта строка.</div>
+
+<div class="co co-g"><b>Итог по девяти вариантам.</b>Они не конкурируют — они последовательно снимают разные виды неопределённости, и потому реестр читается не как выбор из девяти, а как один набор, собранный в девять приёмов. Рекомендуемый вариант и есть этот набор: состав от первого, исполнимость от второго, правдивость от третьего, устройство от пятого, прослеживаемость от шестого, однозначность от седьмого, честность от восьмого и неотменяемость от девятого. Единственное, чего в нём нет, — измерений, и взять их неоткуда, кроме пилота.</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var tabs=document.querySelectorAll('#tabs .tab');
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.t)});
+    if(t.dataset.t==='s2') draw();
+    window.scrollTo({top:0,behavior:'smooth'});
+  })});
+
+  var LBL=['В-1','В-2','В-3','В-4','В-5','В-6','В-7','В-8','В-9','Рек.'];
+  var SERIES=[
+    {k:'det',nm:'определённость расчёта',c:'#1e5fa0',v:[3,6,7,0,2,5,9,9,9,10]},
+    {k:'free',nm:'свобода Организатора',c:'#9b2c2c',v:[9,8,7,8,6,6,5,4,2,2]},
+    {k:'cx',nm:'сложность набора',c:'#a06b12',v:[1.5,1.9,2.2,2.6,2.6,3.7,7.0,9.0,10,10]}
+  ];
+  var show={det:true,free:true,cx:true};
+
+  var ax=document.getElementById('axes');
+  ax.innerHTML=SERIES.map(function(s){return '<button class="axb on" data-k="'+s.k+'">'+s.nm+'</button>'}).join('');
+  ax.addEventListener('click',function(e){
+    var b=e.target.closest('.axb'); if(!b)return;
+    show[b.dataset.k]=!show[b.dataset.k];
+    b.classList.toggle('on',show[b.dataset.k]);
+    draw();
+  });
+
+  function draw(){
+    var W=760,H=260,L=42,R=14,T=14,B=30;
+    var n=LBL.length;
+    function x(i){return L+(W-L-R)*(i/(n-1))}
+    function y(v){return H-B-(H-T-B)*(v/10)}
+    var g='';
+    [0,2.5,5,7.5,10].forEach(function(v){
+      g+='<line x1="'+L+'" y1="'+y(v)+'" x2="'+(W-R)+'" y2="'+y(v)+'" stroke="#e6e4dc"/>'+
+         '<text x="'+(L-8)+'" y="'+(y(v)+3)+'" font-size="9" fill="#8a8a82" text-anchor="end" font-family="monospace">'+v+'</text>';
+    });
+    LBL.forEach(function(l,i){
+      g+='<text x="'+x(i)+'" y="'+(H-10)+'" font-size="10" fill="#55554f" text-anchor="middle" font-family="monospace">'+l+'</text>';
+    });
+    SERIES.forEach(function(s){
+      if(!show[s.k])return;
+      var d=s.v.map(function(v,i){return (i?'L':'M')+x(i)+' '+y(v)}).join(' ');
+      g+='<path d="'+d+'" fill="none" stroke="'+s.c+'" stroke-width="2.2" stroke-linejoin="round"/>';
+      s.v.forEach(function(v,i){ g+='<circle cx="'+x(i)+'" cy="'+y(v)+'" r="3" fill="'+s.c+'"/>'; });
+    });
+    document.getElementById('ch').innerHTML=g;
+  }
+  draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Как работает Система: сервисы → селлеры → заказы → исполнение → клиринг → деньги</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1160px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:26px 0 18px;border-bottom:2px solid var(--ac);margin-bottom:18px}
+.hdr h1{font-size:20px;font-weight:700;color:var(--ac);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:18px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:7px 13px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;white-space:nowrap;background:none;font-family:inherit}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.tab:focus-visible{outline:2px solid var(--ac);outline-offset:-2px}
+.tab .no{font-family:ui-monospace,monospace;font-size:10px;color:var(--t3);margin-right:5px}
+.tab.on .no{color:var(--ac)}
+.sec{display:none}.sec.on{display:block}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}
+.c ul{padding-left:16px;margin:4px 0 6px}.c li{margin-bottom:3px}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:11px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.tb .num{text-align:right;font-family:ui-monospace,monospace}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
+.p{display:inline-block;font-family:ui-monospace,monospace;font-size:10px;color:var(--ac);background:var(--ac2);padding:0 5px;border-radius:3px;font-weight:700;white-space:nowrap}
+.b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:3px;white-space:nowrap}
+.b-k{background:var(--gn2);color:var(--gn)}.b-c{background:var(--wr2);color:var(--wr)}.b-r{background:var(--rd2);color:var(--rd)}
+.b-buy{background:#e7f0fb;color:#14508f}.b-sel{background:#fdeee4;color:var(--co)}
+.co{padding:12px 16px;border-radius:6px;margin-bottom:10px;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.st{font-size:15px;font-weight:600;margin-bottom:12px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px}
+@media(max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+.ab{border:1px solid var(--bd);border-radius:6px;padding:12px;background:var(--card)}
+.ab.hl{border-color:var(--ac);border-width:2px}
+.ab h4{font-size:12.5px;font-weight:600;margin-bottom:4px}
+.ab p{font-size:12px;color:var(--t2)}
+.chain{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:6px 0 14px;font-size:11px}
+.cn{padding:5px 11px;border-radius:5px;background:var(--card);border:1px solid var(--bd);color:var(--t2);cursor:pointer}
+.cn.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+.ca{color:var(--t3)}
+/* проводка */
+.rig{background:#1c1c1a;border-radius:8px;padding:16px;color:#e8e6df;margin-top:10px}
+.rig h4{font-size:13px;color:#fff}
+.rig .sub{font-size:11px;color:#9c998e;margin-bottom:12px}
+.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.btn{background:#2c2c29;color:#e8e6df;border:1px solid #45443f;border-radius:5px;padding:6px 13px;font-size:12px;font-family:inherit;cursor:pointer}
+.btn:hover{background:#3a3a36}.btn:disabled{opacity:.4;cursor:default}
+.btn.pri{background:#1e5fa0;border-color:#1e5fa0;color:#fff;font-weight:600}
+.tgl{font-size:11px;color:#b8b5a9;display:flex;align-items:center;gap:5px;cursor:pointer;margin-left:auto}
+.stepbox{background:#262623;border-radius:6px;padding:12px 14px;min-height:96px}
+.stepbox .n{font-family:ui-monospace,monospace;font-size:10px;color:#8a877d}
+.stepbox .t{font-size:13px;font-weight:700;color:#fff;margin:2px 0 5px}
+.stepbox .d{font-size:12px;color:#c9c6ba;line-height:1.5}
+.stepbox .w{font-size:11px;color:#8fbdf0;font-family:ui-monospace,monospace;margin-top:7px}
+.led{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+@media(max-width:760px){.led{grid-template-columns:1fr 1fr}}
+.lv{background:#2a2a27;border-radius:5px;padding:8px 10px}
+.lv .k{font-size:10px;color:#9c998e;display:block}
+.lv .v{font-size:15px;font-weight:700;color:#8fe3c6;font-family:ui-monospace,monospace}
+.lv .v.zero{color:#6e6b62}
+.prog{height:3px;background:#333330;border-radius:2px;margin:10px 0;overflow:hidden}
+.prog i{display:block;height:100%;background:#5b9bd5;transition:width .2s}
+a{color:#2a6cb6}
+@media print{.tabs{display:none}.sec{display:block!important;page-break-inside:avoid}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Как работает Система<br>Сервисы → селлеры → заказы → исполнение → клиринг → деньги</h1>
+  <p>Сквозное описание работы по параметрам паспорта. Каждая величина в тексте — ссылка на строку паспорта; ни одно число не придумано здесь заново. Одна сделка проходит весь путь от корзины до выплаты, и на каждом шаге видно, какие параметры действуют и что записывается.</p>
+  <div class="meta">23 августа 2026 · Опирается на паспорт P-01…P-95 · Расчёты приведены в проверенном сочетании: тарифы реестра, фулфилмент за счёт продавца, доставка за счёт покупателя</div>
+<div style="max-width:1160px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Параметры: <a href="12-opisanie-sistemy-i-pasport-parametrov.html" style="font-weight:600;">паспорт P-01…P-50</a> и <a href="13-pasport-rasshirenie-platelshchik-scenarii.html" style="font-weight:600;">расширение P-51…P-95</a>. Устройство: <a href="service-registry.html" style="font-weight:600;">реестр сервисов</a>, <a href="11-arhitektura-realizacii-obektov.html" style="font-weight:600;">архитектура реализации</a>, <a href="service-tiers.html" style="font-weight:600;">линейка уровней</a>, <a href="pipeline-model-interactive.html" style="font-weight:600;">модель конвейера</a>. Состояние: <a href="9-ptk-marketplace-arch-part2.html" style="font-weight:600;">аудит кода</a>. Нормы: <a href="pravila-sistemy-red3-edinyi.html" style="font-weight:600;">Правила ред. 3</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="co co-r" style="margin-bottom:12px"><b>Заменено вторым изданием.</b>Полное описание по 122 параметрам — <a href="16-kak-rabotaet-sistema-polnoe.html">«Как работает Система · полное описание»</a>: добавлены цикл сделки, арбитраж, уведомления и документы, мультиселлерный заказ, три режима расчёта, атрибуция базы. Этот документ сохраняется как первая редакция.</div>
+<div class="co co-w" style="margin-bottom:12px"><b>Действует коррекция.</b>Шесть значений пересмотрены, добавлены параметры P-96…P-122, сравнение с площадкой пересобрано на симметричной базе — см. <a href="15-korrekciya-pasporta.html">коррекцию паспорта</a>. При расхождении верна коррекция.</div>
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab"><span class="no">1</span>Сервисы</button>
+  <button class="tab" data-t="s2" role="tab"><span class="no">2</span>Селлеры</button>
+  <button class="tab" data-t="s3" role="tab"><span class="no">3</span>Заказы</button>
+  <button class="tab" data-t="s4" role="tab"><span class="no">4</span>Исполнение</button>
+  <button class="tab" data-t="s5" role="tab"><span class="no">5</span>Клиринг</button>
+  <button class="tab" data-t="s6" role="tab"><span class="no">6</span>Деньги</button>
+  <button class="tab" data-t="s7" role="tab">Проводка сделки</button>
+</div>
+
+<!-- ═══ 1 СЕРВИСЫ ═══ -->
+<div class="sec on" id="s1">
+<div class="st">1 · Сервисы: из чего собрана Система</div>
+<div class="chain"><span class="cn on">сервисы</span><span class="ca">→</span><span class="cn">селлеры</span><span class="ca">→</span><span class="cn">заказы</span><span class="ca">→</span><span class="cn">исполнение</span><span class="ca">→</span><span class="cn">клиринг</span><span class="ca">→</span><span class="cn">деньги</span></div>
+
+<div class="c">
+<h3>Всё, что Система делает, оформлено одинаково</h3>
+<p>Нет «функций платформы» и «возможностей кабинета» — есть сервисы, и каждый описан пятью полями: чем включается, сколько стоит, к какому предмету расчёта относится, в какой точке потока срабатывает, кому виден. Шестое поле добавлено паспортом и оказалось решающим: <b>кто платит</b> <span class="p">P-51</span>–<span class="p">P-63</span>.</p>
+<p>Набор открыт. Новый сервис входит записью в реестр и не требует правки расчёта — при условии, что его предмет попадает в известные: сделка, услуга, комиссия. Это правило и есть причина, по которой реестр должен быть таблицей, а не документом.</p>
+</div>
+
+<div class="st" style="margin-top:16px">Ядро и опции</div>
+<table class="tb">
+<thead><tr><th style="width:22%">Группа</th><th style="width:30%">Состав</th><th>Как оплачивается</th></tr></thead>
+<tbody>
+<tr><td><b>Обязательное ядро</b><br><span style="font-size:11px;color:var(--t3)">нужно всем</span></td><td>Подключение и проверка участника, витрина, корзина и заказ, расчёт с гарантией</td><td>Подключение и проверка — разово <span class="p">P-35</span>. Витрина и каталог — бесплатно. Расчёт — удержанием со сделки <span class="p">P-01</span> <span class="p">P-02</span></td></tr>
+<tr><td><b>Исполнение</b><br><span style="font-size:11px;color:var(--t3)">по спросу</span></td><td>Хранение, приёмка, упаковка, сборка, магистраль, доставка, выдача, возвраты</td><td>По тарифу оператора. Всё, кроме доставки и выдачи, — за счёт продавца <span class="p">P-53</span>–<span class="p">P-58</span></td></tr>
+<tr><td><b>Трафик</b></td><td>Общий каталог, агентный канал, продвижение, комиссия за приведённого</td><td>Каталог и агент бесплатны. Продвижение и приведённый трафик — за счёт продавца <span class="p">P-08</span> <span class="p">P-09</span> <span class="p">P-63</span></td></tr>
+<tr><td><b>Финансы</b></td><td>Страхование заказа, рассрочка и кредит</td><td>За счёт покупателя, по его выбору на чекауте <span class="p">P-61</span> <span class="p">P-62</span></td></tr>
+</tbody>
+</table>
+
+<div class="co co-a" style="margin-top:12px"><b>Порядок доведения задан спросом, а не удобством разработки.</b>Витрина нужна всем, корзина почти всем, каталог семи из десяти, доставка двум третям, страхование каждому седьмому <span class="p">P-49</span>. Этот ряд и есть очередь работ: сервис, нужный половине продавцов, делается раньше того, что нужен пятой части, независимо от того, какой интереснее.</div>
+
+<div class="co co-w"><b>Что сегодня не работает.</b>Расчёт знает четыре роли получателей вместо девяти <span class="p">P-41</span>, поэтому продвижение, приведённый трафик, страхование, кредит и удержание Системы описаны, но оплачены быть не могут. Пока это так, соответствующие сервисы нельзя обещать продавцу как действующие.</div>
+</div>
+
+<!-- ═══ 2 СЕЛЛЕРЫ ═══ -->
+<div class="sec" id="s2">
+<div class="st">2 · Селлеры: вход и настройка</div>
+<div class="chain"><span class="cn">сервисы</span><span class="ca">→</span><span class="cn on">селлеры</span><span class="ca">→</span><span class="cn">заказы</span><span class="ca">→</span><span class="cn">исполнение</span><span class="ca">→</span><span class="cn">клиринг</span><span class="ca">→</span><span class="cn">деньги</span></div>
+
+<div class="c">
+<h3>От заявки до первой продажи — двое суток</h3>
+<p>Целевой срок <span class="p">P-33</span> — не маркетинговая формулировка, а обязательство: у площадок регистрация занимает от одного до семи дней. Внутри этих двух суток: проверка участника по реестрам <span class="p">P-35</span>, договор из шаблона за секунды и подпись за полминуты, с обязательством предоставить усиленную подпись в течение месяца <span class="p">P-36</span>. Поддержка отвечает в пределах двух часов, предельно — трёх суток <span class="p">P-37</span>. Из заявок доходит до работающего магазина чуть больше половины <span class="p">P-34</span>.</p>
+</div>
+
+<div class="st" style="margin-top:16px">Что продавец настраивает</div>
+<table class="tb">
+<thead><tr><th style="width:22%">Настройка</th><th style="width:30%">Из чего выбирает</th><th>Ограничение</th></tr></thead>
+<tbody>
+<tr><td><b>Уровень вовлечения</b></td><td>От «беру только каталог и расчёт» до «отдаю весь конвейер»</td><td>Задаётся на трёх слоях — магазин, категория, товар; частное правило важнее общего</td></tr>
+<tr><td><b>Каналы показа</b></td><td>Своя витрина, общий каталог, агентный канал — по отдельности</td><td>Выключение канала не влияет на уже созданные заказы</td></tr>
+<tr><td><b>Операторы исполнения</b></td><td>По три варианта в каждой роли: фулфилмент, последняя миля, магистраль</td><td>Смена оператора меняет себестоимость заказа; действует со следующего заказа</td></tr>
+<tr><td><b>Режим расчёта</b></td><td>Через Систему, самостоятельно, по выбору в заказе</td><td>Самостоятельный расчёт лишает покупателя гарантии — поэтому доступен не во всех каналах</td></tr>
+</tbody>
+</table>
+
+<div class="co co-a" style="margin-top:12px"><b>Храповик: единственное, чего продавец не может.</b>Уровень вовлечения повышается в момент сделки, но не понижается <span class="p">P-42</span>. Покупатель, пришедший из общего каталога за гарантией расчёта, не должен лишиться её при оформлении. Во всём остальном продавец свободен: он может торговать где угодно, включая площадки, и уйти в любой момент, забрав своих покупателей.</div>
+
+<div class="co co-g"><b>Что продавец видит в деньгах.</b>При тарифах реестра и действующем сборе Организатора с заказа на 1 420 ₽ он получает 1 334,16 ₽ — удержание 6 %. При целевом удержании Системы 12,5 % получит 1 159,50 ₽ — удержание 18,3 %. Для сравнения, на площадке при удержании около 40 % <span class="p">P-07</span> с того же заказа осталось бы примерно 850 ₽. Разница — то, что можно оставить себе или отдать покупателю ценой.</div>
+</div>
+
+<!-- ═══ 3 ЗАКАЗЫ ═══ -->
+<div class="sec" id="s3">
+<div class="st">3 · Заказы: как покупатель находит и оформляет</div>
+<div class="chain"><span class="cn">сервисы</span><span class="ca">→</span><span class="cn">селлеры</span><span class="ca">→</span><span class="cn on">заказы</span><span class="ca">→</span><span class="cn">исполнение</span><span class="ca">→</span><span class="cn">клиринг</span><span class="ca">→</span><span class="cn">деньги</span></div>
+
+<div class="g3">
+<div class="ab"><h4>Витрина магазина</h4><p>Собственная поверхность продавца: его бренд, его товары, его трафик. Покупатель, пришедший сюда, закрепляется за ним.</p></div>
+<div class="ab"><h4>Общий каталог</h4><p>Все товары Системы. Покупатель, пришедший отсюда, считается сетевым — и это различие определяет все права на клиентскую базу.</p></div>
+<div class="ab"><h4>Агентный канал</h4><p>Подбор под задачу, а не под ассортимент. Агент обязан показывать и товары вне Системы, если они отвечают запросу лучше.</p></div>
+</div>
+
+<div class="c" style="margin-top:10px">
+<h3>Порядок в выдаче нельзя купить</h3>
+<p>Место определяется качеством исполнения, свежестью и спросом: рейтинг, отзывы и заказы входят логарифмически <span class="p">P-25</span>, цена в формуле не участвует вовсе, поля для оплаченного места не существует <span class="p">P-32</span>. Недавно пришедшим даётся временный подъём — ушедшим с площадок на три месяца, новым на месяц <span class="p">P-23</span> <span class="p">P-24</span>. Карточка без обновления теряет позиции <span class="p">P-27</span>, старые отзывы весят меньше <span class="p">P-26</span>.</p>
+<p>Выдача защищена порогами: концентрация заказов от одного покупателя <span class="p">P-28</span> и захват верхней десятки одним продавцом <span class="p">P-29</span> отслеживаются как аномалии.</p>
+</div>
+
+<div class="c">
+<h3>Товар публикуется сразу, проверяется следом</h3>
+<p>Продавец не ждёт модерации, чтобы начать продавать: автоматическая проверка занимает секунды <span class="p">P-31</span>, первые три товара нового продавца смотрят вручную, дальше — выборочно <span class="p">P-30</span> <span class="p">P-95</span>.</p>
+</div>
+
+<div class="st" style="margin-top:16px">Что происходит при оформлении</div>
+<table class="tb">
+<thead><tr><th style="width:26%">Шаг</th><th>Что делает Система</th></tr></thead>
+<tbody>
+<tr><td><b>Корзина</b></td><td>Резервирует остаток, чтобы товар не был продан дважды. Резерв держится ограниченное время и возвращается, если заказ не оформлен <span class="p">P-69</span></td></tr>
+<tr><td><b>Проверка порога</b></td><td>Заказ ниже минимальной суммы не создаётся: фиксированные услуги съели бы выручку продавца <span class="p">P-64</span> <span class="p">P-67</span></td></tr>
+<tr><td><b>Сумма считается сервером</b></td><td>Цены берутся из базы по каждой позиции. Клиент не может назвать свою цену — это не проверка ввода, а устройство расчёта</td></tr>
+<tr><td><b>Снимок конфигурации</b></td><td>Записывается, какие сервисы, операторы и тарифы действовали в этот момент. Дальнейшие изменения настроек на этот заказ не влияют <span class="p">P-92</span></td></tr>
+<tr><td><b>Происхождение покупателя</b></td><td>Фиксируется, откуда он пришёл: своя витрина или сеть. Основание всех прав на клиентскую базу <span class="p">P-45</span></td></tr>
+<tr><td><b>Защита от двойного заказа</b></td><td>Повторное нажатие в течение суток возвращает прежний заказ, а не создаёт второй <span class="p">P-85</span></td></tr>
+</tbody>
+</table>
+
+<div class="co co-g" style="margin-top:12px"><b>Что покупатель платит.</b>Товар, доставку и, если выбрал, страховку или рассрочку. Больше ничего: сборка, хранение и упаковка в цену отдельной строкой не попадают — их несёт продавец <span class="p">P-53</span>–<span class="p">P-58</span>. Именно поэтому обещание низкой цены сохраняется на витрине, а не только в презентации.</div>
+</div>
+
+<!-- ═══ 4 ИСПОЛНЕНИЕ ═══ -->
+<div class="sec" id="s4">
+<div class="st">4 · Исполнение: кто и что делает с товаром</div>
+<div class="chain"><span class="cn">сервисы</span><span class="ca">→</span><span class="cn">селлеры</span><span class="ca">→</span><span class="cn">заказы</span><span class="ca">→</span><span class="cn on">исполнение</span><span class="ca">→</span><span class="cn">клиринг</span><span class="ca">→</span><span class="cn">деньги</span></div>
+
+<div class="c">
+<h3>Исполнение разобрано на звенья</h3>
+<p>Не пакет «фулфилмент», а отдельные услуги: хранение <span class="p">P-14</span>, приёмка <span class="p">P-15</span>, упаковка <span class="p">P-16</span>, сборка <span class="p">P-17</span>, магистраль, доставка <span class="p">P-18</span>, выдача <span class="p">P-19</span>, обработка возврата <span class="p">P-20</span>. Продавец берёт любое сочетание: хранит сам, а собирать отдаёт; или наоборот. Это и есть гибкость, ради которой набор разбит.</p>
+<p>Каждое звено выполняет участник со своим тарифом, который он устанавливает сам. Организатор не назначает цены операторам — он обеспечивает, чтобы оператор получил деньги без переговоров с каждым продавцом отдельно.</p>
+</div>
+
+<div class="st" style="margin-top:16px">Ход исполнения и сроки</div>
+<table class="tb">
+<thead><tr><th style="width:24%">Событие</th><th style="width:14%">Срок</th><th>Что происходит дальше</th></tr></thead>
+<tbody>
+<tr><td>Заказ передан в сборку</td><td>24 часа <span class="p">P-93</span></td><td>До этого момента покупатель отменяет бесплатно <span class="p">P-70</span>; после — услуга оказана и подлежит оплате</td></tr>
+<tr><td>Передан логисту</td><td>по зоне</td><td>Доставка оплачена покупателем, её стоимость в расчёт продавца не входит</td></tr>
+<tr><td>Первая попытка вручения</td><td>—</td><td>Не получилось — вторая попытка за счёт покупателя <span class="p">P-78</span></td></tr>
+<tr><td>Доставлено</td><td>—</td><td>Начинается отсчёт до автоматического подтверждения</td></tr>
+<tr><td>Подтверждение получения</td><td>7 дней <span class="p">P-68</span></td><td>Покупатель подтвердил или срок истёк — сделка переходит в клиринг</td></tr>
+<tr><td>Право на возврат</td><td>14 дней <span class="p">P-72</span></td><td>Клиринг уже прошёл; возврат обрабатывается как отдельная операция</td></tr>
+</tbody>
+</table>
+
+<div class="co co-r" style="margin-top:12px"><b>Почему срок автоматического подтверждения критичен.</b>Без него эскроу ждёт кнопки, которую большинство покупателей не нажимает, и обещание выплаты за один-три дня становится невыполнимым. Это не деталь удобства, а условие работоспособности всей конструкции: деньги продавца не должны зависеть от внимательности покупателя.</div>
+
+<div class="co co-w"><b>Снимок, а не текущие настройки.</b>Исполнение идёт по тому набору сервисов и тарифов, что записан при создании заказа. Продавец, сменивший оператора в середине недели, не пересчитывает вчерашние заказы — и это защита обеих сторон, а не техническое удобство.</div>
+</div>
+
+<!-- ═══ 5 КЛИРИНГ ═══ -->
+<div class="sec" id="s5">
+<div class="st">5 · Клиринг: как одна сумма делится между участниками</div>
+<div class="chain"><span class="cn">сервисы</span><span class="ca">→</span><span class="cn">селлеры</span><span class="ca">→</span><span class="cn">заказы</span><span class="ca">→</span><span class="cn">исполнение</span><span class="ca">→</span><span class="cn on">клиринг</span><span class="ca">→</span><span class="cn">деньги</span></div>
+
+<div class="c">
+<h3>Расчёт не знает ролей — он читает реестр</h3>
+<p>Клиринг проходит по списку сервисов, записанных в снимке заказа: у каждого берёт тариф, применяет способ начисления, получает сумму и получателя. Продавцу достаётся остаток. Такая конструкция позволяет добавлять сервисы без правки расчёта — новая роль становится строкой справочника, а не веткой кода.</p>
+</div>
+
+<div class="st" style="margin-top:14px">Расщепление заказа на 1 420 ₽</div>
+<table class="tb">
+<thead><tr><th style="width:20%">Получатель</th><th style="width:24%">За что</th><th class="num" style="width:14%">Сумма</th><th>Из чьих денег</th></tr></thead>
+<tbody>
+<tr><td>Логист</td><td>Доставка по зоне</td><td class="num">350,00</td><td><span class="b b-buy">покупатель</span> — плата за доставку, поверх товара</td></tr>
+<tr><td>Оператор исполнения</td><td>Приёмка, хранение, сборка, упаковка</td><td class="num">83,00</td><td><span class="b b-sel">продавец</span> — из суммы товаров</td></tr>
+<tr><td>Организатор</td><td>Расчёт и реестр, 0,2 %</td><td class="num">2,84</td><td><span class="b b-sel">продавец</span> — из суммы товаров</td></tr>
+<tr><td><b>Продавец</b></td><td>Остаток</td><td class="num"><b>1 334,16</b></td><td>—</td></tr>
+<tr style="background:var(--gn2)"><td colspan="2"><b>Итого расщеплено</b></td><td class="num"><b>1 770,00</b></td><td>= товар 1 420 + доставка 350 <span class="p">P-40</span></td></tr>
+</tbody>
+</table>
+
+<div class="c" style="margin-top:10px">
+<h3>Три правила, без которых расщепление невозможно</h3>
+<ul>
+<li><b>Округление.</b> Доли в процентах дают дробные копейки на каждой сделке. Каждая доля округляется вниз до копейки, разница достаётся продавцу как остатку <span class="p">P-65</span> — поэтому сумма всегда сходится точно.</li>
+<li><b>Приоритет при нехватке.</b> Сначала операторы, затем Организатор, затем продавец. Если продавцу остаётся меньше нуля, заказ не создаётся вовсе <span class="p">P-66</span> — проверка стоит на входе, а не на выходе.</li>
+<li><b>Объяснимость.</b> Каждая доля хранит формулу и ссылку на тариф, действовавший в момент сделки. Продавец видит не «удержано 85,84», а «сборка 35 плюс упаковка 25 плюс приёмка 15 плюс хранение 8 плюс 0,2 % Организатору».</li>
+</ul>
+</div>
+
+<div class="co co-w"><b>Что меняется при переходе к целевому удержанию.</b>Если удержание Системы вырастет до 12,5 %, продавец с того же заказа получит 1 159,50 ₽ вместо 1 334,16 ₽, а удержание составит 18,3 % <span class="p">P-01</span>. Это по-прежнему вдвое лучше площадки, но потолок в 15 % <span class="p">P-04</span> формально превышен — пока не уточнено, относится он к удержанию Системы или к сумме всех услуг, включая оплату операторам.</div>
+
+<div class="co co-a"><b>Свод за период.</b>Расщепления по заказам собираются в месячный свод: сколько ушло каждой роли, сколько осталось продавцу, какова доля удержания. Свод — то, что продавец видит вместо отчёта площадки, и основание выплаты, а не отдельный документ для бухгалтерии.</div>
+</div>
+
+<!-- ═══ 6 ДЕНЬГИ ═══ -->
+<div class="sec" id="s6">
+<div class="st">6 · Деньги: путь платежа</div>
+<div class="chain"><span class="cn">сервисы</span><span class="ca">→</span><span class="cn">селлеры</span><span class="ca">→</span><span class="cn">заказы</span><span class="ca">→</span><span class="cn">исполнение</span><span class="ca">→</span><span class="cn">клиринг</span><span class="ca">→</span><span class="cn on">деньги</span></div>
+
+<div class="c">
+<h3>Один платёж, несколько получателей</h3>
+<p>Покупатель платит одну сумму — 1 772,49 ₽ за наш заказ: товар, доставка и комиссия расчётного контура <span class="p">P-60</span>. Деньги идут не продавцу, а на эскроу-счёт в расчётном банке; комиссия удерживается при внесении, в эскроу остаётся 1 770,00 ₽. Средства заморожены до подтверждённого исполнения <span class="p">P-38</span>, после чего расщепляются и уходят получателям в течение одного–трёх дней <span class="p">P-39</span>. Минимальной суммы выплаты нет: платится каждая сделка <span class="p">P-94</span>, иначе быстрая выплата превратилась бы в накопительный период площадки.</p>
+</div>
+
+<div class="st" style="margin-top:14px">Когда что-то идёт не так</div>
+<table class="tb">
+<thead><tr><th style="width:22%">Случай</th><th style="width:30%">Что происходит с деньгами</th><th>Кто несёт расход</th></tr></thead>
+<tbody>
+<tr><td><b>Отмена до сборки</b></td><td>Полный возврат покупателю, услуги не начислены</td><td>Никто <span class="p">P-70</span></td></tr>
+<tr><td><b>Частичная отмена</b></td><td>Процентные доли пересчитываются пропорционально, услуги за единицу — по факту, неделимые услуги заказа остаются</td><td>Продавец в части уже оказанного <span class="p">P-73</span></td></tr>
+<tr><td><b>Возврат по решению покупателя</b></td><td>Товар возвращается, исполненные услуги оплачены</td><td>Покупатель <span class="p">P-71</span></td></tr>
+<tr><td><b>Возврат по браку</b></td><td>Полный возврат покупателю, услуги всё равно оплачиваются операторам</td><td>Продавец <span class="p">P-71</span></td></tr>
+<tr><td><b>Вина оператора</b></td><td>Компенсация из доли ответственного, определённой по акту</td><td>Оператор <span class="p">P-71</span> <span class="p">P-77</span></td></tr>
+<tr><td><b>Спор</b></td><td>Замораживается только спорная позиция; доли операторов выплачиваются — услуга оказана</td><td>Решается за 10 дней <span class="p">P-74</span> <span class="p">P-75</span> <span class="p">P-76</span></td></tr>
+</tbody>
+</table>
+
+<div class="co co-r" style="margin-top:12px"><b>Здесь конструкция упирается в единственное, чего нельзя сделать самим.</b>Всё описанное выше работает или почти работает. Эскроу, удержание до подтверждения и расщеплённая выплата требуют расчётного банка, и до договора с ним заказ доходит до состояния ожидания и останавливается. Первый такт привлечения можно вести на быстрых платежах без полноценного удержания — но объявляя это честно как этап, а не выдавая обещание за факт.</div>
+
+<div class="co co-w"><b>И один вопрос, который меняет договоры со всеми.</b>Налоговый режим <span class="p">P-89</span>: чей это оборот, когда одна сумма расщепляется между четырьмя участниками. Решение принимается один раз и переписывает все договоры, поэтому чем позже — тем дороже.</div>
+</div>
+
+<!-- ═══ 7 ПРОВОДКА ═══ -->
+<div class="sec" id="s7">
+<div class="st">Проводка сделки: двенадцать шагов от корзины до выплаты</div>
+<p style="font-size:12.5px;color:var(--t2)">Заказ на 1 420 ₽ из трёх позиций, доставка по первой зоне, тарифы реестра. Переключатель меняет удержание Системы с действующего на целевое — видно, как это отражается на каждом шаге.</p>
+
+<div class="rig">
+  <div class="ctl">
+    <button class="btn" id="prev">← Назад</button>
+    <button class="btn pri" id="next">Дальше →</button>
+    <button class="btn" id="reset">Сначала</button>
+    <label class="tgl"><input type="checkbox" id="tgt"> целевое удержание 12,5 % вместо сбора 0,2 %</label>
+  </div>
+  <div class="prog"><i id="pg" style="width:8%"></i></div>
+  <div class="stepbox">
+    <div class="n" id="sn">шаг 1 из 12</div>
+    <div class="t" id="stt"></div>
+    <div class="d" id="sd"></div>
+    <div class="w" id="sw"></div>
+  </div>
+  <div class="led">
+    <div class="lv"><span class="k">У покупателя списано</span><span class="v" id="l1">0,00</span></div>
+    <div class="lv"><span class="k">В эскроу</span><span class="v" id="l2">0,00</span></div>
+    <div class="lv"><span class="k">Выплачено участникам</span><span class="v" id="l3">0,00</span></div>
+    <div class="lv"><span class="k">Продавцу</span><span class="v" id="l4">0,00</span></div>
+  </div>
+</div>
+
+<div class="c" style="margin-top:12px">
+<h3>Что показывает проводка</h3>
+<p>Деньги не появляются и не исчезают: сумма, списанная у покупателя, равна комиссии расчётного контура плюс тому, что ушло участникам. Продавец получает остаток, и он же принимает на себя все округления — поэтому расщепление сходится всегда, при любом числе сервисов и любых долях.</p>
+<p style="margin-top:6px">Шаги с восьмого по двенадцатый требуют расчётного банка и сегодня не выполняются: заказ останавливается на ожидании оплаты. Всё до седьмого шага работает в коде уже сейчас.</p>
+</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var tabs=document.querySelectorAll('#tabs .tab');
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.t)});
+    window.scrollTo({top:0,behavior:'smooth'});
+  })});
+  // переход по цепочке внутри вкладок
+  document.querySelectorAll('.chain .cn').forEach(function(c,i){
+    c.addEventListener('click',function(){
+      var idx=[].indexOf.call(c.parentNode.children,c)/2|0;
+      var t=document.querySelector('#tabs .tab[data-t="s'+(idx+1)+'"]');
+      if(t) t.click();
+    });
+  });
+
+  var GOODS=1420, QTY=3, DLV=350, FF=83, ACQ=GOODS*0.00175;
+  function org(){ return document.getElementById('tgt').checked ? GOODS*0.125 : GOODS*0.002; }
+  function m(x){return (Math.round(x*100)/100).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+  function steps(){
+    var O=org(), seller=GOODS-FF-O, paid=GOODS+DLV+ACQ, escrow=GOODS+DLV;
+    return [
+      {t:'Покупатель кладёт товар в корзину',d:'Три позиции на 1 420 ₽. Остаток резервируется, чтобы товар не был продан дважды; резерв держится ограниченное время.',w:'P-69 · резерв в корзине',s:{}},
+      {t:'Проверка порога заказа',d:'Сумма товаров сравнивается с минимальной: фиксированные услуги составляют 83 ₽, порог пройден с запасом. Заказ на 300 ₽ здесь был бы отклонён либо пропущен с предупреждением о непропорциональном удержании.',w:'P-64 · минимальная сумма заказа',s:{}},
+      {t:'Сумма считается сервером',d:'Цены берутся из базы по каждой позиции, доставка — по зоне из тарифа логиста. Покупатель не может подставить свою цену: расчёт устроен так, что цена из запроса просто не читается.',w:'товар 1 420,00 + доставка 350,00',s:{}},
+      {t:'Снимок конфигурации',d:'Записывается набор сервисов, выбранные операторы и действующие тарифы. Дальнейшие изменения настроек магазина на этот заказ не повлияют.',w:'P-92 · тариф на момент сделки',s:{}},
+      {t:'Фиксируется происхождение покупателя',d:'Заказ пришёл с витрины магазина — покупатель закрепляется за продавцом как свой. Пришёл бы из общего каталога — считался бы сетевым, и это определило бы права на клиентскую базу.',w:'P-45 · происхождение покупателя',s:{}},
+      {t:'Предрасчёт расщепления',d:'Ещё до оплаты известно, кому сколько причитается: логисту 350,00 из платы за доставку, оператору 83,00 и Организатору — из суммы товаров, продавцу остаток.',w:function(){return 'логист 350,00 · оператор 83,00 · Организатор '+m(O)+' · продавец '+m(seller)},s:{}},
+      {t:'Заказ создан, ожидает оплаты',d:'Всё перечисленное произошло в одной транзакции: либо заказ есть целиком со стоком, привязкой покупателя и расщеплением, либо его нет вовсе. Здесь система работает сегодня — и здесь же останавливается.',w:'дальше требуется расчётный банк',s:{}},
+      {t:'Покупатель платит',d:'Одна сумма: товар, доставка и комиссия расчётного контура. Комиссия удерживается банком при внесении, остальное уходит в эскроу.',w:function(){return 'списано '+m(paid)+' · комиссия '+m(ACQ)},s:{paid:paid,escrow:escrow}},
+      {t:'Средства заморожены',d:'Деньги не у продавца и не у Системы — они на эскроу-счёте в расчётном банке и раскрываются только по подтверждённому исполнению. Это единственное, что позволяет покупателю без опаски покупать у незнакомого мелкого магазина.',w:'P-38 · раскрытие по исполнению',s:{paid:paid,escrow:escrow}},
+      {t:'Исполнение и доставка',d:'Оператор собирает и упаковывает в течение суток, логист доставляет по зоне. Каждый шаг подтверждается событием, состояние заказа меняется.',w:'P-93 · сборка 24 часа',s:{paid:paid,escrow:escrow}},
+      {t:'Подтверждение получения',d:'Покупатель подтвердил получение — либо истёк семидневный срок автоматического подтверждения. Без этого срока сделка зависла бы навсегда, а обещание быстрой выплаты стало бы невыполнимым.',w:'P-68 · автоподтверждение 7 дней',s:{paid:paid,escrow:escrow}},
+      {t:'Расщепление и выплата',d:'Эскроу раскрывается, каждый получает своё в течение одного–трёх дней. Продавец принимает на себя округления как остаток, поэтому сумма сходится точно.',w:function(){return 'логист 350,00 · оператор 83,00 · Организатор '+m(O)+' · продавец '+m(seller)+' — итого '+m(escrow)},s:{paid:paid,escrow:0,out:escrow,seller:seller}}
+    ];
+  }
+
+  var i=0;
+  function draw(){
+    var S=steps(), s=S[i];
+    document.getElementById('sn').textContent='шаг '+(i+1)+' из '+S.length;
+    document.getElementById('stt').textContent=s.t;
+    document.getElementById('sd').textContent=s.d;
+    document.getElementById('sw').textContent=(typeof s.w==='function'?s.w():s.w);
+    document.getElementById('pg').style.width=((i+1)/S.length*100)+'%';
+    var st=s.s||{};
+    function set(id,v){var e=document.getElementById(id);e.textContent=m(v||0);e.className='v'+((v||0)===0?' zero':'')}
+    set('l1',st.paid); set('l2',st.escrow); set('l3',st.out); set('l4',st.seller);
+    document.getElementById('prev').disabled=(i===0);
+    document.getElementById('next').disabled=(i===S.length-1);
+  }
+  document.getElementById('next').onclick=function(){i=Math.min(i+1,steps().length-1);draw()};
+  document.getElementById('prev').onclick=function(){i=Math.max(i-1,0);draw()};
+  document.getElementById('reset').onclick=function(){i=0;draw()};
+  document.getElementById('tgt').onchange=draw;
+  draw();
+})();
+</script>
+</body>
+</html>

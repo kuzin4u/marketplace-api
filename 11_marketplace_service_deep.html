@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>11 · Marketplace Service · Спецификация</title>
+<style>
+:root{--bg:#fff;--bg2:#f8f9fb;--bg3:#f1f3f6;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--ac:#1e40af;--acbg:#dbeafe;--grn:#16a34a;--grnbg:#dcfce7;--orn:#d97706;--ornbg:#fef3c7;--red:#dc2626;--redbg:#fee2e2;--pur:#7c3aed;--purbg:#ede9fe;--cyn:#0891b2;--cynbg:#ecfeff;--brd:#e2e8f0;--mono:'SF Mono','JetBrains Mono',monospace;--sans:-apple-system,'Inter','Segoe UI',sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--bg2:#181b24;--bg3:#1f232e;--tx:#e4e6ec;--tx2:#9ca0b0;--tx3:#6b6f80;--ac:#5c8aff;--acbg:#1a2744;--grn:#4ade80;--grnbg:#0f2f1a;--orn:#fbbf24;--ornbg:#2a2010;--red:#f87171;--redbg:#2f1212;--pur:#c084fc;--purbg:#2a1744;--cyn:#22d3ee;--cynbg:#0a2a2e;--brd:#2a2e38}}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--sans);background:var(--bg);color:var(--tx);font-size:13px;line-height:1.6}
+.w{max-width:1100px;margin:0 auto;padding:24px 20px}.hdr{margin-bottom:24px;padding-bottom:18px;border-bottom:1.5px solid var(--brd)}.hdr h1{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px}.hdr .sub{color:var(--tx2);font-size:13px}
+.nav{display:flex;gap:4px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:10;margin-bottom:14px;border-bottom:1px solid var(--brd)}.nb{padding:6px 12px;border-radius:6px;border:1.5px solid var(--brd);cursor:pointer;font-size:12px;font-weight:500;background:transparent;color:var(--tx2);transition:.15s}.nb:hover{border-color:#999}.nb.on{border-color:var(--ac);color:var(--ac);background:var(--acbg)}
+.pn{display:none}.pn.vis{display:block}.cd{border:1px solid var(--brd);border-radius:12px;padding:18px;margin-bottom:12px}.cd h3{font-size:15px;font-weight:600;margin-bottom:8px}.cd h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--tx2)}.cd p{font-size:13px;color:var(--tx2);line-height:1.65;margin-bottom:6px}
+.dm{font-family:var(--mono);font-size:11px;color:var(--tx2);background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:14px 16px;margin-top:8px;line-height:1.8;white-space:pre;overflow-x:auto}.dm b{color:var(--ac);font-weight:600}.dm em{color:var(--grn);font-style:normal;font-weight:600}.dm i{color:var(--orn);font-style:normal;font-weight:600}.dm u{color:var(--pur);text-decoration:none;font-weight:600}.dm s{color:var(--red);text-decoration:none;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}th{padding:7px 8px;text-align:left;font-weight:600;font-size:10px;color:var(--tx3);border-bottom:1.5px solid var(--brd);text-transform:uppercase;letter-spacing:.3px}td{padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--tx2);vertical-align:top}
+.note{font-size:12px;padding:10px 14px;border-radius:8px;margin-top:10px;line-height:1.6}.note.info{background:var(--acbg);color:var(--ac)}.note.warn{background:var(--ornbg);color:var(--orn)}.note.ok{background:var(--grnbg);color:var(--grn)}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>11 · Marketplace Service</h1>
+<p style="font-size:12px;margin-top:6px">Как этот модуль реализован в бою: <a href="9-ptk-marketplace-arch-part2.html">Архитектура ПТК маркетплейса, Часть 2</a> — 26 маршрутов, модель доступа, 8 расхождений с проектом.</p>
+  <div class="sub">Node.js · Магазины, SKU, витрина, каталог, маршрутизация, ранжирование · ст. 9, 10, 11</div>
+</div>
+
+<div class="nav" id="nav"></div>
+<div id="ct"></div>
+
+<script>
+var T=[
+  {id:'role',    l:'Роль в ПТК'},
+  {id:'shops',   l:'Магазины (ст. 9.2)'},
+  {id:'sku',     l:'SKU (ст. 9.4)'},
+  {id:'catalog', l:'Каталог Системы (ст. 9.3)'},
+  {id:'ranking', l:'Ранжирование (ст. 11.3)'},
+  {id:'source',  l:'source_type (ст. 10)'},
+  {id:'routing', l:'Маршрутизация'},
+  {id:'moder',   l:'Модерация'},
+  {id:'api',     l:'API (REST)'},
+  {id:'data',    l:'Модель данных'},
+  {id:'impl',    l:'Реализация по спринтам'}
+];
+var cur='role';
+function R(){var h='';T.forEach(function(t){h+='<button class="nb'+(t.id===cur?' on':'')+'" data-t="'+t.id+'">'+t.l+'</button>';});document.getElementById('nav').innerHTML=h;document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){cur=this.getAttribute('data-t');R();}});document.querySelectorAll('.pn').forEach(function(p){p.classList.toggle('vis',p.id==='p-'+cur);});}
+document.addEventListener('DOMContentLoaded',R);
+</script>
+
+<!-- ==================== РОЛЬ ==================== -->
+<div class="pn vis" id="p-role">
+<div class="cd">
+  <h3>Роль в архитектуре ПТК</h3>
+  <p>Marketplace Service — «лицо» Системы. Всё что видит покупатель (витрина, каталог, поиск) и селлер (магазин, SKU) проходит через этот сервис. Самый большой по объёму кода и самый нагруженный по трафику.</p>
+
+  <div class="dm"><b>МЕСТО В АРХИТЕКТУРЕ</b>
+
+  Покупатель                 Селлер (ЛК)
+       │                        │
+       │ HTTP                   │ HTTP
+       ▼                        ▼
+  ┌─────────────────────────────────────────────┐
+  │         <b>MARKETPLACE SERVICE (11)</b>            │
+  │                                             │
+  │  Shops:     магазины (CRUD, config, slug)    │
+  │  SKU:       товары (CRUD, модерация, CDC)    │
+  │  Catalog:   каталог Системы (поиск, фильтры)│
+  │  Ranking:   ранжирование (формула ст. 11.3) │
+  │  Routing:   маршрутизация (source_type)      │
+  │  Cart:      корзина (атомарный сток)         │
+  │  Storefront:рендеринг витрины (шаблон)       │
+  └──────┬────────────┬─────────────────────────┘
+         │            │
+    ┌────▼────┐  ┌────▼────┐
+    │Registry │  │  Deal   │
+    │(10)     │  │Engine(01)│
+    │         │  │         │
+    │seller   │  │создание │
+    │config   │  │Deal     │
+    └─────────┘  └─────────┘
+
+<b>Язык:</b> Node.js (Express / Fastify)
+<b>Поиск:</b> PostgreSQL tsvector → Elasticsearch (Спринт 3+)
+<b>CDC:</b> PostgreSQL LISTEN/NOTIFY → Debezium (Спринт 3+)
+<b>БД:</b> PostgreSQL (shops, skus, categories, customers, orders)
+<b>Статьи Правил:</b> ст. 9 (витрина), ст. 10 (клиентская база), ст. 11 (маршрутизация и ранжирование)</div>
+</div>
+
+<div class="cd">
+  <h3>Подмодули Marketplace Service</h3>
+  <table>
+    <thead><tr><th>Подмодуль</th><th>Ответственность</th><th>Ключевые endpoints</th></tr></thead>
+    <tbody>
+      <tr><td><b>ShopManager</b></td><td>CRUD магазинов, конфиг бренда, каналы, slug-routing</td><td>GET/POST /shops, GET /s/{slug}, GET /config/{slug}</td></tr>
+      <tr><td><b>SKUManager</b></td><td>CRUD товаров, модерация, видимость (shop/catalog), stock</td><td>GET/POST/PATCH /seller/{id}/products, GET /sku/{id}</td></tr>
+      <tr><td><b>CatalogEngine</b></td><td>Каталог Системы, поиск, фильтры, ранжирование</td><td>GET /catalog/search, GET /catalog/shops, GET /catalog/categories</td></tr>
+      <tr><td><b>CartService</b></td><td>Корзина, атомарное резервирование, source_type</td><td>POST /cart/add, GET /cart</td></tr>
+      <tr><td><b>StorefrontRenderer</b></td><td>Рендеринг HTML витрины из конфига</td><td>GET /s/{slug} (SSR), Mini App</td></tr>
+      <tr><td><b>CustomerTracker</b></td><td>customer_bindings, source_type фиксация</td><td>Автоматически при создании заказа</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== МАГАЗИНЫ ==================== -->
+<div class="pn" id="p-shops">
+<div class="cd">
+  <h3>Магазины: нижний уровень витрины (ст. 9.2)</h3>
+  <div class="dm"><b>ЖИЗНЕННЫЙ ЦИКЛ МАГАЗИНА</b>
+
+  /join → Registry (participant) → Marketplace (shop)
+
+  SETUP ──→ ACTIVE ──→ SUSPENDED ──→ CLOSED
+    │                       │
+    │  wizard завершён      │  нарушение SLA
+    │  + ≥1 SKU ACTIVE      │  или по запросу
+    │                       │
+    │                  REACTIVATED (после исправления)
+
+  <b>Создание магазина (ShopManager.createShop):</b>
+
+  input:
+    seller_id       ← из Registry (после /join)
+    slug            ← транслитерация названия (smart defaults)
+    brand_name      ← из ФНС или ввод
+    brand_accent    ← по категории
+    brand_description ← AI-генерация или ввод
+    channels        ← {telegram:true, website:true, ...}
+
+  автоматически:
+    shop_id = "SHOP-" + slug
+    subdomain = нсвр.рф/shop/{slug}
+    TG bot = @{slug}_shop_bot (из пула, задача 1.4)
+    config = JSON (для рендеринга витрины)
+    ES index update (CDC, когда подключён)
+
+  output:
+    shop object + bot_url + subdomain_url</div>
+</div>
+</div>
+
+<!-- ==================== SKU ==================== -->
+<div class="pn" id="p-sku">
+<div class="cd">
+  <h3>SKU: атом обеих витрин (ст. 9.4)</h3>
+  <div class="dm"><b>SKU LIFECYCLE</b>
+
+  DRAFT ──→ MODERATION ──→ ACTIVE ──→ OUT_OF_STOCK
+    │            │              │           │
+    │        REJECTED       ARCHIVED     stock > 0
+    │            │              │           │
+    │        ←──edit──→     ←──restore  ACTIVE ←──┘
+    │                           │
+    │                       BLOCKED (модератор)
+
+  <b>Инвариант И4 (ст. 9.4):</b>
+  visible_catalog = true → visible_shop = true (обязательно)
+  visible_shop = true, visible_catalog = false (допустимо)
+
+  <b>Два уровня видимости:</b>
+  ┌───────────────────────────────────────────────────┐
+  │ visible_shop   │ visible_catalog │ Где виден      │
+  ├────────────────┼─────────────────┼────────────────┤
+  │ true           │ true            │ магазин + каталог │
+  │ true           │ false           │ только магазин   │
+  │ false          │ false           │ нигде (draft)    │
+  │ false          │ true            │ ✗ ЗАПРЕЩЕНО (И4) │
+  └────────────────┴─────────────────┴────────────────┘
+
+  <b>Единый сток (ст. 9.4):</b>
+  stock = 10, stock_reserved = 3 → available = 7
+  Резервирование: SELECT FOR UPDATE (атомарное)
+  Один сток для магазина и каталога — нет рассинхрона</div>
+</div>
+</div>
+
+<!-- ==================== КАТАЛОГ ==================== -->
+<div class="pn" id="p-catalog">
+<div class="cd">
+  <h3>Каталог Системы: верхний уровень витрины (ст. 9.3)</h3>
+  <div class="dm"><b>КАТАЛОГ = ВСЕ SKU ВСЕХ СЕЛЛЕРОВ</b>
+
+  Условия попадания:
+    sku.status = ACTIVE
+    sku.visible_catalog = true
+    sku.stock > 0
+    shop.status = ACTIVE
+
+  <b>Поиск (CatalogEngine):</b>
+
+  Спринт 0–2: PostgreSQL tsvector
+    to_tsvector('russian', title || description)
+    @@ plainto_tsquery('russian', 'хлеб на закваске')
+    + индекс GIN
+
+  Спринт 3+: Elasticsearch
+    CDC (Debezium) → Kafka → ES consumer → ES index
+    Задержка: PG insert → ES available < 5 сек
+    ru_morph analyzer для русской морфологии
+    function_score для ранжирования
+
+  <b>Фильтры:</b>
+    q          — полнотекстовый поиск
+    cat        — категория (ID)
+    price_min  — мин. цена
+    price_max  — макс. цена
+    rating_min — мин. рейтинг
+    zone       — зона доставки
+    seller     — конкретный селлер (для каталога магазина)
+    sort       — cheap|expensive|rating|new|relevance(default)
+
+  <b>Пагинация:</b>
+    page, limit (default 20, max 100)
+    Ответ: { products, total, page, pages }</div>
+</div>
+</div>
+
+<!-- ==================== РАНЖИРОВАНИЕ ==================== -->
+<div class="pn" id="p-ranking">
+<div class="cd">
+  <h3>Ранжирование SKU (ст. 11.3)</h3>
+  <div class="dm"><b>ФОРМУЛА РАНЖИРОВАНИЯ</b>
+
+  final_score = relevance × quality × commercial × freshness × geo × policy
+
+  Где:
+  <em>relevance</em>  = text match score (tsvector / ES BM25)
+               Вес в запросе: title ×3, description ×1, tags ×2
+
+  <em>quality</em>    = f(rating, reviews_count)
+               = (1 + 0.15 × ln(1 + rating)) × (1 + 0.08 × ln(1 + reviews))
+
+  <em>commercial</em> = f(orders_count, conversion)
+               = 1 + 0.10 × ln(1 + orders_count)
+
+  <em>freshness</em>  = f(created_at)
+               = 1 + 0.05 × max(0, 30 - days_since_created) / 30
+
+  <em>geo</em>        = f(buyer_zone, seller_zones)
+               = 1.2 если зона совпадает, 1.0 иначе
+
+  <em>policy</em>     = priority_boost (ст. 11.3)
+               = 1.3 если seller_group=2 И joined < 90 дней
+               = 1.1 если seller_group=3 И joined < 30 дней
+               = 1.0 иначе
+
+  <b>РЕАЛИЗАЦИЯ:</b>
+
+  Спринт 0–2 (PostgreSQL):
+    ORDER BY (
+      (1 + 0.15 * ln(1 + rating)) *
+      (1 + 0.08 * ln(1 + reviews_count)) *
+      (1 + 0.10 * ln(1 + orders_count)) *
+      CASE WHEN seller_group=2 AND joined > now()-'90d' THEN 1.3
+           WHEN seller_group=3 AND joined > now()-'30d' THEN 1.1
+           ELSE 1.0 END
+    ) DESC
+
+  Спринт 3+ (Elasticsearch):
+    function_score {
+      query: multi_match(q, [title^3, description, tags^2])
+      functions: [
+        {script_score: quality_formula},
+        {script_score: commercial_formula},
+        {gauss: {created_at: {origin:"now", scale:"30d"}}},
+        {script_score: policy_boost}
+      ]
+      score_mode: "multiply"
+    }
+
+  <b>Антиманипуляция (ст. 11.6):</b>
+    • reviews: UNIQUE(order_id, sku_id) — один отзыв на заказ
+    • orders: только COMPLETED считаются
+    • Ручное продвижение: ЗАПРЕЩЕНО
+    • Post-review: 5% случайная выборка</div>
+</div>
+</div>
+
+<!-- ==================== SOURCE TYPE ==================== -->
+<div class="pn" id="p-source">
+<div class="cd">
+  <h3>source_type: MIGRATED vs NETWORK (ст. 10)</h3>
+  <div class="dm"><b>ОПРЕДЕЛЕНИЕ SOURCE_TYPE</b>
+
+  entry_point          → source_type
+  ─────────────────────────────────────
+  SHOP (/s/{slug})     → MIGRATED    (клиент селлера)
+  CHANNEL (TG-бот)     → MIGRATED    (клиент селлера)
+  CATALOG (/catalog)   → NETWORK     (общее достояние)
+  REFERRAL_SYSTEM      → NETWORK     (системная реферальная)
+  REFERRAL_SELLER      → MIGRATED    (реферальная селлера)
+
+  <b>ФИКСАЦИЯ (ст. 10.5):</b>
+  Первый заказ покупателя у этого селлера фиксирует source_type.
+  Все последующие заказы — тот же source_type (не пересчитывается).
+
+  customer_bindings:
+    { customer_id, seller_id, source_type, first_order_at }
+    UNIQUE(customer_id, seller_id)
+
+  ON CONFLICT: если binding уже есть → orders_count++, total_gmv+=
+  Если нет → INSERT с source_type из entry_point
+
+  <b>ЧТО ЭТО ДАЁТ СЕЛЛЕРУ:</b>
+  ЛК → Покупатели → «20 migrated (ваша база) / 3 network (из каталога)»
+
+  Защита (ст. 10.2): мигрировавшая база НЕ перераспределяется
+  через каталог Системы. Покупатель привязан к первому source_type.
+
+  <b>КОРРЕКТИВ К4:</b> priority_boost гр.2 действует только на
+  NETWORK-приток. Не на мигрировавшую базу гр.1.</div>
+</div>
+</div>
+
+<!-- ==================== МАРШРУТИЗАЦИЯ ==================== -->
+<div class="pn" id="p-routing">
+<div class="cd">
+  <h3>Маршрутизация (URL routing + domain)</h3>
+  <div class="dm"><b>URL ROUTING</b>
+
+  <b>Магазин селлера:</b>
+  /s/{slug}                  → витрина магазина
+  /s/{slug}/product/{sku_id} → карточка товара
+  /s/{slug}/cart              → корзина (контекст магазина)
+
+  <b>Каталог Системы:</b>
+  /catalog                    → все товары, поиск, фильтры
+  /catalog/shops              → все магазины
+  /catalog/categories         → дерево категорий
+
+  <b>Custom domain:</b>
+  massamadre.ru → Host header → shops.custom_domain lookup → slug
+
+  <b>Обратная совместимость:</b>
+  /catalog.html → 301 → /s/massamadre
+  /card.html?sku=X → 301 → /s/massamadre/product/X
+
+  <b>Middleware resolveSeller:</b>
+  1. Если URL = /s/{slug} → sellerSlug = slug
+  2. Если Host = custom domain → lookup → sellerSlug
+  3. Если ни то ни другое → каталог Системы</div>
+</div>
+</div>
+
+<!-- ==================== МОДЕРАЦИЯ ==================== -->
+<div class="pn" id="p-moder">
+<div class="cd">
+  <h3>Модерация SKU (ст. 13.1.4)</h3>
+  <div class="dm"><b>PUBLISH-FIRST МОДЕРАЦИЯ</b>
+
+  SKU создан → ML-проверка (2–5 сек)
+
+  confidence ≥ 0.85:
+    moderation_status = AUTO_APPROVED
+    visible_shop = true
+    <em>visible_catalog = true</em>      ← сразу в каталоге
+    status = ACTIVE
+
+  confidence 0.50–0.85:
+    moderation_status = PENDING
+    <em>visible_shop = true</em>          ← виден в магазине
+    visible_catalog = false      ← не в каталоге до проверки
+    status = ACTIVE
+    → очередь на ручную модерацию (SLA 4ч)
+
+  confidence < 0.50:
+    moderation_status = REJECTED
+    visible_shop = false
+    visible_catalog = false
+    status = REJECTED
+    → уведомление селлеру с причиной
+
+  <b>ML-модель:</b>
+  Спринт 0–2: Claude Haiku Vision (API call)
+    → проверка фото (запрещённый контент)
+    → проверка текста (spam, запрещёнка)
+    → confidence score
+
+  Спринт 3+: собственная модель + Claude fallback
+
+  <b>Защита:</b>
+  • Первые 3 SKU нового селлера: каталог после ручной проверки
+  • Post-publication review: 5% случайная выборка
+  • Жалоба покупателя → мгновенное скрытие → ручная проверка</div>
+</div>
+</div>
+
+<!-- ==================== API ==================== -->
+<div class="pn" id="p-api">
+<div class="cd">
+  <h3>API (REST)</h3>
+  <table>
+    <thead><tr><th>Группа</th><th>Метод</th><th>Endpoint</th><th>Описание</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="4"><b>Магазин</b></td><td>GET</td><td>/api/v1/shop/{slug}</td><td>Магазин по slug + статистика</td></tr>
+      <tr><td>GET</td><td>/api/v1/shop/{slug}/products</td><td>Товары магазина (?cat, ?sort, ?page)</td></tr>
+      <tr><td>POST</td><td>/api/v1/shops</td><td>Создать магазин (из wizard)</td></tr>
+      <tr><td>GET</td><td>/api/v1/config/{slug}</td><td>Конфиг для рендеринга витрины</td></tr>
+      <tr><td rowspan="3"><b>SKU</b></td><td>GET</td><td>/api/v1/sku/{id}</td><td>Карточка SKU (source of truth)</td></tr>
+      <tr><td>POST</td><td>/api/v1/seller/{id}/products</td><td>Создать SKU</td></tr>
+      <tr><td>PATCH</td><td>/api/v1/seller/{id}/products/{sku_id}</td><td>Обновить SKU</td></tr>
+      <tr><td rowspan="3"><b>Каталог</b></td><td>GET</td><td>/api/v1/catalog/search</td><td>Поиск + ранжирование (?q, ?cat, ?sort)</td></tr>
+      <tr><td>GET</td><td>/api/v1/catalog/shops</td><td>Каталог магазинов</td></tr>
+      <tr><td>GET</td><td>/api/v1/catalog/categories</td><td>Дерево категорий</td></tr>
+      <tr><td rowspan="2"><b>Корзина</b></td><td>POST</td><td>/api/v1/cart/add</td><td>Добавить (SELECT FOR UPDATE)</td></tr>
+      <tr><td>POST</td><td>/api/v1/orders</td><td>Оформить заказ + авто-клиринг</td></tr>
+      <tr><td rowspan="2"><b>Витрина</b></td><td>GET</td><td>/s/{slug}</td><td>Витрина магазина (JSON / SSR)</td></tr>
+      <tr><td>GET</td><td>/s/{slug}/product/{sku_id}</td><td>Карточка в контексте магазина</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== ДАННЫЕ ==================== -->
+<div class="pn" id="p-data">
+<div class="cd">
+  <h3>Модель данных</h3>
+  <div class="dm"><b>ТАБЛИЦЫ MARKETPLACE SERVICE</b>
+
+  <em>Все уже в schema 01_schema.sql:</em>
+  • shops (ст. 9.2) — slug, brand, channels, custom_domain
+  • skus (ст. 9.4) — title, price, stock, visible_shop/catalog, moderation
+  • categories (ст. 4.6) — дерево, slug, icon
+  • customers (ст. 10) — phone, name, email
+  • customer_bindings (ст. 10.4) — source_type MIGRATED/NETWORK
+  • orders (ст. 6) — entry_point, source_type, total_goods/delivery
+  • order_items — sku_id, qty, price_at_order
+  • reviews (ст. 4.8) — rating, text, UNIQUE(order_id, sku_id)
+
+  <i>Новые (Спринт 3+, при подключении Elasticsearch):</i>
+  • es_sync_log — отслеживание CDC → ES синхронизации
+    ├── entity_type TEXT (SKU, SHOP)
+    ├── entity_id TEXT
+    ├── pg_updated_at TIMESTAMPTZ
+    ├── es_indexed_at TIMESTAMPTZ
+    └── lag_ms INTEGER
+
+  • moderation_queue — очередь ручной модерации
+    ├── sku_id TEXT FK
+    ├── ml_confidence NUMERIC
+    ├── ml_result JSONB
+    ├── moderator_id TEXT
+    ├── decision TEXT (APPROVED, REJECTED)
+    ├── reason TEXT
+    └── decided_at TIMESTAMPTZ</div>
+</div>
+</div>
+
+<!-- ==================== РЕАЛИЗАЦИЯ ==================== -->
+<div class="pn" id="p-impl">
+<div class="cd">
+  <h3>Реализация по спринтам</h3>
+  <table>
+    <thead><tr><th>Спринт</th><th>Что реализовано</th><th>Где</th><th>Что упрощено</th></tr></thead>
+    <tbody>
+      <tr><td><b>0</b></td><td>shops, skus, categories, customers, orders — таблицы</td><td>01_schema.sql</td><td>Полные (без es_sync_log, moderation_queue)</td></tr>
+      <tr><td><b>0</b></td><td>GET /shop/{slug}, /products, /sku/{id}, /catalog/search, /cart/add, /orders</td><td>server.js</td><td>Всё в одном файле (не отдельный сервис). Поиск через tsvector (не ES). Нет CDC</td></tr>
+      <tr><td><b>0</b></td><td>Routing: /s/{slug}, custom_domain, обратная совместимость</td><td>server.js</td><td>Нет SSR. JSON-ответ. Фронтенд отдельно</td></tr>
+      <tr><td><b>0</b></td><td>Seller config endpoint</td><td>server.js GET /config/{slug}</td><td>—</td></tr>
+      <tr><td><b>1</b></td><td>Wizard создания магазина</td><td>wizard-create-shop.html</td><td>Фронтенд-прототип. API call — симуляция</td></tr>
+      <tr><td><b>1</b></td><td>SKU CRUD: Quick Add, Manual, Import</td><td>sku-crud.html</td><td>AI — симуляция. Импорт Ozon — симуляция</td></tr>
+      <tr><td><b>1</b></td><td>Корзина + checkout</td><td>cart-checkout.html</td><td>source_type — статический. Stock — клиентский</td></tr>
+      <tr><td><b>1</b></td><td>ЛК селлера: товары, заказы, покупатели, аналитика</td><td>seller-cabinet.html</td><td>Данные — статические. API — не подключён</td></tr>
+      <tr><td><b>2</b></td><td>Форма /join (создание participant + shop)</td><td>join-form.html</td><td>ФНС — симуляция (4 тестовых ИНН)</td></tr>
+      <tr><td><b>2</b></td><td>Каталог Системы (/catalog) — реальный, из БД</td><td>server.js + frontend</td><td>tsvector (не ES). Нет CDC — прямой запрос к PG</td></tr>
+      <tr><td><b>2</b></td><td>source_type разметка в orders + customer_bindings</td><td>server.js POST /orders</td><td>—</td></tr>
+      <tr><td><b>2</b></td><td>Ранжирование (SQL формула)</td><td>server.js GET /catalog/search</td><td>Формула в SQL ORDER BY. Без geo (один регион)</td></tr>
+      <tr><td><b>3</b></td><td>Publish-first модерация (Claude Haiku Vision)</td><td>server.js + Claude API</td><td>Без собственной ML-модели</td></tr>
+      <tr><td><b>3+</b></td><td>Отдельный Node.js сервис</td><td>marketplace-service/ (свой repo)</td><td>Полное: ES, CDC, SSR, модерация, ML</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note info"><b>Ключевое:</b> server.js из Спринта 0 содержит ~70% функциональности Marketplace Service. Это не недоделка — это сознательная стратегия: сначала работающий монолит, потом извлечение в сервис. Формула ранжирования, source_type логика, атомарный сток — всё работает одинаково и в монолите, и в отдельном сервисе.</div>
+</div>
+</div>
+
+</div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Интегрировано без сокращений в своды слоёв: <a href="24-servisnyj-sloj-opisanie.html" style="font-weight:600;">сервисный слой</a> (+<a href="25-servisnyj-sloj-parametry.html">параметры</a>) и <a href="26-operacionnyj-sloj-opisanie.html" style="font-weight:600;">операционный слой</a> (+<a href="27-operacionnyj-sloj-parametry.html">параметры</a>).</div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Этот документ сведён с пятью другими в <a href="26-operacii-opisanie.html" style="font-weight:600;">интегрированное описание операционного слоя</a>; выведенные из него величины — в <a href="27-operacii-parametry.html" style="font-weight:600;">наборе параметров</a>.</div>
+</body>
+</html>

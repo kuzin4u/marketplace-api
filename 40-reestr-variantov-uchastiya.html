@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Полный реестр вариантов участия</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1260px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--gn);margin-bottom:16px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--gn);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:16px;overflow-x:auto}
+.tab{padding:7px 13px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;white-space:nowrap;background:none;font-family:inherit}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--gn);border-bottom-color:var(--gn)}
+.tab:focus-visible{outline:2px solid var(--gn);outline-offset:-2px}
+.sec{display:none}.sec.on{display:block}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}.c ul{padding-left:16px;margin:4px 0}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.co-p{background:var(--pr2);border-left:3px solid var(--pr);color:#2e2670}
+.st{font-size:15px;font-weight:600;margin:16px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:10.5px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.tb .num{text-align:right;font-family:ui-monospace,monospace}
+.mono{font-family:ui-monospace,monospace;font-size:11px}
+.b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:3px;white-space:nowrap}
+.b-ok{background:var(--gn2);color:var(--gn)}.b-part{background:var(--wr2);color:var(--wr)}
+.b-no{background:var(--rd2);color:var(--rd)}.b-w1{background:var(--ac2);color:var(--ac)}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+@media(max-width:880px){.g2,.g3{grid-template-columns:1fr}}
+.ty{border:1px solid var(--bd);border-left:4px solid var(--gn);border-radius:6px;background:var(--card);padding:12px 15px;margin-bottom:9px}
+.ty h4{font-size:13px;font-weight:700;margin-bottom:3px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ty .n{font-family:ui-monospace,monospace;font-size:10px;color:#fff;background:var(--t2);padding:1px 6px;border-radius:3px}
+.ty p{font-size:12.5px;color:var(--t2);margin-bottom:4px}
+.ty dl{display:grid;grid-template-columns:130px 1fr;gap:3px 10px;font-size:12px;color:var(--t2);margin-top:6px}
+.ty dt{color:var(--t3);font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;padding-top:1px}
+.ty.a{border-left-color:var(--ac)}.ty.b{border-left-color:var(--co)}
+.ty.c{border-left-color:var(--pr)}.ty.d{border-left-color:var(--wr)}
+/* подборщик */
+.rig{background:#1c1c1a;border-radius:8px;padding:16px;color:#e8e6df;margin-top:10px}
+.rig h4{font-size:13px;color:#fff}
+.rig .sub{font-size:11px;color:#9c998e;margin-bottom:12px}
+.q{margin-bottom:11px}
+.q .t{font-size:12.5px;color:#e8e6df;margin-bottom:5px}
+.opts{display:flex;gap:6px;flex-wrap:wrap}
+.qb{background:#2c2c29;color:#c9c6ba;border:1px solid #45443f;border-radius:20px;padding:5px 13px;font-size:11.5px;font-family:inherit;cursor:pointer}
+.qb:hover{background:#3a3a36}.qb.on{background:#0d6650;border-color:#0d6650;color:#fff;font-weight:600}
+.res{margin-top:12px;padding:13px 15px;border-radius:6px;background:#0d3d30;color:#a8ecd2;font-size:12.5px;line-height:1.55}
+.res.none{background:#262623;color:#9c998e}
+.res b{display:block;font-size:14px;color:#fff;margin-bottom:5px}
+.res .kv{display:grid;grid-template-columns:150px 1fr;gap:3px 10px;margin-top:8px;font-size:12px}
+.res .kv span:first-child{color:#8fbdf0}
+a{color:#2a6cb6}
+@media print{.tabs{display:none}.sec{display:block!important;page-break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Полный реестр вариантов участия в Системе</h1>
+  <p>Шесть типов участия, шесть осей конфигурации продавца, восемь готовых вариантов, условия входа и пребывания для каждого, состояние готовности. Подборщик внизу собирает вариант по четырём ответам.</p>
+  <div class="meta">23 августа 2026 · Шкала уровней приведена к возрастающей: большее число — более глубокое участие · Тариф расчётов 0,5 %, совокупное удержание 12,5 % по протоколу</div>
+<div style="max-width:1260px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Основания: <a href="39-protokol-i-pravki-v-pravila.html" style="font-weight:600;">протокол и правки Правил</a>, <a href="participation-conditions-by-type.html" style="font-weight:600;">условия участия по типам</a>, <a href="service-tiers.html" style="font-weight:600;">линейка уровней</a>, <a href="28-servis-edinyi.html" style="font-weight:600;">сервисный слой</a>, <a href="32-sellery-edinyi.html" style="font-weight:600;">слой селлеров</a>, <a href="36-sistemnyi-sloy-opisanie.html" style="font-weight:600;">системный слой</a>, <a href="7-infrastructure-participants-synced.html" style="font-weight:600;">инфраструктурные участники</a>, <a href="pravila-agentic-articles-14-21.html" style="font-weight:600;">статьи 14–21</a>, <a href="external-shop-integration.html" style="font-weight:600;">внешний магазин</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="co co-r"><b>Принято решение: расчёт только через Систему.</b>Ось расчёта снята, пространство вариантов сократилось до 48 сочетаний. Действующий реестр — <a href="42-reestr-uchastiya-raschet-cherez-sistemu.html">участие при расчёте через Систему</a>; варианты «только трафик», «расчёт свой» и «гибрид по заказу» из реестра исключены.</div>
+<div class="co co-a"><b>Полный перебор сочетаний.</b>Все 144 положения пяти осей с допустимостью, предметом клиринга, удержанием и готовностью — <a href="41-matrica-sochetanii-uchastiya.html">матрица сочетаний участия</a>. Отсеивается больше половины, и причины структурны.</div>
+<div class="co co-g"><b>Шкала уровней принята: возрастающая, диапазон 2–7.</b>Прежние две отменены. Определение, разграничение конфигурации и сделки, порядок перевода записей и норма — <a href="44-shkala-urovnei-reshenie.html">решение по шкале уровней</a>.</div>
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab">Шесть типов участия</button>
+  <button class="tab" data-t="s2" role="tab">Оси конфигурации</button>
+  <button class="tab" data-t="s3" role="tab">Варианты продавца</button>
+  <button class="tab" data-t="s4" role="tab">Условия входа и пребывания</button>
+  <button class="tab" data-t="s5" role="tab">Готовность</button>
+  <button class="tab" data-t="s6" role="tab">Подборщик</button>
+</div>
+
+<!-- 1 -->
+<div class="sec on" id="s1">
+<div class="st">Шесть типов участия</div>
+<div class="co co-a"><b>Тип участия — не то же, что роль доступа.</b>Тип определяет основание нахождения в реестре и объём прав по Правилам; роль доступа — технические полномочия в комплексе. Типов шесть, ролей доступа пятнадцать. Разведение закреплено протоколом.</div>
+
+<div class="ty"><h4><span class="n">тип 0</span>Организатор</h4>
+<p>Не торгует и не владеет товаром. Держит реестр, расчётный контур, правила и гарантию расчёта. Ведёт фонд поддержки сети как казначей, а не как получатель.</p>
+<dl><dt>Что несёт</dt><dd>Капитальные вложения в платформу, реестр, расчётный портал на старте</dd>
+<dt>Что получает</dt><dd>Тариф расчётов 0,5 % и долю в финансовых потоках; ничего сверх этого</dd>
+<dt>Ограничение</dt><dd>Веса выдачи и ставки меняются изменением Правил, а не его решением</dd></dl></div>
+
+<div class="ty a"><h4><span class="n">тип 1</span>Продавец</h4>
+<p>Торговые операции. Сохраняет бренд, клиентскую базу и право торговать где угодно, включая площадки. Единственный тип с настраиваемой глубиной участия — шесть уровней и шесть профилей.</p>
+<dl><dt>Вход</dt><dd>Бесплатно: регистрация, программное обеспечение магазина, витрина, импорт. Депозита нет</dd>
+<dt>Во времени</dt><dd>Удержание 12,5 % при расчёте через Систему; услуги операторов по тарифу реестра</dd>
+<dt>Свобода</dt><dd>Может уйти в любой момент, забрав своих покупателей</dd></dl></div>
+
+<div class="ty b"><h4><span class="n">тип 2</span>Участник инфраструктуры</h4>
+<p>Исполнение, склад, последняя миля, магистраль. Публикует свои тарифы сам — Организатор цен не назначает. Пять подтипов, из которых один оператор часто закрывает два-три.</p>
+<dl><dt>Вход</dt><dd>Бесплатно: приёмка в реестр, публикация тарифов; разовая техническая интеграция с клирингом</dd>
+<dt>Во времени</dt><dd>Комиссии с оборота нет — налог в один процент рассмотрен и отклонён. Целевой взнос по потреблению</dd>
+<dt>Обязательство</dt><dd>Соблюдение сроков; нарушение снижает рейтинг и меняет маршрутизацию заказов</dd></dl></div>
+
+<div class="ty c"><h4><span class="n">тип 3</span>Расчётный банк</h4>
+<p>Эскроу-счета, клиринг, кредитование. Критический путь: готового универсального эскроу-интерфейса на рынке нет.</p>
+<dl><dt>Вход</dt><dd>Рамочное соглашение об обслуживании, разовая интеграция эскроу</dd>
+<dt>Во времени</dt><dd>Доля от средств на счетах и от кредитования, делится с Организатором</dd>
+<dt>Обязательство</dt><dd>Срок расчёта один-три дня с автоподтверждением по таймеру</dd></dl></div>
+
+<div class="ty d"><h4><span class="n">тип 4</span>Оператор агентной поверхности</h4>
+<p>Предоставляет поверхность взаимодействия покупателя с агентом. Шестой тип, введённый агентным слоем.</p>
+<dl><dt>Вход</dt><dd>Допуск по раскрытию сведений и подтверждению ключа; запись в реестре агентов</dd>
+<dt>Во времени</dt><dd>Взнос слоя — фиксированный, ступенчатый или за единицу; доля оборота запрещена</dd>
+<dt>Ограничение</dt><dd>Не может снижать защиту покупателя и менять порядок распределения</dd></dl></div>
+
+<div class="ty"><h4><span class="n">тип 5</span>Покупатель</h4>
+<p>Не участник реестра в том же смысле, но сторона сделки с собственными правами: гарантия удержания средств до подтверждения, право на возврат, право на спор.</p>
+<dl><dt>Вход</dt><dd>Свободный; регистрация при первом заказе</dd>
+<dt>Принадлежность</dt><dd>Свой у продавца при заказе с витрины, сетевой при заказе из каталога или через агента</dd>
+<dt>Право</dt><dd>Мандат агенту с лимитами; журнал согласий неизменяем</dd></dl></div>
+</div>
+
+<!-- 2 -->
+<div class="sec" id="s2">
+<div class="st">Шесть осей конфигурации продавца</div>
+<div class="co co-g"><b>Уровень вовлечения не выбирается из списка — он складывается из положений переключателей.</b>Осей шесть; каждая независима, но не все сочетания осмысленны. Предмет клиринга вычисляется из осей, а не задаётся вручную.</div>
+
+<table class="tb">
+<thead><tr><th style="width:18%">Ось</th><th style="width:34%">Положения</th><th>Что меняет</th></tr></thead>
+<tbody>
+<tr><td><b>1 · Витрина</b></td><td>в Системе · своя с коннектором</td><td>Где живёт каталог и кто источник правды по наличию и цене</td></tr>
+<tr><td><b>2 · Расчёт</b></td><td>через Систему · свой · по выбору в заказе</td><td>Идут ли деньги через эскроу; определяет предмет клиринга</td></tr>
+<tr><td><b>3 · Исполнение</b></td><td>Системы · своё · по звеньям</td><td>Кто хранит, собирает, упаковывает, везёт; звенья берутся по отдельности</td></tr>
+<tr><td><b>4 · Каналы показа</b></td><td>своя витрина · каталог · агент · прямая ссылка · внешние площадки</td><td>Откуда приходит покупатель и своим он считается или сетевым</td></tr>
+<tr><td><b>5 · Бренд</b></td><td>Системы · продавца под белой маркой</td><td>Видит ли покупатель Систему</td></tr>
+<tr><td><b>6 · Область настройки</b></td><td>магазин · категория · товар</td><td>На каком слое действует правило; частное важнее общего</td></tr>
+</tbody>
+</table>
+
+<div class="co co-w" style="margin-top:10px"><b>Единственное ограничение сочетаний.</b>Оно действует на сделку, а не на конфигурацию: уровень операции не может быть ниже сконфигурированного, повышение разово и конфигурацию не меняет. Сама конфигурация меняется только конфигуратором и в обе стороны. Покупатель, пришедший из общего каталога за гарантией расчёта, не должен лишиться её при оформлении. Всё остальное сочетается свободно, включая параллельную торговлю на площадках.</div>
+
+<div class="c">
+<h3>Как из осей получается предмет клиринга</h3>
+<table class="tb">
+<thead><tr><th style="width:26%">Расчёт</th><th style="width:26%">Исполнение</th><th style="width:20%">Предмет</th><th>Что удерживается</th></tr></thead>
+<tbody>
+<tr><td>через Систему</td><td>любое</td><td><b>сделка</b></td><td>Удержание 12,5 %: 0,5 % расчёты и 12,0 % фонд сети</td></tr>
+<tr><td>свой</td><td>Системы</td><td><b>услуга</b></td><td>Только тарифы операторов; удержания Системы нет</td></tr>
+<tr><td>свой</td><td>своё</td><td><b>комиссия</b></td><td>Только плата за приведённого покупателя, если он пришёл из каталога или от агента</td></tr>
+</tbody>
+</table>
+<p style="margin-top:6px">Отсюда видно, почему ось расчёта главная: она одна определяет, есть ли удержание вообще. Остальные оси меняют состав услуг и каналы, но не природу платы.</p>
+</div>
+</div>
+
+<!-- 3 -->
+<div class="sec" id="s3">
+<div class="st">Восемь готовых вариантов для продавца</div>
+<div class="co co-p"><b>О нумерации.</b>Шкала приведена к возрастающей: большее число означает более глубокое участие. Это шкала журнала повышений, закреплённая ограничением в базе; линейка документов перенумерована под неё. Ранг конфигуратора — отдельная величина, мера полноты включения сервисов, а не уровень участия.</div>
+
+<table class="tb">
+<thead><tr><th style="width:5%">Ур.</th><th style="width:18%">Вариант</th><th style="width:22%">Что берёт у Системы</th><th style="width:16%">Удержание</th><th>Кому подходит</th></tr></thead>
+<tbody>
+<tr><td><b>1</b></td><td><b>Только трафик</b></td><td>Каталог и агент. Витрина, расчёт и исполнение свои</td><td>комиссия за приведённого 3–8 %</td><td>Есть всё, кроме потока покупателей</td></tr>
+<tr><td><b>2</b></td><td><b>Внешний магазин</b></td><td>Каталог, агент, расчёт. Витрина и каталог остаются у продавца зеркалом</td><td>12,5 % на сделках через Систему</td><td>Действующий интернет-магазин со своим сайтом</td></tr>
+<tr><td><b>3</b></td><td><b>Расчёт свой</b></td><td>Исполнение и каталог. Деньги мимо Системы</td><td>только тарифы операторов</td><td>Есть приём платежей, нет склада и курьеров</td></tr>
+<tr><td><b>4</b></td><td><b>Гибрид по заказу</b></td><td>Каталог, исполнение; расчёт выбирается в момент заказа</td><td>12,5 % на заказах через Систему</td><td>Разные заказы требуют разной модели</td></tr>
+<tr><td><b>5</b></td><td><b>Витрина своя</b></td><td>Расчёт, исполнение, каталог. Витрина остаётся своей</td><td>12,5 %</td><td>Есть сайт, нет ничего остального</td></tr>
+<tr><td><b>6</b></td><td><b>Полное участие</b></td><td>Всё: витрина, каталог, расчёт, исполнение</td><td>12,5 % плюс тарифы операторов</td><td>Нет ничего своего либо всё хочется отдать</td></tr>
+<tr style="background:var(--pr2)"><td><b>6+</b></td><td><b>Белая марка</b></td><td>Всё, но под брендом продавца — Систему покупатель не видит</td><td>12,5 % плюс подписка</td><td>Крупный со своим брендом и трафиком</td></tr>
+<tr style="background:var(--ac2)"><td><b>—</b></td><td><b>Финансовый набор</b></td><td>Надстройка к любому уровню: кредитование, страхование</td><td>плюс финансовые ставки</td><td>Дефицит оборотных средств</td></tr>
+</tbody>
+</table>
+
+<div class="co co-a" style="margin-top:10px"><b>Почему белая марка — это «шесть с плюсом», а не седьмой уровень.</b>Глубина участия у неё та же, что у полного: берётся всё. Отличается только видимость Системы для покупателя. Делать её отдельным уровнем означало бы, что храповик запретит перейти от полного участия к белой марке — а это разные оси, а не разные глубины.</div>
+
+<div class="st" style="margin-top:16px">Шесть профилей — те же уровни под задачу продавца</div>
+<table class="tb">
+<thead><tr><th style="width:20%">Профиль</th><th style="width:8%">Уровень</th><th style="width:28%">Состав</th><th>Удержание в сумме</th></tr></thead>
+<tbody>
+<tr><td>Своя логистика</td><td>5</td><td>Ядро и каталог, исполнение своё</td><td>около 12,5 %</td></tr>
+<tr><td>Лёгкий старт</td><td>6</td><td>Ядро и доставка</td><td>около 17 %</td></tr>
+<tr><td>Полный фулфилмент</td><td>6</td><td>Ядро, весь фулфилмент, возвраты</td><td>19–20 %</td></tr>
+<tr><td>Трафик-максимум</td><td>6</td><td>Ядро, продвижение, приведённый трафик, агент</td><td>12,5 % плюс 2–8 %</td></tr>
+<tr><td>Белая марка</td><td>6+</td><td>Внешняя витрина, расчёт и клиринг Системы</td><td>12,5 % плюс подписка</td></tr>
+<tr><td>Финансовый</td><td>любой</td><td>Ядро, кредитование, страхование</td><td>12,5 % плюс ставки</td></tr>
+</tbody>
+</table>
+<div class="co co-w"><b>Разница между уровнем и профилем.</b>Уровень — глубина участия, она одна. Профиль — набор услуг внутри уровня, их может быть много. Два продавца шестого уровня с разными профилями платят по-разному: один 12,5 %, другой 20 %, потому что второй взял склад и доставку.</div>
+</div>
+
+<!-- 4 -->
+<div class="sec" id="s4">
+<div class="st">Условия входа и пребывания — сводно</div>
+<div class="co co-a"><b>Два слоя разделены намеренно.</b>Единовременные условия — барьер входа, он должен быть минимален. Текущие — граница ухода, они должны оставлять запас. Смешивать нельзя: они по-разному влияют на решение вступить и на решение остаться.</div>
+
+<table class="tb">
+<thead><tr><th style="width:18%">Тип участия</th><th style="width:34%">Единовременно при вступлении</th><th>Во времени, пока участвует</th></tr></thead>
+<tbody>
+<tr><td><b>Продавец</b></td><td>Регистрация 0 ₽ · программное обеспечение магазина 0 ₽ · витрина и импорт 0 ₽ · депозита нет</td><td>Комиссии с продажи нет · удержание 12,5 % при расчёте через Систему · услуги операторов по тарифу реестра · взнос только сверх базового уровня · абонентской платы нет</td></tr>
+<tr><td><b>Инфраструктура</b></td><td>Приёмка в реестр 0 ₽ · публикация своих тарифов 0 ₽ · разовая интеграция с клирингом</td><td>Комиссии с оборота нет · целевой взнос по потреблению · оплата от Системы через эскроу после подтверждения · соблюдение сроков под рейтинг</td></tr>
+<tr><td><b>Расчётный банк</b></td><td>Рамочное соглашение · разовая интеграция эскроу</td><td>Доля от средств на счетах и кредитования · обеспечение срока расчёта один-три дня</td></tr>
+<tr><td><b>Оператор поверхности</b></td><td>Допуск по раскрытию сведений и подтверждению ключа · запись в реестре агентов</td><td>Взнос слоя, не исчисляемый долей оборота · соблюдение норм агентной выдачи</td></tr>
+<tr><td><b>Организатор</b></td><td>Капитальные вложения в платформу, реестр, портал</td><td>Тариф расчётов 0,5 % · доля в финансовых потоках · ведение фонда как казначей</td></tr>
+<tr><td><b>Покупатель</b></td><td>Свободный вход, регистрация при первом заказе</td><td>Оплачивает товар, доставку и выбранные опции · гарантия удержания средств до подтверждения</td></tr>
+</tbody>
+</table>
+
+<div class="co co-g" style="margin-top:10px"><b>Три обещания, одинаковые для всех типов.</b>Базовый доступ бесплатен всегда. Взнос целевой и по потреблению, а не долей оборота. Ставки и веса меняются изменением Правил, а не решением Организатора. Эти три нормы и есть то, что отличает участие в Системе от размещения на площадке.</div>
+</div>
+
+<!-- 5 -->
+<div class="sec" id="s5">
+<div class="st">Готовность вариантов</div>
+<table class="tb">
+<thead><tr><th style="width:22%">Вариант</th><th style="width:14%">Состояние</th><th>Чего не хватает</th></tr></thead>
+<tbody>
+<tr><td>Уровень 6 · полное участие</td><td><span class="b b-part">почти</span></td><td>Работает до входа в эскроу; дальше ручной режим расчёта либо банк</td></tr>
+<tr><td>Уровень 5 · витрина своя</td><td><span class="b b-part">почти</span></td><td>То же плюс привязка своего домена</td></tr>
+<tr><td>Уровень 3 · расчёт свой</td><td><span class="b b-no">нет</span></td><td>Заказ не читает режим расчёта; предмет «услуга» в клиринге не выделен</td></tr>
+<tr><td>Уровень 4 · гибрид по заказу</td><td><span class="b b-no">нет</span></td><td>Нет переключателя расчёта на чекауте</td></tr>
+<tr><td>Уровень 2 · внешний магазин</td><td><span class="b b-w1">волна 1</span></td><td>Признак источника товара, коннектор, проверка наличия при заказе</td></tr>
+<tr><td>Уровень 1 · только трафик</td><td><span class="b b-no">нет</span></td><td>Роли комиссии за приведённого в клиринге не существует</td></tr>
+<tr><td>Уровень 6+ · белая марка</td><td><span class="b b-no">нет</span></td><td>Поля бренда есть, режима фасада и привязки домена нет</td></tr>
+<tr><td>Финансовый набор</td><td><span class="b b-no">нет</span></td><td>Ролей финансов и страхования в расчёте нет</td></tr>
+<tr><td>Инфраструктурный участник</td><td><span class="b b-no">нет</span></td><td>Реестра участников как сервиса нет — тарифы негде публиковать</td></tr>
+<tr><td>Оператор агентной поверхности</td><td><span class="b b-no">нет</span></td><td>Реестра агентов, мандатов, журнала согласий нет; агент — прокси-маршрут</td></tr>
+</tbody>
+</table>
+
+<div class="co co-r" style="margin-top:10px"><b>Что видно из этой таблицы.</b>Работают только два варианта из десяти, и оба — глубокие. Все мелкие формы участия, которыми удобно заходить осторожному продавцу — только трафик, свой расчёт, гибрид, — не работают, потому что упираются в одно и то же: <b>расчёт не различает предмет клиринга и не знает ролей сверх четырёх</b>. Один шаг — перевод реестра сервисов в данные — открывает сразу пять вариантов из десяти.</div>
+
+<div class="co co-a"><b>И следствие для привлечения.</b>Сегодня можно предлагать только полное участие или витрину в Системе. Это ровно те варианты, которые труднее всего продать осторожному продавцу с готовой базой: они требуют отдать всё сразу. Варианты для постепенного входа существуют на бумаге и не существуют в коде — поэтому разговор с первой группой продавцов имеет смысл начинать после того шага, а не до.</div>
+</div>
+
+<!-- 6 -->
+<div class="sec" id="s6">
+<div class="st">Подборщик варианта</div>
+<p style="font-size:12.5px;color:var(--t2)">Четыре ответа о том, что у продавца уже есть. Подборщик соберёт вариант, назовёт удержание и покажет, работает ли он сегодня.</p>
+
+<div class="rig">
+  <div class="q" data-k="vitrina"><div class="t">1 · Есть ли своя витрина — сайт или интернет-магазин?</div>
+    <div class="opts"><button class="qb" data-v="own">Есть, оставляю себе</button><button class="qb" data-v="sys">Нет, нужна от Системы</button></div></div>
+  <div class="q" data-k="raschet"><div class="t">2 · Кто принимает деньги от покупателя?</div>
+    <div class="opts"><button class="qb" data-v="sys">Система, через эскроу</button><button class="qb" data-v="own">Я сам, у меня есть приём платежей</button><button class="qb" data-v="mix">По-разному, решать в заказе</button></div></div>
+  <div class="q" data-k="ispoln"><div class="t">3 · Кто хранит, собирает и везёт?</div>
+    <div class="opts"><button class="qb" data-v="sys">Операторы Системы</button><button class="qb" data-v="own">Я сам</button><button class="qb" data-v="part">Часть сам, часть Система</button></div></div>
+  <div class="q" data-k="traffic"><div class="t">4 · Нужен ли поток покупателей из каталога и от агента?</div>
+    <div class="opts"><button class="qb" data-v="yes">Да, своего мало</button><button class="qb" data-v="no">Нет, свой трафик есть</button></div></div>
+  <div class="res none" id="res">Ответьте на четыре вопроса.</div>
+</div>
+
+<div class="c" style="margin-top:12px">
+<h3>Как читать результат</h3>
+<p>Подборщик показывает уровень по возрастающей шкале, состав, удержание и состояние готовности. Если вариант помечен как неработающий, это не отказ — это означает, что сегодня продавцу придётся начать с ближайшего доступного и перейти позже. Переход вверх разрешён всегда, вниз — нет.</p>
+<p style="margin-top:6px">Удержание в результате — доля от суммы товаров. Оплата операторов исполнения в него не входит: она считается по тарифам реестра и зависит от выбранных звеньев.</p>
+</div>
+</div>
+
+</div>
+<script>
+(function(){
+  var tabs=document.querySelectorAll('#tabs .tab');
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.t)});
+    window.scrollTo({top:0,behavior:'smooth'});
+  })});
+
+  var a={};
+  document.querySelectorAll('.q').forEach(function(q){
+    q.querySelectorAll('.qb').forEach(function(b){
+      b.addEventListener('click',function(){
+        q.querySelectorAll('.qb').forEach(function(x){x.classList.remove('on')});
+        b.classList.add('on'); a[q.dataset.k]=b.dataset.v; pick();
+      });
+    });
+  });
+
+  function pick(){
+    var r=document.getElementById('res');
+    var keys=['vitrina','raschet','ispoln','traffic'];
+    if(keys.some(function(k){return !(k in a)})){
+      r.className='res none'; r.textContent='Ответьте на четыре вопроса.'; return;
+    }
+    var lvl,nm,hold,state,note,sostav;
+    if(a.raschet==='own'&&a.ispoln==='own'){
+      lvl=1; nm='Только трафик';
+      sostav='Каталог и агент. Витрина, расчёт и исполнение остаются вашими';
+      hold='комиссия за приведённого покупателя 3–8 % — только с тех заказов, которых у вас без Системы не было бы';
+      state='не работает'; note='Роли комиссии за приведённого в расчёте пока нет. Открывается переводом реестра сервисов в данные.';
+    } else if(a.raschet==='own'){
+      lvl=3; nm='Расчёт свой';
+      sostav='Исполнение и каталог от Системы; деньги идут мимо неё';
+      hold='удержания Системы нет — только тарифы выбранных операторов';
+      state='не работает'; note='Заказ пока не читает режим расчёта, предмет «услуга» в клиринге не выделен.';
+    } else if(a.raschet==='mix'){
+      lvl=4; nm='Гибрид по заказу';
+      sostav='Каталог и исполнение от Системы; расчёт выбирается в момент оформления';
+      hold='12,5 % на заказах через Систему, ноль на остальных';
+      state='не работает'; note='Нет переключателя расчёта на чекауте.';
+    } else if(a.vitrina==='own'){
+      lvl=2; nm='Внешний магазин';
+      sostav='Каталог, агент и расчёт от Системы; витрина и каталог остаются вашими, в Систему идёт зеркало';
+      hold='12,5 %: 0,5 % расчёты и 12,0 % фонд сети';
+      state='волна 1'; note='Нужны признак источника товара, коннектор синхронизации и проверка наличия при заказе.';
+    } else {
+      lvl=6; nm='Полное участие';
+      sostav='Витрина, каталог, расчёт и исполнение от Системы';
+      hold='12,5 % плюс тарифы операторов за выбранные звенья';
+      state='работает до эскроу'; note='Доходит до входа в эскроу; дальше ручной режим расчёта либо договор с банком.';
+    }
+    if(a.vitrina==='own'&&lvl>=5){ lvl=5; nm='Витрина своя'; sostav='Расчёт, исполнение и каталог от Системы; витрина остаётся вашей'; }
+    if(a.traffic==='no'&&lvl>=5){ note+=' Каталог и агент можно выключить — на удержание это не влияет, но приток сетевых покупателей исчезнет.'; }
+    if(a.ispoln==='part'){ sostav+='. Звенья исполнения берутся по отдельности: хранение, сборка, упаковка, доставка — каждое своим переключателем'; }
+
+    r.className='res';
+    r.innerHTML='<b>Уровень '+lvl+' · '+nm+'</b>'+
+      '<div class="kv"><span>Состав</span><span>'+sostav+'</span>'+
+      '<span>Удержание</span><span>'+hold+'</span>'+
+      '<span>Сегодня</span><span>'+state+'</span>'+
+      '<span>Что нужно</span><span>'+note+'</span></div>';
+  }
+})();
+</script>
+</body>
+</html>

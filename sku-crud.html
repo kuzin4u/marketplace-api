@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Добавление товаров</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root {
+  --bg:#f8fafc;--card:#fff;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;
+  --ac:#1e40af;--ac-l:#dbeafe;--ac-bg:#eff6ff;
+  --grn:#16a34a;--grn-l:#dcfce7;--orn:#d97706;--orn-l:#fef3c7;
+  --red:#dc2626;--red-l:#fee2e2;--brd:#e2e8f0;--radius:14px;
+  --sans:'Inter',-apple-system,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--tx);min-height:100vh}
+.page{max-width:720px;margin:0 auto;padding:24px 20px 60px}
+.page-hdr{margin-bottom:24px}
+.page-hdr h1{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:4px}
+.page-hdr p{font-size:13px;color:var(--tx2)}
+
+/* Mode tabs */
+.modes{display:flex;gap:6px;margin-bottom:20px}
+.mode-btn{flex:1;padding:12px;border-radius:10px;border:1.5px solid var(--brd);cursor:pointer;text-align:center;background:var(--card);transition:.15s}
+.mode-btn:hover{border-color:#94a3b8}
+.mode-btn.on{border-color:var(--ac);background:var(--ac-bg)}
+.mode-btn .m-icon{font-size:24px;margin-bottom:4px}
+.mode-btn .m-name{font-size:12px;font-weight:600;color:var(--tx)}
+.mode-btn .m-desc{font-size:10px;color:var(--tx3)}
+
+/* Form card */
+.fc{background:var(--card);border:1.5px solid var(--brd);border-radius:var(--radius);padding:24px;margin-bottom:14px}
+.fc h2{font-size:16px;font-weight:700;margin-bottom:4px}
+.fc .sub{font-size:12px;color:var(--tx2);margin-bottom:18px}
+
+/* Fields */
+.f{margin-bottom:16px}
+.f label{display:block;font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px}
+.f input,.f textarea,.f select{width:100%;padding:10px 13px;border:1.5px solid var(--brd);border-radius:9px;font:400 14px/1.4 var(--sans);background:var(--bg);outline:none;transition:.2s}
+.f input:focus,.f textarea:focus,.f select:focus{border-color:var(--ac);background:var(--card)}
+.f textarea{resize:vertical;min-height:70px}
+.f .hint{font-size:10px;color:var(--tx3);margin-top:3px}
+.f .ai-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--grn-l);color:var(--grn);margin-left:5px}
+.f-row{display:flex;gap:12px}
+.f-row .f{flex:1}
+
+/* Photo upload */
+.photo-zone{border:2px dashed var(--brd);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:.2s;position:relative}
+.photo-zone:hover{border-color:var(--ac);background:var(--ac-bg)}
+.photo-zone .pz-icon{font-size:40px;margin-bottom:8px}
+.photo-zone .pz-text{font-size:13px;color:var(--tx2)}
+.photo-zone .pz-hint{font-size:11px;color:var(--tx3);margin-top:4px}
+.photo-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+
+/* Photo preview */
+.photo-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.photo-thumb{width:80px;height:80px;border-radius:8px;background:var(--bg);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;overflow:hidden}
+.photo-thumb img{width:100%;height:100%;object-fit:cover}
+.photo-thumb .remove{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none}
+
+/* AI analysis box */
+.ai-box{background:var(--grn-l);border:1.5px solid var(--grn);border-radius:10px;padding:14px;margin:12px 0;font-size:12px;color:#166534;line-height:1.6}
+.ai-box b{font-weight:700}
+.ai-box .ai-loading{display:flex;align-items:center;gap:8px}
+.ai-box .spinner{width:16px;height:16px;border:2px solid #16a34a44;border-top-color:var(--grn);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Tags */
+.tags-wrap{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.tag{font-size:11px;padding:4px 10px;border-radius:6px;background:var(--ac-l);color:var(--ac);font-weight:500;cursor:pointer}
+.tag:hover{background:var(--ac);color:#fff}
+.tag.suggested{background:var(--grn-l);color:var(--grn);border:1px dashed var(--grn)}
+
+/* Product list */
+.product-list{margin-top:20px}
+.product-list h3{font-size:14px;font-weight:600;color:var(--tx2);margin-bottom:10px}
+.pl-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--brd);border-radius:10px;margin-bottom:8px}
+.pl-thumb{width:48px;height:48px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;overflow:hidden}
+.pl-thumb img{width:100%;height:100%;object-fit:cover}
+.pl-info{flex:1}
+.pl-title{font-size:13px;font-weight:600}
+.pl-meta{font-size:11px;color:var(--tx3)}
+.pl-price{font-size:15px;font-weight:700;flex-shrink:0}
+.pl-status{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px}
+.pl-status.ok{background:var(--grn-l);color:var(--grn)}
+.pl-status.pending{background:var(--orn-l);color:var(--orn)}
+
+/* Buttons */
+.btns{display:flex;gap:10px;margin-top:20px}
+.btn{padding:12px 20px;border-radius:10px;border:none;font:600 13px/1 var(--sans);cursor:pointer;transition:.15s}
+.btn-p{background:var(--ac);color:#fff}.btn-p:hover{background:#1d4ed8}
+.btn-s{background:var(--bg);color:var(--tx2);border:1.5px solid var(--brd)}.btn-s:hover{background:var(--card)}
+.btn-g{background:var(--grn);color:#fff}.btn-g:hover{background:#15803d}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+@media(max-width:520px){.f-row{flex-direction:column;gap:0}.modes{flex-direction:column}}
+</style>
+<script src="config.js"></script>
+<script src="auth-guard.js"></script>
+</head>
+<body>
+
+<div class="page">
+  <div class="page-hdr">
+    <h1>Добавление товаров</h1>
+    <p id="shop-name">Масса Матере · 0 товаров добавлено</p>
+  </div>
+
+  <div class="modes">
+    <div class="mode-btn on" id="mb-quick" onclick="setMode('quick')">
+      <div class="m-icon">📸</div>
+      <div class="m-name">Quick Add</div>
+      <div class="m-desc">Фото → AI → готово</div>
+    </div>
+    <div class="mode-btn" id="mb-manual" onclick="setMode('manual')">
+      <div class="m-icon">✏️</div>
+      <div class="m-name">Вручную</div>
+      <div class="m-desc">Все поля сам</div>
+    </div>
+    <div class="mode-btn" id="mb-import" onclick="setMode('import')">
+      <div class="m-icon">📋</div>
+      <div class="m-name">Импорт</div>
+      <div class="m-desc">Ozon / WB / CSV</div>
+    </div>
+  </div>
+
+  <div id="form-area"></div>
+
+  <div class="product-list" id="product-list"></div>
+
+  <div class="btns" id="bottom-btns" style="display:none">
+    <button class="btn btn-s" onclick="window.history.back()">← Назад к магазину</button>
+    <button class="btn btn-g" onclick="alert('→ Переход к активации (Шаг 7: Go Live)')">Открыть магазин для покупателей →</button>
+  </div>
+</div>
+
+<script>
+// ============ STATE ============
+var API = (window.API_BASE || 'https://marketplace-api-ujfh.onrender.com') + '/api/v1';
+
+// Нет токена — сразу на вход, а не пустая форма.
+if (!AUTH.guard()) throw new Error('redirect to login');
+
+// SELLER_ID больше не берётся из адреса: сервер определяет продавца
+// по токену. Оставлен только для подписей в интерфейсе.
+var SELLER_ID = AUTH.sellerId() || '';
+var mode = 'quick'; // quick | manual | import
+var products = []; // added products
+var photoData = null; // current photo base64
+var aiResult = null; // AI analysis result
+
+var CATEGORIES = [
+  {id:'CAT-BREAD',name:'Хлеб и выпечка',icon:'🍞'},
+  {id:'CAT-PASTRY',name:'Кондитерские',icon:'🥐'},
+  {id:'CAT-DAIRY',name:'Молочное',icon:'🥛'},
+  {id:'CAT-FARM',name:'Фермерские',icon:'🌾'},
+  {id:'CAT-CRAFT',name:'Крафт',icon:'🎨'}
+];
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(function(b){b.classList.remove('on')});
+  document.getElementById('mb-'+m).classList.add('on');
+  photoData = null;
+  aiResult = null;
+  renderForm();
+}
+
+// ============ RENDER ============
+
+function renderForm() {
+  var el = document.getElementById('form-area');
+  switch(mode) {
+    case 'quick': renderQuick(el); break;
+    case 'manual': renderManual(el); break;
+    case 'import': renderImport(el); break;
+  }
+  renderProductList();
+}
+
+// ──── Quick Add (фото → AI → pre-fill) ────
+function renderQuick(el) {
+  var h = '<div class="fc">';
+  h += '<h2>📸 Quick Add</h2>';
+  h += '<div class="sub">Сфотографируйте товар — AI заполнит название, описание и категорию. Вы добавите цену.</div>';
+
+  // Photo upload
+  h += '<div class="photo-zone" id="photo-zone">';
+  h += '<input type="file" accept="image/*" capture="environment" id="photo-input" />';
+  if (photoData) {
+    h += '<img src="'+photoData+'" style="max-height:180px;border-radius:8px" />';
+  } else {
+    h += '<div class="pz-icon">📷</div>';
+    h += '<div class="pz-text">Нажмите чтобы сфотографировать</div>';
+    h += '<div class="pz-hint">или перетащите файл сюда</div>';
+  }
+  h += '</div>';
+
+  // AI analysis
+  if (photoData && !aiResult) {
+    h += '<div class="ai-box"><div class="ai-loading"><div class="spinner"></div> AI анализирует фото...</div></div>';
+    setTimeout(simulateAI, 1500);
+  }
+
+  // Pre-filled form after AI
+  if (aiResult) {
+    h += '<div class="ai-box"><b>AI определил:</b> '+aiResult.title+' ('+aiResult.category_name+') — уверенность '+aiResult.confidence+'%</div>';
+
+    h += '<div class="f"><label>Название <span class="ai-badge">AI</span></label>';
+    h += '<input type="text" id="q-title" value="'+esc(aiResult.title)+'" /></div>';
+
+    h += '<div class="f"><label>Описание <span class="ai-badge">AI</span></label>';
+    h += '<textarea id="q-desc">'+esc(aiResult.description)+'</textarea></div>';
+
+    h += '<div class="f-row">';
+    h += '<div class="f"><label>Цена, ₽</label>';
+    h += '<input type="number" id="q-price" placeholder="450" /></div>';
+    h += '<div class="f"><label>В наличии, шт</label>';
+    h += '<input type="number" id="q-stock" value="10" /></div>';
+    h += '</div>';
+
+    h += '<div class="f"><label>Категория <span class="ai-badge">AI</span></label>';
+    h += '<select id="q-cat">';
+    CATEGORIES.forEach(function(c){
+      h += '<option value="'+c.id+'"'+(c.id===aiResult.category?' selected':'')+'>'+c.icon+' '+c.name+'</option>';
+    });
+    h += '</select></div>';
+
+    h += '<div class="f"><label>Теги <span class="ai-badge">AI</span></label>';
+    h += '<div class="tags-wrap">';
+    aiResult.tags.forEach(function(t){
+      h += '<span class="tag suggested">'+t+'</span>';
+    });
+    h += '</div>';
+    h += '<div class="hint">Нажмите на тег чтобы убрать. Добавьте свои в поле ниже.</div>';
+    h += '</div>';
+
+    h += '<div class="btns">';
+    h += '<button class="btn btn-s" onclick="photoData=null;aiResult=null;renderForm()">Другое фото</button>';
+    h += '<button class="btn btn-p" onclick="saveQuickAdd()">Сохранить товар</button>';
+    h += '</div>';
+  }
+
+  h += '</div>';
+  el.innerHTML = h;
+
+  // Attach file handler
+  var input = document.getElementById('photo-input');
+  if (input) {
+    input.addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        photoData = ev.target.result;
+        aiResult = null;
+        renderForm();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+}
+
+// Simulate AI analysis (in production: Claude Haiku Vision API)
+function simulateAI() {
+  aiResult = {
+    title: 'Хлеб ржаной на закваске',
+    description: 'Ржаной хлеб из цельнозерновой муки на натуральной закваске. Без дрожжей, без сахара. Вес: ~700г.',
+    category: 'CAT-BREAD',
+    category_name: 'Хлеб и выпечка',
+    tags: ['ржаной', 'закваска', 'без дрожжей', 'цельнозерновой'],
+    confidence: 92
+  };
+  renderForm();
+}
+
+// Единая отправка на сервер. Раньше её вызывал только режим
+// быстрого добавления: ручной ввод и импорт складывали товар
+// в массив в памяти и ничего не сохраняли. Со стороны это
+// выглядело как успешное добавление.
+async function pushToApi(product) {
+  var res = await AUTH.fetch(API + '/seller/products', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      title:          product.title,
+      description:    product.description || '',
+      price:          product.price,
+      stock:          product.stock || 0,
+      category_id:    product.category_id || product.category || null,
+      tags:           product.tags || [],
+      weight_g:       product.weight_g || null,
+      visible_catalog: true
+    })
+  });
+  var data = await res.json();
+  if (!res.ok) throw new Error(data.detail || data.error || 'Ошибка сохранения');
+  return data.id;
+}
+
+async function saveQuickAdd() {
+  var title = document.getElementById('q-title').value;
+  var price = document.getElementById('q-price').value;
+  if (!title || !price) { alert('Введите название и цену'); return; }
+
+  var product = {
+    title: title,
+    description: document.getElementById('q-desc').value,
+    price: parseFloat(price),
+    stock: parseInt(document.getElementById('q-stock').value) || 0,
+    category_id: document.getElementById('q-cat').value,
+    photo: photoData,
+    source: 'quick_add',
+    status: 'ACTIVE'
+  };
+
+  try {
+    product.id = await pushToApi(product);
+  } catch(err) {
+    // Раньше здесь был «офлайн-режим»: ошибка проглатывалась, товар
+    // показывался добавленным, а в базе его не было. Молчаливая
+    // потеря данных хуже видимой ошибки.
+    console.error('Не удалось сохранить товар:', err.message);
+    alert('Товар не сохранён: ' + err.message);
+    return;
+  }
+
+  products.push(product);
+  photoData = null;
+  aiResult = null;
+  renderForm();
+}
+
+// ──── Ручное добавление ────
+function renderManual(el) {
+  var h = '<div class="fc">';
+  h += '<h2>✏️ Добавить вручную</h2>';
+  h += '<div class="sub">Заполните все поля самостоятельно</div>';
+
+  h += '<div class="f"><label>Название *</label>';
+  h += '<input type="text" id="m-title" placeholder="Тартин на закваске" /></div>';
+
+  h += '<div class="f"><label>Описание</label>';
+  h += '<textarea id="m-desc" placeholder="Пшеничный хлеб, 24ч ферментация..."></textarea></div>';
+
+  h += '<div class="f-row">';
+  h += '<div class="f"><label>Цена, ₽ *</label>';
+  h += '<input type="number" id="m-price" placeholder="450" /></div>';
+  h += '<div class="f"><label>В наличии, шт</label>';
+  h += '<input type="number" id="m-stock" value="10" /></div>';
+  h += '<div class="f"><label>Вес, г</label>';
+  h += '<input type="number" id="m-weight" placeholder="800" /></div>';
+  h += '</div>';
+
+  h += '<div class="f"><label>Категория</label>';
+  h += '<select id="m-cat">';
+  CATEGORIES.forEach(function(c){
+    h += '<option value="'+c.id+'">'+c.icon+' '+c.name+'</option>';
+  });
+  h += '</select></div>';
+
+  h += '<div class="f"><label>Фото</label>';
+  h += '<div class="photo-zone" style="padding:20px">';
+  h += '<input type="file" accept="image/*" multiple id="m-photos" />';
+  h += '<div class="pz-icon" style="font-size:28px">📷</div>';
+  h += '<div class="pz-text" style="font-size:12px">Добавить фото (до 10)</div>';
+  h += '</div></div>';
+
+  h += '<div class="f"><label>Теги (через запятую)</label>';
+  h += '<input type="text" id="m-tags" placeholder="закваска, крафт, без дрожжей" /></div>';
+
+  h += '<div class="btns">';
+  h += '<button class="btn btn-p" onclick="saveManual()">Сохранить товар</button>';
+  h += '</div>';
+
+  h += '</div>';
+  el.innerHTML = h;
+}
+
+async function saveManual() {
+  var title = document.getElementById('m-title').value;
+  var price = document.getElementById('m-price').value;
+  if (!title || !price) { alert('Введите название и цену'); return; }
+
+  var product = {
+    title: title,
+    description: document.getElementById('m-desc').value,
+    price: parseFloat(price),
+    stock: parseInt(document.getElementById('m-stock').value) || 0,
+    // на сервере поле называется category_id; здесь раньше было
+    // category, и такой товар сервер бы не принял
+    category_id: document.getElementById('m-cat').value,
+    weight_g: parseInt(document.getElementById('m-weight').value) || null,
+    tags: (document.getElementById('m-tags').value || '').split(',').map(function(t){return t.trim()}).filter(Boolean),
+    photo: null,
+    source: 'manual',
+    status: 'ACTIVE'
+  };
+
+  try {
+    product.id = await pushToApi(product);
+  } catch(err) {
+    console.error('Не удалось сохранить товар:', err.message);
+    alert('Товар не сохранён: ' + err.message);
+    return;
+  }
+
+  products.push(product);
+
+  // Clear form
+  document.getElementById('m-title').value = '';
+  document.getElementById('m-desc').value = '';
+  document.getElementById('m-price').value = '';
+  document.getElementById('m-stock').value = '10';
+  document.getElementById('m-weight').value = '';
+  document.getElementById('m-tags').value = '';
+  renderProductList();
+}
+
+// ──── Импорт ────
+function renderImport(el) {
+  var h = '<div class="fc">';
+  h += '<h2>📋 Импорт товаров</h2>';
+  h += '<div class="sub">Загрузите каталог из другого источника</div>';
+
+  // Ozon/WB import
+  h += '<div class="f"><label>Импорт из Ozon / WB</label>';
+  h += '<input type="text" id="i-url" placeholder="https://www.ozon.ru/seller/moy-magazin-123456/" />';
+  h += '<div class="hint">Вставьте ссылку на ваш магазин — система извлечёт все товары</div></div>';
+
+  h += '<div class="btns" style="margin-top:10px;margin-bottom:20px">';
+  h += '<button class="btn btn-p" onclick="simulateImport()">Извлечь товары</button>';
+  h += '</div>';
+
+  // CSV upload
+  h += '<div style="border-top:1px solid var(--brd);padding-top:16px;margin-top:8px">';
+  h += '<div class="f"><label>Или загрузите CSV / Excel</label>';
+  h += '<div class="photo-zone" style="padding:20px">';
+  h += '<input type="file" accept=".csv,.xlsx,.xls" id="i-file" />';
+  h += '<div class="pz-icon" style="font-size:28px">📄</div>';
+  h += '<div class="pz-text" style="font-size:12px">Перетащите файл или нажмите</div>';
+  h += '<div class="pz-hint">Формат: название, описание, цена, категория, фото URL</div>';
+  h += '</div></div>';
+
+  h += '<div class="btns" style="margin-top:10px">';
+  h += '<button class="btn btn-s" onclick="downloadTemplate()">Скачать шаблон CSV</button>';
+  h += '</div>';
+  h += '</div>';
+
+  h += '</div>';
+  el.innerHTML = h;
+}
+
+async function simulateImport() {
+  var url = document.getElementById('i-url').value;
+  if (!url) { alert('Вставьте ссылку на магазин'); return; }
+
+  // Simulate parsing Ozon/WB
+  var imported = [
+    {title:'Круассан миндальный',description:'27 слоёв, крем франжипан',price:280,stock:20,category:'CAT-PASTRY',source:'import_ozon',status:'ACTIVE'},
+    {title:'Фокачча с томатами',description:'Итальянская, вяленые томаты, оливки',price:420,stock:10,category:'CAT-BREAD',source:'import_ozon',status:'ACTIVE'},
+    {title:'Торт Наполеон',description:'16 слоёв, заварной крем, ваниль',price:2400,stock:4,category:'CAT-PASTRY',source:'import_ozon',status:'ACTIVE'}
+  ];
+
+  saveImported(imported);
+}
+
+// Импорт сохраняет каждый товар отдельно и честно сообщает итог.
+// Раньше он только наполнял массив в памяти: пользователь видел
+// «Импортировано 3 товара», а в базе не появлялось ничего.
+async function saveImported(list) {
+  var ok = 0, failed = [];
+  for (var i = 0; i < list.length; i++) {
+    var it = list[i];
+    it.category_id = it.category_id || it.category;
+    try {
+      it.id = await pushToApi(it);
+      products.push(it);
+      ok++;
+    } catch (err) {
+      failed.push(it.title + ' — ' + err.message);
+    }
+  }
+  renderProductList();
+  if (failed.length === 0) {
+    alert('Импортировано ' + ok + ' товаров');
+  } else {
+    alert('Импортировано ' + ok + ' из ' + list.length + '.\n\nНе сохранены:\n' + failed.join('\n'));
+  }
+}
+
+function downloadTemplate() {
+  var csv = 'Название,Описание,Цена,Категория,Фото URL\n';
+  csv += 'Пример товара,Описание товара,450,CAT-BREAD,https://example.com/photo.jpg\n';
+  var blob = new Blob([csv], {type:'text/csv'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'import-template.csv';
+  a.click();
+}
+
+// ──── Product list ────
+function renderProductList() {
+  var el = document.getElementById('product-list');
+  document.getElementById('shop-name').textContent = 'Масса Матере · '+products.length+' товаров добавлено';
+
+  if (products.length === 0) {
+    el.innerHTML = '';
+    document.getElementById('bottom-btns').style.display = 'none';
+    return;
+  }
+
+  var h = '<h3>Добавленные товары ('+products.length+')</h3>';
+  products.forEach(function(p, i) {
+    var catIcon = '📦';
+    CATEGORIES.forEach(function(c){ if(c.id===p.category) catIcon=c.icon; });
+
+    h += '<div class="pl-item">';
+    h += '<div class="pl-thumb">';
+    if (p.photo) h += '<img src="'+p.photo+'" />';
+    else h += catIcon;
+    h += '</div>';
+    h += '<div class="pl-info">';
+    h += '<div class="pl-title">'+esc(p.title)+'</div>';
+    h += '<div class="pl-meta">'+p.source.replace('_',' ')+' · stock: '+p.stock+'</div>';
+    h += '</div>';
+    h += '<div class="pl-price">'+p.price+' ₽</div>';
+    h += '<span class="pl-status ok">✓</span>';
+    h += '</div>';
+  });
+
+  el.innerHTML = h;
+  document.getElementById('bottom-btns').style.display = 'flex';
+
+  // Log API payload
+  console.log('Products for API:', JSON.stringify(products.map(function(p){
+    return {title:p.title, price:p.price, stock:p.stock, category_id:p.category, description:p.description};
+  }), null, 2));
+}
+
+// ============ UTILS ============
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// ============ INIT ============
+renderForm();
+</script>
+</body>
+</html>

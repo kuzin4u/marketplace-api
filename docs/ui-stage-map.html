@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Карта UI-этапа — сборка и проверка пользовательского интерфейса</title>
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --sys:#2E5B3A;--own:#B0791F;--money:#A62B2B;--up:#0F7B4A;--blue:#1D5FBF;--r:8px;
+  --sysbg:#E5F3EA;--ownbg:#FBF4E6;--bluebg:#EAF1FB;--redbg:#F7EAEA;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:-.3px}
+.sub{color:var(--ink3);font-size:14px;margin-bottom:24px}
+h2{font-size:19px;margin:34px 0 4px;letter-spacing:-.2px}
+h2 .rail{font-size:13px;font-weight:500;color:var(--ink3)}
+.lead{color:var(--ink2);font-size:14.5px;margin:6px 0 18px;max-width:820px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin:14px 0 8px;font-size:12.5px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+.d-done{background:var(--up)} .d-part{background:var(--own)} .d-todo{background:var(--ink3)} .d-bank{background:var(--money)}
+
+/* поток — горизонтальная лента экранов */
+.flow{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;margin:12px 0 6px}
+.card{flex:1 1 190px;min-width:180px;background:var(--paper2);border:1px solid var(--line);
+  border-radius:var(--r);padding:12px 13px;position:relative;display:flex;flex-direction:column}
+.card .st{position:absolute;top:10px;right:10px;width:11px;height:11px;border-radius:3px}
+.card h4{margin:0 4px 3px 0;font-size:14.5px;padding-right:16px}
+.card .file{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink3);margin-bottom:7px;word-break:break-all}
+.card p{margin:0;font-size:12.7px;color:var(--ink2)}
+.card .tag{display:inline-block;margin-top:8px;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:600}
+.t-done{background:var(--sysbg);color:var(--sys)} .t-part{background:var(--ownbg);color:var(--own)}
+.t-todo{background:#EEF1EC;color:var(--ink3)} .t-bank{background:var(--redbg);color:var(--money)}
+.arrow{align-self:center;color:var(--ink3);font-size:20px;flex:0 0 auto;padding:0 2px}
+
+.band{border-left:3px solid var(--sys);background:#F4F9F5;border-radius:0 var(--r) var(--r) 0;padding:2px 16px;margin:8px 0 4px}
+.band.buyer{border-left-color:var(--blue);background:var(--bluebg)}
+
+table{width:100%;border-collapse:collapse;margin:12px 0 4px;font-size:13px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--ink3);font-weight:600}
+td.mono,.mono{font-family:'IBM Plex Mono',monospace;font-size:12px}
+.chk{color:var(--up);font-weight:700} .cross{color:var(--money);font-weight:700}
+
+.note{border-left:3px solid var(--own);background:var(--ownbg);padding:10px 15px;border-radius:0 var(--r) var(--r) 0;
+  margin:16px 0;font-size:13.5px;color:#5a4416}
+.note.blue{border-left-color:var(--blue);background:var(--bluebg);color:#1c3c68}
+.note.red{border-left-color:var(--money);background:var(--redbg);color:#6b2020}
+.note b{color:inherit}
+
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:12px 0}
+ol.steps li{position:relative;padding:9px 0 9px 40px;border-bottom:1px solid var(--line);font-size:13.7px;color:var(--ink2)}
+ol.steps li:before{counter-increment:s;content:counter(s);position:absolute;left:0;top:8px;
+  width:26px;height:26px;border-radius:50%;background:var(--sys);color:#fff;font-size:13px;font-weight:600;
+  display:flex;align-items:center;justify-content:center}
+ol.steps li b{color:var(--ink)}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink2)}
+footer a{color:var(--blue)}
+a{color:var(--blue)}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:#EEF1EC;color:var(--ink2);margin-left:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Карта UI-этапа</h1>
+<div class="sub">Сборка и проверка пользовательского интерфейса поверх проверенного операционного скелета · план до L2/L4</div>
+
+<p class="lead">Операционно-технологический скелет проверен: сделка замыкается (магазин→товар→заказ→эскроу),
+пробелы контракта закрыты (находки №1, №2), запись защищена (ТРЕК C). Теперь отдельный этап — собрать
+из имеющихся экранов цельный <b>пользовательский</b> интерфейс и проверить его глазами человека, а не через консоль.
+Эта карта показывает: какие экраны есть, чего не хватает, как они связаны, и что именно проверяем на уровнях L2 и L4.</p>
+
+<div class="legend">
+  <span><i class="dot d-done"></i> готов, проверен в jsdom</span>
+  <span><i class="dot d-part"></i> есть, нужна доводка/связка</span>
+  <span><i class="dot d-todo"></i> собрать заново</span>
+  <span><i class="dot d-bank"></i> ждёт банк (R1-R14)</span>
+</div>
+
+<!-- ========== ПОТОК ПРОДАВЦА ========== -->
+<h2>Поток продавца <span class="rail">— кабinet (ЛК): от входа до приёма заказов</span></h2>
+<div class="band">
+<p class="lead" style="margin:10px 0">Продавец заходит в кабинет, создаёт магазин, заводит товары, настраивает каналы выдачи, принимает заказы.
+Экраны есть по отдельности — задача этапа связать их в единый флоу с навигацией и общим состоянием (токен продавца).</p>
+</div>
+
+<div class="flow">
+  <div class="card"><span class="st d-done"></span>
+    <h4>Вход</h4><div class="file">seller-login.html</div>
+    <p>Логин/пароль → токен в localStorage. Отсюда его читают все формы.</p>
+    <span class="tag t-done">готов · 15/15 auth</span></div>
+  <div class="arrow">→</div>
+  <div class="card"><span class="st d-done"></span>
+    <h4>Создать магазин</h4><div class="file">shop-form.html</div>
+    <p>Мастер 4 экрана: бренд→адрес→регион→готово. Токен, живое превью.</p>
+    <span class="tag t-done">готов · L1 22/22</span></div>
+  <div class="arrow">→</div>
+  <div class="card"><span class="st d-done"></span>
+    <h4>Завести товары</h4><div class="file">sku-crud.html</div>
+    <p>Импорт, CRUD, 7 живых категорий. <b>Критический шаг</b> — тут больше всего drop-off.</p>
+    <span class="tag t-done">готов · L1 16/16</span></div>
+  <div class="arrow">→</div>
+  <div class="card"><span class="st d-part"></span>
+    <h4>Настроить каналы</h4><div class="file">alpha-dashboard-live.html</div>
+    <p>Тумблеры видимости+ранг. Есть, но как отдельный пульт — встроить в ЛК с навигацией.</p>
+    <span class="tag t-part">встроить в ЛК</span></div>
+  <div class="arrow">→</div>
+  <div class="card"><span class="st d-todo"></span>
+    <h4>Приём заказов</h4><div class="file">cabinet-orders (собрать)</div>
+    <p>Список заказов, метка источника MIGRATED/NETWORK, статусы. Экрана пока нет.</p>
+    <span class="tag t-todo">собрать заново</span></div>
+</div>
+
+<div class="note">
+<b>Что связать в потоке продавца:</b> единая навигация (шапка/меню ЛК), общее состояние входа
+(вошёл→видит свои магазины→товары→каналы→заказы), выход. Сейчас это отдельные страницы — нужна оболочка ЛК,
+которая их сшивает и не даёт открыть форму без токена (сейчас формы это уже проверяют, но каждая сама по себе).
+</div>
+
+<!-- ========== ПОТОК ПОКУПАТЕЛЯ ========== -->
+<h2>Поток покупателя <span class="rail">— витрина: от карточки до заказа в эскроу</span></h2>
+<div class="band buyer">
+<p class="lead" style="margin:10px 0">Покупатель открывает витрину магазина или каталог Системы, кладёт в корзину, оформляет заказ.
+Витрина уже читает живой API — не хватает регистрации покупателя (находка №1 дала API) и платёжного шага (банк).</p>
+</div>
+
+<div class="flow">
+  <div class="card"><span class="st d-done"></span>
+    <h4>Витрина магазина</h4><div class="file">vitrina-live.html</div>
+    <p>Бренд, карточки, сортировка. Читает /config/:slug + /shop/:slug/products. jsdom 7/7.</p>
+    <span class="tag t-done">готов на живом API</span></div>
+  <div class="arrow">→</div>
+  <div class="card"><span class="st d-part"></span>
+    <h4>Каталог Системы</h4><div class="file">agent-buyer-live / каталог 32</div>
+    <p>Срез товаров visible_catalog + агент 🟢/⚪. Есть прототип — довести до живого.</p>
+    <span class="tag t-part">довести</span></div>
+  <div class="arrow">→</div>
+  <div class="card"><span class="st d-done"></span>
+    <h4>Корзина</h4><div class="file">vitrina-live (встроена)</div>
+    <p>Резерв стока POST /cart/add, счётчик, 409 при нехватке. jsdom+409.</p>
+    <span class="tag t-done">готов</span></div>
+  <div class="arrow">→</div>
+  <div class="card"><span class="st d-part"></span>
+    <h4>Оформление</h4><div class="file">vitrina-live (модалка)</div>
+    <p>Имя/телефон→заказ. <b>Связать с регистрацией покупателя</b> (customers-api, находка №1).</p>
+    <span class="tag t-part">связать CUST-</span></div>
+  <div class="arrow">→</div>
+  <div class="card"><span class="st d-bank"></span>
+    <h4>Оплата</h4><div class="file">платёжный шаг</div>
+    <p>СБП/эквайринг + hold эскроу. Сейчас заказ создаётся в PENDING без оплаты.</p>
+    <span class="tag t-bank">ждёт банк R1-R14</span></div>
+</div>
+
+<div class="note blue">
+<b>Что связать в потоке покупателя:</b> (1) на оформлении вызвать <span class="mono">POST /api/v1/customers</span>
+и подставить полученный <span class="mono">CUST-</span> в заказ — сейчас витрина создаёт заказ, но покупателя не регистрирует;
+(2) довести каталог Системы до живого API; (3) платёжный шаг — заглушка до банка, но UI под него готовим (место в потоке уже есть).
+</div>
+
+<!-- ========== ГДЕ ПОТОКИ ВСТРЕЧАЮТСЯ ========== -->
+<h2>Где потоки встречаются</h2>
+<p class="lead">Продавец и покупатель — две стороны одной сделки. UI обоих потоков сходится в двух точках, и их важно проверить вместе:</p>
+<table>
+<tr><th>Точка встречи</th><th>Со стороны продавца</th><th>Со стороны покупателя</th><th>Проверка</th></tr>
+<tr><td><b>Товар</b></td><td>завёл в sku-crud, включил канал в дашборде</td><td>видит карточку в витрине/каталоге</td><td class="mono">visible_shop / visible_catalog</td></tr>
+<tr><td><b>Заказ</b></td><td>видит в приёме заказов с меткой источника</td><td>оформил в витрине</td><td class="mono">MIGRATED / NETWORK</td></tr>
+</table>
+
+<!-- ========== ПРОВЕРКА L2 ========== -->
+<h2>Проверка L2 <span class="rail">— браузер, ручной чек-лист (глазами, не через консоль)</span></h2>
+<p class="lead">jsdom не рисует пиксели и не знает про мобильный экран. L2 — открыть каждый экран в Chrome и на телефоне,
+пройти чек-лист. Инструмент: браузер + F12 (Console, Network). Это первая настоящая проверка UI.</p>
+<table>
+<tr><th>Экран</th><th>Что смотрим на L2</th><th>Красный флаг</th></tr>
+<tr><td>Вход</td><td>ошибка логина понятна; токен реально лёг; редирект после входа</td><td>белый экран, тихий провал</td></tr>
+<tr><td>Создать магазин</td><td>4 шага проходят; превью совпадает; slug-проверка; на телефоне не разъезжается</td><td>кнопка «Далее» без реакции</td></tr>
+<tr><td>Завести товары <span class="pill">риск-шаг</span></td><td>импорт/CSV; фото; выпадающий список категорий; можно ли за 30 мин завести каталог</td><td>непонятно как добавить товар</td></tr>
+<tr><td>Дашборд каналов</td><td>тумблер откликается; ранг пересчитался; тост; на 403 понятное сообщение</td><td>тумблер молча не сохраняет</td></tr>
+<tr><td>Витрина</td><td>карточки, цены ₽, наличие; корзина; оформление; состояния загрузка/пусто/404</td><td>цена/наличие неверны</td></tr>
+</table>
+<div class="note"><b>Мобайл обязателен.</b> Пекари и покупатели зайдут с телефона. Каждый экран смотрим и в узком вьюпорте —
+по спецификации именно мобильная витрина и импорт товаров дают больше всего отказов.</div>
+
+<!-- ========== ПРОВЕРКА L4 ========== -->
+<h2>Проверка L4 <span class="rail">— сквозной путь и приёмка на людях (UAT)</span></h2>
+<p class="lead">Финальная проверка UI: живой человек проходит весь путь <b>сам, без подсказок</b>. Два прогона:</p>
+<ol class="steps">
+<li><b>Сквозной одним оператором.</b> Вы проходите оба потока подряд на живом API: вошли как продавец → магазин → товары → каналы → вышли → как покупатель открыли витрину → купили → вернулись в ЛК продавца → увидели заказ. Одна петля, оба UI.</li>
+<li><b>UAT на 2-3 пекарях.</b> Реальные кандидаты Масса Матере и знакомые селлеры проходят путь сами. Вы наблюдаете и засекаете, где застряли, что переспросили, сколько заняло.</li>
+</ol>
+<div class="note red"><b>Критический замер L4 — импорт товаров.</b> По спецификации шаг заведения каталога даёт больше всего drop-off.
+Если пекарь не смог за 30 минут завести товары — это блокер запуска, а не косметика. На UAT смотрим на него пристальнее всего.</div>
+
+<!-- ========== ПОРЯДОК СБОРКИ ========== -->
+<h2>Порядок сборки UI-этапа</h2>
+<ol class="steps">
+<li><b>Дождаться деплоя находки №2 + ТРЕК C.</b> Бэкенд закрыт и защищён — UI ляжет на твёрдую опору (на вашей стороне).</li>
+<li><b>Оболочка ЛК продавца.</b> Сшить вход→магазин→товары→каналы навигацией, единое состояние токена. Собрать недостающий экран приёма заказов.</li>
+<li><b>Довести витрину покупателя.</b> Связать оформление с регистрацией покупателя (customers-api); каталог Системы до живого API.</li>
+<li><b>L2 — браузерный чек-лист.</b> Каждый экран в Chrome и на телефоне, оба потока.</li>
+<li><b>L4 — сквозной прогон + UAT.</b> Сначала вы одним оператором, затем 2-3 пекаря сами.</li>
+<li><b>Платёжный шаг витрины</b> — подключается когда будет банк (R1-R14), параллельно остальному.</li>
+</ol>
+
+<div class="note blue"><b>Развилка до сборки — уровни вовлечения (service-tiers).</b> В модели заложены разные схемы для разных селлеров
+и white-label для Ozon/WB-продавцов. Кабинет полного участника и кабинет white-label выглядят по-разному.
+Решить заранее: делаем UI сразу многоуровневым или сначала один базовый флоу (Масса Мадре = уровень 3), а варианты — второй волной.
+Рекомендация: базовый флоу первым, tiers — после L4, чтобы не усложнять проверку.</div>
+
+<footer>
+Карта UI-этапа · часть пула. Связанные:
+<a href="test-plan-seller-flow.html">план тестирования L1-L4</a>,
+<a href="e2e-walkthrough-map.html">карта E2E-прогона</a>,
+<a href="../vitrina-live.html">живая витрина</a>,
+<a href="../shop-form.html">форма магазина</a>,
+<a href="../sku-crud.html">товары</a>,
+<a href="../seller-login.html">вход продавца</a>,
+<a href="../alpha-dashboard-live.html">дашборд каналов</a>,
+<a href="service-tiers.html">уровни вовлечения</a>,
+<a href="system-layer-navigator.html">навигатор системного слоя</a>,
+<a href="model-vs-reality-service-tiers.html">модель ↔ скелет: сервисы</a>,
+<a href="site-overview.html">обзор сайта</a>.
+</footer>
+
+</div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Этот документ сведён с двадцатью другими в <a href="33-ui-vitrina-opisanie.html" style="font-weight:600;">интегрированное описание слоя UI и витрины</a>; выведенные величины — в <a href="34-ui-vitrina-parametry.html" style="font-weight:600;">наборе параметров U</a>.</div>
+</body>
+</html>

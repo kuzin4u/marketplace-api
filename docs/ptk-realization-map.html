@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Карта соответствия: ПТК ↔ Реализация</title>
+<style>
+:root{--bg:#fff;--bg2:#f8f9fb;--bg3:#f1f3f6;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--ac:#1e40af;--acbg:#dbeafe;--grn:#16a34a;--grnbg:#dcfce7;--orn:#d97706;--ornbg:#fef3c7;--red:#dc2626;--redbg:#fee2e2;--pur:#7c3aed;--purbg:#ede9fe;--cyn:#0891b2;--cynbg:#ecfeff;--brd:#e2e8f0;--mono:'SF Mono','JetBrains Mono',monospace;--sans:-apple-system,'Inter','Segoe UI',sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--bg2:#181b24;--bg3:#1f232e;--tx:#e4e6ec;--tx2:#9ca0b0;--tx3:#6b6f80;--ac:#5c8aff;--acbg:#1a2744;--grn:#4ade80;--grnbg:#0f2f1a;--orn:#fbbf24;--ornbg:#2a2010;--red:#f87171;--redbg:#2f1212;--pur:#c084fc;--purbg:#2a1744;--cyn:#22d3ee;--cynbg:#0a2a2e;--brd:#2a2e38}}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--sans);background:var(--bg);color:var(--tx);font-size:13px;line-height:1.6}
+.w{max-width:1200px;margin:0 auto;padding:24px 20px}
+.hdr{margin-bottom:24px;padding-bottom:18px;border-bottom:1.5px solid var(--brd)}.hdr h1{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px}.hdr .sub{color:var(--tx2);font-size:13px}
+.nav{display:flex;gap:4px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:10;margin-bottom:14px;border-bottom:1px solid var(--brd)}.nb{padding:6px 12px;border-radius:6px;border:1.5px solid var(--brd);cursor:pointer;font-size:12px;font-weight:500;background:transparent;color:var(--tx2);transition:.15s}.nb:hover{border-color:#999}.nb.on{border-color:var(--ac);color:var(--ac);background:var(--acbg)}
+.pn{display:none}.pn.vis{display:block}
+.cd{border:1px solid var(--brd);border-radius:12px;padding:18px;margin-bottom:12px}.cd h3{font-size:15px;font-weight:600;margin-bottom:8px}.cd p{font-size:13px;color:var(--tx2);line-height:1.65;margin-bottom:6px}
+.dm{font-family:var(--mono);font-size:11px;color:var(--tx2);background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:14px 16px;margin-top:8px;line-height:1.8;white-space:pre;overflow-x:auto}.dm b{color:var(--ac);font-weight:600}.dm em{color:var(--grn);font-style:normal;font-weight:600}.dm i{color:var(--orn);font-style:normal;font-weight:600}.dm u{color:var(--pur);text-decoration:none;font-weight:600}.dm s{color:var(--red);text-decoration:none;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}th{padding:7px 8px;text-align:left;font-weight:600;font-size:10px;color:var(--tx3);border-bottom:1.5px solid var(--brd);text-transform:uppercase;letter-spacing:.3px}td{padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--tx2);vertical-align:top}
+.note{font-size:12px;padding:10px 14px;border-radius:8px;margin-top:10px;line-height:1.6}.note.info{background:var(--acbg);color:var(--ac)}.note.warn{background:var(--ornbg);color:var(--orn)}.note.ok{background:var(--grnbg);color:var(--grn)}
+.k{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700}.k-g{background:var(--grnbg);color:var(--grn)}.k-o{background:var(--ornbg);color:var(--orn)}.k-r{background:var(--redbg);color:var(--red)}.k-b{background:var(--acbg);color:var(--ac)}.k-p{background:var(--purbg);color:var(--pur)}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Карта соответствия: ПТК ↔ Реализация</h1>
+<p style="font-size:12px;margin-top:6px">Аудит фактического кода на 23.08.2026: <a href="9-ptk-marketplace-arch-part2.html">Архитектура ПТК маркетплейса, Часть 2</a>.</p>
+  <div class="sub">Целевая архитектура (11 модулей) → что реализовано в каждом спринте → что упрощено → что появится позже</div>
+</div>
+
+<div class="nav" id="nav"></div>
+<div id="ct"></div>
+
+<script>
+var T=[
+  {id:'gap',     l:'Разрыв и стратегия'},
+  {id:'matrix',  l:'Матрица 11×4'},
+  {id:'monolith',l:'Монолит → сервисы'},
+  {id:'s0',      l:'Спринт 0: что из ПТК'},
+  {id:'s1',      l:'Спринт 1: что из ПТК'},
+  {id:'s2',      l:'Спринт 2: что из ПТК'},
+  {id:'s3',      l:'Спринт 3+: извлечение'},
+  {id:'files',   l:'Файлы ↔ модули'}
+];
+var cur='gap';
+function R(){var h='';T.forEach(function(t){h+='<button class="nb'+(t.id===cur?' on':'')+'" data-t="'+t.id+'">'+t.l+'</button>';});document.getElementById('nav').innerHTML=h;document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){cur=this.getAttribute('data-t');R();}});document.querySelectorAll('.pn').forEach(function(p){p.classList.toggle('vis',p.id==='p-'+cur);});}
+document.addEventListener('DOMContentLoaded',R);
+</script>
+
+<!-- ==================== РАЗРЫВ ==================== -->
+<div class="pn vis" id="p-gap">
+<div class="cd">
+  <h3>Информационно-логический разрыв</h3>
+  <p>Архитектура ПТК описывает 11 микросервисов. Реализация (server.js) — один файл, монолит. Спецификации ПТК содержат gRPC, Kafka, Elasticsearch, ЕСИА. Реализация — Express, PostgreSQL tsvector, симуляция OTP. Это не ошибка — это стратегия.</p>
+
+  <div class="dm"><b>ДВА ДОКУМЕНТА — ДВА ГОРИЗОНТА</b>
+
+  ┌───────────────────────────────────────────────────────────────┐
+  │ <b>АРХИТЕКТУРА ПТК</b> (26-nsvr_architecture_overview + 01–11)    │
+  │ Горизонт: целевое состояние (год 2+)                         │
+  │ 11 микросервисов, gRPC, Kafka, ES, ЕСИА, КЭП               │
+  │ «Как должно быть когда 1000+ селлеров и полный эскроу»      │
+  └───────────────────────┬───────────────────────────────────────┘
+                          │
+                          │ ← <s>РАЗРЫВ ЗДЕСЬ</s>
+                          │
+  ┌───────────────────────▼───────────────────────────────────────┐
+  │ <b>ПЛАН РЕАЛИЗАЦИИ</b> (38-realization-plan + Sprint 0–2 файлы)    │
+  │ Горизонт: сейчас → 10 недель (4 спринта)                    │
+  │ 1 файл server.js, Express, PostgreSQL, симуляции             │
+  │ «Как работает сегодня при 5 селлерах без эскроу»             │
+  └───────────────────────────────────────────────────────────────┘
+
+<b>ПОЧЕМУ РАЗРЫВ НОРМАЛЕН:</b>
+
+  1. <em>Стратегия монолит → извлечение.</em>
+     Строим монолит с правильными интерфейсами.
+     Логика внутри — та же что в целевых сервисах.
+     При росте → извлекаем в отдельные процессы.
+
+  2. <em>Формулы одинаковы.</em>
+     calculateClearing() в server.js = calculateSplit() в Clearing Engine (09).
+     ORDER BY ранжирования в SQL = function_score в ES.
+     Формула та же, обёртка другая.
+
+  3. <em>Таблицы одинаковы.</em>
+     01_schema.sql содержит таблицы для Registry (10) и Marketplace (11).
+     При извлечении — каждый сервис получает «свои» таблицы.
+
+  4. <em>API совместимо.</em>
+     REST endpoints в server.js = REST в Marketplace Service (11).
+     Тот же URL, тот же формат. Фронтенд не меняется.</div>
+</div>
+
+<div class="cd">
+  <h3>Витрина — часть ПТК</h3>
+  <p>Витрина — это Marketplace Service (модуль 11). Не отдельный объект. ПТК = вся система, включая витрину. Модуль 11 — самый большой по объёму и самый нагруженный, но архитектурно он стоит в ряду с остальными десятью.</p>
+
+  <div class="dm"><b>ВИТРИНА ← → ПТК</b>
+
+  ПТК = 11 модулей:
+    01 Deal Engine FSM       ← C2C (адаптирован)
+    02 Escrow + Contract     ← C2C (адаптирован)
+    03 Auth Service          ← C2C (адаптирован)
+    04 Notification + Widget ← C2C (адаптирован)
+    05 Widget Service        ← C2C (как есть)
+    06 Admin Panel           ← C2C (расширен)
+    07 Contract Builder      ← C2C (расширен)
+    08 WebApp + Arbitrage    ← C2C (адаптирован)
+    <em>09 Clearing Engine       ← НОВЫЙ (маркетплейс)</em>
+    <em>10 Registry Service      ← НОВЫЙ (маркетплейс)</em>
+    <em>11 Marketplace Service   ← НОВЫЙ (маркетплейс) = ВИТРИНА</em>
+
+  Витрина = модуль 11 = Marketplace Service
+  Витрина ≠ отдельный от ПТК объект
+  Витрина зависит от: Registry (10), Clearing (09), Deal (01)
+  Витрина = самый большой модуль (~70% кода Спринтов 0–2)</div>
+</div>
+</div>
+
+<!-- ==================== МАТРИЦА ==================== -->
+<div class="pn" id="p-matrix">
+<div class="cd">
+  <h3>Матрица: 11 модулей ПТК × 4 спринта</h3>
+  <table>
+    <thead><tr><th>Модуль ПТК</th><th>Спринт 0</th><th>Спринт 1</th><th>Спринт 2</th><th>Спринт 3+</th></tr></thead>
+    <tbody>
+      <tr><td><b>01 Deal Engine</b></td><td>—</td><td>—</td><td>—</td><td><span class="k k-o">Полный FSM</span></td></tr>
+      <tr><td><b>02 Escrow</b></td><td>—</td><td>—</td><td>—</td><td><span class="k k-o">Трек B (банк)</span></td></tr>
+      <tr><td><b>03 Auth</b></td><td>—</td><td>—</td><td><span class="k k-b">ИНН + OTP</span></td><td><span class="k k-o">ЕСИА, КЭП</span></td></tr>
+      <tr><td><b>04 Notification</b></td><td>—</td><td>—</td><td>—</td><td><span class="k k-o">6 каналов</span></td></tr>
+      <tr><td><b>05 Widget</b></td><td>—</td><td>—</td><td>—</td><td><span class="k k-o">C2C iframe</span></td></tr>
+      <tr><td><b>06 Admin</b></td><td>—</td><td>—</td><td>—</td><td><span class="k k-o">3 модуля BI</span></td></tr>
+      <tr><td><b>07 Contract Builder</b></td><td>—</td><td>—</td><td>—</td><td><span class="k k-o">Шаблоны</span></td></tr>
+      <tr><td><b>08 Arbitrage</b></td><td>—</td><td>—</td><td>—</td><td><span class="k k-o">L0–L3</span></td></tr>
+      <tr style="background:var(--grnbg)"><td><b>09 Clearing Engine</b></td><td><span class="k k-g">calculateClearing()</span></td><td><span class="k k-g">preview в корзине</span></td><td><span class="k k-b">ручной клиринг</span></td><td><span class="k k-o">Go + gRPC + банк</span></td></tr>
+      <tr style="background:var(--grnbg)"><td><b>10 Registry</b></td><td><span class="k k-g">таблицы + CRUD</span></td><td><span class="k k-g">привязки в wizard</span></td><td><span class="k k-b">/join + ФНС</span></td><td><span class="k k-o">Go + gRPC + KYC2</span></td></tr>
+      <tr style="background:var(--grnbg)"><td><b>Agent Service</b></td><td>—</td><td>—</td><td><span class="k k-b">агент + fallback</span></td><td><span class="k k-o">AI-парсинг + каталог рынка</span></td></tr>
+      <tr style="background:var(--grnbg)"><td><b>11 Marketplace</b></td><td><span class="k k-g">shop + SKU + catalog</span></td><td><span class="k k-g">wizard + CRUD + bot + ЛК + корзина</span></td><td><span class="k k-b">каталог + ранж. + source_type</span></td><td><span class="k k-o">Node.js + ES + CDC</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note info"><b>Чтение матрицы.</b> <span class="k k-g">зелёный</span> = реализовано (работает). <span class="k k-b">синий</span> = в работе (Спринт 2). <span class="k k-o">оранжевый</span> = будущее (после Спринта 3). Модули 01–08 (C2C-контур) не затрагиваются в Спринтах 0–2 — они запускаются при подключении эскроу (Трек B). Модули 09–11 (маркетплейс-контур) строятся сейчас.</div>
+</div>
+</div>
+
+<!-- ==================== МОНОЛИТ → СЕРВИСЫ ==================== -->
+<div class="pn" id="p-monolith">
+<div class="cd">
+  <h3>Стратегия: монолит → извлечение в сервисы</h3>
+  <div class="dm"><b>СЕЙЧАС: один server.js</b>
+
+  server.js (36KB) содержит:
+  ├── Registry endpoints   ← из модуля 10
+  │   GET /participants, /tariffs, /bindings
+  ├── Marketplace endpoints ← из модуля 11
+  │   GET /shop/{slug}, /products, /catalog/search, /cart/add
+  │   POST /orders, /seller/{id}/products
+  ├── Clearing logic        ← из модуля 09
+  │   calculateClearing() внутри POST /orders
+  ├── Bot webhook           ← из модуля 11 (sub: bot)
+  │   POST /bot/webhook/{seller_id}
+  └── Routing middleware     ← из модуля 11 (sub: routing)
+      resolveSeller()
+
+<b>ИЗВЛЕЧЕНИЕ (Спринт 3+):</b>
+
+  server.js → 3 отдельных процесса:
+
+  marketplace-service/       ← модуль 11
+  ├── src/shops.js
+  ├── src/skus.js
+  ├── src/catalog.js
+  ├── src/cart.js
+  ├── src/routing.js
+  └── src/bot.js
+
+  registry-service/          ← модуль 10 (Go)
+  ├── internal/participants/
+  ├── internal/tariffs/
+  ├── internal/bindings/
+  ├── internal/gate/
+  └── api/grpc/registry.proto
+
+  clearing-engine/           ← модуль 09 (Go)
+  ├── internal/calculator/
+  ├── internal/bank_adapter/
+  ├── internal/dispute/
+  └── api/grpc/clearing.proto
+
+<b>КРИТЕРИЙ ИЗВЛЕЧЕНИЯ:</b>
+  Извлекаем когда:
+  • server.js > 100KB (сложность управления)
+  • > 50 req/sec (нагрузка на один процесс)
+  • Нужен gRPC (Clearing ↔ Registry)
+  • Нужна изоляция (банковский код отдельно)
+
+  При 5 селлерах → монолит достаточен.
+  При 50+ селлерах → извлечение начинается.</div>
+</div>
+</div>
+
+<!-- ==================== СПРИНТ 0 ==================== -->
+<div class="pn" id="p-s0">
+<div class="cd">
+  <h3>Спринт 0 «Фундамент»: что из ПТК реализовано</h3>
+  <table>
+    <thead><tr><th>Файл</th><th>Модуль ПТК</th><th>Что реализует</th><th>Что упрощено vs целевого</th></tr></thead>
+    <tbody>
+      <tr><td><b>01_schema.sql</b></td><td>10 + 11</td><td>13 таблиц: participants, tariffs, bindings (из 10) + shops, skus, categories, customers, orders, order_items, clearing_splits, reviews, audit_log (из 11) + customer_bindings (из 11)</td><td>Нет: participant_sla, participant_documents, gate_checks (из 10), es_sync_log, moderation_queue (из 11), clearing_log, clearing_instructions (из 09)</td></tr>
+      <tr><td><b>02_seed.sql</b></td><td>10</td><td>Seed данные: 4 participants, 8 tariffs, 1 binding, 1 shop, 4 SKU, 3 customers, 1 order с clearing</td><td>Hardcoded, не через API приёмки</td></tr>
+      <tr><td><b>server.js</b></td><td>09 + 10 + 11</td><td>20+ REST endpoints: shop, products, catalog/search, cart/add, orders, seller CRUD, routing, config, bot webhook, smoke test</td><td>Монолит (не 3 сервиса). REST (не gRPC). tsvector (не ES). Синхронный clearing (не очередь). Нет auth middleware</td></tr>
+      <tr><td><b>seller.config.json</b></td><td>11</td><td>Конфиг магазина для рендеринга</td><td>—</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== СПРИНТ 1 ==================== -->
+<div class="pn" id="p-s1">
+<div class="cd">
+  <h3>Спринт 1 «Шаблон магазина»: что из ПТК реализовано</h3>
+  <table>
+    <thead><tr><th>Файл</th><th>Модуль ПТК</th><th>Что реализует</th><th>Что упрощено</th></tr></thead>
+    <tbody>
+      <tr><td><b>wizard-create-shop.html</b></td><td>11 (ShopManager)</td><td>Создание магазина: 4 шага, smart defaults, preview</td><td>Фронтенд-прототип. API call — console.log. Нет POST /shops в server.js</td></tr>
+      <tr><td><b>sku-crud.html</b></td><td>11 (SKUManager)</td><td>CRUD товаров: Quick Add (AI), Manual, Import (Ozon/WB)</td><td>AI — симуляция (hardcoded). Import — симуляция (3 товара). Нет Claude Haiku Vision</td></tr>
+      <tr><td><b>bot-service.js</b></td><td>11 (Bot sub-module)</td><td>TG-бот: пул, настройка, webhook handler, /catalog из БД</td><td>Пул вместо BotFather API. Нет inline-заказа. Нет AI-консультанта</td></tr>
+      <tr><td><b>seller-cabinet.html</b></td><td>11 (ЛК) + 10 (операторы) + 09 (аналитика клиринга)</td><td>7 разделов: обзор, заказы, товары, покупатели (MIGRATED/NETWORK), аналитика (доли клиринга), операторы (привязки + тарифы), настройки</td><td>Данные статические (не из API). Кнопка «Сменить оператора» — заглушка</td></tr>
+      <tr><td><b>cart-checkout.html</b></td><td>11 (CartService)</td><td>Корзина + checkout: 3 шага, source_type индикатор, clearing preview, 4 способа оплаты</td><td>Stock резервирование — клиентское (не SELECT FOR UPDATE). source_type — статический</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== СПРИНТ 2 ==================== -->
+<div class="pn" id="p-s2">
+<div class="cd">
+  <h3>Спринт 2 «Регистрация + каталог»: что из ПТК реализовано</h3>
+  <table>
+    <thead><tr><th>Файл</th><th>Модуль ПТК</th><th>Что реализует</th><th>Что упрощено</th></tr></thead>
+    <tbody>
+      <tr><td><b>join-form.html</b></td><td>10 (приёмка) + 03 (auth, частично)</td><td>Форма /join: ИНН → ФНС → OTP → группа → participant → wizard</td><td>ФНС — симуляция (4 тестовых ИНН). OTP — hardcoded 123456. Нет ЕСИА, нет КЭП. KYC Level 1 (не Level 2)</td></tr>
+      <tr><td><b>catalog (в server.js)</b></td><td>11 (CatalogEngine)</td><td>GET /catalog/search с фильтрами, поиском, ранжированием по формуле ст. 11.3</td><td>tsvector (не ES). Нет CDC. Ранжирование без geo (один регион). Нет function_score</td></tr>
+      <tr><td><b>source_type (в server.js)</b></td><td>11 (CustomerTracker)</td><td>entry_point → source_type, запись в customer_bindings, ON CONFLICT</td><td>— (полная реализация)</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== СПРИНТ 3+ ==================== -->
+<div class="pn" id="p-s3">
+<div class="cd">
+  <h3>Спринт 3+: извлечение и достройка</h3>
+  <table>
+    <thead><tr><th>Модуль</th><th>Что добавится</th><th>Зависимость</th></tr></thead>
+    <tbody>
+      <tr><td><b>09 Clearing Engine</b></td><td>Отдельный Go-сервис. gRPC API. BankAdapter (ПСБ/ВТБ). Очередь retry. Пересчёт при споре. clearing_log, clearing_instructions</td><td>Контракт с банком (Трек B)</td></tr>
+      <tr><td><b>10 Registry</b></td><td>Отдельный Go-сервис. gRPC API. KYC Level 2 (ЮЛ). SLA-контроль. Гейт готовности. participant_documents</td><td>—</td></tr>
+      <tr><td><b>11 Marketplace</b></td><td>Elasticsearch + CDC (Debezium). SSR витрины. Publish-first модерация (Claude Haiku Vision). moderation_queue</td><td>Масштаб (50+ селлеров)</td></tr>
+      <tr><td><b>01 Deal Engine</b></td><td>FSM 15 состояний. Kafka events. Интеграция с Clearing (09) и Escrow (02)</td><td>Трек B</td></tr>
+      <tr><td><b>02 Escrow</b></td><td>splitRelease через банк API. 8 операций эскроу</td><td>Трек B (банк)</td></tr>
+      <tr><td><b>03 Auth</b></td><td>ЕСИА для ГосУслуг. КЭП для ЮЛ. RBAC 8 ролей</td><td>Интеграция ЕСИА</td></tr>
+      <tr><td><b>04–08</b></td><td>Notification (6 каналов), Widget (iframe), Admin (BI), Contract Builder (шаблоны), Arbitrage (L0–L3)</td><td>Масштаб + Трек B</td></tr>
+    </tbody>
+  </table>
+  <div class="note warn"><b>Модули 01–08 (C2C-контур НСВР) не блокируют запуск маркетплейса.</b> Трек A (витрина без эскроу) работает на модулях 09–11 в монолитной обёртке. Трек B (эскроу + клиринг через банк) подключает модули 01–08 при готовности банка API. Два трека параллельны.</div>
+</div>
+</div>
+
+<!-- ==================== ФАЙЛЫ ==================== -->
+<div class="pn" id="p-files">
+<div class="cd">
+  <h3>Полная карта: файл реализации ↔ модуль ПТК</h3>
+  <table>
+    <thead><tr><th>Файл</th><th>Спринт</th><th>Размер</th><th>Модули ПТК</th></tr></thead>
+    <tbody>
+      <tr style="background:var(--bg2)"><td colspan="4"><b>Спринт 0: Фундамент (63KB)</b></td></tr>
+      <tr><td>schema/01_schema.sql</td><td>0</td><td>13KB</td><td>10 (participants, tariffs, bindings) + 11 (shops, skus, customers, orders) + 09 (clearing_splits)</td></tr>
+      <tr><td>seed/02_seed_massamadre.sql</td><td>0</td><td>8KB</td><td>10 (seed участников и тарифов)</td></tr>
+      <tr><td>api/server.js</td><td>0</td><td>36KB</td><td>11 (shops, SKU, catalog, cart, routing, bot) + 10 (CRUD participants) + 09 (calculateClearing)</td></tr>
+      <tr><td>config/seller.config.example.json</td><td>0</td><td>1.4KB</td><td>11 (StorefrontRenderer)</td></tr>
+      <tr style="background:var(--bg2)"><td colspan="4"><b>Спринт 1: Шаблон магазина (109KB)</b></td></tr>
+      <tr><td>wizard-create-shop.html</td><td>1</td><td>23KB</td><td>11 (ShopManager)</td></tr>
+      <tr><td>sku-crud.html</td><td>1</td><td>21KB</td><td>11 (SKUManager)</td></tr>
+      <tr><td>bot-service.js</td><td>1</td><td>10KB</td><td>11 (Bot sub-module)</td></tr>
+      <tr><td>seller-cabinet.html</td><td>1</td><td>23KB</td><td>11 (ЛК) + 10 (операторы) + 09 (clearing аналитика)</td></tr>
+      <tr><td>cart-checkout.html</td><td>1</td><td>18KB</td><td>11 (CartService)</td></tr>
+      <tr><td>test-checklist-and-sprint2-plan.html</td><td>1</td><td>14KB</td><td>—</td></tr>
+      <tr style="background:var(--bg2)"><td colspan="4"><b>Спринт 2: Регистрация + каталог (20KB+)</b></td></tr>
+      <tr><td>join-form.html</td><td>2</td><td>20KB</td><td>10 (приёмка) + 03 (auth, частично)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="cd">
+  <h3>Спецификации ПТК (3 новых модуля)</h3>
+  <table>
+    <thead><tr><th>Спецификация</th><th>Размер</th><th>Вкладок</th><th>Ключевое содержание</th></tr></thead>
+    <tbody>
+      <tr><td><b>09_clearing_engine_deep.html</b></td><td>26KB</td><td>10</td><td>Go, FSM 12 состояний, алгоритм calculateSplit, gRPC+REST API, пересчёт при споре (ст. 12.6), BankAdapter (PSB/VTB/Manual), Трек A vs B</td></tr>
+      <tr><td><b>10_registry_service_deep.html</b></td><td>22KB</td><td>9</td><td>Go, участники/тарифы/привязки, приёмка (селлер/оператор/банк), гейт готовности (ст. 13.2), gRPC+REST API, SLA, documents</td></tr>
+      <tr><td><b>11_marketplace_service_deep.html</b></td><td>27KB</td><td>11</td><td>Node.js, 6 подмодулей, SKU lifecycle, инвариант И4, каталог, формула ранжирования (6 множителей), source_type, publish-first модерация, SSR</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note ok"><b>Разрыв устранён.</b> Каждая спецификация (09, 10, 11) содержит вкладку «Реализация по спринтам» — карту: что из целевой архитектуры реализовано в каком спринте, в каком файле, и что упрощено. Этот документ (карта соответствия) объединяет все три карты в одну матрицу.</div>
+</div>
+</div>
+
+</div>
+</body>
+</html>

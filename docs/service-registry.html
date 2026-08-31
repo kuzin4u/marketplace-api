@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Реестр сервисов Системы и модель расширения</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --sys:#2E5B3A;--money:#A62B2B;--form:#5A3E9A;--new:#0F7B4A;--r:8px;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,sans-serif;font-size:15px;line-height:1.55}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px 90px}
+header.top{background:var(--paper2);border-bottom:1px solid var(--line)}
+.top-in{max-width:1120px;margin:0 auto;padding:26px 24px 20px}
+.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+h1{font-family:'IBM Plex Serif',Georgia,serif;font-size:clamp(23px,3.5vw,33px);margin:8px 0 6px;letter-spacing:-.02em;line-height:1.15}
+.sub{color:var(--ink2);max-width:84ch;margin:0}
+.thesis{margin-top:16px;padding:12px 16px;border:1px solid var(--line);border-left:3px solid var(--form);background:var(--paper);border-radius:var(--r);font-size:14px;color:var(--ink2)}
+.thesis b{color:var(--form)}
+h2{font-family:'IBM Plex Serif',Georgia,serif;font-size:22px;margin:34px 0 8px;border-bottom:2px solid var(--line);padding-bottom:6px}
+h3{font-size:16px;margin:20px 0 6px}
+p{margin:6px 0 12px;max-width:86ch}
+.form-card{border:1px solid var(--form);border-radius:var(--r);background:linear-gradient(180deg,#F6F2FB,#fff 60%);padding:6px 20px 18px;margin:16px 0}
+.form-card h3{color:var(--form)}
+.field{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #EAE2F3;align-items:flex-start}
+.field:last-child{border-bottom:none}
+.field .k{flex:none;width:170px;font-weight:600;font-size:13.5px;color:var(--form)}
+.field .v{flex:1;font-size:13.5px;color:var(--ink2)}
+.field .v .mono{font-size:12px;background:#EFE9F7;padding:1px 6px;border-radius:4px;color:var(--form)}
+.tbl-scroll{overflow-x:auto;margin:12px 0}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;min-width:860px}
+th{text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);padding:9px 10px;border-bottom:1px solid var(--line);font-weight:600;background:var(--paper);vertical-align:bottom}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.mono{font-size:11.5px}
+td .pred{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:1px 6px;border-radius:4px;background:rgba(166,43,43,.07);color:var(--money);white-space:nowrap}
+.sect{font-weight:700;background:var(--paper)}
+.open-row td{background:#F0F8F3;color:var(--new);font-style:italic;text-align:center;font-weight:600}
+.callout{border:1px solid var(--line);border-left:3px solid var(--sys);background:var(--paper2);padding:11px 14px;border-radius:var(--r);margin:16px 0;font-size:13.8px}
+.callout b{color:var(--sys)}
+.callout.form{border-left-color:var(--form)}.callout.form b{color:var(--form)}
+.callout.new{border-left-color:var(--new)}.callout.new b{color:var(--new)}
+.steps{counter-reset:s;margin:14px 0}
+.step{display:flex;gap:12px;margin:10px 0;align-items:flex-start}
+.step .n{counter-increment:s;flex:none;width:24px;height:24px;border-radius:50%;background:var(--new);color:#fff;text-align:center;line-height:24px;font-weight:600;font-size:13px}
+.step .n::before{content:counter(s)}
+.step .b{flex:1;font-size:14px}
+.example{border:1px dashed var(--new);border-radius:var(--r);padding:12px 16px;margin:12px 0;background:#F4FBF7;font-size:13.5px}
+.example b{color:var(--new)}
+footer{border-top:1px solid var(--line);margin-top:36px;padding-top:16px;font-size:12.5px;color:var(--ink3)}
+footer a{color:var(--sys)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="eyebrow">ПТК · реестр сервисов · модель расширения</div>
+    <h1>Реестр сервисов Системы</h1>
+    <p class="sub">Набор сервисов Системы не мёртвый список, а живой реестр. Когда селлерам нужен новый сервис — он включается в Систему по единой форме, не ломая ядро. Этот документ описывает не «что мы умеем сегодня», а машину включения: форму сервиса, существующие сервисы по ней, и правило добавления нового.</p>
+    <div class="thesis"><b>Принцип:</b> любой сервис — старый или будущий — описывается ОДНОЙ формой из 5 полей. Если новый сервис заполняет эту форму, он автоматически встаёт в конфигуратор магазина, в клиринг и в кабинет. Ядро переписывать не нужно. Так набор растёт по спросу, оставаясь связным.</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ФОРМА СЕРВИСА -->
+<h2>Форма сервиса — контракт, которому подчиняется любой сервис</h2>
+<p>Пять полей. Заполнены — сервис встраивается. Это тот самый слот, в который встаёт и витрина, и доставка, и любой будущий сервис.</p>
+<div class="form-card">
+<h3>service = { … }</h3>
+<div class="field"><div class="k">1 · Переключатель</div><div class="v">как селлер включает сервис в профиле магазина: <span class="mono">Система | свой | —</span>. Ось выбора для конфигуратора</div></div>
+<div class="field"><div class="k">2 · Тариф</div><div class="v">сколько стоит и как считается: % от суммы, фикс за операцию, за единицу, за период</div></div>
+<div class="field"><div class="k">3 · Предмет клиринга</div><div class="v">что именно клирингуется: <span class="mono">СДЕЛКА</span> · <span class="mono">УСЛУГА</span> · <span class="mono">КОМИССИЯ</span> · новый вид. Определяет, как деньги проходят через расчётный контур</div></div>
+<div class="field"><div class="k">4 · Точка в потоке</div><div class="v">где сервис вступает в жизненный цикл заказа: до оплаты · при сборке · при доставке · после выдачи · вне заказа</div></div>
+<div class="field"><div class="k">5 · Видимость</div><div class="v">кому и когда предлагается: опция на чекауте · настройка магазина · автоматически по правилу</div></div>
+</div>
+<div class="callout form"><b>Почему именно эти пять.</b> Они покрывают всё, что Системе нужно знать о сервисе, чтобы им управлять: как его <b>выбирают</b> (1), как <b>тарифицируют</b> (2), как через него идут <b>деньги</b> (3), <b>когда</b> он срабатывает (4) и кому <b>показан</b> (5). Больше ничего для встраивания не требуется — остальное внутри самого сервиса.</div>
+
+<!-- РЕЕСТР -->
+<h2>Реестр — существующие сервисы по этой форме</h2>
+<p>Всё, что мы построили, ложится в одну таблицу. Разделы открыты — новые записи добавляются, не меняя структуру.</p>
+<div class="tbl-scroll"><table>
+  <thead><tr><th style="min-width:150px">Сервис</th><th>Переключатель</th><th>Тариф</th><th>Предмет клиринга</th><th>Точка в потоке</th><th>Видимость</th></tr></thead>
+  <tbody>
+    <tr class="sect"><td colspan="6">Витрина и продажа</td></tr>
+    <tr><td><b>Витрина в Системе</b></td><td class="mono">Система|своя</td><td>в составе take-rate</td><td><span class="pred">СДЕЛКА</span></td><td>показ товара</td><td>настройка магазина</td></tr>
+    <tr><td><b>Расчёт с покупателем</b></td><td class="mono">Система|свой|по заказу</td><td>take-rate %</td><td><span class="pred">СДЕЛКА</span></td><td>оплата</td><td>настройка / чекаут</td></tr>
+    <tr><td><b>Эскроу-гарантия</b></td><td class="mono">вкл при расчёте Системы</td><td>в take-rate</td><td><span class="pred">СДЕЛКА</span></td><td>оплата→выдача</td><td>авто при расчёте Системы</td></tr>
+
+    <tr class="sect"><td colspan="6">Трафик и каталог</td></tr>
+    <tr><td><b>Общий каталог</b></td><td class="mono">в Системе|только свой</td><td>—</td><td>—</td><td>обнаружение товара</td><td>настройка магазина</td></tr>
+    <tr><td><b>Агентный канал 🟢</b></td><td class="mono">вкл|выкл</td><td>—</td><td>—</td><td>обнаружение товара</td><td>настройка магазина</td></tr>
+    <tr><td><b>Referral (только трафик)</b></td><td class="mono">вкл|выкл</td><td>комиссия за покупателя</td><td><span class="pred">КОМИССИЯ</span></td><td>после выдачи</td><td>настройка магазина</td></tr>
+
+    <tr class="sect"><td colspan="6">Fulfilment — открытый набор под-сервисов</td></tr>
+    <tr><td><b>Хранение</b></td><td class="mono">Система|свой|—</td><td>за единицу/период</td><td><span class="pred">УСЛУГА</span></td><td>до заказа</td><td>настройка магазина</td></tr>
+    <tr><td><b>Приёмка / фасовка</b></td><td class="mono">Система|свой|—</td><td>за операцию</td><td><span class="pred">УСЛУГА</span></td><td>при поступлении товара</td><td>настройка магазина</td></tr>
+    <tr><td><b>Упаковка</b></td><td class="mono">Система|свой|—</td><td>за заказ</td><td><span class="pred">УСЛУГА</span></td><td>при сборке</td><td>настройка магазина</td></tr>
+    <tr><td><b>Доставка (последняя миля)</b></td><td class="mono">Система|свой|—</td><td>за доставку</td><td><span class="pred">УСЛУГА</span></td><td>после сборки</td><td>настройка / чекаут</td></tr>
+    <tr><td><b>ПВЗ / самовывоз</b></td><td class="mono">Система|свой|—</td><td>за выдачу</td><td><span class="pred">УСЛУГА</span></td><td>выдача</td><td>опция на чекауте</td></tr>
+    <tr><td><b>Возвраты</b></td><td class="mono">Система|свой|—</td><td>за обработку</td><td><span class="pred">УСЛУГА</span></td><td>после выдачи</td><td>авто при возврате</td></tr>
+    <tr class="open-row"><td colspan="6">↑ раздел открыт — новые звенья fulfilment добавляются той же формой</td></tr>
+
+    <tr class="sect"><td colspan="6">Оформление и бренд</td></tr>
+    <tr><td><b>White-label</b></td><td class="mono">бренд Системы|селлера</td><td>подписка/в тарифе</td><td><span class="pred">СДЕЛКА</span></td><td>показ товара</td><td>настройка магазина</td></tr>
+    <tr class="open-row"><td colspan="6">↑ и весь реестр открыт — любой новый сервис входит сюда по форме</td></tr>
+  </tbody>
+</table></div>
+
+<div class="callout"><b>Три предмета клиринга уже покрывают почти всё.</b> Обратите внимание: почти каждый сервис клирингуется как <span class="mono">СДЕЛКА</span>, <span class="mono">УСЛУГА</span> или <span class="mono">КОМИССИЯ</span> — три предмета, введённые в <a href="service-tiers.html">линейке сервисов</a>. Новый сервис чаще всего попадёт в один из них, и тогда расчётный контур его принимает без изменений. Новый предмет клиринга нужен редко — и это единственный случай, когда затрагивается ядро расчёта.</div>
+
+<!-- ПРАВИЛО ВКЛЮЧЕНИЯ -->
+<h2>Правило включения нового сервиса</h2>
+<p>Когда выясняется, что селлерам нужен сервис, которого нет, — он добавляется по шагам, не ломая Систему.</p>
+<div class="steps">
+  <div class="step"><div class="n"></div><div class="b"><b>Заполнить форму.</b> Описать сервис пятью полями: переключатель, тариф, предмет клиринга, точка в потоке, видимость.</div></div>
+  <div class="step"><div class="n"></div><div class="b"><b>Проверить предмет клиринга.</b> Попадает в <span class="mono">СДЕЛКА / УСЛУГА / КОМИССИЯ</span>? Тогда расчётный контур готов. Если нужен новый предмет — это единственная правка ядра.</div></div>
+  <div class="step"><div class="n"></div><div class="b"><b>Добавить переключатель в профиль магазина.</b> Новая ось в конфигураторе — селлер сможет включить сервис.</div></div>
+  <div class="step"><div class="n"></div><div class="b"><b>Встроить в поток заказа.</b> Повесить сервис на его точку (при сборке, после выдачи и т.д.) — кабинет и статусы подхватят автоматически.</div></div>
+  <div class="step"><div class="n"></div><div class="b"><b>Записать в реестр.</b> Строка в этой таблице — сервис существует, документирован, доступен селлерам.</div></div>
+</div>
+
+<div class="example"><b>Пример: селлеры просят страхование груза.</b> Форма: переключатель <span class="mono">страховка: Система|—</span>; тариф — % от суммы заказа; предмет клиринга — <span class="mono">КОМИССИЯ</span> (уже есть!); точка — при оформлении; видимость — опция на чекауте. Все поля заполнены известными типами → сервис встроен, ядро не тронуто. Появился спрос на <b>рассрочку</b> — та же форма, предмет <span class="mono">УСЛУГА</span> или новый финансовый предмет. Модель принимает оба одинаково.</div>
+
+<div class="callout new"><b>Вот что значит «набор не мёртвый».</b> Система описана не списком услуг, а <b>машиной их включения</b>. Список в реестре — снимок на сегодня; форма и правило — механизм на завтра. Когда рынок попросит сервис, которого мы сейчас даже не представляем, он войдёт тем же способом. Это превращает Систему из продукта с фиксированными фичами в платформу с открытым набором.</div>
+
+<h2>Где это в общей картине</h2>
+<p>Реестр — самый верхний слой над всеми документами Системы:</p>
+<div class="tbl-scroll"><table>
+  <thead><tr><th>Слой</th><th>Документ</th><th>Отвечает на вопрос</th></tr></thead>
+  <tbody>
+    <tr><td><b>Реестр сервисов</b> (этот)</td><td>service-registry</td><td>как сервисы устроены и как растёт набор</td></tr>
+    <tr><td>Линейка сервисов</td><td><a href="service-tiers.html">service-tiers</a></td><td>какие готовые уровни собираются из сервисов</td></tr>
+    <tr><td>Схемы вариантов</td><td><a href="site-overview.html">site-overview</a>, <a href="external-shop-integration.html">внешний магазин</a>, <a href="massamadre-settlement-mechanisms.html">механизмы расчёта</a></td><td>как конкретный пресет выглядит на практике</td></tr>
+    <tr><td>Реализация</td><td><a href="massamadre-catalog-settlement.html">Масса Мадре</a>, <a href="../vitrina-live.html">живая витрина</a></td><td>как это работает на реальном магазине</td></tr>
+  </tbody>
+</table></div>
+
+<footer>
+  Реестр сервисов и модель расширения · верхний слой пула. <b>Величины сервисов — <a href="12-opisanie-sistemy-i-pasport-parametrov.html">паспорт параметров</a>. Полный <a href="index-pool.html">указатель пула</a>. Исполнительный механизм объектов реестра: <a href="11-arhitektura-realizacii-obektov.html">архитектура реализации</a>.</b> Ниже: <a href="service-tiers.html">линейка сервисов</a>, <a href="site-overview.html">типы магазина</a>, <a href="massamadre-settlement-mechanisms.html">механизмы расчёта</a>. Расчётный контур: <a href="full-cycle-seller-to-buyer-red2.html">полный цикл</a>. Нормы: <a href="pravila-sistemy-red3-edinyi.html">Правила ред. 3</a>. Что из реестра реально реализовано: <a href="model-vs-reality-service-tiers.html">модель ↔ скелет</a>. Место в системе: <a href="system-layer-navigator.html">навигатор системного слоя</a>. Полный разбор по фазам процесса: <a href="service-registry-full-analysis.html">реестр — полный разбор</a>.
+</footer>
+</div>
+<div style="max-width:1080px;margin:16px auto;padding:10px 16px;border-left:3px solid #2E5B3A;background:#EEF3EF;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">🎛 Как селлер управляет каналами SKU (тумблеры, 3 уровня, храповик): <a href="sku-visibility-seller.html" style="color:#2E5B3A;font-weight:600">управление видимостью SKU</a></div>
+<div style="max-width:1080px;margin:16px auto;padding:10px 16px;border-left:3px solid #9A5B00;background:#FCEEDA;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">⚙ Работающий альфа-релиз этой модели (Postgres+API, 13/13): <a href="alpha-channels-dashboard.html" style="color:#9A5B00;font-weight:600">конфигуратор каналов — кабинет</a></div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Интегрировано без сокращений в своды слоёв: <a href="24-servisnyj-sloj-opisanie.html" style="font-weight:600;">сервисный слой</a> (+<a href="25-servisnyj-sloj-parametry.html">параметры</a>) и <a href="26-operacionnyj-sloj-opisanie.html" style="font-weight:600;">операционный слой</a> (+<a href="27-operacionnyj-sloj-parametry.html">параметры</a>).</div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Этот документ сведён с пятью другими в <a href="28-servis-edinyi.html" style="font-weight:600;">единое описание с параметрами</a> и в <a href="24-servis-opisanie.html" style="font-weight:600;">интегрированное описание сервисного слоя</a>; выведенные из него величины — в <a href="25-servis-parametry.html" style="font-weight:600;">наборе параметров</a>.</div>
+</body>
+</html>

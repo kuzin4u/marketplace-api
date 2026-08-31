@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Составные при создании витрины магазина селлера</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --form:#1D5FBF;--api:#2E5B3A;--db:#8A4B9A;--vit:#B0791F;--stop:#A62B2B;--r:3px;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,sans-serif;font-size:15px;line-height:1.6}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 90px}
+header.top{background:var(--paper2);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;padding:26px 24px 20px}
+.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+h1{font-family:'IBM Plex Serif',Georgia,serif;font-size:clamp(25px,4vw,36px);margin:8px 0 6px;letter-spacing:-.02em}
+.sub{color:var(--ink2);max-width:80ch;margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:16px;font-size:12.5px}
+.lg{display:flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:3px;flex:none}
+.d-form{background:var(--form)}.d-api{background:var(--api)}.d-db{background:var(--db)}.d-vit{background:var(--vit)}
+.diagram{background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);padding:10px;margin:22px 0;overflow-x:auto}
+svg{display:block;margin:0 auto;min-width:900px}
+h2{font-family:'IBM Plex Serif',Georgia,serif;font-size:21px;margin:32px 0 8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+p{margin:0 0 12px;max-width:84ch}
+table{width:100%;border-collapse:collapse;font-size:13.4px;background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:10px 0 16px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);padding:9px 11px;border-bottom:1px solid var(--line);font-weight:600;background:var(--paper)}
+td{padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.mono{font-family:'IBM Plex Mono',monospace;font-size:12.2px}
+.tbl-scroll{overflow-x:auto}
+.callout{border:1px solid var(--line);border-left:3px solid var(--form);background:var(--paper2);padding:11px 14px;border-radius:var(--r);margin:14px 0;font-size:13.8px}
+.callout b{color:var(--form)}
+.step-n{display:inline-block;width:20px;height:20px;border-radius:50%;background:var(--api);color:#fff;text-align:center;font-size:12px;font-weight:600;line-height:20px;margin-right:6px}
+footer{border-top:1px solid var(--line);margin-top:36px;padding-top:16px;font-size:12.5px;color:var(--ink3)}
+footer a{color:var(--api)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="eyebrow">ПТК · путь селлера · схема составных частей</div>
+    <h1>Как рождается витрина магазина</h1>
+    <p class="sub">Что с чем взаимодействует, когда селлер создаёт магазин и наполняет его товарами — от формы в личном кабинете до готовой витрины, которую видит покупатель и агент. Все связи по фактическому контракту server.js.</p>
+    <div class="legend">
+      <span class="lg"><span class="dot d-form"></span> формы ЛК (клиент)</span>
+      <span class="lg"><span class="dot d-api"></span> Marketplace API (server.js)</span>
+      <span class="lg"><span class="dot d-db"></span> база (Supabase)</span>
+      <span class="lg"><span class="dot d-vit"></span> витрина и агент (потребители)</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="diagram">
+<svg viewBox="0 0 960 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Схема составных частей при создании витрины">
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#3E4A57"/>
+    </marker>
+    <marker id="arw" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#B0791F"/>
+    </marker>
+  </defs>
+
+  <!-- КОЛОНКИ-ЗОНЫ -->
+  <text x="120" y="28" text-anchor="middle" font-size="12" font-weight="600" fill="#1D5FBF" font-family="IBM Plex Sans">ЛИЧНЫЙ КАБИНЕТ</text>
+  <text x="410" y="28" text-anchor="middle" font-size="12" font-weight="600" fill="#2E5B3A" font-family="IBM Plex Sans">MARKETPLACE API</text>
+  <text x="680" y="28" text-anchor="middle" font-size="12" font-weight="600" fill="#8A4B9A" font-family="IBM Plex Sans">БАЗА (SUPABASE)</text>
+  <text x="880" y="28" text-anchor="middle" font-size="12" font-weight="600" fill="#B0791F" font-family="IBM Plex Sans">ВИТРИНА · АГЕНТ</text>
+  <line x1="240" y1="40" x2="240" y2="700" stroke="#E3E7E1" stroke-dasharray="3 4"/>
+  <line x1="560" y1="40" x2="560" y2="700" stroke="#E3E7E1" stroke-dasharray="3 4"/>
+  <line x1="790" y1="40" x2="790" y2="700" stroke="#E3E7E1" stroke-dasharray="3 4"/>
+
+  <!-- ШАГ 0: участник -->
+  <g font-family="IBM Plex Sans">
+    <rect x="30" y="52" width="180" height="52" rx="8" fill="#EAF1FB" stroke="#1D5FBF"/>
+    <text x="120" y="74" text-anchor="middle" font-size="13" font-weight="600" fill="#1D5FBF">0 · Регистрация KYC</text>
+    <text x="120" y="92" text-anchor="middle" font-size="11" fill="#3E4A57">ИНН, имя → участник</text>
+  </g>
+  <rect x="300" y="52" width="220" height="52" rx="8" fill="#E7F0EA" stroke="#2E5B3A"/>
+  <text x="410" y="72" text-anchor="middle" font-size="12" font-weight="600" fill="#2E5B3A" font-family="IBM Plex Mono">POST /participants</text>
+  <text x="410" y="92" text-anchor="middle" font-size="11" fill="#3E4A57" font-family="IBM Plex Sans">создаёт seller_id (PTR-…)</text>
+  <rect x="600" y="52" width="180" height="52" rx="8" fill="#F3EAF6" stroke="#8A4B9A"/>
+  <text x="690" y="74" text-anchor="middle" font-size="12" font-weight="600" fill="#8A4B9A" font-family="IBM Plex Mono">participants</text>
+  <text x="690" y="92" text-anchor="middle" font-size="11" fill="#3E4A57" font-family="IBM Plex Sans">роль SELLER, ACTIVE</text>
+  <path d="M210 78 H298" stroke="#3E4A57" stroke-width="1.5" marker-end="url(#ar)"/>
+  <path d="M520 78 H598" stroke="#3E4A57" stroke-width="1.5" marker-end="url(#ar)"/>
+
+  <!-- ШАГ 1: Shop Form -->
+  <g font-family="IBM Plex Sans">
+    <rect x="30" y="140" width="180" height="66" rx="8" fill="#EAF1FB" stroke="#1D5FBF" stroke-width="1.4"/>
+    <text x="120" y="162" text-anchor="middle" font-size="13" font-weight="600" fill="#1D5FBF">1 · Shop Form</text>
+    <text x="120" y="180" text-anchor="middle" font-size="11" fill="#3E4A57">бренд, slug, регион</text>
+    <text x="120" y="196" text-anchor="middle" font-size="10.5" fill="#6C7681">wizard 4 экрана</text>
+  </g>
+  <!-- проверка slug -->
+  <rect x="300" y="130" width="220" height="40" rx="8" fill="#E7F0EA" stroke="#2E5B3A"/>
+  <text x="410" y="147" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2E5B3A" font-family="IBM Plex Mono">GET /shop/:slug</text>
+  <text x="410" y="162" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">404 свободен · 200 занят</text>
+  <!-- создать магазин -->
+  <rect x="300" y="178" width="220" height="42" rx="8" fill="#E7F0EA" stroke="#2E5B3A"/>
+  <text x="410" y="196" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2E5B3A" font-family="IBM Plex Mono">POST /shops</text>
+  <text x="410" y="211" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">brand_name, brand_accent, seller_id</text>
+
+  <rect x="600" y="150" width="180" height="56" rx="8" fill="#F3EAF6" stroke="#8A4B9A"/>
+  <text x="690" y="172" text-anchor="middle" font-size="12" font-weight="600" fill="#8A4B9A" font-family="IBM Plex Mono">shops</text>
+  <text x="690" y="189" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">id=SHOP-slug, brand_*,</text>
+  <text x="690" y="202" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">channels, status=ACTIVE</text>
+
+  <path d="M120 140 V110" stroke="#3E4A57" stroke-width="1.2" marker-end="url(#ar)" fill="none"/>
+  <path d="M210 158 H298" stroke="#3E4A57" stroke-width="1.5" marker-end="url(#ar)"/>
+  <path d="M210 190 H298" stroke="#3E4A57" stroke-width="1.5" marker-end="url(#ar)"/>
+  <path d="M520 192 H598" stroke="#3E4A57" stroke-width="1.5" marker-end="url(#ar)"/>
+  <!-- участник → магазин связь -->
+  <path d="M690 104 V148" stroke="#8A4B9A" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+  <text x="742" y="130" font-size="9.5" fill="#8A4B9A" font-family="IBM Plex Sans">seller_id →</text>
+
+  <!-- auto: infra_bindings -->
+  <rect x="600" y="222" width="180" height="40" rx="8" fill="#F3EAF6" stroke="#8A4B9A" stroke-dasharray="3 3"/>
+  <text x="690" y="239" text-anchor="middle" font-size="11" font-weight="600" fill="#8A4B9A" font-family="IBM Plex Mono">infra_bindings</text>
+  <text x="690" y="253" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Sans">авто: фулфилмент/логистика</text>
+  <path d="M560 206 C 580 230, 580 240, 598 242" stroke="#3E4A57" stroke-width="1.2" marker-end="url(#ar)" fill="none"/>
+
+  <!-- ШАГ 2: SKU-CRUD -->
+  <g font-family="IBM Plex Sans">
+    <rect x="30" y="300" width="180" height="66" rx="8" fill="#EAF1FB" stroke="#1D5FBF" stroke-width="1.4"/>
+    <text x="120" y="322" text-anchor="middle" font-size="13" font-weight="600" fill="#1D5FBF">2 · SKU-CRUD</text>
+    <text x="120" y="340" text-anchor="middle" font-size="11" fill="#3E4A57">товары: фото, цена, остаток</text>
+    <text x="120" y="356" text-anchor="middle" font-size="10.5" fill="#6C7681">quick add · CSV</text>
+  </g>
+  <rect x="300" y="308" width="220" height="50" rx="8" fill="#E7F0EA" stroke="#2E5B3A"/>
+  <text x="410" y="326" text-anchor="middle" font-size="11" font-weight="600" fill="#2E5B3A" font-family="IBM Plex Mono">POST /seller/:id/products</text>
+  <text x="410" y="342" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">title, price (₽), stock,</text>
+  <text x="410" y="354" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">category_id, visible_catalog</text>
+
+  <rect x="600" y="305" width="180" height="56" rx="8" fill="#F3EAF6" stroke="#8A4B9A"/>
+  <text x="690" y="327" text-anchor="middle" font-size="12" font-weight="600" fill="#8A4B9A" font-family="IBM Plex Mono">skus</text>
+  <text x="690" y="344" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">price, stock, status=ACTIVE,</text>
+  <text x="690" y="357" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">moderation=PENDING</text>
+
+  <path d="M120 300 V210" stroke="#3E4A57" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#ar)" fill="none"/>
+  <text x="128" y="258" font-size="9.5" fill="#6C7681" font-family="IBM Plex Sans">после магазина</text>
+  <path d="M210 333 H298" stroke="#3E4A57" stroke-width="1.5" marker-end="url(#ar)"/>
+  <path d="M520 333 H598" stroke="#3E4A57" stroke-width="1.5" marker-end="url(#ar)"/>
+  <!-- skus привязан к shop -->
+  <path d="M690 262 V303" stroke="#8A4B9A" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+  <text x="700" y="288" font-size="9.5" fill="#8A4B9A" font-family="IBM Plex Sans">shop_id →</text>
+
+  <!-- ШАГ 3: витрина читает -->
+  <g font-family="IBM Plex Sans">
+    <rect x="820" y="150" width="120" height="200" rx="10" fill="#FBF3E1" stroke="#B0791F" stroke-width="1.4"/>
+    <text x="880" y="176" text-anchor="middle" font-size="12.5" font-weight="600" fill="#B0791F">ВИТРИНА</text>
+    <text x="880" y="196" text-anchor="middle" font-size="10.5" fill="#3E4A57">massamadre.ru</text>
+    <line x1="835" y1="208" x2="925" y2="208" stroke="#E3D6B6"/>
+    <text x="880" y="228" text-anchor="middle" font-size="10" fill="#6C7681">config → бренд</text>
+    <text x="880" y="246" text-anchor="middle" font-size="10" fill="#6C7681">products → товары</text>
+    <line x1="835" y1="262" x2="925" y2="262" stroke="#E3D6B6"/>
+    <text x="880" y="284" text-anchor="middle" font-size="12.5" font-weight="600" fill="#B0791F">АГЕНТ</text>
+    <text x="880" y="303" text-anchor="middle" font-size="10" fill="#6C7681">🟢 каталог</text>
+    <text x="880" y="320" text-anchor="middle" font-size="10" fill="#6C7681">Системы</text>
+    <text x="880" y="338" text-anchor="middle" font-size="9.5" fill="#6C7681">visible_catalog=TRUE</text>
+  </g>
+
+  <!-- витрина читает config -->
+  <rect x="300" y="410" width="220" height="42" rx="8" fill="#E7F0EA" stroke="#2E5B3A"/>
+  <text x="410" y="428" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2E5B3A" font-family="IBM Plex Mono">GET /config/:slug</text>
+  <text x="410" y="443" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">бренд, логотип, каналы</text>
+  <rect x="300" y="462" width="220" height="42" rx="8" fill="#E7F0EA" stroke="#2E5B3A"/>
+  <text x="410" y="480" text-anchor="middle" font-size="11.5" font-weight="600" fill="#2E5B3A" font-family="IBM Plex Mono">GET /shop/:slug/products</text>
+  <text x="410" y="495" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">visible_shop=TRUE, ACTIVE</text>
+
+  <!-- витрина тянет из API -->
+  <path d="M820 250 C 650 250, 560 300, 522 430" stroke="#B0791F" stroke-width="1.5" marker-end="url(#arw)" fill="none"/>
+  <path d="M820 260 C 660 300, 560 400, 522 483" stroke="#B0791F" stroke-width="1.5" marker-end="url(#arw)" fill="none"/>
+  <!-- API читает из БД для витрины -->
+  <path d="M520 431 H598 V361" stroke="#3E4A57" stroke-width="1.2" marker-end="url(#ar)" fill="none"/>
+  <path d="M520 483 C 560 483, 600 400, 600 361" stroke="#3E4A57" stroke-width="1.2" marker-end="url(#ar)" fill="none"/>
+
+  <!-- НИЖНИЙ ИНВАРИАНТ -->
+  <rect x="60" y="560" width="840" height="120" rx="10" fill="#F1F4F0" stroke="#B9BEB6"/>
+  <text x="480" y="586" text-anchor="middle" font-size="13" font-weight="600" fill="#1A1F26" font-family="IBM Plex Serif">Инвариант: все интерфейсы — клиенты одного API</text>
+  <g font-family="IBM Plex Sans" font-size="11" fill="#3E4A57">
+    <rect x="90" y="600" width="220" height="62" rx="8" fill="#EAF1FB" stroke="#1D5FBF"/>
+    <text x="200" y="622" text-anchor="middle" font-weight="600" fill="#1D5FBF">Формы ЛК</text>
+    <text x="200" y="640" text-anchor="middle">пишут в API (создание)</text>
+    <text x="200" y="655" text-anchor="middle" font-size="10" fill="#6C7681">POST /shops, /products</text>
+
+    <rect x="370" y="600" width="220" height="62" rx="8" fill="#E7F0EA" stroke="#2E5B3A"/>
+    <text x="480" y="622" text-anchor="middle" font-weight="600" fill="#2E5B3A">server.js + база</text>
+    <text x="480" y="640" text-anchor="middle">единственный источник правды</text>
+    <text x="480" y="655" text-anchor="middle" font-size="10" fill="#6C7681">shops · skus · participants</text>
+
+    <rect x="650" y="600" width="220" height="62" rx="8" fill="#FBF3E1" stroke="#B0791F"/>
+    <text x="760" y="622" text-anchor="middle" font-weight="600" fill="#B0791F">Витрина + агент</text>
+    <text x="760" y="640" text-anchor="middle">читают из API (показ)</text>
+    <text x="760" y="655" text-anchor="middle" font-size="10" fill="#6C7681">GET /config, /products</text>
+  </g>
+  <path d="M310 631 H368" stroke="#3E4A57" stroke-width="1.4" marker-end="url(#ar)"/>
+  <path d="M590 631 H648" stroke="#3E4A57" stroke-width="1.4" marker-end="url(#ar)"/>
+</svg>
+</div>
+
+<h2>Как читать схему</h2>
+<p>Четыре зоны слева направо: <b>формы личного кабинета</b> (селлер вводит) → <b>Marketplace API</b> (server.js принимает и проверяет) → <b>база Supabase</b> (данные ложатся) → <b>витрина и агент</b> (читают и показывают). Сплошные стрелки — запросы, пунктир — связи между таблицами по ключам.</p>
+
+<h2>Порядок и зависимости составных</h2>
+<div class="tbl-scroll"><table>
+  <thead><tr><th>Шаг</th><th>Кто</th><th>Маршрут</th><th>Что создаёт</th><th>Зависит от</th></tr></thead>
+  <tbody>
+    <tr><td><span class="step-n">0</span></td><td>Регистрация KYC</td><td class="mono">POST /participants</td><td>участник → <b>seller_id</b> (PTR-…)</td><td>—</td></tr>
+    <tr><td><span class="step-n">1</span></td><td>Shop Form</td><td class="mono">GET /shop/:slug<br>POST /shops</td><td>магазин (id=SHOP-slug), авто-привязки</td><td><b>seller_id</b> должен существовать</td></tr>
+    <tr><td><span class="step-n">2</span></td><td>SKU-CRUD</td><td class="mono">POST /seller/:id/products</td><td>товары в <span class="mono">skus</span></td><td>у продавца должен быть <b>магазин</b></td></tr>
+    <tr><td><span class="step-n">3</span></td><td>Витрина</td><td class="mono">GET /config/:slug<br>GET /shop/:slug/products</td><td>—  (только читает)</td><td>магазин + товары ACTIVE</td></tr>
+    <tr><td><span class="step-n">3</span></td><td>Агент 🟢</td><td class="mono">каталог Системы</td><td>—  (только читает)</td><td>товар с <span class="mono">visible_catalog=TRUE</span></td></tr>
+  </tbody>
+</table></div>
+
+<div class="callout"><b>Ключевая зависимость — цепочка ключей.</b> Товар нельзя создать раньше магазина (проверка «у продавца есть магазин»), магазин нельзя создать без участника (проверка «seller_id существует»). Поэтому порядок жёсткий: <span class="mono">participant → shop → sku</span>. Витрина и агент в конце только читают — они ничего не создают, а собирают готовое из базы через API.</div>
+
+<h2>Что где хранится</h2>
+<div class="tbl-scroll"><table>
+  <thead><tr><th>Таблица</th><th>Ключевые поля</th><th>Наполняет</th><th>Читает</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">participants</td><td>id (PTR-…), inn, name, role, seller_group, status</td><td>шаг 0</td><td>магазин, витрина (рейтинг)</td></tr>
+    <tr><td class="mono">shops</td><td>id (SHOP-slug), seller_id, slug, brand_name, brand_accent, channels</td><td>Shop Form</td><td>витрина (config), товары</td></tr>
+    <tr><td class="mono">skus</td><td>id (SKU-…), shop_id, seller_id, title, price, stock, visible_shop, visible_catalog, status</td><td>SKU-CRUD</td><td>витрина, агент, заказ</td></tr>
+    <tr><td class="mono">infra_bindings</td><td>seller_id, fulfillment_id, logistics_id</td><td>авто при POST /shops</td><td>логистика заказа</td></tr>
+  </tbody>
+</table></div>
+
+<div class="callout"><b>Две «видимости» товара.</b> <span class="mono">visible_shop</span> — показывать ли товар на витрине магазина; <span class="mono">visible_catalog</span> — отдавать ли его агенту в каталог Системы. Форма SKU-CRUD ставит обе в зависимости от статуса ACTIVE, поэтому DRAFT-товар не появляется ни там, ни там — это и есть проверка сквозного сценария из <a href="test-plan-seller-flow.html#l4">уровня 4</a>.</div>
+
+<h2>Связанные документы пула</h2>
+<p style="font-size:13.5px;color:var(--ink2)">Что показывает эта схема — техника пути селлера; куда нырнуть за ролями, полным циклом и нормами. Ссылки двусторонние.</p>
+<div class="tbl-scroll"><table>
+  <thead><tr><th>Документ</th><th>Связь со схемой</th></tr></thead>
+  <tbody>
+    <tr><td><a href="roles-mental-model.html">Кто есть кто</a></td><td>та же система в терминах ролей (инструмент/посредник/данные/потребитель) — смысл вместо механики</td></tr>
+    <tr><td><a href="full-cycle-seller-to-buyer-red2.html">Полный цикл, ред. 2</a></td><td>эта схема — увеличительное стекло на часть «рождение витрины» общего цикла сделки</td></tr>
+    <tr><td><a href="external-shop-integration.html">Внешний магазин в Системе</a></td><td>вариант, когда каталог остаётся у селлера, а расчёты идут через Систему</td></tr>
+    <tr><td><a href="../shop-form.html">Shop Form</a> · <a href="../sku-crud.html">SKU-CRUD</a></td><td>формы ЛК из зоны «инструмент» — как селлер вводит данные</td></tr>
+    <tr><td><a href="api-routes-seller.html">Справочник маршрутов</a></td><td>реальный контракт server.js — маршруты и поля из зоны «API»</td></tr>
+    <tr><td><a href="test-plan-seller-flow.html">План тестирования</a></td><td>как проверяется, что путь работает от формы до витрины</td></tr>
+  </tbody>
+</table></div>
+
+<footer>
+  Схема составных при создании витрины · часть пула документов Системы. Построена по фактическому контракту <span class="mono">server.js</span> (marketplace-api). Формы — <a href="../shop-form.html">Shop Form</a>, <a href="../sku-crud.html">SKU-CRUD</a>; маршруты — <a href="api-routes-seller.html">справочник</a>; полный цикл — <a href="full-cycle-seller-to-buyer-red2.html">схема ред. 2</a>. Концептуальная версия (роли, метафоры) — <a href="roles-mental-model.html">кто есть кто</a>. Внешний магазин в Системе — <a href="external-shop-integration.html">модель интеграции</a>.
+</footer>
+</div>
+<div style="max-width:1080px;margin:16px auto;padding:10px 16px;border-left:3px solid #2E5B3A;background:#EEF3EF;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">▶ Живая реализация витрины (читает магазин и товары из API): <a href="../vitrina-live.html" style="color:#2E5B3A;font-weight:600">vitrina-live</a></div>
+<div style="max-width:1080px;margin:16px auto;padding:10px 16px;border-left:3px solid #2E5B3A;background:#EEF3EF;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">🎛 Как селлер управляет каналами SKU (тумблеры, 3 уровня, храповик): <a href="sku-visibility-seller.html" style="color:#2E5B3A;font-weight:600">управление видимостью SKU</a></div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Этот документ сведён с двадцатью другими в <a href="33-ui-vitrina-opisanie.html" style="font-weight:600;">интегрированное описание слоя UI и витрины</a>; выведенные величины — в <a href="34-ui-vitrina-parametry.html" style="font-weight:600;">наборе параметров U</a>.</div>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Линейка сервисов Системы: уровни вовлечения продавца</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --sys:#2E5B3A;--money:#A62B2B;--own:#7A5C1E;--sysbg:#EEF3EF;--ownbg:#FBF6EA;--r:8px;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,sans-serif;font-size:15px;line-height:1.55}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px 90px}
+header.top{background:var(--paper2);border-bottom:1px solid var(--line)}
+.top-in{max-width:1120px;margin:0 auto;padding:26px 24px 20px}
+.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+h1{font-family:'IBM Plex Serif',Georgia,serif;font-size:clamp(23px,3.5vw,33px);margin:8px 0 6px;letter-spacing:-.02em;line-height:1.15}
+.sub{color:var(--ink2);max-width:84ch;margin:0}
+.thesis{margin-top:16px;padding:12px 16px;border:1px solid var(--line);border-left:3px solid var(--sys);background:var(--paper);border-radius:var(--r);font-size:14px;color:var(--ink2)}
+.thesis b{color:var(--sys)}
+h2{font-family:'IBM Plex Serif',Georgia,serif;font-size:22px;margin:34px 0 8px;border-bottom:2px solid var(--line);padding-bottom:6px}
+h3{font-size:16px;margin:20px 0 6px}
+p{margin:6px 0 12px;max-width:86ch}
+.tbl-scroll{overflow-x:auto;margin:12px 0}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;min-width:820px}
+th{text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);padding:9px 10px;border-bottom:1px solid var(--line);font-weight:600;background:var(--paper);vertical-align:bottom}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.lvl-name{font-weight:700;white-space:nowrap}
+.s{background:var(--sysbg);color:var(--sys);font-weight:600;text-align:center;border-radius:4px;font-size:12px}
+.o{background:var(--ownbg);color:var(--own);font-weight:600;text-align:center;border-radius:4px;font-size:12px}
+.cellwrap{padding:4px 6px;border-radius:4px;display:block;text-align:center}
+.tag{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:99px;margin-left:5px;vertical-align:middle}
+.tag.core{background:rgba(46,91,58,.12);color:var(--sys);border:1px solid rgba(46,91,58,.3)}
+.tag.ext{background:rgba(122,92,30,.12);color:var(--own);border:1px solid rgba(122,92,30,.3)}
+.callout{border:1px solid var(--line);border-left:3px solid var(--sys);background:var(--paper2);padding:11px 14px;border-radius:var(--r);margin:16px 0;font-size:13.8px}
+.callout b{color:var(--sys)}
+.callout.money{border-left-color:var(--money)}.callout.money b{color:var(--money)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin:6px 0 0;font-size:12.5px}
+.lg{display:flex;align-items:center;gap:6px}.dot{width:13px;height:13px;border-radius:3px}
+.diagram{background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);padding:10px;margin:18px 0;overflow-x:auto}
+svg{display:block;margin:0 auto;min-width:900px}
+.card{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin:12px 0}
+.card h4{margin:0 0 6px;font-size:15px}
+.clearing{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--money);background:rgba(166,43,43,.06);padding:2px 7px;border-radius:4px}
+footer{border-top:1px solid var(--line);margin-top:36px;padding-top:16px;font-size:12.5px;color:var(--ink3)}
+footer a{color:var(--sys)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="eyebrow">ПТК · продуктовая линейка · верхний документ над схемами</div>
+    <h1>Линейка сервисов Системы</h1>
+    <p class="sub">Разные продавцы приходят с разными блокерами: у одного нет сайта, у другого нет курьеров, у третьего нет доверия покупателей, у четвёртого есть всё — кроме потока клиентов. Система не навязывает одну модель, а предлагает уровни вовлечения. Продавец берёт ровно то, чего ему не хватает. В этом сила Системы.</p>
+    <div class="thesis"><b>Единый принцип:</b> расчёт и клиринг есть на КАЖДОМ уровне — но <b>предмет клиринга разный</b>: вся сделка, услуга fulfilment или комиссия за трафик. Движок один, меняется предмет. Поэтому новый уровень — это не новая разработка, а новый пресет переключателей.</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h2>Шесть уровней — матрица</h2>
+<div class="legend">
+  <span class="lg"><span class="dot" style="background:#2E5B3A"></span> модуль Системы</span>
+  <span class="lg"><span class="dot" style="background:#B0791F"></span> остаётся у продавца</span>
+  <span class="lg"><span class="tag core">осн.</span> три уровня, названные вами</span>
+  <span class="lg"><span class="tag ext">доп.</span> достроенные</span>
+</div>
+<div class="tbl-scroll"><table>
+  <thead><tr>
+    <th style="min-width:180px">Уровень</th><th>Витрина</th><th>Расчёт с покупателем</th><th>Fulfilment</th><th>Каталог / трафик</th><th style="min-width:190px">Что делает клиринг</th>
+  </tr></thead>
+  <tbody>
+    <tr>
+      <td class="lvl-name">1 · Полный <span class="tag core">осн.</span><br><span style="font-weight:400;color:var(--ink3);font-size:11.5px">под ключ в Системе</span></td>
+      <td><span class="cellwrap s">Система</span></td><td><span class="cellwrap s">Система</span></td><td><span class="cellwrap s">Система</span></td><td><span class="cellwrap s">Система</span></td>
+      <td><span class="clearing">клиринг всей сделки</span> эскроу→сплит→выплата, − take-rate</td>
+    </tr>
+    <tr>
+      <td class="lvl-name">2 · Витрина своя,<br>остальное Система <span class="tag core">осн.</span></td>
+      <td><span class="cellwrap o">своя</span></td><td><span class="cellwrap s">Система</span></td><td><span class="cellwrap s">Система</span></td><td><span class="cellwrap s">Система</span></td>
+      <td><span class="clearing">клиринг всей сделки</span> то же, заказ пришёл с чужой витрины</td>
+    </tr>
+    <tr>
+      <td class="lvl-name">3 · Витрина + расчёт свои,<br>fulfilment наш <span class="tag core">осн.</span></td>
+      <td><span class="cellwrap o">своя</span></td><td><span class="cellwrap o">свой</span></td><td><span class="cellwrap s">Система</span></td><td><span class="cellwrap s">Система</span></td>
+      <td><span class="clearing">клиринг УСЛУГИ</span> продавец платит за fulfilment, деньги сделки шли мимо</td>
+    </tr>
+    <tr>
+      <td class="lvl-name">4 · Только трафик <span class="tag ext">доп.</span><br><span style="font-weight:400;color:var(--ink3);font-size:11.5px">каталог-лайт</span></td>
+      <td><span class="cellwrap o">своя</span></td><td><span class="cellwrap o">свой</span></td><td><span class="cellwrap o">свой</span></td><td><span class="cellwrap s">Система</span></td>
+      <td><span class="clearing">клиринг КОМИССИИ</span> referral-fee за приведённого покупателя</td>
+    </tr>
+    <tr>
+      <td class="lvl-name">5 · White-label <span class="tag ext">доп.</span><br><span style="font-weight:400;color:var(--ink3);font-size:11.5px">под ключ, под бренд селлера</span></td>
+      <td><span class="cellwrap s">Система<br><span style="font-size:10px;font-weight:400">фасад селлера</span></span></td><td><span class="cellwrap s">Система</span></td><td><span class="cellwrap s">Система</span></td><td><span class="cellwrap s">Система</span></td>
+      <td><span class="clearing">клиринг всей сделки</span> как «полный», но покупатель не видит Систему</td>
+    </tr>
+    <tr>
+      <td class="lvl-name">6 · Гибрид по заказу <span class="tag ext">доп.</span><br><span style="font-weight:400;color:var(--ink3);font-size:11.5px">режим, не фикс. уровень</span></td>
+      <td><span class="cellwrap o">своя</span></td><td><span class="cellwrap s" style="background:linear-gradient(90deg,#FBF6EA 50%,#EEF3EF 50%)">свой / Система<br><span style="font-size:10px;font-weight:400">выбор на заказ</span></span></td><td><span class="cellwrap o">свой/Сист.</span></td><td><span class="cellwrap s">Система</span></td>
+      <td><span class="clearing">клиринг ПО ТИПУ заказа</span> то сделка, то ничего — решается на чекауте</td>
+    </tr>
+  </tbody>
+</table></div>
+
+<div class="callout money"><b>Клиринг — универсальный движок, предмет разный.</b> Обратите внимание на последнюю колонку: на уровнях 1, 2, 5 клирингуется <b>вся сделка</b> (эскроу денег покупателя). На уровне 3 — <b>услуга fulfilment</b> (сделка мимо, платится только доставка). На уровне 4 — <b>комиссия за трафик</b> (ни сделки, ни услуги, только referral-fee). На уровне 6 — <b>по типу каждого заказа</b>. Это и есть ось, под которую адаптируется Система: не «есть клиринг / нет клиринга», а «что именно клирингуется».</div>
+
+<h2>Лестница вовлечения — визуально</h2>
+<p>Чем выше уровень, тем больше продавец отдаёт Системе и меньше делает сам. Левый край — «Система только приводит покупателя», правый — «Система делает всё».</p>
+<div class="diagram">
+<svg viewBox="0 0 920 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Лестница вовлечения">
+  <!-- ось -->
+  <text x="30" y="30" font-size="11" font-weight="600" fill="#B0791F" font-family="IBM Plex Sans">← продавец делает больше сам</text>
+  <text x="890" y="30" text-anchor="end" font-size="11" font-weight="600" fill="#2E5B3A" font-family="IBM Plex Sans">Система делает больше →</text>
+  <line x1="30" y1="42" x2="890" y2="42" stroke="#DDE2DB"/>
+  <!-- ступени -->
+  <g font-family="IBM Plex Sans">
+    <!-- 4 только трафик -->
+    <rect x="30" y="210" width="150" height="70" rx="8" fill="#FBF6EA" stroke="#B0791F"/>
+    <text x="105" y="234" text-anchor="middle" font-size="12" font-weight="700" fill="#B0791F">4 · Трафик</text>
+    <text x="105" y="251" text-anchor="middle" font-size="9.5" fill="#3E4A57">только каталог/агент</text>
+    <text x="105" y="266" text-anchor="middle" font-size="9" fill="#6C7681">клиринг: комиссия</text>
+    <!-- 3 fulfilment -->
+    <rect x="200" y="170" width="150" height="70" rx="8" fill="#FBF6EA" stroke="#B0791F"/>
+    <text x="275" y="194" text-anchor="middle" font-size="12" font-weight="700" fill="#B0791F">3 · +Fulfilment</text>
+    <text x="275" y="211" text-anchor="middle" font-size="9.5" fill="#3E4A57">витрина+расчёт свои</text>
+    <text x="275" y="226" text-anchor="middle" font-size="9" fill="#6C7681">клиринг: услуга</text>
+    <!-- 2 витрина своя -->
+    <rect x="370" y="130" width="150" height="70" rx="8" fill="#F4F1E8" stroke="#7A6E4E"/>
+    <text x="445" y="154" text-anchor="middle" font-size="12" font-weight="700" fill="#5E5636">2 · Витрина своя</text>
+    <text x="445" y="171" text-anchor="middle" font-size="9.5" fill="#3E4A57">расчёт+fulfilment Сист.</text>
+    <text x="445" y="186" text-anchor="middle" font-size="9" fill="#6C7681">клиринг: сделка</text>
+    <!-- 1 полный -->
+    <rect x="540" y="90" width="150" height="70" rx="8" fill="#EEF3EF" stroke="#2E5B3A"/>
+    <text x="615" y="114" text-anchor="middle" font-size="12" font-weight="700" fill="#2E5B3A">1 · Полный</text>
+    <text x="615" y="131" text-anchor="middle" font-size="9.5" fill="#3E4A57">всё в Системе</text>
+    <text x="615" y="146" text-anchor="middle" font-size="9" fill="#6C7681">клиринг: сделка</text>
+    <!-- 5 white-label -->
+    <rect x="710" y="90" width="180" height="70" rx="8" fill="#EEF3EF" stroke="#2E5B3A" stroke-dasharray="5 3"/>
+    <text x="800" y="114" text-anchor="middle" font-size="12" font-weight="700" fill="#2E5B3A">5 · White-label</text>
+    <text x="800" y="131" text-anchor="middle" font-size="9.5" fill="#3E4A57">полный, но под бренд</text>
+    <text x="800" y="146" text-anchor="middle" font-size="9" fill="#6C7681">клиринг: сделка</text>
+  </g>
+  <!-- ступенчатая линия -->
+  <path d="M105 210 V200 M105 200 H275 M275 200 V170 M275 170 H445 M445 170 V130 M445 130 H615 M615 130 V90" stroke="#B9BEB6" stroke-width="1.2" fill="none" stroke-dasharray="3 3"/>
+  <!-- 6 гибрид сбоку -->
+  <rect x="370" y="250" width="320" height="38" rx="8" fill="#fff" stroke="#3E4A57" stroke-dasharray="4 3"/>
+  <text x="530" y="267" text-anchor="middle" font-size="11" font-weight="600" fill="#141A21">6 · Гибрид — не ступень, а режим: расчёт выбирается на каждый заказ</text>
+  <text x="530" y="281" text-anchor="middle" font-size="9" fill="#6C7681">накладывается на уровни 2-3</text>
+</svg>
+</div>
+
+<h2>Под какой блокер — какой уровень</h2>
+<div class="tbl-scroll"><table>
+  <thead><tr><th>У продавца нет…</th><th>Уровень</th><th>Пример</th></tr></thead>
+  <tbody>
+    <tr><td>ничего своего (ни сайта, ни логистики)</td><td class="s">1 · Полный</td><td>новый мелкий пекарь — нужно всё готовое</td></tr>
+    <tr><td>только сайта-витрины</td><td class="s">2 · Витрина Системы</td><td>есть товар и руки, нет веб-магазина</td></tr>
+    <tr><td>только курьеров/склада</td><td class="o">3 · Fulfilment</td><td><b>Масса Мадре</b> — оплата налажена, доставки нет</td></tr>
+    <tr><td>только потока покупателей</td><td class="o">4 · Трафик</td><td>налаженный магазин, нужен лишь новый канал сбыта</td></tr>
+    <tr><td>своего бренда на витрине Системы</td><td class="s">5 · White-label</td><td>Ozon/WB-селлер хочет свой фасад на движке Системы</td></tr>
+    <tr><td>единой модели — разные заказы разные</td><td>6 · Гибрид</td><td>прямые для постоянных, гарантия для новых</td></tr>
+  </tbody>
+</table></div>
+
+<h2>Как под это адаптируется Система</h2>
+<p>Не переписывать движок под каждый уровень, а сделать уровень <b>конфигурацией магазина</b> из независимых переключателей. Уровни 1-6 — это готовые пресеты одной модели.</p>
+<div class="card">
+<h4>Профиль магазина = набор переключателей</h4>
+<pre style="background:#0F1720;color:#E6EDF3;padding:14px 16px;border-radius:6px;overflow-x:auto;font-size:12.5px;line-height:1.6;font-family:'IBM Plex Mono',monospace">профиль_магазина = {
+  витрина:    СИСТЕМА | СВОЯ
+  расчёт:     СИСТЕМА | СВОЙ | ПО_ЗАКАЗУ
+  fulfilment: СИСТЕМА | СВОЙ
+  каталог:    В_СИСТЕМЕ | ТОЛЬКО_СВОЙ
+  бренд:      СИСТЕМА | СЕЛЛЕРА          <span style="color:#7A8794"># white-label</span>
+  клиринг.предмет: СДЕЛКА | УСЛУГА | КОМИССИЯ   <span style="color:#7A8794"># вычисляется из выше</span>
+}</pre>
+</div>
+
+<div class="tbl-scroll"><table>
+  <thead><tr><th>Что достроить в Системе</th><th>Для каких уровней</th><th>Статус</th></tr></thead>
+  <tbody>
+    <tr><td>Профиль магазина (конфигурация переключателей)</td><td>все — основа модели</td><td>надо спроектировать (сейчас магазин без профиля сервиса)</td></tr>
+    <tr><td>Флаг <span class="mono">settlement</span> в заказе (СДЕЛКА/УСЛУГА/КОМИССИЯ)</td><td>3, 4, 6 — разный предмет клиринга</td><td>сейчас есть только <span class="mono">entry_point</span> (источник, не предмет)</td></tr>
+    <tr><td>Сервис fulfilment + его тарификация</td><td>1, 3, 5</td><td>отдельный контур, не реализован</td></tr>
+    <tr><td>Referral-клиринг (комиссия за трафик)</td><td>4</td><td>не реализован</td></tr>
+    <tr><td>White-label: свой домен/бренд на движке</td><td>5</td><td>витрина умеет читать бренд; нужен домен-маппинг</td></tr>
+    <tr><td>Переключатель расчёта на чекауте</td><td>6</td><td>UI + флаг на заказ</td></tr>
+  </tbody>
+</table></div>
+
+<div class="callout"><b>Частные схемы — это пресеты этой модели.</b> Всё, что мы разбирали раньше, теперь встаёт на место как готовые конфигурации: <a href="site-overview.html">Тип 1 в Системе</a> = уровень 1; <a href="external-shop-integration.html">внешний магазин</a> = уровень 2; <a href="massamadre-settlement-mechanisms.html">три механизма расчёта</a> = детализация уровней 3 и 6; <a href="massamadre-catalog-settlement.html">Масса Мадре</a> = уровень 3. Этот документ — шапка над ними: он объясняет, почему схем много и как они складываются из общих переключателей.</div>
+
+<footer>
+  Линейка сервисов Системы · верхний документ пула над схемами вариантов. Пресеты: <a href="site-overview.html">типы магазина на сайте</a>, <a href="external-shop-integration.html">внешний магазин</a>, <a href="massamadre-settlement-mechanisms.html">механизмы расчёта</a>, <a href="massamadre-catalog-settlement.html">Масса Мадре</a>. Расчётный контур: <a href="full-cycle-seller-to-buyer-red2.html">полный цикл</a>. Нормы: <a href="pravila-sistemy-red3-edinyi.html">Правила ред. 3</a>. Сборка UI: <a href="ui-stage-map.html">карта UI-этапа</a> (кабинет полного участника vs white-label). Системный слой: <a href="system-layer-navigator.html">навигатор</a>. Что из этого реально реализовано: <a href="model-vs-reality-service-tiers.html">модель ↔ скелет</a>. Полный разбор реестра по фазам: <a href="service-registry-full-analysis.html">реестр — полный разбор</a>. Действующая модель (профили=уровни, per-SKU=гибрид по заказу): <a href="pipeline-model-interactive.html">интерактивная модель конвейера</a>.</footer>
+</div>
+<div style="max-width:1080px;margin:16px auto;padding:10px 16px;border-left:3px solid #5A3E9A;background:#F6F2FB;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">⬆ Ещё выше: как устроен сервис и как набор растёт — <a href="service-registry.html" style="color:#5A3E9A;font-weight:600">реестр сервисов и модель расширения</a></div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Как уровни вовлечения работают в общем конвейере — <a href="14-kak-rabotaet-sistema.html" style="font-weight:600;">сквозное описание Системы</a>.</div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Интегрировано без сокращений в своды слоёв: <a href="24-servisnyj-sloj-opisanie.html" style="font-weight:600;">сервисный слой</a> (+<a href="25-servisnyj-sloj-parametry.html">параметры</a>) и <a href="26-operacionnyj-sloj-opisanie.html" style="font-weight:600;">операционный слой</a> (+<a href="27-operacionnyj-sloj-parametry.html">параметры</a>).</div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Этот документ сведён с пятью другими в <a href="24-servis-opisanie.html" style="font-weight:600;">интегрированное описание сервисного слоя</a>; выведенные из него величины — в <a href="25-servis-parametry.html" style="font-weight:600;">наборе параметров</a>.</div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Уровни этого документа перенумерованы по возрастающей шкале и сведены с типами участия в <a href="40-reestr-variantov-uchastiya.html" style="font-weight:600;">полном реестре вариантов участия</a>.</div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#E0F4ED;border-left:4px solid #0d6650;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#084a38;">Нумерация этого документа отменена: принята возрастающая шкала глубины участия — <a href="44-shkala-urovnei-reshenie.html" style="font-weight:600;">решение по шкале</a>.</div>
+</body>
+</html>

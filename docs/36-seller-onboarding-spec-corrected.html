@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Подключение селлера — процедура, технология, юридика, финансы</title>
+<style>
+:root{--bg:#fff;--bg2:#f8f9fb;--bg3:#f1f3f6;--tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;--ac:#1e40af;--acbg:#dbeafe;--grn:#16a34a;--grnbg:#dcfce7;--orn:#d97706;--ornbg:#fef3c7;--red:#dc2626;--redbg:#fee2e2;--pur:#7c3aed;--purbg:#ede9fe;--cyn:#0891b2;--cynbg:#ecfeff;--brd:#e2e8f0;--mono:'SF Mono','JetBrains Mono',monospace;--sans:-apple-system,'Inter','Segoe UI',sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--bg2:#181b24;--bg3:#1f232e;--tx:#e4e6ec;--tx2:#9ca0b0;--tx3:#6b6f80;--ac:#5c8aff;--acbg:#1a2744;--grn:#4ade80;--grnbg:#0f2f1a;--orn:#fbbf24;--ornbg:#2a2010;--red:#f87171;--redbg:#2f1212;--pur:#c084fc;--purbg:#2a1744;--cyn:#22d3ee;--cynbg:#0a2a2e;--brd:#2a2e38}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--tx);font-size:13px;line-height:1.6}
+.w{max-width:1100px;margin:0 auto;padding:24px 20px}
+.hdr{margin-bottom:24px;padding-bottom:18px;border-bottom:1.5px solid var(--brd)}
+.hdr h1{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:4px}
+.hdr .sub{color:var(--tx2);font-size:13px}
+.nav{display:flex;gap:4px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:10;margin-bottom:14px;border-bottom:1px solid var(--brd)}
+.nb{padding:6px 12px;border-radius:6px;border:1.5px solid var(--brd);cursor:pointer;font-size:12px;font-weight:500;background:transparent;color:var(--tx2);transition:.15s}
+.nb:hover{border-color:#999}.nb.on{border-color:var(--ac);color:var(--ac);background:var(--acbg)}
+.pn{display:none}.pn.vis{display:block}
+.cd{border:1px solid var(--brd);border-radius:12px;padding:18px;margin-bottom:12px}
+.cd h3{font-size:15px;font-weight:600;margin-bottom:8px}
+.cd h4{font-size:13px;font-weight:600;margin:14px 0 6px;color:var(--tx2)}
+.cd p{font-size:13px;color:var(--tx2);line-height:1.65;margin-bottom:6px}
+.dm{font-family:var(--mono);font-size:11px;color:var(--tx2);background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:14px 16px;margin-top:8px;line-height:1.8;white-space:pre;overflow-x:auto}
+.dm b{color:var(--ac);font-weight:600}.dm em{color:var(--grn);font-style:normal;font-weight:600}.dm i{color:var(--orn);font-style:normal;font-weight:600}.dm u{color:var(--pur);text-decoration:none;font-weight:600}.dm s{color:var(--red);text-decoration:none;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+th{padding:7px 8px;text-align:left;font-weight:600;font-size:10px;color:var(--tx3);border-bottom:1.5px solid var(--brd);text-transform:uppercase;letter-spacing:.3px}
+td{padding:7px 8px;border-bottom:1px solid var(--brd);color:var(--tx2);vertical-align:top}
+tr.hl{background:var(--acbg)}
+.note{font-size:12px;padding:10px 14px;border-radius:8px;margin-top:10px;line-height:1.6}
+.note.info{background:var(--acbg);color:var(--ac)}.note.warn{background:var(--ornbg);color:var(--orn)}.note.rule{background:var(--redbg);color:var(--red)}.note.ok{background:var(--grnbg);color:var(--grn)}
+.fl{display:flex;gap:10px;align-items:flex-start;margin-bottom:3px}
+.fn{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.fn1{background:var(--acbg);color:var(--ac)}.fn2{background:var(--grnbg);color:var(--grn)}.fn3{background:var(--ornbg);color:var(--orn)}.fn4{background:var(--purbg);color:var(--pur)}.fn5{background:var(--cynbg);color:var(--cyn)}.fn6{background:var(--redbg);color:var(--red)}
+.ft{flex:1;font-size:12px;color:var(--tx2);line-height:1.6;padding:2px 0}.ft b{color:var(--tx);font-weight:600}
+.fa{color:var(--tx3);font-size:11px;text-align:center;margin:0 0 0 8px}
+.kpi{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700}
+.kpi-g{background:var(--grnbg);color:var(--grn)}.kpi-o{background:var(--ornbg);color:var(--orn)}.kpi-r{background:var(--redbg);color:var(--red)}
+.timeline{border-left:3px solid var(--brd);margin:10px 0 10px 12px;padding-left:20px}
+.timeline .step{margin-bottom:14px;position:relative}
+.timeline .step::before{content:'';position:absolute;left:-26px;top:4px;width:12px;height:12px;border-radius:50%;border:2px solid var(--ac);background:var(--bg)}
+.timeline .step.done::before{background:var(--grn);border-color:var(--grn)}
+.timeline .step.active::before{background:var(--ac);border-color:var(--ac)}
+.timeline .step h5{font-size:13px;font-weight:600;margin-bottom:2px}
+.timeline .step p{font-size:12px;color:var(--tx2);margin:0}
+.timeline .step .time{font-size:11px;color:var(--tx3);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Подключение селлера · Полная процедура</h1>
+  <div class="sub">Технология · Организация · Финансы · Юридика · От заявки до первой продажи за 48 часов</div>
+</div>
+
+<div style="max-width:1000px;margin:0 auto 8px;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 2</div>
+  <div style="margin-top:10px;padding:12px 16px;background:#dcfce7;border-left:4px solid #16a34a;border-radius:0 6px 6px 0;font-size:13px;line-height:1.6">
+    <b>Полный цикл: от регистрации до покупки.</b> Селлер проходит join-form (ИНН, OTP, группа) → wizard (бренд, каналы, акцент) → sku-crud (товары, цены, фото) → ЛК селлера (управление). Данные записываются в Supabase через API (server.js на Render). Витрина рендерится из API, агент покупателя (виджет 🤖) работает поверх того же API. Покупатель покупает через витрину (MIGRATED) или через агента (NETWORK). Два каталога: 🟢 Система + ⚪ рынок.<br>
+    <b>Связанные документы:</b>
+    <a href="29-vitrina-dvukhurovnevaya-spec-synced.html" style="color:#166534;font-weight:600;">Витрина двухуровневая</a> ·
+    <a href="34-vitrina-prototype-live-synced.html" style="color:#166534;font-weight:600;">Прототип витрины</a> ·
+    <a href="full-cycle-seller-to-buyer.html" style="color:#166534;font-weight:600;">Полный цикл: от селлера до покупателя</a> · <a href="full-cycle-seller-to-buyer-red2.html" style="color:#166534;font-weight:600;">Полный цикл (ред. 2 — два сервиса)</a> · <a href="agentic-commerce-architecture.html" style="color:#166534;font-weight:600;">Архитектура агентного слоя</a> ·
+    <a href="37-seller-onboarding-fast-corrected.html" style="color:#166534;font-weight:600;">Быстрый онбординг</a>
+  </div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Настоящий документ действует в рамках <b>Правил системы (ред. 2)</b> и подчинён им при любом расхождении. Процедуры ниже реализуют следующие статьи Правил:</div>
+  <div><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 2 — присоединение</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 3 — услуги/тарифы</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 4 — реестр</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 6 — расчёты/клиринг</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 7 — доход/co-payment</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 12 — права/споры</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 13 — вступление/выход</span></div>
+</div>
+<div class="nav" id="nav"></div>
+<div id="ct"></div>
+
+<script>
+var T=[
+  {id:'target',   l:'Целевые показатели'},
+  {id:'pipeline', l:'Onboarding pipeline'},
+  {id:'step1',    l:'Шаг 1: Заявка и KYC'},
+  {id:'step2',    l:'Шаг 2: Договор'},
+  {id:'step3',    l:'Шаг 3: Магазин и каталог'},
+  {id:'step4',    l:'Шаг 4: Импорт товаров'},
+  {id:'step5',    l:'Шаг 5: Каналы'},
+  {id:'step6',    l:'Шаг 6: Тестовый заказ'},
+  {id:'step7',    l:'Шаг 7: Go Live'},
+  {id:'finance',  l:'Финансовые условия'},
+  {id:'legal',    l:'Юридическая рамка'},
+  {id:'groups',   l:'Специфика по группам'},
+  {id:'support',  l:'Поддержка и сопровождение'},
+  {id:'metrics',  l:'KPI onboarding'}
+];
+var cur='target';
+function R(){
+  var h='';T.forEach(function(t){h+='<button class="nb'+(t.id===cur?' on':'')+'" data-t="'+t.id+'">'+t.l+'</button>';});
+  document.getElementById('nav').innerHTML=h;
+  document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){cur=this.getAttribute('data-t');R();}});
+  document.querySelectorAll('.pn').forEach(function(p){p.classList.toggle('vis',p.id==='p-'+cur);});
+}
+document.addEventListener('DOMContentLoaded',R);
+</script>
+
+<!-- ==================== ЦЕЛЕВЫЕ ПОКАЗАТЕЛИ ==================== -->
+<div class="pn vis" id="p-target">
+<div class="cd">
+  <h3>Целевые показатели подключения</h3>
+  <p>Подключение селлера — конкурентное преимущество Системы. У Ozon регистрация занимает 3–7 дней, у WB — 1–3 дня. Цель: <b>48 часов от заявки до первой продажи</b>, включая юридическое оформление.</p>
+
+  <table>
+    <thead><tr><th>Метрика</th><th>Целевое значение</th><th>Сравнение с Ozon</th><th>Сравнение с WB</th></tr></thead>
+    <tbody>
+      <tr><td><b>Заявка → KYC</b></td><td><span class="kpi kpi-g">≤ 15 мин</span></td><td>~30 мин</td><td>~15 мин</td></tr>
+      <tr><td><b>KYC → Договор подписан</b></td><td><span class="kpi kpi-g">≤ 2 часа</span></td><td>1–3 дня (проверка)</td><td>Мгновенно (оферта)</td></tr>
+      <tr><td><b>Договор → Магазин создан</b></td><td><span class="kpi kpi-g">≤ 10 мин</span></td><td>Нет аналога</td><td>Нет аналога</td></tr>
+      <tr><td><b>Магазин → Первый SKU в каталоге</b></td><td><span class="kpi kpi-g">≤ 30 мин</span></td><td>2–4 часа (модерация)</td><td>1–2 часа</td></tr>
+      <tr><td><b>Первый SKU → Первая продажа</b></td><td><span class="kpi kpi-o">≤ 48 часов</span></td><td>7–14 дней (трафик)</td><td>3–7 дней</td></tr>
+      <tr class="hl"><td><b>Полный цикл: заявка → продажа</b></td><td><span class="kpi kpi-g">≤ 48 часов</span></td><td>7–21 день</td><td>3–10 дней</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note ok"><b>Ключевое отличие.</b> На Ozon/WB селлер получает «витрину в чужом магазине» — его SKU тонет среди миллионов. В Системе селлер получает <b>собственный магазин с брендом + место в каталоге Системы</b>. Два уровня витрины = два потока покупателей с первого дня.</div>
+</div>
+</div>
+
+<!-- ==================== PIPELINE ==================== -->
+<div class="pn" id="p-pipeline">
+<div class="cd">
+  <h3>Onboarding pipeline: 7 шагов</h3>
+  <div class="dm"><b>ВОРОНКА ПОДКЛЮЧЕНИЯ (48 часов)</b>
+
+<b>Час 0</b>          <b>Час 0:15</b>       <b>Час 2</b>         <b>Час 2:10</b>       <b>Час 2:40</b>
+┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐
+│ <em>1</em>    │─────→│ <em>2</em>    │─────→│ <em>3</em>    │─────→│ <em>4</em>    │─────→│ <em>5</em>    │
+│Заявка│      │KYC   │      │Договор│     │Магазин│      │Импорт│
+│+KYC  │      │готов │      │подпис.│     │создан │      │SKU   │
+└──────┘      └──────┘      └──────┘      └──────┘      └──────┘
+15 мин        авто           2ч*           10 мин        30 мин
+                             (*ожидание
+                              подписи)
+
+<b>Час 3</b>         <b>Час 3:30</b>       <b>Час 4–48</b>
+┌──────┐      ┌──────┐      ┌──────────┐
+│ <em>6</em>    │─────→│ <em>7</em>    │─────→│ <b>LIVE</b>     │
+│Каналы│      │Тест. │      │Первая    │
+│вкл.  │      │заказ │      │продажа   │
+└──────┘      └──────┘      └──────────┘
+20 мин        30 мин         ← priority_boost (гр.2)
+                               ← push в каталоге
+                               ← welcome-нотификация
+                                 покупателям
+
+<b>ПАРАЛЛЕЛЬНЫЕ ПРОЦЕССЫ:</b>
+├── Модерация первых 3 SKU (SLA 4ч, может быть параллельна)
+├── Привязка к фулфилменту (автоматическая, из гейта)
+├── Настройка webhook-интеграции с логистикой
+└── Миграция клиентской базы (гр.1, если есть)</div>
+</div>
+
+<div class="cd">
+  <h3>Конверсия воронки</h3>
+  <table>
+    <thead><tr><th>Этап</th><th>Действие</th><th>Drop-off</th><th>Причины отсева</th><th>Решение</th></tr></thead>
+    <tbody>
+      <tr><td>Заявка</td><td>Форма + ИНН</td><td>~30%</td><td>«Потом посмотрю», не готов к ИНН</td><td>Возможность сохранить черновик, напоминание через 24ч</td></tr>
+      <tr><td>KYC</td><td>Проверка ИНН/ЕСИА</td><td>~5%</td><td>Некорректный ИНН, блокировка ФНС</td><td>Мгновенная валидация, подсказки</td></tr>
+      <tr><td>Договор</td><td>Подписание</td><td>~15%</td><td>«Хочу почитать условия», юрист</td><td>FAQ по договору, чат с поддержкой, 72ч на подпись</td></tr>
+      <tr><td>Магазин</td><td>Настройка бренда</td><td>~5%</td><td>Нет логотипа, не знает что писать</td><td>Автогенерация из ИНН (название), шаблоны описания</td></tr>
+      <tr><td>SKU</td><td>Загрузка товаров</td><td>~20%</td><td>Нет фото, сложная форма</td><td>Импорт из Ozon/WB, фото с телефона, AI-помощник</td></tr>
+      <tr><td>Каналы</td><td>Подключение TG/сайт</td><td>~3%</td><td>Технические сложности</td><td>Автосоздание TG-бота, субдомен автоматически</td></tr>
+      <tr><td>Тест</td><td>Тестовый заказ</td><td>~2%</td><td>Не понимает flow</td><td>Guided tour, тестовый заказ от «покупателя-робота»</td></tr>
+      <tr class="hl"><td><b>ИТОГО</b></td><td>заявка → live</td><td><b>~55%</b></td><td></td><td>Целевая конверсия: 55% заявок → работающий магазин</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== ШАГ 1 ==================== -->
+<div class="pn" id="p-step1">
+<div class="cd">
+  <h3>Шаг 1: Заявка и KYC <span class="kpi kpi-g">15 мин</span></h3>
+
+  <h4>Форма заявки (минимум полей)</h4>
+  <div class="dm"><b>ФОРМА ЗАЯВКИ — 6 полей</b>
+
+  ┌────────────────────────────────────────────────┐
+  │  Подключиться к Системе                        │
+  │                                                │
+  │  ИНН:  [____________] ← авто-проверка ФНС      │
+  │                         название подтянется     │
+  │                                                │
+  │  Тип:  ○ Самозанятый  ○ ИП  ○ ООО             │
+  │         ← автоопределение по ИНН               │
+  │                                                │
+  │  Телефон: [+7 ___ ___-__-__] ← SMS OTP         │
+  │  Email:   [________________] ← подтверждение    │
+  │                                                │
+  │  Категория: [Продукты питания ▾]                │
+  │  Регион:    [Москва ▾]                          │
+  │                                                │
+  │  [Подать заявку →]                              │
+  │                                                │
+  │  Нажимая кнопку, вы принимаете условия Системы │
+  └────────────────────────────────────────────────┘
+
+<b>АВТОМАТИЧЕСКАЯ ПРОВЕРКА (KYC Level 1):</b>
+
+  ИНН введён
+    │
+    ├──→ ФНС API: проверка существования, статус
+    │    ├── ОК → подтягиваем: наименование, ОГРН, адрес
+    │    └── Ошибка → «ИНН не найден или заблокирован»
+    │
+    ├──→ Определение типа: ФЛ / самозанятый / ИП / ООО
+    │
+    ├──→ SMS OTP: подтверждение телефона
+    │
+    └──→ <em>KYC Level 1 = ИНН проверен + телефон подтверждён</em>
+         (достаточно для начала; Level 2 = ЕСИА, потом)
+
+<b>SLA: 15 мин от открытия формы до подтверждения KYC</b></div>
+
+  <div class="note info"><b>Для гр. 1 (с сайтом):</b> доп. поле «URL вашего магазина» — парсим для предзаполнения каталога (шаг 4).</div>
+  <div class="note info"><b>Для гр. 2 (с маркетплейса):</b> доп. поле «Ссылка на магазин Ozon/WB» — парсим SKU для импорта (шаг 4).</div>
+</div>
+</div>
+
+<!-- ==================== ШАГ 2 ==================== -->
+<div class="pn" id="p-step2">
+<div class="cd">
+  <h3>Шаг 2: Договор присоединения <span class="kpi kpi-o">до 2 часов</span></h3>
+
+  <h4>Юридические документы (генерируются автоматически)</h4>
+  <table>
+    <thead><tr><th>Документ</th><th>Содержание</th><th>Подпись</th><th>Генерация</th></tr></thead>
+    <tbody>
+      <tr><td><b>Договор присоединения</b></td><td>Вступление в Систему, права/обязанности — присоединение к Правилам (ст. 2), права и споры (ст. 12)</td><td>ПЭП (SMS) — для ФЛ/самозанятых<br>КЭП — для ИП/ООО</td><td>Contract Builder (07), Jinja2 → PDF, 2 сек</td></tr>
+      <tr><td><b>SLA-соглашение</b></td><td>Приложение: метрики качества (ст. 2.4)</td><td>Вместе с договором</td><td>Автоматически по роли</td></tr>
+      <tr><td><b>Оферта маркетплейса</b></td><td>Публичная оферта для покупателей (ст. 2.4)</td><td>Акцепт = первый заказ</td><td>Стандартный шаблон</td></tr>
+      <tr><td><b>Согласие на обработку ПД</b></td><td>ФЗ-152</td><td>Чекбокс при регистрации</td><td>Стандартный шаблон</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Процесс подписания</h4>
+  <div class="dm"><b>ПОДПИСАНИЕ ДОГОВОРА</b>
+
+  KYC пройден
+    │
+    ├──→ Contract Builder (07): generate(joining.j2, sla.j2)
+    │    └── PDF за 2 секунды, SHA-256 hash
+    │
+    ├──→ Показ в ЛК: превью PDF, scroll, «Я ознакомился»
+    │
+    ├──→ Подпись:
+    │    ├── ФЛ / самозанятый: ПЭП (SMS OTP, 6 цифр)
+    │    └── ИП / ООО: КЭП (через КриптоПро, плагин браузера)
+    │         или ПЭП + обязательство предоставить КЭП в 30 дней
+    │
+    ├──→ Notification (04): уведомление «Договор подписан»
+    │    SMS + Email + TG (если подключён)
+    │
+    └──→ <em>participant.status = ACTIVE</em>
+         <em>→ переход к Шагу 3</em>
+
+<b>ВРЕМЯ:</b>
+  Генерация: 2 сек
+  Чтение: 5–120 мин (зависит от селлера)
+  Подпись: 30 сек (SMS) / 2 мин (КЭП)
+  <b>SLA: до 2 часов (целевое), до 72 часов (максимальное)</b></div>
+
+  <div class="note warn"><b>Ускорение для гр. 2:</b> селлеры, ушедшие с маркетплейсов, привыкли к мгновенной оферте (WB). Для них: договор = 1 страница + ссылка на Правила. Подпись через SMS за 30 сек. Детальные условия — по ссылке, не в теле договора.</div>
+</div>
+</div>
+
+<!-- ==================== ШАГ 3 ==================== -->
+<div class="pn" id="p-step3">
+<div class="cd">
+  <h3>Шаг 3: Создание магазина <span class="kpi kpi-g">10 мин</span></h3>
+
+  <div class="dm"><b>WIZARD НАСТРОЙКИ МАГАЗИНА (4 экрана)</b>
+
+  <b>Экран 1: Бренд</b>
+  ┌────────────────────────────────────┐
+  │  Название магазина: [Масса Матере]  │ ← предзаполнено из ИНН
+  │  Описание: [Хлеб на закваске...]    │ ← AI-подсказка по категории
+  │  Логотип: [📷 Загрузить]            │ ← или автогенерация из названия
+  │  Цвет бренда: [🟤 #8B4513]          │ ← picker
+  └────────────────────────────────────┘
+
+  <b>Экран 2: URL</b>
+  ┌────────────────────────────────────┐
+  │  Адрес магазина:                    │
+  │  нсвр.рф/shop/[massamadre]         │ ← проверка уникальности
+  │                                    │
+  │  Свой домен (опционально):         │
+  │  [massamadre.ru] ← CNAME запись    │
+  └────────────────────────────────────┘
+
+  <b>Экран 3: Регион и доставка</b>
+  ┌────────────────────────────────────┐
+  │  Откуда отправляете:               │
+  │  ☑ Москва и МО                     │
+  │  ☐ Санкт-Петербург                 │
+  │  ☐ Вся Россия                      │
+  │                                    │
+  │  Фулфилмент:                       │
+  │  ● 3PL-Сервис (рекомендован)       │ ← из гейта
+  │  ○ FulfilPro                       │
+  │  ○ Самостоятельно                   │
+  └────────────────────────────────────┘
+
+  <b>Экран 4: Подтверждение</b>
+  ┌────────────────────────────────────┐
+  │  Ваш магазин готов!                │
+  │                                    │
+  │  🍞 Масса Матере                    │
+  │  нсвр.рф/shop/massamadre           │
+  │  Москва · 3PL-Сервис               │
+  │                                    │
+  │  [Добавить товары →]               │
+  └────────────────────────────────────┘
+
+<b>Что создаётся автоматически (Marketplace Service, 11):</b>
+  ├── Shop entity (shop_id, slug, brand)
+  ├── Привязка к participant (Registry, 10)
+  ├── Привязка к фулфилменту (Registry, 10)
+  ├── Субдомен / DNS record (если свой домен)
+  ├── API-ключ для интеграции (HMAC-SHA256)
+  └── Запись в shops_catalog (ES index)
+
+<b>SLA: 10 мин</b> (wizard + автоматическое создание)</div>
+<p style="margin-top:10px;font-size:13px"><a href="../shop-form.html" style="color:#166534;font-weight:600;">▶ Открыть живую Shop Form (рабочий wizard)</a></p>
+</div>
+</div>
+
+<!-- ==================== ШАГ 4 ==================== -->
+<div class="pn" id="p-step4">
+<div class="cd">
+  <h3>Шаг 4: Импорт товаров <span class="kpi kpi-g">10–30 мин</span></h3>
+  <p>Критический шаг. Чем быстрее и проще — тем меньше drop-off. Три способа, оптимизированных под группу селлера.</p>
+
+  <table>
+    <thead><tr><th>Способ</th><th>Для кого</th><th>Время</th><th>Как работает</th></tr></thead>
+    <tbody>
+      <tr><td><b>📱 Quick Add</b></td><td>Гр. 3 (новые), малый каталог (1–5 SKU)</td><td>5–15 мин</td><td>Фото с телефона → AI распознаёт название и категорию → селлер добавляет цену и описание → SKU создан</td></tr>
+      <tr><td><b>📋 Импорт из Ozon/WB</b></td><td>Гр. 2 (ушедшие с МП)</td><td>10–20 мин</td><td>Ссылка на магазин Ozon/WB → парсинг карточек (название, фото, описание, категория) → селлер корректирует цены → bulk-создание SKU</td></tr>
+      <tr><td><b>📄 CSV / Excel</b></td><td>Гр. 1 (с существующим каталогом)</td><td>15–30 мин</td><td>Шаблон Excel (заполнить: название, описание, цена, фото URL, категория) → загрузка → валидация → bulk-создание</td></tr>
+      <tr><td><b>🔗 API</b></td><td>Гр. 1 (техническая интеграция)</td><td>1–4 ч (разработка)</td><td>POST /api/v1/seller/products — программный импорт из своей CMS / 1С / МойСклад</td></tr>
+      <tr><td><b>🤖 Telegram-бот</b></td><td>Все (пилот Масса Матере)</td><td>3–5 мин на SKU</td><td>Отправить фото + текст в бот → AI создаёт карточку → селлер подтверждает</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Импорт из Ozon/WB — детальный flow</h4>
+  <div class="dm"><b>ИМПОРТ ИЗ МАРКЕТПЛЕЙСА</b>
+
+  Селлер вводит: https://www.ozon.ru/seller/moy-magazin-123456/
+    │
+    ├──→ Parser Service: загрузка страницы магазина
+    │    ├── Извлечение: название, описание, фото, категория
+    │    ├── Извлечение: цена (справочно, может быть завышена)
+    │    └── Группировка: SKU-список (до 100 за раз)
+    │
+    ├──→ Показ селлеру: «Нашли N товаров»
+    │    ┌─────────────────────────────────────────┐
+    │    │ ☑ Тартин на закваске    [450 ₽] ← edit │
+    │    │   📷 3 фото с Ozon                      │
+    │    │   Описание: подтянуто     [✏ Изменить]  │
+    │    │   Категория: Хлеб         [▾]           │
+    │    │                                         │
+    │    │ ☑ Заварной ржаной        [380 ₽]        │
+    │    │   📷 2 фото                             │
+    │    │   ...                                   │
+    │    │                                         │
+    │    │ ☐ Товар Х (не актуален)                 │
+    │    │                                         │
+    │    │ [Импортировать выбранные (3) →]          │
+    │    └─────────────────────────────────────────┘
+    │
+    ├──→ Селлер корректирует цены, описания, убирает неактуальные
+    │
+    ├──→ Bulk-создание SKU → авто-валидация → ML-модерация
+    │    (облегчённая: контент уже проверен площадкой)
+    │
+    └──→ <em>SKU в статусе ACTIVE → CDC → Elasticsearch</em>
+         <em>Товары в каталоге Системы через 5 сек</em>
+
+<b>Ограничение:</b> фото с Ozon/WB — их CDN. При импорте скачиваем
+и сохраняем на наш MinIO (CDN). Не hot-linking.
+
+<b>SLA импорта: 10–20 мин</b> (до 50 SKU)</div>
+
+  <p style="margin:10px 0;font-size:13px"><a href="../sku-crud.html" style="color:#166534;font-weight:600;">▶ Открыть живой SKU-CRUD (рабочий инструмент)</a></p>
+  <div class="note ok"><b>AI-помощник при импорте.</b> Claude Haiku (как в Масса Матере): анализирует фото товара, предлагает название, описание, категорию, теги. Селлер подтверждает или корректирует. Экономия 60% времени на ручном заполнении.</div>
+</div>
+</div>
+
+<!-- ==================== ШАГ 5 ==================== -->
+<div class="pn" id="p-step5">
+<div class="cd">
+  <h3>Шаг 5: Подключение каналов <span class="kpi kpi-g">20 мин</span></h3>
+
+  <table>
+    <thead><tr><th>Канал</th><th>Подключение</th><th>Время</th><th>Автоматизация</th></tr></thead>
+    <tbody>
+      <tr><td><b>📱 Telegram</b></td><td>Автосоздание бота через BotFather API. Селлер получает готовый бот с витриной (Mini App)</td><td><span class="kpi kpi-g">5 мин</span></td><td>100% автоматическое. Бот создаётся с именем магазина, аватаром и каталогом</td></tr>
+      <tr><td><b>🌐 Сайт</b></td><td>Субдомен нсвр.рф/shop/{slug} — автоматически. Свой домен — CNAME + SSL</td><td><span class="kpi kpi-g">авто / 10 мин</span></td><td>Субдомен: 100%. Свой домен: инструкция + автопроверка DNS</td></tr>
+      <tr><td><b>💬 VK</b></td><td>Авторизация через VK API → создание Mini App в сообществе</td><td><span class="kpi kpi-o">10 мин</span></td><td>Wizard: «Войдите в VK → выберите сообщество → подключить»</td></tr>
+      <tr><td><b>📧 Макс</b></td><td>Бот в VK Мессенджер (бывш. ICQ)</td><td><span class="kpi kpi-o">10 мин</span></td><td>Wizard аналогичный Telegram</td></tr>
+      <tr><td><b>📷 Instagram</b></td><td>Shopping tags + Link in Bio → сайт-витрина</td><td><span class="kpi kpi-o">15 мин</span></td><td>Генерация taplink-страницы с кнопками (как у Масса Матере)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note info"><b>Минимальный набор (Волна 0–1):</b> Telegram + Сайт (субдомен). Подключаются автоматически. Остальные каналы — опционально, в любой момент из ЛК.</div>
+</div>
+</div>
+
+<!-- ==================== ШАГ 6 ==================== -->
+<div class="pn" id="p-step6">
+<div class="cd">
+  <h3>Шаг 6: Тестовый заказ <span class="kpi kpi-g">30 мин</span></h3>
+  <p>Обязательный шаг перед Go Live. Селлер проходит полный цикл: заказ → оплата → сборка → доставка → подтверждение → клиринг.</p>
+
+  <div class="dm"><b>ТЕСТОВЫЙ ЗАКАЗ (sandbox mode)</b>
+
+  Система создаёт «покупателя-робота» (test_buyer)
+    │
+    ├──→ Покупатель-робот «заказывает» 1 SKU
+    │    Deal Engine: mode=SPLIT_CLEARING, amount=1₽ (тестовый)
+    │
+    ├──→ Селлер видит в ЛК: «Новый заказ #TEST-001»
+    │    Guided tour: подсказки на каждом шаге
+    │
+    ├──→ Селлер нажимает «Передать в сборку»
+    │    → Фулфилмент webhook: тестовый signal
+    │
+    ├──→ Селлер нажимает «Передать курьеру»
+    │    → Логистика webhook: тестовый signal
+    │
+    ├──→ Покупатель-робот «подтверждает получение»
+    │    → Clearing Engine: тестовый split (1₽)
+    │    → Escrow: sandbox release (без реального перевода)
+    │
+    └──→ <em>Тест пройден!</em>
+         «Поздравляем! Ваш магазин готов к работе.
+          [Открыть магазин для покупателей →]»
+
+<b>Что проверяется:</b>
+  ✓ Webhook-интеграция с фулфилментом работает
+  ✓ Webhook-интеграция с логистикой работает
+  ✓ SKU отображается корректно
+  ✓ Клиринг-инструкции генерируются верно
+  ✓ Уведомления приходят (SMS, TG, email)
+
+<b>Если webhook не настроен</b> (самозанятый, ручная сборка):
+  → Упрощённый тест: заказ → ручное подтверждение → клиринг
+  → Без webhook-проверки</div>
+</div>
+</div>
+
+<!-- ==================== ШАГ 7 ==================== -->
+<div class="pn" id="p-step7">
+<div class="cd">
+  <h3>Шаг 7: Go Live <span class="kpi kpi-g">мгновенно</span></h3>
+
+  <div class="dm"><b>АКТИВАЦИЯ МАГАЗИНА</b>
+
+  Селлер нажимает «Открыть магазин»
+    │
+    ├──→ shop.status = ACTIVE
+    │
+    ├──→ Все SKU с visible_catalog=true → CDC → Elasticsearch
+    │    Появление в каталоге Системы: < 5 сек
+    │
+    ├──→ Магазин в каталоге магазинов (/catalog/shops)
+    │
+    ├──→ Notification (04):
+    │    ├── Селлеру: «Ваш магазин открыт! Ссылка: ...»
+    │    ├── Организатору: «Новый селлер подключён»
+    │    └── Покупателям (если гр.1, мигрировавшая база):
+    │        «Масса Матере теперь в Системе! Заказывайте с эскроу-защитой»
+    │
+    ├──→ Priority boost активирован:
+    │    ├── Гр. 2: +30% в ранжировании на 90 дней
+    │    └── Гр. 3: +10% на 30 дней
+    │
+    └──→ <em>Магазин принимает заказы</em>
+
+<b>WELCOME-ПАКЕТ (автоматический):</b>
+  📧 Email: «Добро пожаловать в Систему»
+     ├── Ссылка на магазин
+     ├── QR-код для покупателей
+     ├── Промокод -10% на первый заказ (для покупателей)
+     ├── Инструкция: как поделиться магазином
+     └── Контакт менеджера (Волна 0–1: Организатор лично)</div>
+</div>
+</div>
+
+<!-- ==================== ФИНАНСЫ ==================== -->
+<div class="pn" id="p-finance">
+<div class="cd">
+  <h3>Финансовые условия подключения</h3>
+
+  <p style="font-size:13.5px;color:#5a5548;line-height:1.6;margin:0 0 14px;padding:12px 16px;background:#F5E9DA;border-left:4px solid #8A5A2B;border-radius:4px;"><b>Два слоя условий.</b> <b>Единовременные</b> (при вступлении): регистрация, ПО магазина, создание витрины — всё 0 ₽, депозита нет. Это барьер входа, он минимален осознанно. <b>Текущие</b> (во времени): расчётный тариф 0,2→0,5% + опциональный взнос на инфраструктуру только за сверх-базовый уровень (co-payment по потреблению, не с оборота). Базовый доступ бесплатен всегда (Правила ст. 7.3). Комиссия-налог с оборота не взимается ни с кого — доход Организатора идёт из расчётов и финпотоков (ст. 7.1).</p>
+
+  <table>
+    <thead><tr><th>Параметр</th><th>Условие</th><th>Сравнение Ozon</th><th>Сравнение WB</th></tr></thead>
+    <tbody>
+      <tr><td><b>Стоимость регистрации</b></td><td><span class="kpi kpi-g">0 ₽</span></td><td>0 ₽</td><td>0 ₽ (10 000₽ гарантия*)</td></tr>
+      <tr><td><b>Абонентская плата</b></td><td><span class="kpi kpi-g">0 ₽</span></td><td>0 ₽</td><td>0 ₽</td></tr>
+      <tr><td><b>Расчёты (эскроу-клиринг)</b></td><td><span class="kpi kpi-g">0,2% → 0,5%</span> (Организатору)</td><td>5–55% (зависит от категории)</td><td>5–25%+</td></tr>
+      <tr><td><b>Взнос на инфраструктуру</b></td><td><span class="kpi kpi-g">только сверх-базовый</span> (co-payment)</td><td>Входит в комиссию</td><td>Входит в комиссию</td></tr>
+      <tr><td><b>Комиссия НСВР (эскроу)</b></td><td>0.175% (от суммы сделки)</td><td>Входит в комиссию</td><td>Входит в комиссию</td></tr>
+      <tr><td><b>Срок выплаты</b></td><td><span class="kpi kpi-g">1–3 дня</span> (клиринг)</td><td>7–60 дней</td><td>7–14 дней (после возврата)</td></tr>
+      <tr><td><b>Штрафы</b></td><td><span class="kpi kpi-g">Нет</span> (SLA нарушение → предупреждение)</td><td>Штрафы за маркировку, возвраты</td><td>Штрафы за упаковку, габариты</td></tr>
+      <tr><td><b>Хранение на складе</b></td><td>По тарифу оператора (прозрачно)</td><td>Скрытые списания</td><td>Скрытые списания</td></tr>
+      <tr><td><b>Возвраты</b></td><td>Через арбитраж (ст. 12), прозрачно</td><td>Автоматические, без контроля</td><td>FBS: потеря контроля</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Финансовый flow</h4>
+  <div class="dm"><b>ФИНАНСОВЫЙ FLOW ЗАКАЗА</b>
+
+Покупатель платит: <b>1 000 ₽</b>
+    │
+    ├── Комиссия НСВР (эскроу):     1.75₽  (0.175%)
+    ├── На эскроу-счёте:           998.25₽
+    │
+    │   После подтверждения получения:
+    │   Clearing Engine расщепляет:
+    │
+    ├── Селлеру:                   <em>868.25₽  (~87%)</em>
+    ├── Фулфилменту:                 80.00₽   (тариф: 200₽/ед × 0.4)
+    ├── Логистике:                   48.00₽   (тариф: зона-1)
+    └── Организатору:                 2.00₽   (0.2%)
+                                  ─────────
+                                   998.25₽   ✓
+
+<b>Итого селлер получает: ~87% от суммы</b>
+  На Ozon: 45–95% (зависит от категории)
+  На WB:   75–95% (зависит от категории + штрафы)</div>
+</div>
+</div>
+
+<!-- ==================== ЮРИДИКА ==================== -->
+<div class="pn" id="p-legal">
+<div class="cd">
+  <h3>Юридическая рамка</h3>
+
+  <table>
+    <thead><tr><th>Документ</th><th>Тип</th><th>Когда</th><th>Подпись</th><th>Обязательность</th></tr></thead>
+    <tbody>
+      <tr><td><b>Правила системы (ред. 2)</b></td><td>Публичный документ</td><td>Доступен до регистрации</td><td>Акцепт при регистрации</td><td>Обязательный</td></tr>
+      <tr><td><b>Договор присоединения</b></td><td>Двусторонний (Организатор↔Селлер)</td><td>Шаг 2</td><td>ПЭП / КЭП</td><td>Обязательный</td></tr>
+      <tr><td><b>SLA-соглашение</b></td><td>Приложение к договору</td><td>Шаг 2</td><td>Вместе с договором</td><td>Обязательный</td></tr>
+      <tr><td><b>Согласие ПД (ФЗ-152)</b></td><td>Одностороннее</td><td>Шаг 1 (чекбокс)</td><td>Электронное согласие</td><td>Обязательный</td></tr>
+      <tr><td><b>Оферта маркетплейса</b></td><td>Публичная оферта</td><td>Автоматически при Go Live</td><td>Акцепт покупателем</td><td>Автоматический</td></tr>
+      <tr><td><b>Уведомление о выходе</b></td><td>Одностороннее</td><td>При выходе (ст. 13.5)</td><td>ПЭП / КЭП</td><td>При необходимости</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Налоговые режимы</h4>
+  <table>
+    <thead><tr><th>Тип селлера</th><th>Налоговый режим</th><th>Документооборот</th><th>Особенности</th></tr></thead>
+    <tbody>
+      <tr><td><b>Самозанятый (НПД)</b></td><td>4–6% от дохода</td><td>Чек через API «Мой налог» (автоматически)</td><td>Ограничение: только услуги (не торговля товарами). При продаже товаров → нужен ИП</td></tr>
+      <tr><td><b>ИП (УСН)</b></td><td>6% доходы / 15% доходы−расходы</td><td>Закрывающие через Contract Builder</td><td>Основной тип для Волны 1</td></tr>
+      <tr><td><b>ООО</b></td><td>УСН / ОСНО</td><td>ЭДО через Диадок (автоматически)</td><td>Для крупных селлеров (гр. 1)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note warn"><b>Важно для гр. 3 (новые):</b> многие начинают как самозанятые, но торговля товарами для самозанятых ограничена. Система подсказывает: «Для продажи товаров зарегистрируйте ИП» — и предлагает помощь с регистрацией (партнёрство с банком).</div>
+</div>
+</div>
+
+<!-- ==================== ПО ГРУППАМ ==================== -->
+<div class="pn" id="p-groups">
+<div class="cd">
+  <h3>Специфика по группам селлеров</h3>
+
+  <table>
+    <thead><tr><th></th><th>Гр. 1 «Неорганизованные»</th><th>Гр. 2 «Разочаровавшиеся»</th><th>Гр. 3 «Новые»</th></tr></thead>
+    <tbody>
+      <tr><td><b>Типичный профиль</b></td><td>ИП/ООО, свой сайт, 20–200 SKU, база клиентов</td><td>ИП, бывший МП-селлер, 10–100 SKU, нулевая база</td><td>Самозанятый → ИП, 1–10 SKU, нулевая база</td></tr>
+      <tr><td><b>Импорт SKU</b></td><td>CSV / API из 1С / МойСклад</td><td>Импорт из Ozon/WB (парсинг)</td><td>Quick Add (фото с телефона + AI)</td></tr>
+      <tr><td><b>Миграция базы</b></td><td>Рассылка по email/TG: «Мы теперь в Системе»</td><td>Нет базы для миграции</td><td>Нет базы</td></tr>
+      <tr><td><b>Priority boost</b></td><td>Нет (не нужен — есть своя база)</td><td>+30% на 90 дней</td><td>+10% на 30 дней</td></tr>
+      <tr><td><b>Ключевой стимул</b></td><td>Эскроу-защита, кредитование покупателей</td><td>100% выручки, 1–3 дня выплата, без штрафов</td><td>0₽ вход, готовый магазин, зонтичный бренд</td></tr>
+      <tr><td><b>Onboarding time</b></td><td>4–24ч (техническая интеграция API)</td><td>2–4ч (импорт + настройка)</td><td>1–2ч (Quick Add)</td></tr>
+      <tr><td><b>Сопровождение</b></td><td>Менеджер по интеграции</td><td>Guided onboarding + чат</td><td>Наставник + AI-помощник</td></tr>
+      <tr><td><b>Договор</b></td><td>КЭП (ООО/ИП)</td><td>ПЭП (быстро, как на WB)</td><td>ПЭП</td></tr>
+      <tr><td><b>Пороговый ввод</b></td><td>Волна 1 (сразу)</td><td>Волна 1 (сразу)</td><td>Волна 2 (когда база ≥ порога, ст. 13.4)</td></tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+<!-- ==================== ПОДДЕРЖКА ==================== -->
+<div class="pn" id="p-support">
+<div class="cd">
+  <h3>Поддержка и сопровождение после подключения</h3>
+
+  <table>
+    <thead><tr><th>Период</th><th>Активность</th><th>Канал</th><th>Кто</th></tr></thead>
+    <tbody>
+      <tr><td><b>День 1</b></td><td>Welcome-звонок (15 мин): проверить что всё работает, ответить на вопросы</td><td>Телефон / TG</td><td>Менеджер (Волна 0–1: Организатор)</td></tr>
+      <tr><td><b>День 3</b></td><td>Проверка: есть ли первые просмотры? Подсказки по SEO-оптимизации карточек</td><td>TG / Email</td><td>Автоматическое + менеджер</td></tr>
+      <tr><td><b>День 7</b></td><td>Первый отчёт: просмотры, конверсия, позиция в каталоге. Рекомендации</td><td>ЛК + Email</td><td>Автоматический дашборд</td></tr>
+      <tr><td><b>День 14</b></td><td>Чекпоинт: первые продажи? Если нет — предложение промо-акции, помощь с контентом</td><td>TG / звонок</td><td>Менеджер</td></tr>
+      <tr><td><b>День 30</b></td><td>Итоговый отчёт первого месяца. NPS-опрос. Если 0 продаж → аудит карточек</td><td>ЛК + Email</td><td>Менеджер + AI</td></tr>
+      <tr><td><b>Постоянно</b></td><td>Чат поддержки (SLA: 4ч ответ). AI-помощник в ЛК (мгновенно)</td><td>TG / ЛК</td><td>Поддержка + AI</td></tr>
+    </tbody>
+  </table>
+
+  <h4>AI-помощник для селлера</h4>
+  <div class="dm"><b>AI-ПОМОЩНИК (Claude Haiku, как в Масса Матере)</b>
+
+  Возможности:
+  ├── Анализ фото товара → предложение описания и категории
+  ├── Оптимизация карточки: «Добавьте ключевые слова: ...»
+  ├── Ответ на вопросы покупателей (автоматический)
+  ├── Генерация текста для Instagram / VK постов
+  ├── Анализ конкурентов: «Средняя цена в категории: ...»
+  └── Подсказки по ранжированию: «Ваш товар на #7, добавьте ещё 2 фото»
+
+  Доступ: в ЛК (чат-виджет) + Telegram-бот (inline)
+  Стоимость для селлера: <em>бесплатно</em> (входит в подключение)</div>
+</div>
+</div>
+
+<!-- ==================== KPI ==================== -->
+<div class="pn" id="p-metrics">
+<div class="cd">
+  <h3>KPI процесса onboarding</h3>
+
+  <table>
+    <thead><tr><th>Метрика</th><th>Формула</th><th>Целевое</th><th>Красная зона</th></tr></thead>
+    <tbody>
+      <tr><td><b>Time-to-Live</b></td><td>Время от заявки до shop.status=ACTIVE</td><td><span class="kpi kpi-g">≤ 4ч</span></td><td><span class="kpi kpi-r">> 48ч</span></td></tr>
+      <tr><td><b>Time-to-First-Sale</b></td><td>Время от Go Live до первого deal.status=COMPLETED</td><td><span class="kpi kpi-g">≤ 48ч</span></td><td><span class="kpi kpi-r">> 14 дней</span></td></tr>
+      <tr><td><b>Конверсия воронки</b></td><td>Заявка → Go Live</td><td><span class="kpi kpi-g">≥ 55%</span></td><td><span class="kpi kpi-r">< 30%</span></td></tr>
+      <tr><td><b>Drop-off по шагу</b></td><td>% ушедших на каждом шаге</td><td>< 15% на шаг</td><td>> 30% на одном шаге</td></tr>
+      <tr><td><b>Activation rate (30д)</b></td><td>Селлеры с ≥1 продажей за 30 дней / все подключённые</td><td><span class="kpi kpi-g">≥ 70%</span></td><td><span class="kpi kpi-r">< 40%</span></td></tr>
+      <tr><td><b>SKU-per-seller (30д)</b></td><td>Среднее число ACTIVE SKU через 30 дней</td><td>≥ 5</td><td>< 2</td></tr>
+      <tr><td><b>NPS onboarding</b></td><td>Net Promoter Score опрос после 30 дней</td><td><span class="kpi kpi-g">≥ 50</span></td><td><span class="kpi kpi-r">< 20</span></td></tr>
+      <tr><td><b>Retention 90д</b></td><td>% селлеров с ≥1 продажей в каждом из месяцев 1–3</td><td><span class="kpi kpi-g">≥ 60%</span></td><td><span class="kpi kpi-r">< 35%</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note info"><b>Дашборд Организатора:</b> все KPI в реальном времени в Admin Panel → модуль «Onboarding». Алерт при попадании в красную зону. Drill-down по группам (1/2/3) и по шагам воронки.</div>
+</div>
+</div>
+
+</div><!-- /wrap -->
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Этот документ сведён с девятью другими в <a href="30-sellery-opisanie.html" style="font-weight:600;">интегрированное описание слоя селлеров</a>; выведенные величины — в <a href="31-sellery-parametry.html" style="font-weight:600;">наборе параметров C</a>.</div>
+</body>
+</html>

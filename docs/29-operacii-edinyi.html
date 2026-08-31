@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Операционный слой Системы · описание и параметры</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1240px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--co);margin-bottom:14px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--co);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.ctl{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--bd);margin-bottom:14px}
+.ctl .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ctl input{flex:1;min-width:170px;padding:6px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12.5px;font-family:inherit;background:var(--card)}
+.fb{padding:4px 11px;font-size:11px;border:1px solid var(--bd);background:var(--card);border-radius:20px;cursor:pointer;color:var(--t2);font-family:inherit}
+.fb:hover{border-color:var(--co);color:var(--t1)}.fb.on{background:var(--co);border-color:var(--co);color:#fff;font-weight:600}
+.fb:focus-visible{outline:2px solid var(--co);outline-offset:2px}
+.stat{font-size:11px;color:var(--t3);margin-left:auto}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;margin-top:8px}
+.tab{padding:5px 11px;font-size:11px;color:var(--t3);cursor:pointer;border:none;background:none;font-family:inherit;border-radius:5px}
+.tab:hover{color:var(--t1);background:var(--card)}.tab.on{background:var(--co2);color:var(--co);font-weight:600}
+.sec{display:none}.sec.on{display:block}
+.st{font-size:15px;font-weight:600;margin:16px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.blk{background:var(--card);border:1px solid var(--bd);border-radius:8px;margin-bottom:10px;overflow:hidden}
+.blk .txt{padding:13px 17px}
+.blk .txt h3{font-size:13.5px;font-weight:600;margin-bottom:5px}
+.blk .txt p,.blk .txt li{font-size:12.5px;color:var(--t2)}
+.blk .txt ul{padding-left:16px;margin:4px 0}
+.pars{border-top:1px dashed var(--bd);background:#fbfaf7;padding:9px 17px}
+.pars .lbl{font-size:9.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.par{display:grid;grid-template-columns:58px 1fr 1.15fr 92px;gap:8px;padding:5px 0;border-bottom:1px solid #ecebe4;align-items:baseline}
+.par:last-child{border-bottom:none}
+@media(max-width:760px){.par{grid-template-columns:52px 1fr;gap:3px 8px}.par .v,.par .s{grid-column:2}}
+.par .k{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--co);font-weight:700}
+.par .n{font-size:12px;color:var(--t1);font-weight:500}
+.par .v{font-family:ui-monospace,monospace;font-size:11.5px;color:var(--t2)}
+.par .v i{font-style:normal;color:var(--t3);font-size:10.5px;display:block}
+.par .s{text-align:right}
+@media(max-width:760px){.par .s{text-align:left}}
+.b{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;white-space:nowrap}
+.b-norm{background:var(--pr2);color:var(--pr)}.b-spec{background:var(--ac2);color:var(--ac)}
+.b-real{background:var(--gn2);color:var(--gn)}.b-hyp{background:var(--wr2);color:var(--wr)}
+.b-conf{background:var(--rd2);color:var(--rd)}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:6px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:10.5px}
+.tb td{padding:6px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.tb .num{text-align:right;font-family:ui-monospace,monospace}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.conf{border:1px solid var(--bd);border-left:4px solid var(--rd);border-radius:6px;background:var(--card);padding:12px 15px;margin-bottom:8px}
+.conf h4{font-size:13px;font-weight:600;margin-bottom:4px}
+.conf p{font-size:12.5px;color:var(--t2);margin-bottom:4px}
+.conf .opt{font-size:12px;background:var(--bg);border-radius:4px;padding:7px 10px;margin-top:4px}
+.fsm{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.fsm .s{padding:4px 9px;border-radius:4px;font-size:10.5px;font-family:ui-monospace,monospace;background:var(--bg);border:1px solid var(--bd);color:var(--t2)}
+.fsm .s.on{background:var(--gn2);border-color:var(--gn);color:var(--gn);font-weight:600}
+.fsm .s.stop{background:var(--rd2);border-color:var(--rd);color:var(--rd);font-weight:600}
+.fsm .s.alt{background:var(--wr2);border-color:var(--wr);color:var(--wr)}
+.fsm .a{color:var(--t3);font-size:11px}
+.code{background:#1c1c1a;color:#d8e8dd;padding:11px 14px;border-radius:6px;margin:8px 0;font-family:ui-monospace,monospace;font-size:11.5px;line-height:1.6;overflow-x:auto;white-space:pre}
+.hit{background:#fff8e6!important}
+a{color:#2a6cb6}
+@media print{.ctl{position:static}.sec{display:block!important}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Операционный слой Системы · описание и параметры в одном документе</h1>
+  <p>Как устроены роли, что происходит с магазином, товаром и заказом, как считается выдача и как идут деньги. Каждая величина стоит под утверждением, из которого следует.</p>
+  <div class="meta">23 августа 2026 · 47 параметров при 7 разделах · 7 противоречий вынесено на решение · Сведено из шести источников</div>
+<div style="max-width:1240px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Источники: <a href="11_marketplace_service_deep.html" style="font-weight:600;">Marketplace Service</a>, <a href="bazovye-otnosheniya-sdelka.html" style="font-weight:600;">базовые отношения и сделка</a>, <a href="e2e-walkthrough-map.html" style="font-weight:600;">сквозной прогон</a>, <a href="full-cycle-seller-to-buyer-red2.html" style="font-weight:600;">полный цикл ред. 2</a>, <a href="full-cycle-seller-to-buyer.html" style="font-weight:600;">ред. 1</a>, <a href="roles-mental-model.html" style="font-weight:600;">ментальная модель ролей</a>. Раздельные версии: <a href="26-operacii-opisanie.html" style="font-weight:600;">описание</a>, <a href="27-operacii-parametry.html" style="font-weight:600;">набор O</a>. Сервисный слой: <a href="28-servis-edinyi.html" style="font-weight:600;">единый документ</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="co co-a" style="margin-bottom:10px"><b>Четвёртый слой.</b>UI и витрина в том же формате — <a href="35-ui-vitrina-edinyi.html">описание и параметры</a>.</div>
+<div class="co co-a" style="margin-bottom:10px"><b>Третий слой.</b>Селлеры в том же формате — <a href="32-sellery-edinyi.html">описание и параметры</a>. Сервисный слой — <a href="28-servis-edinyi.html">здесь</a>.</div>
+<div class="ctl">
+  <div class="row">
+    <input id="q" type="search" placeholder="Поиск по тексту, параметру, коду…" autocomplete="off">
+    <button class="fb on" data-m="both">Описание и параметры</button>
+    <button class="fb" data-m="txt">Только описание</button>
+    <button class="fb" data-m="par">Только параметры</button>
+    <button class="fb" data-m="conf">Только спорное</button>
+    <span class="stat" id="stat"></span>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-t="s1">1 · Роли и инвариант</button>
+    <button class="tab" data-t="s2">2 · Жизненные циклы</button>
+    <button class="tab" data-t="s3">3 · Каталог и выдача</button>
+    <button class="tab" data-t="s4">4 · Анатомия заказа</button>
+    <button class="tab" data-t="s5">5 · Деньги и клиринг</button>
+    <button class="tab" data-t="s6">6 · Что работает вживую</button>
+    <button class="tab" data-t="s7">7 · Противоречия</button>
+  </div>
+</div>
+
+<!-- ═══ 1 ═══ -->
+<div class="sec on" id="s1">
+<div class="st">1 · Кто есть кто и главный инвариант</div>
+
+<div class="blk">
+<div class="txt"><h3>Один интерфейс, одна база, много окон</h3>
+<p>Личный кабинет — инструмент: продавец вводит данные, но кабинет ничего не хранит и не показывает покупателю. Торговый сервис — посредник: принимает, проверяет, переносит, сам не хранит. База — данные: в ней лежат магазины, товары, участники, заказы и расщепления. Витрина и агент — окна: оба читают из базы, но витрина показывает один магазин, а агент — каталог многих.</p>
+<p style="margin-top:6px"><b>Отсюда два уточнения, которые часто путают.</b> Магазин — не кабинет и не отдельный сервер, а запись в базе плюс витрина, которая её показывает. Каталог Системы — не место и не сервис, а срез таблицы товаров по признаку видимости в каталоге. Если считать кабинет магазином, кажется, что у каждого продавца свой сервер; на деле кабинет и витрина — общие интерфейсы, отличающиеся только тем, какие данные показывают.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">O-01</span><span class="n">Инвариант доступа</span><span class="v">один интерфейс, одна база, много окон<i>делает возможным единый каталог и общие правила расчёта</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-05</span><span class="n">Подмодулей торгового сервиса</span><span class="v">7: магазины · товары · каталог · корзина · витрина · маршрутизация · учёт покупателей</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-06</span><span class="n">Ролей доступа</span><span class="v">15<i>расширено с 7 под участников Системы</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Агент выделен в отдельный сервис — и это меняет права, а не только код</h3>
+<p>В первой редакции агент был маршрутом внутри общего сервиса, уровень доступа задавался параметром при вызове виджета на странице, у сделки было два источника. Во второй агент вынесен в отдельный процесс с собственными ключами и тремя разделёнными контурами — допуск, выдача, чтение. Уровень берётся <b>из реестра по коду агента</b>: страница больше не может выдать себе доступ ко всему рынку. У сделки появился третий источник с полным следом — агент, мандат, поверхность, первое касание.</p>
+<p style="margin-top:6px">Работающий код соответствует первой редакции: агент остаётся маршрутом внутри торгового сервиса.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="conf"><span class="k">O-02</span><span class="n">Сервисов в контуре</span><span class="v">1 в коде и ред. 1 · 2 в ред. 2</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-03</span><span class="n">Контуров доступа агента</span><span class="v">3: допуск · выдача · чтение</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="conf"><span class="k">O-04</span><span class="n">Источников сделки</span><span class="v">2 в ред. 1 · 3 с агентным следом в ред. 2</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+<div class="par" data-s="conf"><span class="k">O-07</span><span class="n">Источник уровня агента</span><span class="v">параметр страницы · реестр по коду агента</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+</div></div>
+</div>
+
+<!-- ═══ 2 ═══ -->
+<div class="sec" id="s2">
+<div class="st">2 · Жизненные циклы магазина, товара и сделки</div>
+
+<div class="blk">
+<div class="txt"><h3>Магазин: от настройки до закрытия</h3>
+<div class="fsm"><span class="s on">настройка</span><span class="a">→</span><span class="s on">активен</span><span class="a">→</span><span class="s alt">приостановлен</span><span class="a">→</span><span class="s">закрыт</span><span class="a" style="margin-left:8px">возврат из приостановки после исправления</span></div>
+<p>Переход в активное состояние требует завершённого мастера и хотя бы одного активного товара — магазин без товаров не активируется. При заведении автоматически создаётся идентификатор, адрес витрины, телеграм-бот из пула и конфигурация рендеринга; slug получается транслитерацией названия, акцентный цвет — по категории.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">O-08</span><span class="n">Состояний магазина</span><span class="v">4: настройка · активен · приостановлен · закрыт</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-09</span><span class="n">Условие активации</span><span class="v">мастер завершён и не менее одного активного товара</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Товар: два уровня видимости и жёсткий запрет</h3>
+<div class="fsm"><span class="s">черновик</span><span class="a">→</span><span class="s alt">модерация</span><span class="a">→</span><span class="s on">активен</span><span class="a">→</span><span class="s">нет в наличии</span><span class="a" style="margin-left:6px">ветви:</span><span class="s">отклонён</span><span class="s">заблокирован</span><span class="s">в архиве</span></div>
+<p><b>Инвариант:</b> видимость в каталоге требует видимости на витрине. Товар может быть только на витрине, может быть и там, и там, может быть нигде — но не может попасть в общий каталог, не будучи на витрине своего магазина.</p>
+<p style="margin-top:6px"><b>Единый сток.</b> Остаток один для магазина и каталога, резервирование атомарное с блокировкой строки, доступное количество — остаток минус зарезервированное. Рассинхрона между двумя витринами не может быть по устройству.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">O-10</span><span class="n">Состояний товара</span><span class="v">7: черновик · модерация · активен · нет в наличии · отклонён · заблокирован · архив</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="norm"><span class="k">O-11</span><span class="n">Инвариант видимости</span><span class="v">каталог требует витрины<i>обратное сочетание запрещено</i></span><span class="s"><span class="b b-norm">норма</span></span></div>
+<div class="par" data-s="real"><span class="k">O-15</span><span class="n">Резервирование стока</span><span class="v">атомарное, с блокировкой строки</span><span class="s"><span class="b b-real">реализовано</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-16</span><span class="n">Условия попадания в каталог</span><span class="v">4 одновременно: товар активен · видим в каталоге · остаток больше нуля · магазин активен</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Сделка: автомат, а не цепочка</h3>
+<div class="fsm"><span class="s on">создан</span><span class="a">→</span><span class="s stop">внесён в эскроу</span><span class="a">→</span><span class="s">исполняется</span><span class="a">→</span><span class="s">доставляется</span><span class="a">→</span><span class="s">ожидает подтверждения</span><span class="a">→</span><span class="s">клиринг</span><span class="a">→</span><span class="s">раскрыт</span></div>
+<p>Расчётное ядро описывает двенадцать состояний и шесть режимов; для маркетплейса добавлены три состояния — исполнение, отправка, клиринг — и седьмой режим расщеплённого клиринга. Новые элементы активируются только в этом режиме, поэтому прежние двусторонние сделки работают без изменений. В описаниях цикла при этом фигурирует упрощённая цепочка из семи шагов.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="conf"><span class="k">O-12</span><span class="n">Состояний сделки</span><span class="v">12 базовых + 3 маркетплейсных = 15 · в описаниях 7</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-13</span><span class="n">Режимов эскроу</span><span class="v">6 + расщеплённый клиринг = 7</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-14</span><span class="n">Событий сделки</span><span class="v">16 + 5 новых = 21<i>каждый шаг исполнения меняет состояние</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+</div>
+
+<!-- ═══ 3 ═══ -->
+<div class="sec" id="s3">
+<div class="st">3 · Каталог и ранжирование</div>
+
+<div class="blk">
+<div class="txt"><h3>Полная формула — шесть множителей, реализованы три</h3>
+<div class="code">итог = релевантность × качество × коммерция × свежесть × география × политика</div>
+<table class="tb">
+<thead><tr><th style="width:18%">Множитель</th><th style="width:40%">Как считается</th><th>Состояние</th></tr></thead>
+<tbody>
+<tr><td>Релевантность</td><td>полнотекстовое совпадение; название ×3, теги ×2, описание ×1</td><td>частично</td></tr>
+<tr><td>Качество</td><td>(1 + 0,15·ln(1+рейтинг)) × (1 + 0,08·ln(1+отзывы))</td><td>реализовано</td></tr>
+<tr><td>Коммерция</td><td>1 + 0,10·ln(1+заказы)</td><td>реализовано</td></tr>
+<tr><td>Свежесть</td><td>1 + 0,05·(30 − дней с создания)/30</td><td>нет в коде</td></tr>
+<tr><td>География</td><td>1,2 при совпадении зоны, иначе 1,0</td><td>нет в коде</td></tr>
+<tr><td>Политика</td><td>1,3 ушедшим с площадок 90 дней; 1,1 новым 30 дней</td><td>реализовано</td></tr>
+</tbody></table>
+<p style="margin-top:6px"><b>Географический множитель особенно важен:</b> он поднимает локального продавца перед удалённым при равном качестве — то есть работает ровно на ту нишу, где экономика Системы сходится. В паспорте параметров его до сих пор не было.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="conf"><span class="k">O-17</span><span class="n">Множителей ранжирования</span><span class="v">6 в спецификации · 3 в коде</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+<div class="par" data-s="real"><span class="k">O-18</span><span class="n">Вес качества</span><span class="v">рейтинг 0,15 · отзывы 0,08, логарифмически</span><span class="s"><span class="b b-real">реализовано</span></span></div>
+<div class="par" data-s="real"><span class="k">O-19</span><span class="n">Вес коммерции</span><span class="v">заказы 0,10, логарифмически</span><span class="s"><span class="b b-real">реализовано</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-20</span><span class="n">Множитель свежести</span><span class="v">1 + 0,05·(30 − дней)/30<i>фора новому товару на месяц</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-21</span><span class="n">Множитель географии</span><span class="v">1,2 при совпадении зоны<i>преимущество локальному продавцу</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="real"><span class="k">O-22</span><span class="n">Подъём ушедшим с площадок</span><span class="v">1,3 первые 90 дней</span><span class="s"><span class="b b-real">реализовано</span></span></div>
+<div class="par" data-s="real"><span class="k">O-23</span><span class="n">Подъём новым продавцам</span><span class="v">1,1 первые 30 дней</span><span class="s"><span class="b b-real">реализовано</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-24</span><span class="n">Веса полей поиска</span><span class="v">название ×3 · теги ×2 · описание ×1</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Фильтры, сортировки и границы выдачи</h3>
+<p>Фильтры: поисковая строка, категория, цена от и до, минимальный рейтинг, зона доставки, конкретный продавец. Сортировки: дешевле, дороже, по рейтингу, новые, по релевантности по умолчанию. Страница — двадцать позиций, предел сто: без этого один запрос выгружает весь каталог.</p>
+<p style="margin-top:6px">Развитие поиска: сначала полнотекстовый поиск средствами базы с русской морфологией и индексом, затем внешний поисковый движок с потоковой репликацией изменений.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">O-25</span><span class="n">Фильтров каталога</span><span class="v">7 фильтров и 5 сортировок</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-26</span><span class="n">Размер страницы</span><span class="v">20 по умолчанию, не более 100</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+</div>
+
+<!-- ═══ 4 ═══ -->
+<div class="sec" id="s4">
+<div class="st">4 · Анатомия заказа</div>
+
+<div class="blk">
+<div class="txt"><h3>Заказ соединяет три слоя, но никто ничего не подписывает</h3>
+<p>Юридический, операционный и финансовый слои сходятся в одну сделку. Ни один участник не подписывает нового документа: всё зафиксировано в Правилах, реестре и привязках. Пять шагов: сборка параметров, создание сделки, эскроу и оплата, исполнение, клиринг.</p>
+<p style="margin-top:6px">На первом шаге из корзины берутся позиции, считается сумма, по точке входа определяется источник покупателя, а из привязок продавца — оператор фулфилмента с тарифом и логист с тарифом зоны. Цена берётся из базы: цена из запроса не читается вовсе, поэтому подставить свою сумму нельзя по устройству, а не по проверке.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="real"><span class="k">O-27</span><span class="n">Сумма заказа</span><span class="v">считается сервером по ценам из базы</span><span class="s"><span class="b b-real">реализовано</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-28</span><span class="n">Тариф фулфилмента в примере</span><span class="v">200 ₽ за единицу<i>из привязки продавца к оператору</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-29</span><span class="n">Тариф доставки в примере</span><span class="v">зона 1 — 350 ₽</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="hyp"><span class="k">O-43</span><span class="n">Хранение на паллете</span><span class="v">40 ₽ за паллетоместо в сутки</span><span class="s"><span class="b b-hyp">оценка</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Смена оператора без нового договора</h3>
+<p>Продавец нажимает «сменить», видит список из реестра с тарифами и сроками, выбирает нового — привязка обновляется. Текущие заказы доводятся прежним оператором, новые идут по новому: это согласуется со снимком конфигурации, зафиксированным при создании заказа. Нового договора не требуется, потому что оба оператора уже в Системе.</p>
+<p style="margin-top:6px">Свобода выбора действует, когда в роли не менее двух участников. До этого — рекомендованный партнёр с автоматической привязкой из гейта готовности, то есть фактически единственный.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">O-40</span><span class="n">Смена оператора</span><span class="v">список из реестра, привязка обновляется</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-41</span><span class="n">Действие смены</span><span class="v">текущие заказы по прежнему, новые по новому</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="norm"><span class="k">O-42</span><span class="n">Условие свободы выбора</span><span class="v">не менее двух участников в роли</span><span class="s"><span class="b b-norm">норма</span></span></div>
+</div></div>
+</div>
+
+<!-- ═══ 5 ═══ -->
+<div class="sec" id="s5">
+<div class="st">5 · Деньги: расщепление, пересчёт, ручной режим</div>
+
+<div class="blk">
+<div class="txt"><h3>Расщепление на сквозном примере</h3>
+<p>Заказ на 1 420 ₽ из трёх единиц, оператор по тарифу за единицу, логист по зоне 1.</p>
+<table class="tb">
+<thead><tr><th style="width:24%">Получатель</th><th style="width:26%">Как считается</th><th class="num" style="width:14%">Сумма</th><th>Источник</th></tr></thead>
+<tbody>
+<tr><td>Оператор фулфилмента</td><td>3 × 200 ₽</td><td class="num">600,00</td><td>привязка продавца</td></tr>
+<tr><td>Логист</td><td>зона 1</td><td class="num">350,00</td><td>тариф зоны</td></tr>
+<tr><td>Организатор</td><td>0,2 % от товаров</td><td class="num">2,84</td><td>статья 6.3</td></tr>
+<tr><td><b>Продавец</b></td><td>остаток</td><td class="num"><b>817,16</b></td><td>расчётное ядро</td></tr>
+<tr style="background:var(--gn2)"><td colspan="2"><b>Итого</b></td><td class="num"><b>1 770,00</b></td><td>товар 1 420 + доставка 350</td></tr>
+</tbody></table>
+<p style="margin-top:6px"><b>Расхождение внутри источников.</b> Расчётное ядро даёт продавцу 817,16 ₽ при итоге 1 770 — фулфилмент вычитается из товара, доставку платит покупатель. Базовые отношения указывают цену покупателя 2 372,49 ₽, что означало бы оплату услуг сверх товара, и приводят числа, занижающие обе величины на 400 ₽.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="real"><span class="k">O-30</span><span class="n">Сбор Организатора</span><span class="v">0,2 % от суммы товаров<i>2,84 ₽ в примере</i></span><span class="s"><span class="b b-real">реализовано</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-31</span><span class="n">Комиссия расчётного контура</span><span class="v">0,175 %, удерживается при внесении</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="conf"><span class="k">O-32</span><span class="n">Расщепление примера</span><span class="v">817,16 · 600 · 350 · 2,84<i>второй источник даёт 417,16</i></span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+<div class="par" data-s="conf"><span class="k">O-33</span><span class="n">Итог расщепления</span><span class="v">1 770 ₽ · второй источник 1 370 при цене 2 372,49</span><span class="s"><span class="b b-conf">конфликт</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Пересчёт при вине участника</h3>
+<p>Если установлена вина конкретного участника, <b>его доля изымается целиком</b> и возвращается покупателю, доли остальных не меняются. Пример из спецификации: при вине логиста его 350 ₽ обнуляются и уходят покупателю, продавец, оператор и Организатор получают своё без изменений. Пересчёт оформляется отдельной операцией со ссылкой на исходную — исходная проводка не правится, иначе история перестаёт быть историей.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">O-34</span><span class="n">Пересчёт при вине</span><span class="v">доля виновного изымается целиком</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-35</span><span class="n">Форма пересчёта</span><span class="v">отдельная операция со ссылкой на исходную</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+
+<div class="blk">
+<div class="txt"><h3>Ручной режим расчёта — контур работает до появления банка</h3>
+<p>Расчётный движок предусматривает режим без банковской автоматизации: инструкции складываются со статусом ожидания ручной обработки, раз в неделю агрегируются по участнику — «оператору за неделю столько-то» — и переводятся вручную быстрым платежом или платёжкой; отметка о переводе закрывает инструкцию. Значит расчётный контур может работать с первого дня, а банк ускоряет, но не является условием запуска.</p>
+<p style="margin-top:6px">Полный контур: деньги не идут продавцу напрямую. Оплата быстрым платежом или эквайрингом, эскроу через единый интерфейс к любому расчётному банку, раскрытие только после подтверждённого исполнения, иначе возврат покупателю.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">O-36</span><span class="n">Ручной клиринг</span><span class="v">агрегация раз в неделю, перевод вручную<i>позволяет работать до банка</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-37</span><span class="n">Срок выплаты</span><span class="v">1–3 дня после подтверждённого исполнения</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="norm"><span class="k">O-38</span><span class="n">Условие раскрытия</span><span class="v">только подтверждённое исполнение<i>иначе возврат покупателю</i></span><span class="s"><span class="b b-norm">норма</span></span></div>
+<div class="par" data-s="norm"><span class="k">O-39</span><span class="n">Способы оплаты</span><span class="v">быстрые платежи и эквайринг; криптовалюта исключена</span><span class="s"><span class="b b-norm">норма</span></span></div>
+</div></div>
+</div>
+
+<!-- ═══ 6 ═══ -->
+<div class="sec" id="s6">
+<div class="st">6 · Что работает вживую</div>
+
+<div class="blk">
+<div class="txt"><h3>Пять шагов из семи проходят на живом контуре</h3>
+<table class="tb">
+<thead><tr><th style="width:6%">№</th><th style="width:26%">Действие</th><th style="width:14%">Состояние</th><th>Проверка</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Вход продавца, токен</td><td><b>проверено</b></td><td>Внутри токена реальный идентификатор — подмена невозможна</td></tr>
+<tr><td>2</td><td>Заведение магазина</td><td><b>проверено</b></td><td>Магазин создан и читается по адресу витрины</td></tr>
+<tr><td>3</td><td>Каталог и карточка</td><td><b>проверено</b></td><td>Шесть боевых товаров, три схемы обслуживания работают</td></tr>
+<tr><td>4</td><td>Витрина и корзина</td><td>готово</td><td>Сток резервируется, сверх остатка — отказ</td></tr>
+<tr><td>5</td><td>Оформление заказа</td><td>готово</td><td>Сумма считается сервером, заказ в ожидании оплаты</td></tr>
+<tr style="background:var(--rd2)"><td colspan="4"><b>Стоп-точка: реальная оплата</b> — предельная точка, докуда Система доходит сегодня</td></tr>
+<tr><td>6</td><td>Оплата и эскроу</td><td>ждёт банк</td><td>Слой спроектирован, кода нет</td></tr>
+<tr><td>7</td><td>Выдача, клиринг, выплата</td><td>ждёт банк</td><td>Расщепления считаются, раскрытие — через банк либо вручную</td></tr>
+</tbody></table>
+<p style="margin-top:6px">Быстрый прогон — на готовом магазине сразу с четвёртого шага. Полный — с первого, новый тестовый магазин и весь путь продавца и покупателя.</p></div>
+<div class="pars"><div class="lbl">Параметры утверждения</div>
+<div class="par" data-s="spec"><span class="k">O-44</span><span class="n">Шагов сквозного прогона</span><span class="v">7: пять работают, два ждут банк</span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+<div class="par" data-s="real"><span class="k">O-45</span><span class="n">Предельная точка</span><span class="v">заказ в состоянии ожидания оплаты</span><span class="s"><span class="b b-real">реализовано</span></span></div>
+<div class="par" data-s="real"><span class="k">O-46</span><span class="n">Боевых товаров в прогоне</span><span class="v">6: четыре хлеба, зефир, печенье</span><span class="s"><span class="b b-real">реализовано</span></span></div>
+<div class="par" data-s="spec"><span class="k">O-47</span><span class="n">Требований к банку</span><span class="v">R1–R14, обязательные R1–R9<i>R1 — блокер полной ценности, не запуска</i></span><span class="s"><span class="b b-spec">спецификация</span></span></div>
+</div></div>
+</div>
+
+<!-- ═══ 7 ═══ -->
+<div class="sec" id="s7">
+<div class="st">7 · Семь противоречий — на решение</div>
+<div class="co co-a"><b>Природа отличается от сервисного слоя.</b>Там пять расхождений из восьми — разные единицы измерения. Здесь пять из семи — <b>разные редакции во времени</b>: документ описывает более позднее состояние, чем код, либо более раннее, чем спецификация. Лечится не выбором значения, а датировкой утверждений.</div>
+
+<div class="conf"><h4>O-32 и O-33 · Сквозной пример расчёта</h4>
+<p>Расчётное ядро: продавцу 817,16 ₽, итог 1 770 ₽, услуги фулфилмента вычитаются из товара. Базовые отношения: цена покупателя 2 372,49 ₽, то есть услуги сверх товара, при этом в расщеплении приведены 417,16 и 1 370 — обе величины на 400 ₽ ниже согласованных.</p>
+<div class="opt"><b>Варианты:</b> принять версию расчётного ядра и исправить пример · признать оплату услуг сверх товара сознательной моделью и пересчитать расщепление до 1 417,16 при итоге 2 370.</div></div>
+
+<div class="conf"><h4>O-17 · Множители ранжирования</h4>
+<p>Спецификация: шесть множителей, включая свежесть и географию. Код и паспорт: три. При равном качестве порядок выдачи получается разный.</p>
+<div class="opt"><b>Варианты:</b> достроить недостающие — географический особенно ценен для локальной ниши · зафиксировать три как действующую редакцию формулы и внести в нормы.</div></div>
+
+<div class="conf"><h4>O-12 · Число состояний сделки</h4>
+<p>Расчётное ядро: 15 состояний и 7 режимов. Описания цикла: упрощённая цепочка из семи шагов.</p>
+<div class="opt"><b>Варианты:</b> считать 15 нормой, а семишаговую цепочку — её видимой частью для интерфейса · явно развести внутренние и отображаемые состояния.</div></div>
+
+<div class="conf"><h4>O-02 · Один сервис или два</h4>
+<p>Первая редакция и работающий код: один процесс, агент внутри. Вторая: два сервиса с раздельными ключами и тремя контурами доступа.</p>
+<div class="opt"><b>Варианты:</b> считать разделение целевым и зафиксировать срок · признать, что до появления нагрузки агент остаётся маршрутом, и снять требование из описания, чтобы оно не считалось выполненным.</div></div>
+
+<div class="conf"><h4>O-07 · Источник уровня агента</h4>
+<p>Первая редакция: параметр при вызове виджета на странице. Вторая: запись в реестре по коду агента — страница не может выдать себе доступ ко всему рынку.</p>
+<div class="opt"><b>Варианты:</b> вторая по существу верна; решение нужно о судьбе первой — отменить полностью или сохранить справочной.</div></div>
+
+<div class="conf"><h4>O-04 · Источники сделки</h4>
+<p>Два источника в первой редакции против трёх с агентным следом во второй. От этого зависит, чем считается покупатель, пришедший через агента.</p>
+<div class="opt"><b>Варианты:</b> принять три и достроить след · оставить два до выделения агентного сервиса, поскольку без него след неполон.</div></div>
+
+<div class="conf"><h4>O-30 · Сбор Организатора в примере</h4>
+<p>Пример использует 0,2 % и комиссию контура 0,175 %. Архитектура ПТК даёт вилку 0,1–0,2 %, условия участия — рост с 0,2 до 0,5 %.</p>
+<div class="opt"><b>Варианты:</b> зафиксировать 0,2 % действующим и описать порядок перехода · ввести канальную ставку, зависящую от источника заказа.</div></div>
+</div>
+
+</div>
+<script>
+(function(){
+  var tabs=document.querySelectorAll('#tabs .tab');
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.t)});
+    window.scrollTo({top:0,behavior:'smooth'});
+  })});
+  var mode='both', q=document.getElementById('q'), st=document.getElementById('stat');
+  var pars=[].slice.call(document.querySelectorAll('.par'));
+  var txts=[].slice.call(document.querySelectorAll('.blk .txt'));
+  var boxes=[].slice.call(document.querySelectorAll('.pars'));
+  var confs=[].slice.call(document.querySelectorAll('.conf'));
+  function apply(){
+    var s=(q.value||'').trim().toLowerCase();
+    txts.forEach(function(t){t.style.display=(mode==='par'||mode==='conf')?'none':''});
+    boxes.forEach(function(b){b.style.display=(mode==='txt')?'none':''});
+    var n=0;
+    pars.forEach(function(p){
+      var okM=(mode!=='conf')||p.dataset.s==='conf';
+      var okQ=!s||p.textContent.toLowerCase().indexOf(s)>-1;
+      var v=okM&&okQ; p.style.display=v?'':'none';
+      p.classList.toggle('hit', !!s&&okQ); if(v)n++;
+    });
+    document.querySelectorAll('.blk').forEach(function(b){
+      var vis=[].slice.call(b.querySelectorAll('.par')).some(function(p){return p.style.display!=='none'});
+      var tx=b.querySelector('.txt');
+      var hasTxt=tx&&tx.style.display!=='none';
+      var txtMatch=!s||(tx&&tx.textContent.toLowerCase().indexOf(s)>-1);
+      b.style.display=(vis||(hasTxt&&txtMatch))?'':'none';
+    });
+    confs.forEach(function(c){c.style.display=(!s||c.textContent.toLowerCase().indexOf(s)>-1)?'':'none'});
+    st.textContent=n+' из '+pars.length+' параметров';
+  }
+  q.addEventListener('input',apply);
+  document.querySelectorAll('.ctl .fb').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('.ctl .fb').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on'); mode=b.dataset.m; apply();
+  })});
+  apply();
+})();
+</script>
+</body>
+</html>

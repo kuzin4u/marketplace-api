@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Условия присоединения по типам участников / Распределённый маркетплейс</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#F6F3EC;--paper-line:#E4DECC;--ink:#1D1B17;--ink-soft:#5B5548;--ledger:#233A52;--copper:#B07A34;--card:#FCFAF4;
+    --once:#8A5A2B;--once-bg:#F5E9DA;--flow:#2E5B3A;--flow-bg:#DCE6DD;
+    --seller:#233A52;--infra:#A34A2E;--bank:#6E5A8F;--org:#8A6D2F;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;padding:0 0 90px;}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 34px;}
+  .cover{padding:70px 0 38px;border-bottom:3px double var(--ink);margin-bottom:24px;}
+  .cover .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ledger);}
+  .cover .of{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--copper);margin-top:6px;}
+  .cover h1{font-family:'PT Serif',serif;font-weight:700;font-size:38px;line-height:1.1;margin:16px 0 12px;letter-spacing:-.015em;}
+  .cover h1 em{font-style:italic;color:var(--ledger);}
+  .cover .sub{font-size:15.5px;color:var(--ink-soft);max-width:720px;line-height:1.6;}
+  .frame{background:#FBF3E4;border-left:4px solid var(--copper);border-radius:4px;padding:16px 20px;margin:26px 0 20px;font-size:13.5px;color:var(--ink-soft);line-height:1.6;}
+  .frame b{color:var(--ink);}
+  .keylegend{display:flex;gap:20px;flex-wrap:wrap;margin:0 0 34px;font-size:12.5px;}
+  .keylegend .k{display:flex;align-items:center;gap:8px;}
+  .keychip{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:4px;font-weight:600;}
+  .kc-once{background:var(--once-bg);color:var(--once);border:1px solid var(--once);}
+  .kc-flow{background:var(--flow-bg);color:var(--flow);border:1px solid var(--flow);}
+  .ptype{margin-bottom:40px;}
+  .ptype-head{padding:16px 22px;border-radius:8px 8px 0 0;color:#fff;display:flex;align-items:baseline;gap:14px;}
+  .ptype-head .pn{font-family:'IBM Plex Mono',monospace;font-size:13px;opacity:.7;}
+  .ptype-head h2{font-family:'PT Serif',serif;font-size:21px;font-weight:700;margin:0;}
+  .ptype-head .role{margin-left:auto;font-size:12px;opacity:.9;font-family:'IBM Plex Mono',monospace;}
+  .ptype-body{border:1px solid var(--paper-line);border-top:none;border-radius:0 0 8px 8px;background:#fff;padding:0;}
+  .cond-block{padding:18px 22px;border-bottom:1px solid var(--paper-line);}
+  .cond-block:last-child{border-bottom:none;}
+  .cond-label{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:12px;}
+  .cond-label.once{color:var(--once);} .cond-label.flow{color:var(--flow);}
+  .cond-label .badge{width:9px;height:9px;border-radius:2px;}
+  .cond-label.once .badge{background:var(--once);} .cond-label.flow .badge{background:var(--flow);}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);padding:0 12px 8px 0;border-bottom:1.5px solid var(--ink);}
+  td{padding:10px 12px 10px 0;border-bottom:1px solid var(--paper-line);vertical-align:top;line-height:1.5;}
+  td.em{font-weight:600;white-space:nowrap;}
+  tr:last-child td{border-bottom:none;}
+  .copay-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;background:var(--flow-bg);color:var(--flow);border:1px solid var(--flow);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;}
+  .free-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;background:#E7F0E8;color:var(--flow);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 8px;}
+  .section-num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--copper);font-weight:600;}
+  .section-head h2{font-family:'PT Serif',serif;font-size:22px;margin:0;font-weight:700;}
+  .section-sub{color:var(--ink-soft);font-size:13px;max-width:720px;margin:0 0 18px;line-height:1.5;}
+  .callout{background:var(--card);border:1px solid var(--paper-line);border-left:4px solid var(--copper);border-radius:4px;padding:16px 20px;margin:8px 0 20px;font-size:13.5px;color:var(--ink-soft);line-height:1.6;}
+  .callout b{color:var(--ink);}
+  .callout.copay{background:var(--flow-bg);border-left-color:var(--flow);}
+  .callout.copay b{color:var(--flow);}
+  footer{max-width:1040px;margin:40px auto 0;padding:24px 34px 0;border-top:2px solid var(--ink);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);display:flex;justify-content:space-between;}
+  @media(max-width:640px){.cover h1{font-size:28px;}.ptype-head .role{margin-left:0;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cover">
+    <div class="eyebrow">Распределённый маркетплейс</div>
+    <div class="of">Условия участия · дополнение к документам 36–38 (подключение)</div>
+    <h1>Условия присоединения<br><em>по типам участников</em></h1>
+    <p class="sub">Условия каждого типа участника разделены на два слоя: единовременные (при вступлении, платятся один раз) и текущие (во времени, платятся постоянно). С учётом модели co-payment: базовый уровень бесплатен, взнос — только за общую инфраструктуру и по потреблению.</p>
+  </div>
+
+  <div class="frame"><b>Почему два слоя.</b> Смешивать «плату за вход» и «плату за пребывание» — ошибка: они по-разному влияют на решение участника вступить и остаться. Единовременные условия — барьер входа (должен быть минимален). Текущие — граница ухода (должны оставлять запас). Модель co-payment (Правила ст. 7.2) означает: базовый доступ бесплатен всегда, а взнос — целевой, за общее благо и по потреблению, а не налог с оборота.</div>
+
+  <div class="keylegend">
+    <div class="k"><span class="keychip kc-once">единовременно</span> при вступлении, один раз</div>
+    <div class="k"><span class="keychip kc-flow">во времени</span> постоянно, пока участвует</div>
+  </div>
+
+  <!-- SELLER -->
+  <div class="ptype">
+    <div class="ptype-head" style="background:var(--seller)"><span class="pn">Тип 1</span><h2>Селлер</h2><span class="role">торговые операции под брендом Системы</span></div>
+    <div class="ptype-body">
+      <div class="cond-block">
+        <div class="cond-label once"><span class="badge"></span>Единовременно — при вступлении</div>
+        <table>
+          <thead><tr><th style="width:30%">Условие</th><th style="width:22%">Значение</th><th>Комментарий</th></tr></thead>
+          <tbody>
+            <tr><td class="em">Регистрация в реестре</td><td>0 ₽ <span class="free-tag">бесплатно</span></td><td>KYC по ИНН, присвоение роли, договор присоединения (click-wrap)</td></tr>
+            <tr><td class="em">ПО магазина (5 каналов)</td><td>0 ₽ <span class="free-tag">базовый уровень</span></td><td>Обещание «нулевых затрат на технологию» — базовый доступ всегда бесплатен (ст. 7.3)</td></tr>
+            <tr><td class="em">Создание витрины + импорт</td><td>0 ₽</td><td>Магазин + SKU в каталоге Системы; smart defaults из ФНС API</td></tr>
+            <tr><td class="em">Гарантийный депозит</td><td>Нет</td><td>В отличие от WB (10 000 ₽) — снимает барьер входа для групп 2 и 3</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label flow"><span class="badge"></span>Во времени — пока участвует</div>
+        <table>
+          <thead><tr><th style="width:30%">Условие</th><th style="width:22%">Значение</th><th>Комментарий</th></tr></thead>
+          <tbody>
+            <tr><td class="em">Комиссия с продажи</td><td>0 ₽</td><td>Селлер получает 100% выручки (статья дохода 1 «Пирога»)</td></tr>
+            <tr><td class="em">Расчёты (эскроу-клиринг)</td><td>0,2% → 0,5%</td><td>Тариф Организатора, растёт с развитием инфраструктуры; несопоставимо ниже 40% маркетплейса</td></tr>
+            <tr><td class="em">Услуги инфраструктуры</td><td>По тарифу реестра</td><td>Фулфилмент/логистика — по тарифу выбранного участника (ст. 3.2), селлер видит заранее</td></tr>
+            <tr><td class="em">Взнос на инфраструктуру</td><td>Только сверх-базовый <span class="copay-tag">co-payment</span></td><td>За продвижение, приоритет в каталоге, расширенные модули — по потреблению, не с оборота. Базовый уровень бесплатен</td></tr>
+            <tr><td class="em">Абонентская плата</td><td>0 ₽</td><td>Нет фиксированной платы за пребывание в Системе</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFRASTRUCTURE -->
+  <div class="ptype">
+    <div class="ptype-head" style="background:var(--infra)"><span class="pn">Тип 2</span><h2>Участник инфраструктуры</h2><span class="role">фулфилмент · склад · последняя миля · магистраль</span></div>
+    <div class="ptype-body">
+      <div class="cond-block">
+        <div class="cond-label once"><span class="badge"></span>Единовременно — при вступлении</div>
+        <table>
+          <thead><tr><th style="width:30%">Условие</th><th style="width:22%">Значение</th><th>Комментарий</th></tr></thead>
+          <tbody>
+            <tr><td class="em">Приёмка в реестр</td><td>0 ₽ <span class="free-tag">бесплатно</span></td><td>KYC роли, проверка SLA-возможностей, договор присоединения</td></tr>
+            <tr><td class="em">Внесение тарифов в реестр</td><td>0 ₽</td><td>Участник сам публикует свои тарифы (оферта внутри Системы, ст. 3.2)</td></tr>
+            <tr><td class="em">Интеграция с клирингом</td><td>Разовая, техническая</td><td>Подключение к Clearing Engine для автосверки и расщепления платежа</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label flow"><span class="badge"></span>Во времени — пока участвует</div>
+        <table>
+          <thead><tr><th style="width:30%">Условие</th><th style="width:22%">Значение</th><th>Комментарий</th></tr></thead>
+          <tbody>
+            <tr><td class="em">Комиссия с оборота Организатору</td><td>Нет <span class="copay-tag">снято</span></td><td><b>Налог 1% отклонён:</b> переносился бы на селлера через тариф и сужал разрыв с маркетплейсом (Правила ст. 7.1)</td></tr>
+            <tr><td class="em">Взнос на общую инфраструктуру</td><td>Целевой <span class="copay-tag">co-payment</span></td><td>Доля общей себестоимости сети (платформа, клиринг, каталог) по потреблению ресурса, а не с оборота. Прозрачный фонд, Организатор — казначей</td></tr>
+            <tr><td class="em">Клиринг взаиморасчётов</td><td>Автоматически</td><td>Оплата от Системы через эскроу после подтверждения — гарантия платежа</td></tr>
+            <tr><td class="em">Соблюдение SLA</td><td>Обязательно</td><td>Нарушение → снижение рейтинга в реестре, влияет на маршрутизацию</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- BANK -->
+  <div class="ptype">
+    <div class="ptype-head" style="background:var(--bank)"><span class="pn">Тип 3</span><h2>Расчётный банк</h2><span class="role">эскроу · клиринг · кредитование</span></div>
+    <div class="ptype-body">
+      <div class="cond-block">
+        <div class="cond-label once"><span class="badge"></span>Единовременно — при вступлении</div>
+        <table>
+          <thead><tr><th style="width:30%">Условие</th><th style="width:22%">Значение</th><th>Комментарий</th></tr></thead>
+          <tbody>
+            <tr><td class="em">Соглашение о расчётном обслуживании</td><td>Рамочное</td><td>Эскроу-счета, клиринг, ставка эквайринга, условия по статьям 3–4</td></tr>
+            <tr><td class="em">Интеграция эскроу-API</td><td>Разовая</td><td>Критический путь Волны −1 (моат: нет банков с готовым API универсального эскроу)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label flow"><span class="badge"></span>Во времени — пока участвует</div>
+        <table>
+          <thead><tr><th style="width:30%">Условие</th><th style="width:22%">Значение</th><th>Комментарий</th></tr></thead>
+          <tbody>
+            <tr><td class="em">Доход от привлечённых средств</td><td>Доля (статья 3)</td><td>Проценты на эскроу-флоат, делятся с Организатором</td></tr>
+            <tr><td class="em">Доход от кредитования</td><td>Доля (статья 4)</td><td>Кредитование участников/покупателей, делится с Организатором</td></tr>
+            <tr><td class="em">Обеспечение SLA расчётов</td><td>1–3 дня</td><td>Срок клиринга, автоподтверждение по таймеру</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORGANIZER -->
+  <div class="ptype">
+    <div class="ptype-head" style="background:var(--org)"><span class="pn">Тип 0</span><h2>Организатор</h2><span class="role">зонтичный бренд · реестр · клиринг · гарант</span></div>
+    <div class="ptype-body">
+      <div class="cond-block">
+        <div class="cond-label once"><span class="badge"></span>Единовременно — вклад на старте</div>
+        <table>
+          <thead><tr><th style="width:30%">Что несёт</th><th style="width:22%">Характер</th><th>Комментарий</th></tr></thead>
+          <tbody>
+            <tr><td class="em">Построение платформы</td><td>Капитальные</td><td>Расчётный портал, реестр, клиринг-движок, каталог, ПО магазинов</td></tr>
+            <tr><td class="em">Сборка инфраструктуры (Волна −1)</td><td>Фронт-загруженные</td><td>Переговоры и интеграция ≥2 участников в каждой роли до первого селлера</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label flow"><span class="badge"></span>Во времени — доход и затраты</div>
+        <table>
+          <thead><tr><th style="width:30%">Статья</th><th style="width:22%">Направление</th><th>Комментарий</th></tr></thead>
+          <tbody>
+            <tr><td class="em">Доход от расчётов (статья 2)</td><td>100% Организатору</td><td>Тариф 0,2–0,5%, растёт с оборотом вместе с затратами на сеть</td></tr>
+            <tr><td class="em">Доход от финпотоков (статьи 3–4)</td><td>Доля с банками</td><td>Проценты на флоат + кредитование, старт +6 мес</td></tr>
+            <tr><td class="em">Затраты на поддержание сети</td><td>Расход</td><td>Платформа, клиринг, модерация, доверие; частично покрываются co-payment как казначеем фонда</td></tr>
+            <tr><td class="em">Комиссия-налог с участников</td><td>Не взимает <span class="copay-tag">снято</span></td><td>Доход только из расчётов и финпотоков, не из изъятия у участников (ст. 7.1)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- summary co-payment -->
+  <div class="section-head"><span class="section-num">Итог</span><h2>Как co-payment меняет условия</h2></div>
+  <div class="callout copay"><b>Единовременные условия — минимальный барьер входа.</b> У всех типов вступление бесплатно или технически-разово: регистрация 0 ₽, ПО магазина 0 ₽, депозита нет. Это осознанно: единовременная плата — барьер входа, а Системе нужен максимальный приток участников, особенно на старте. Co-payment сюда не входит — за вход не платят.</div>
+  <div class="callout copay"><b>Текущие условия — граница ухода с запасом.</b> Во времени участник платит только за то, что потребляет: селлер — расчётный тариф (0,2–0,5%) + опционально взнос за сверх-базовое; инфраструктура — целевой взнос на общую сеть по потреблению; банк — ничего не платит, а получает долю. Ключевое: <b>налог с оборота отклонён у всех типов</b> — вместо него co-payment, привязанный к потреблению ресурса и прозрачному фонду. Это держит каждого выше границы ухода.</div>
+  <div class="callout"><b>Что скорректировано в документах 36–38.</b> Финансовый раздел подключения селлера приведён в соответствие: «комиссия 0,1–0,2%» уточнена как расчётный тариф (растущий 0,2→0,5%), добавлена строка co-payment (только сверх-базовый уровень, не с оборота), убрана любая трактовка платежей как налога. Единовременные и текущие условия разнесены явно во всех трёх документах.</div>
+
+</div>
+<footer><span>Условия присоединения по типам участников · Распределённый маркетплейс</span><span id="footerDate"></span></footer>
+<script>document.getElementById('footerDate').textContent=new Date().toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'});</script>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Этот документ вошёл в <a href="36-sistemnyi-sloy-opisanie.html" style="font-weight:600;">интегрированное описание системного слоя</a> (величины — в <a href="37-sistemnyi-sloy-parametry.html" style="font-weight:600;">наборе Y</a>) и в <a href="38-ptk-integrirovannaya-model.html" style="font-weight:600;">интегрированную модель ПТК</a>.</div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Условия сведены с уровнями и профилями в <a href="40-reestr-variantov-uchastiya.html" style="font-weight:600;">полном реестре вариантов участия</a>; тариф расчётов Организатора — 0,5 % по <a href="39-protokol-i-pravki-v-pravila.html" style="font-weight:600;">протоколу</a>.</div>
+</body>
+</html>

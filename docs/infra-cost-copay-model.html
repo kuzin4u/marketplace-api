@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Затраты на инфраструктуру и Co-Payment во времени / Распределённый маркетплейс</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#F6F3EC;--paper-line:#E4DECC;--ink:#1D1B17;--ink-soft:#5B5548;--ledger:#233A52;--copper:#B07A34;--card:#FCFAF4;
+    --c1:#233A52;--c2:#A34A2E;--c3:#6E5A8F;--c4:#8A6D2F;--c5:#4E6B52;--copay:#2E5B3A;--gap:#B07A34;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;padding:0 0 90px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+  header{padding:50px 0 22px;border-bottom:2px solid var(--ink);margin-bottom:26px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ledger);}
+  .eyebrow .stamp{border:1.5px solid var(--copper);color:var(--copper);padding:2px 8px;border-radius:3px;font-weight:600;margin-left:8px;}
+  h1{font-family:'PT Serif',serif;font-weight:700;font-size:30px;line-height:1.15;margin:14px 0 10px;letter-spacing:-.01em;}
+  h1 em{font-style:italic;color:var(--ledger);}
+  .lede{font-size:14px;color:var(--ink-soft);max-width:760px;line-height:1.55;}
+  .thesis{background:#FBF3E4;border-left:4px solid var(--copper);border-radius:4px;padding:15px 20px;margin:20px 0 28px;font-size:13.5px;color:var(--ink-soft);line-height:1.6;}
+  .thesis b{color:var(--ink);}
+  .params{background:var(--card);border:1px solid var(--paper-line);border-left:4px solid var(--ledger);border-radius:4px;padding:18px 22px;margin-bottom:26px;}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:16px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:11.5px;color:var(--ink-soft);display:flex;justify-content:space-between;}
+  .field label .val{font-family:'IBM Plex Mono',monospace;color:var(--ink);font-weight:600;}
+  .field input[type=range]{width:100%;accent-color:var(--copper);}
+  .field .hint{font-size:10px;color:var(--ink-soft);opacity:.72;}
+  .grouplbl{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--copper);font-weight:600;grid-column:1/-1;margin-bottom:-4px;}
+  .section-head{display:flex;align-items:baseline;gap:12px;margin:30px 0 4px;}
+  .section-num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--copper);font-weight:600;}
+  .section-head h2{font-family:'PT Serif',serif;font-size:19px;margin:0;font-weight:700;}
+  .section-sub{color:var(--ink-soft);font-size:12.5px;max-width:750px;margin:0 0 14px;line-height:1.5;}
+  .card{background:var(--card);border:1px solid var(--paper-line);border-radius:8px;padding:18px 20px;margin-bottom:20px;}
+  svg{width:100%;height:auto;display:block;}
+  .axis-label{font-family:'IBM Plex Mono',monospace;font-size:10px;fill:var(--ink-soft);}
+  .grid-line{stroke:var(--paper-line);stroke-width:1;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-bottom:10px;}
+  .legend span{display:flex;align-items:center;gap:6px;}
+  .dot{width:11px;height:11px;border-radius:2px;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:4px;}
+  th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);padding:0 10px 8px 0;border-bottom:1.5px solid var(--ink);}
+  td{padding:9px 10px 9px 0;border-bottom:1px solid var(--paper-line);vertical-align:top;line-height:1.45;}
+  td.em{font-weight:600;white-space:nowrap;}
+  .type-dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle;}
+  .results{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;}
+  .res{background:#fff;border:1px solid var(--paper-line);border-radius:4px;padding:12px 15px;min-width:150px;flex:1;}
+  .res .rl{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin-bottom:5px;}
+  .res .rv{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;}
+  .verdict{background:var(--card);border:1px solid var(--paper-line);border-left:4px solid var(--copper);border-radius:4px;padding:16px 20px;font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:16px;}
+  .verdict b{color:var(--ink);}
+  .rules-tie{background:#DCE6DD;border-left:4px solid var(--copay);border-radius:4px;padding:16px 20px;font-size:13.5px;color:var(--ink);line-height:1.6;margin-top:20px;}
+  .rules-tie b{color:var(--copay);}
+  footer{max-width:1080px;margin:34px auto 0;padding:0 32px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);display:flex;justify-content:space-between;}
+  @media(max-width:640px){h1{font-size:24px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Затраты на инфраструктуру <span class="stamp">во времени · связь с Co-Payment</span></div>
+    <h1>Затраты на развитие сети <em>и как их покрывает Co-Payment</em></h1>
+    <p class="lede">Пять типов затрат на инфраструктуру Системы развиваются по-разному: одни ступенями (платформа), другие растут с оборотом (клиринг, модерация). Co-Payment следует за этими затратами, оставаясь привязанным к потреблению, а не к обороту — и не превышая потолок устойчивости.</p>
+    <div class="thesis"><b>Зачем это считать.</b> Co-Payment по Правилам (ст. 7.2) — покрытие реальной себестоимости сети, а не доход Организатора. Чтобы взнос был честным и устойчивым, надо знать: сколько стоит сеть во времени, как эта стоимость распределяется на участника, и остаётся ли взнос ниже потолка ухода. Модель отвечает на все три вопроса.</p>
+  </header>
+<div style="max-width:1080px;margin:0 auto 20px;padding:14px 20px;background:#eaf1fa;border-left:4px solid #2a6cb6;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2a6cb6;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Часть пула документов Системы · синхронизировано с Правилами ред. 2</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Настоящий документ — аналитическое обоснование бизнес-модели, на которое ссылается <b>Преамбула Правил системы (ред. 2)</b> (п. 0.5). Выводы отражены в нормах: устойчивость распределения — ст. 8, модель дохода и co-payment — ст. 7. При расхождении нормой являются Правила.</div>
+</div>
+
+  <div class="params">
+    <div class="pgrid">
+      <div class="grouplbl">Развитие сети</div>
+      <div class="field"><label>Горизонт<span class="val" id="v_hor">36 мес</span></label><input type="range" id="hor" min="12" max="60" value="36" step="6"></div>
+      <div class="field"><label>Число участников на старте<span class="val" id="v_n0">10</span></label><input type="range" id="n0" min="2" max="50" value="10"></div>
+      <div class="field"><label>Число участников в конце<span class="val" id="v_nend">2000</span></label><input type="range" id="nend" min="100" max="10000" value="2000" step="100"></div>
+      <div class="field"><label>Средний оборот на участника (тыс ₽/мес)<span class="val" id="v_gmvp">700</span></label><input type="range" id="gmvp" min="200" max="3000" value="700" step="50"></div>
+
+      <div class="grouplbl">Ставки затрат (годовые, млн ₽ и доли)</div>
+      <div class="field"><label>Платформа: ступень при удвоении базы<span class="val" id="v_platstep">8 млн</span></label><input type="range" id="platstep" min="2" max="30" value="8"><span class="hint">постоянные, растут ступенями</span></div>
+      <div class="field"><label>Клиринг: доля от оборота<span class="val" id="v_clearrate">0.08%</span></label><input type="range" id="clearrate" min="2" max="20" value="8"><span class="hint">переменные с оборотом</span></div>
+      <div class="field"><label>Модерация: ₽/участник/мес<span class="val" id="v_modrate">1200</span></label><input type="range" id="modrate" min="200" max="4000" value="1200" step="100"><span class="hint">переменные с числом участников/SKU</span></div>
+      <div class="field"><label>Онбординг: ₽ на нового участника<span class="val" id="v_onbrate">15000</span></label><input type="range" id="onbrate" min="2000" max="50000" value="15000" step="1000"><span class="hint">фронт-загруженные</span></div>
+      <div class="field"><label>Доверие/антифрод/резервы: доля от оборота<span class="val" id="v_trustrate">0.05%</span></label><input type="range" id="trustrate" min="1" max="15" value="5"><span class="hint">постоянные скрытые</span></div>
+
+      <div class="grouplbl">Co-Payment</div>
+      <div class="field"><label>Покрытие затрат взносом<span class="val" id="v_coverage">70%</span></label><input type="range" id="coverage" min="0" max="100" value="70"><span class="hint">остальное — из расчётного тарифа</span></div>
+      <div class="field"><label>Потолок взноса (% GMV участника)<span class="val" id="v_ceil">1.0%</span></label><input type="range" id="ceil" min="2" max="30" value="10"><span class="hint">граница устойчивости ~1–1,5%</span></div>
+    </div>
+  </div>
+
+  <!-- 1 cost stack over time -->
+  <div class="section-head"><span class="section-num">01</span><h2>Затраты на инфраструктуру во времени</h2></div>
+  <p class="section-sub">Пять типов затрат, наложенных стопкой (млн ₽/мес). Видно, как меняется структура: на старте доминируют платформа и онбординг (фронт-загруженные), со временем — клиринг и модерация (растут с оборотом и числом участников).</p>
+  <div class="card">
+    <div class="legend">
+      <span><span class="dot" style="background:var(--c1)"></span>Платформа (ступени)</span>
+      <span><span class="dot" style="background:var(--c2)"></span>Клиринг (с оборотом)</span>
+      <span><span class="dot" style="background:var(--c3)"></span>Модерация (с участниками)</span>
+      <span><span class="dot" style="background:var(--c4)"></span>Онбординг (фронт)</span>
+      <span><span class="dot" style="background:var(--c5)"></span>Доверие/резервы</span>
+    </div>
+    <svg id="costChart" viewBox="0 0 1000 360"></svg>
+    <div class="results">
+      <div class="res"><div class="rl">Затраты на старте</div><div class="rv" id="cost0">—</div></div>
+      <div class="res"><div class="rl">Затраты в конце</div><div class="rv" id="costEnd">—</div></div>
+      <div class="res"><div class="rl">Затраты, % GMV (конец)</div><div class="rv" id="costPct" style="color:var(--copper)">—</div></div>
+    </div>
+  </div>
+
+  <!-- 2 copay vs cost -->
+  <div class="section-head"><span class="section-num">02</span><h2>Co-Payment покрывает затраты — но остаётся под потолком</h2></div>
+  <p class="section-sub">Линия затрат на участника (₽/мес) против линии co-payment. Взнос покрывает заданную долю затрат, но не превышает потолок устойчивости. Разрыв между ними покрывается расчётным тарифом.</p>
+  <div class="card">
+    <div class="legend">
+      <span><span class="dot" style="background:var(--c2)"></span>Затраты сети на участника</span>
+      <span><span class="dot" style="background:var(--copay)"></span>Co-Payment на участника</span>
+      <span><span class="dot" style="background:var(--gap)"></span>Потолок устойчивости</span>
+    </div>
+    <svg id="copayChart" viewBox="0 0 1000 340"></svg>
+    <div class="verdict" id="copayVerdict"></div>
+  </div>
+
+  <!-- 3 structure table -->
+  <div class="section-head"><span class="section-num">03</span><h2>Структура затрат: тип, поведение, кто покрывает</h2></div>
+  <div class="card">
+    <table>
+      <thead><tr><th style="width:22%">Тип затрат</th><th style="width:20%">Поведение во времени</th><th>Чем покрывается</th></tr></thead>
+      <tbody>
+        <tr><td class="em"><span class="type-dot" style="background:var(--c1)"></span>Платформа</td><td>Ступени при росте базы</td><td>Co-Payment (общее благо: платформа, реестр, каталог) — типичный кандидат на взнос</td></tr>
+        <tr><td class="em"><span class="type-dot" style="background:var(--c2)"></span>Клиринг/расчёты</td><td>Растёт с оборотом</td><td>Расчётный тариф (0,2–0,5%) — прямо привязан к операции, растёт вместе</td></tr>
+        <tr><td class="em"><span class="type-dot" style="background:var(--c3)"></span>Модерация/качество</td><td>Растёт с числом участников/SKU</td><td>Co-Payment по потреблению (число SKU, нагрузка) — честная привязка</td></tr>
+        <tr><td class="em"><span class="type-dot" style="background:var(--c4)"></span>Онбординг</td><td>Фронт-загруженные, на нового</td><td>Разовый взнос за подключение сверх-базовых модулей / расчётный доход</td></tr>
+        <tr><td class="em"><span class="type-dot" style="background:var(--c5)"></span>Доверие/антифрод</td><td>Постоянные скрытые</td><td>Расчётный тариф + резервный фонд из Co-Payment</td></tr>
+      </tbody>
+    </table>
+    <div class="verdict"><b>Принцип разнесения.</b> Затраты, растущие <b>с оборотом</b> (клиринг, доверие), покрываются расчётным тарифом — он тоже растёт с оборотом, привязка честная. Затраты на <b>общее благо</b> (платформа, каталог, модерация) — кандидаты на Co-Payment, привязанный к потреблению ресурса (число SKU, модули), а не к обороту. Это и есть разделение из ст. 7: тариф за операцию, взнос за инфраструктуру.</div>
+  </div>
+
+  <div class="rules-tie" id="rulesTie"></div>
+</div>
+<footer><span>Затраты на инфраструктуру и Co-Payment · Распределённый маркетплейс</span><span id="footerDate"></span></footer>
+
+<script>
+function val(id){ return +document.getElementById(id).value; }
+document.querySelectorAll('input').forEach(el=>el.addEventListener('input',recalc));
+function fmt(n){ return Math.round(n).toLocaleString('ru-RU'); }
+
+function recalc(){
+  const hor=val('hor'), n0=val('n0'), nend=val('nend'), gmvp=val('gmvp')*1000; // ₽/mo per participant
+  const platstep=val('platstep'), clearrate=val('clearrate')/10000, modrate=val('modrate'), onbrate=val('onbrate'), trustrate=val('trustrate')/10000;
+  const coverage=val('coverage')/100, ceil=val('ceil')/1000;
+  document.getElementById('v_hor').textContent=hor+' мес';
+  document.getElementById('v_n0').textContent=n0;
+  document.getElementById('v_nend').textContent=fmt(nend);
+  document.getElementById('v_gmvp').textContent=fmt(gmvp/1000);
+  document.getElementById('v_platstep').textContent=platstep+' млн';
+  document.getElementById('v_clearrate').textContent=(clearrate*100).toFixed(2)+'%';
+  document.getElementById('v_modrate').textContent=fmt(modrate);
+  document.getElementById('v_onbrate').textContent=fmt(onbrate);
+  document.getElementById('v_trustrate').textContent=(trustrate*100).toFixed(2)+'%';
+  document.getElementById('v_coverage').textContent=(coverage*100).toFixed(0)+'%';
+  document.getElementById('v_ceil').textContent=(ceil*100).toFixed(1)+'%';
+
+  // participant count grows exponentially n0 -> nend
+  function N(t){ const r=Math.pow(nend/n0, t/hor); return n0*r; }
+  // monthly series
+  const months=[]; for(let t=0;t<=hor;t++) months.push(t);
+  let prevN=n0;
+  const platBase=Math.log2(nend/n0); // number of doublings total
+  const rows=months.map(t=>{
+    const n=N(t);
+    const gmv=n*gmvp; // total monthly GMV
+    // platform: step every doubling of base -> platform monthly cost = platstep(млн/год)/12 * (number of doublings so far +1)
+    const doublings=Math.floor(Math.log2(n/n0));
+    const plat=(platstep*1e6/12)*(doublings+1);
+    const clearing=gmv*clearrate;
+    const moderation=n*modrate;
+    const newN=Math.max(0, n - prevN); prevN=n;
+    const onboarding=newN*onbrate;
+    const trust=gmv*trustrate;
+    const total=plat+clearing+moderation+onboarding+trust;
+    return {t,n,gmv,plat,clearing,moderation,onboarding,trust,total};
+  });
+
+  // ---- chart 1: stacked area (млн ₽/мес) ----
+  const maxTotal=Math.max(...rows.map(r=>r.total))/1e6;
+  drawStack('costChart',rows,hor,maxTotal);
+
+  const r0=rows[0], rE=rows[hor];
+  document.getElementById('cost0').textContent=fmt(r0.total/1e6*10)/10+' млн/мес';
+  document.getElementById('costEnd').textContent=fmt(rE.total/1e6)+' млн/мес';
+  document.getElementById('costPct').textContent=(rE.total/rE.gmv*100).toFixed(2)+'% GMV';
+
+  // ---- chart 2: cost per participant vs copay vs ceiling (₽/mo) ----
+  const perP=rows.map(r=>({t:r.t, cost:r.total/r.n, ceil:ceil*gmvp, copayRaw:(r.total*coverage)/r.n}));
+  // copay capped at ceiling
+  perP.forEach(p=>{ p.copay=Math.min(p.copayRaw, p.ceil); });
+  drawCopay('copayChart',perP,hor);
+
+  const pE=perP[hor];
+  const covered=pE.copay/ (rE.total/rE.n);
+  const capped = pE.copayRaw > pE.ceil;
+  document.getElementById('copayVerdict').innerHTML = capped
+    ? `<b>Взнос упёрся в потолок.</b> Затраты на участника (${fmt(rE.total/rE.n)} ₽/мес) требуют взноса выше потолка устойчивости (${fmt(pE.ceil)} ₽/мес = ${(ceil*100).toFixed(1)}% GMV). Co-Payment ограничен потолком и покрывает ${(covered*100).toFixed(0)}% затрат; остальное обязано идти из расчётного тарифа. Это правильно — взнос не может расти бесконечно, иначе станет налогом и подтолкнёт участника к границе ухода.`
+    : `<b>Взнос под потолком — устойчиво.</b> Co-Payment (${fmt(pE.copay)} ₽/мес) покрывает ${(covered*100).toFixed(0)}% затрат на участника (${fmt(rE.total/rE.n)} ₽/мес) и остаётся ниже потолка устойчивости (${fmt(pE.ceil)} ₽/мес). Остаток покрывается расчётным тарифом. Запас до потолка есть — взнос не давит на границу ухода.`;
+
+  document.getElementById('rulesTie').innerHTML = `<b>Связь с Правилами (ст. 7.2).</b> Модель подтверждает три условия устойчивости co-payment на цифрах: <b>(1)</b> взнос покрывает конкретную себестоимость (${(covered*100).toFixed(0)}% реальных затрат сети), а не абстрактный сбор; <b>(2)</b> привязан к потреблению — платформа и модерация масштабируются с числом участников/SKU, а не с оборотом (оборотную часть несёт расчётный тариф); <b>(3)</b> прозрачен — каждый рубль взноса сопоставим с конкретным типом затрат из таблицы 03. К концу горизонта сеть стоит ${(rE.total/rE.gmv*100).toFixed(2)}% GMV — против удержания маркетплейса 40%, что и оставляет запас для честной экономики.`;
+}
+
+function drawStack(id,rows,hor,maxTotal){
+  const W=1000,H=360,padL=52,padR=16,padT=16,padB=32,iW=W-padL-padR,iH=H-padT-padB;
+  const x=t=>padL+(t/hor)*iW;
+  const yMax=maxTotal*1.1||1;
+  const y=v=>padT+iH-(v/yMax)*iH;
+  let c='';
+  for(let g=0;g<=4;g++){ const vv=yMax*g/4, yy=y(vv); c+=`<line class="grid-line" x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}"/><text class="axis-label" x="${padL-6}" y="${yy+3}" text-anchor="end">${vv.toFixed(1)}</text>`; }
+  for(let t=0;t<=hor;t+=(hor>36?12:6)){ c+=`<text class="axis-label" x="${x(t)}" y="${H-8}" text-anchor="middle">мес ${t}</text>`; }
+  c+=`<text class="axis-label" x="${padL-6}" y="${padT-4}" text-anchor="end">млн ₽</text>`;
+  const keys=[['plat','#233A52'],['clearing','#A34A2E'],['moderation','#6E5A8F'],['onboarding','#8A6D2F'],['trust','#4E6B52']];
+  // build cumulative areas
+  let below=rows.map(()=>0);
+  keys.forEach(([k,col])=>{
+    let top=rows.map((r,i)=>below[i]+r[k]/1e6);
+    const up=rows.map((r,i)=>`${x(r.t)},${y(top[i])}`);
+    const down=rows.map((r,i)=>`${x(r.t)},${y(below[i])}`).reverse();
+    c+=`<polygon points="${up.concat(down).join(' ')}" fill="${col}" opacity="0.82"/>`;
+    below=top;
+  });
+  document.getElementById(id).innerHTML=c;
+}
+function drawCopay(id,perP,hor){
+  const W=1000,H=340,padL=58,padR=16,padT=16,padB=32,iW=W-padL-padR,iH=H-padT-padB;
+  const x=t=>padL+(t/hor)*iW;
+  const yMax=Math.max(...perP.map(p=>Math.max(p.cost,p.ceil)))*1.1||1;
+  const y=v=>padT+iH-(v/yMax)*iH;
+  let c='';
+  for(let g=0;g<=4;g++){ const vv=yMax*g/4, yy=y(vv); c+=`<line class="grid-line" x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}"/><text class="axis-label" x="${padL-6}" y="${yy+3}" text-anchor="end">${fmt(vv)}</text>`; }
+  for(let t=0;t<=hor;t+=(hor>36?12:6)){ c+=`<text class="axis-label" x="${x(t)}" y="${H-8}" text-anchor="middle">мес ${t}</text>`; }
+  c+=`<text class="axis-label" x="${padL-6}" y="${padT-4}" text-anchor="end">₽/мес</text>`;
+  // ceiling line
+  const ceilPts=perP.map(p=>`${x(p.t)},${y(p.ceil)}`).join(' ');
+  c+=`<polyline points="${ceilPts}" fill="none" stroke="#B07A34" stroke-width="2" stroke-dasharray="6 4"/>`;
+  // cost line
+  const costPts=perP.map(p=>`${x(p.t)},${y(p.cost)}`).join(' ');
+  c+=`<polyline points="${costPts}" fill="none" stroke="#A34A2E" stroke-width="2.6"/>`;
+  // copay line
+  const copayPts=perP.map(p=>`${x(p.t)},${y(p.copay)}`).join(' ');
+  c+=`<polyline points="${copayPts}" fill="none" stroke="#2E5B3A" stroke-width="2.6"/>`;
+  // shade gap between copay and cost (расчётный тариф covers this)
+  const gapUp=perP.map(p=>`${x(p.t)},${y(p.cost)}`);
+  const gapDown=perP.map(p=>`${x(p.t)},${y(p.copay)}`).reverse();
+  c+=`<polygon points="${gapUp.concat(gapDown).join(' ')}" fill="#B07A34" opacity="0.12"/>`;
+  document.getElementById(id).innerHTML=c;
+}
+recalc();
+document.getElementById('footerDate').textContent=new Date().toLocaleDateString('ru-RU',{day:'2-digit',month:'long',year:'numeric'});
+</script>
+</div>
+</body>
+</html>

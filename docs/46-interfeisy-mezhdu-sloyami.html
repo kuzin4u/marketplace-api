@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Интерфейсы между слоями</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1300px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--pr);margin-bottom:14px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--pr);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:16px;overflow-x:auto}
+.tab{padding:7px 13px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;white-space:nowrap;background:none;font-family:inherit}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--pr);border-bottom-color:var(--pr)}
+.tab:focus-visible{outline:2px solid var(--pr);outline-offset:-2px}
+.sec{display:none}.sec.on{display:block}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}.c ul{padding-left:16px;margin:4px 0}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.co-p{background:var(--pr2);border-left:3px solid var(--pr);color:#2e2670}
+.st{font-size:15px;font-weight:600;margin:15px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:10.5px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.mono{font-family:ui-monospace,monospace;font-size:11px}
+.b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:3px;white-space:nowrap}
+.b-ok{background:var(--gn2);color:var(--gn)}.b-part{background:var(--wr2);color:var(--wr)}
+.b-no{background:var(--rd2);color:var(--rd)}
+/* матрица */
+.mxwrap{overflow-x:auto;border:1px solid var(--bd);border-radius:8px;background:var(--card)}
+table.mx{border-collapse:collapse;font-size:11.5px;width:100%;min-width:760px}
+table.mx th{padding:8px 7px;background:#f0efe9;border:1px solid var(--bd);font-size:10px;font-weight:700;color:var(--t2);text-align:center}
+table.mx th.rowh{text-align:left;min-width:150px;background:#eceae2}
+table.mx td{padding:0;border:1px solid var(--bd);text-align:center;height:44px}
+table.mx td.rowh{text-align:left;padding:7px 9px;font-size:11.5px;font-weight:600;background:#fbfaf7;color:var(--t1)}
+table.mx td.self{background:#f2f1ec}
+.cell{width:100%;height:100%;min-height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;font-weight:700;transition:opacity .15s}
+.cell:hover{opacity:.75}
+.cell.ok{background:var(--gn2);color:var(--gn)}
+.cell.part{background:var(--wr2);color:var(--wr)}
+.cell.no{background:var(--rd2);color:var(--rd)}
+.cell.none{background:transparent;color:#cbc8bf;cursor:default;font-weight:400}
+.cell.sel{outline:2px solid var(--pr);outline-offset:-2px}
+.det{margin-top:12px;background:var(--card);border:1px solid var(--bd);border-left:4px solid var(--pr);border-radius:8px;padding:14px 18px;min-height:90px}
+.det h3{font-size:14px;font-weight:700;margin-bottom:3px}
+.det .dir{font-size:11px;color:var(--t3);font-family:ui-monospace,monospace;margin-bottom:8px}
+.det dl{display:grid;grid-template-columns:132px 1fr;gap:5px 12px;font-size:12.5px;color:var(--t2)}
+.det dt{color:var(--t3);font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;padding-top:2px}
+.det dd b{color:var(--t1)}
+.lg{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--t2);margin:8px 0}
+.lg i{display:inline-block;width:14px;height:12px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.ly{border:1px solid var(--bd);border-left:4px solid var(--pr);border-radius:6px;background:var(--card);padding:12px 15px;margin-bottom:8px}
+.ly h4{font-size:13px;font-weight:700;margin-bottom:3px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ly .n{font-family:ui-monospace,monospace;font-size:10px;color:#fff;background:var(--t2);padding:1px 6px;border-radius:3px}
+.ly dl{display:grid;grid-template-columns:110px 1fr;gap:3px 10px;font-size:12px;color:var(--t2);margin-top:5px}
+.ly dt{color:var(--t3);font-size:10.5px;text-transform:uppercase;letter-spacing:.03em}
+a{color:#2a6cb6}
+@media print{.tabs{display:none}.sec{display:block!important}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Интерфейсы между слоями Системы</h1>
+  <p>Шесть слоёв плюс нормативный контур Правил над ними: системный, сервисный, операционный, ПТК, селлеры, UI и витрина. Для каждой пары — что передаётся, кто владелец сущности, чем скреплён контракт и в каком состоянии связь сегодня.</p>
+  <div class="meta">23 августа 2026 · 30 возможных направлений, 24 содержательных · 12 работают · 7 частично · 5 разрывов, где интерфейс объявлен, но не подключён</div>
+<div style="max-width:1300px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Слои: <a href="36-sistemnyi-sloy-opisanie.html" style="font-weight:600;">системный</a>, <a href="38-ptk-integrirovannaya-model.html" style="font-weight:600;">ПТК</a>, <a href="29-operacii-edinyi.html" style="font-weight:600;">операционный</a>, <a href="28-servis-edinyi.html" style="font-weight:600;">сервисный</a>, <a href="32-sellery-edinyi.html" style="font-weight:600;">селлеры</a>, <a href="35-ui-vitrina-edinyi.html" style="font-weight:600;">UI и витрина</a>. Решения: <a href="39-protokol-i-pravki-v-pravila.html" style="font-weight:600;">протокол</a>, <a href="42-reestr-uchastiya-raschet-cherez-sistemu.html" style="font-weight:600;">расчёт через Систему</a>, <a href="44-shkala-urovnei-reshenie.html" style="font-weight:600;">шкала</a>, <a href="43-personalnye-dannye-statya-i-kontur.html" style="font-weight:600;">персональные данные</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab">Матрица</button>
+  <button class="tab" data-t="s2" role="tab">Предмет слоёв</button>
+  <button class="tab" data-t="s3" role="tab">Разрывы ⚑ 5</button>
+  <button class="tab" data-t="s4" role="tab">Общие контракты</button>
+</div>
+
+<!-- 1 -->
+<div class="sec on" id="s1">
+<div class="co co-p"><b>Что считается интерфейсом.</b>Не связь документов, а <b>передаваемая сущность с одним владельцем</b>. У каждой есть слой-владелец, который её определяет и вправе менять, и слой-потребитель, который обязан принимать её как данность. Там, где владелец не назначен, интерфейса нет — есть дублирование.</div>
+<p style="font-size:12.5px;color:var(--t2)">Строка — кто передаёт, столбец — кто принимает. Нажмите клетку.</p>
+
+<div class="mxwrap"><table class="mx" id="mx"></table></div>
+<div class="lg">
+  <span><i style="background:#e0f4ed"></i>связь работает</span>
+  <span><i style="background:#faf0da"></i>частично</span>
+  <span><i style="background:#fce9e9"></i>разрыв: объявлена, не подключена</span>
+  <span><i style="background:#f2f1ec"></i>нет содержательной связи</span>
+</div>
+<div class="det" id="det"><h3>Выберите клетку матрицы</h3><div class="dir">строка передаёт — столбец принимает</div></div>
+</div>
+
+<!-- 2 -->
+<div class="sec" id="s2">
+<div class="st">Предмет каждого слоя: чем владеет и что берёт у других</div>
+<div class="co co-a"><b>Правило владения.</b>Сущность определяется в одном слое и только в нём меняется. Прочие слои её потребляют. Нарушение этого правила — источник половины расхождений, которые мы разбирали: одна величина жила в трёх документах и менялась в каждом независимо.</div>
+
+<div class="ly"><h4><span class="n">0</span>Нормативный контур · Правила</h4>
+<dl><dt>Владеет</dt><dd>Права и обязанности участников, ставки распределения, потолок удержания, запреты, порядок изменения самих норм</dd>
+<dt>Берёт</dt><dd>Ничего. Это верхний слой; при расхождении с любым документом действуют Правила</dd>
+<dt>Меняется</dt><dd>Только изменением Правил, не решением Организатора</dd></dl></div>
+
+<div class="ly" style="border-left-color:var(--gn)"><h4><span class="n">1</span>Системный слой</h4>
+<dl><dt>Владеет</dt><dd>Типы участия и условия входа, два типа магазина, два каталога, метка происхождения покупателя, волновая модель, гейт готовности роли</dd>
+<dt>Берёт</dt><dd>Нормы у Правил</dd>
+<dt>Отдаёт</dt><dd>Сервисному — рамку тарифов и условий; ПТК — требование реестра участников; селлерам — волны и группы</dd></dl></div>
+
+<div class="ly" style="border-left-color:var(--ac)"><h4><span class="n">2</span>Сервисный слой</h4>
+<dl><dt>Владеет</dt><dd>Форма сервиса из шести полей, реестр сервисов, предмет клиринга, тарифы услуг, уровни и профили участия</dd>
+<dt>Берёт</dt><dd>Условия и типы участия у системного; фактические тарифы у участников инфраструктуры</dd>
+<dt>Отдаёт</dt><dd>Операционному — состав ролей расщепления; UI — оси конфигуратора; ПТК — реестр как данные</dd></dl></div>
+
+<div class="ly" style="border-left-color:var(--co)"><h4><span class="n">3</span>Операционный слой</h4>
+<dl><dt>Владеет</dt><dd>Жизненные циклы магазина, товара и сделки, формула выдачи, анатомия заказа, правила расщепления и пересчёта, инвариант сходимости</dd>
+<dt>Берёт</dt><dd>Состав ролей у сервисного, метку источника у системного, конфигурацию у UI</dd>
+<dt>Отдаёт</dt><dd>ПТК — состояния и инварианты для реализации; селлерам — метку источника как основание прав</dd></dl></div>
+
+<div class="ly" style="border-left-color:var(--pr)"><h4><span class="n">4</span>Слой ПТК</h4>
+<dl><dt>Владеет</dt><dd>Состав сервисов комплекса, объектная модель, контракты маршрутов, гарантии исполнения: подпись, идемпотентность, сроки, журналы</dd>
+<dt>Берёт</dt><dd>Циклы и инварианты у операционного, реестр у сервисного, требования реестра участников у системного</dd>
+<dt>Отдаёт</dt><dd>UI — контракт полей и маршрутов; всем — техническую возможность или её отсутствие</dd></dl></div>
+
+<div class="ly" style="border-left-color:var(--wr)"><h4><span class="n">5</span>Слой селлеров</h4>
+<dl><dt>Владеет</dt><dd>Группы источников, воронка привлечения, модель подключения, переток доли, экономика продавца</dd>
+<dt>Берёт</dt><dd>Уровни и профили у сервисного, метку источника у операционного, волны у системного, экраны у UI</dd>
+<dt>Отдаёт</dt><dd>Системному — обратную связь о том, какие варианты участия востребованы</dd></dl></div>
+
+<div class="ly" style="border-left-color:var(--rd)"><h4><span class="n">6</span>Слой UI и витрины</h4>
+<dl><dt>Владеет</dt><dd>Экраны и их последовательность, конфигуратор как интерфейс к форме сервиса, витрина как окно к данным, контракт форм с сервером</dd>
+<dt>Берёт</dt><dd>Оси у сервисного, маршруты у ПТК, модель подключения у селлеров, выдачу у операционного</dd>
+<dt>Отдаёт</dt><dd>Операционному — конфигурацию, заданную продавцом; продавцу и покупателю — всё остальное</dd></dl></div>
+</div>
+
+<!-- 3 -->
+<div class="sec" id="s3">
+<div class="st">Пять разрывов: интерфейс объявлен, но не подключён</div>
+<div class="co co-r"><b>Разрыв — не отсутствие связи, а связь, которая описана с обеих сторон и не работает.</b>Оба слоя считают, что интерфейс есть; ни один не знает, что он не соединён. Такие места опаснее прямых пробелов: пробел виден, разрыв — нет.</div>
+
+<div class="c">
+<h3>1 · Конфигуратор пишет — выдача не читает</h3>
+<p><b>Слои:</b> UI передаёт операционному конфигурацию каналов. <b>Что должно быть:</b> резолвер эффективных каналов вызывается при формировании выдачи, и товар показывается там, где включён. <b>Что есть:</b> конфигуратор пишет правила в базу, резолвер работает, но выдача фильтрует по двум признакам видимости напрямую, минуя его.</p>
+<p style="margin-top:5px"><b>Чем опасно:</b> продавец выключает канал и видит подтверждение, но товар остаётся видимым. Обещание гибкости выполняется в интерфейсе и не выполняется в реальности.</p>
+</div>
+
+<div class="c">
+<h3>2 и 3 · Реестр сервисов не существует как данные</h3>
+<p><b>Слои:</b> сервисный передаёт операционному и ПТК состав сервисов и получателей. <b>Что должно быть:</b> расчёт проходит по реестру и строит столько долей, сколько сервисов вошло в сделку. <b>Что есть:</b> реестр существует документом, получатели зашиты в коде, из девяти работают четыре.</p><p style="margin-top:5px"><b>Уточнение после решения о едином расчёте.</b> Предмет клиринга перестал быть переменной — он всегда «сделка». Но роли внутри сделки остались все девять: услуга оператора не исчезла, она стала строкой в расщеплении. Более того, решение <b>добавило требование пятой роли</b> — удержания Системы: раньше при своём расчёте продавца его могло не быть вовсе, теперь оно есть в каждой сделке.</p>
+<p style="margin-top:5px"><b>Чем опасно:</b> это корневой разрыв, и он двойной — рвётся связь сервисного слоя и с операционным, и с ПТК. Из него следуют отсутствующие роли комиссии, финансов, страхования и заморозки: пять сервисов описаны, но не могут быть оплачены.</p>
+</div>
+
+<div class="c">
+<h3>4 · Реестр участников не существует как сервис</h3>
+<p><b>Слои:</b> системный передаёт ПТК требование реестра; сервисный берёт оттуда тарифы; операционный — маршрутизацию. <b>Что должно быть:</b> участник публикует тариф, расчёт его читает, гейт проверяет наличие двух участников в роли. <b>Что есть:</b> ничего из этого.</p>
+<p style="margin-top:5px"><b>Чем опасно:</b> пять из семи вопросов системного слоя упираются в него. Без реестра тарифы негде публиковать, а «свобода выбора оператора» остаётся словом.</p>
+</div>
+
+<div class="c">
+<h3>5 · Метка источника есть — прав она не даёт</h3>
+<p><b>Слои:</b> операционный передаёт селлерам метку происхождения покупателя как основание прав на клиентскую базу. <b>Что должно быть:</b> метка вместе с согласием определяет право на повторное обращение и состав выгрузки при выходе. <b>Что есть:</b> метка проставляется и хранится, но ни реестра согласий, ни выгрузки, ни разграничения доступа нет.</p>
+<p style="margin-top:5px"><b>Чем опасно:</b> обещание «покупатель остаётся ваш» ничем не обеспечено. После принятия статьи 22 разрыв стал именованным — раньше он был просто незамеченным.</p>
+</div>
+
+<div class="co co-w"><b>Что общего у всех пяти.</b>В каждом случае <b>слой-потребитель не знает, что данные не приходят</b>. Отсюда практическое требование к интерфейсам: у каждой передаваемой сущности должен быть признак, откуда она получена. Тогда выдача, считающая каналы напрямую вместо резолвера, будет отличима от выдачи, использующей его, — а сегодня они выглядят одинаково.</div>
+</div>
+
+<!-- 4 -->
+<div class="sec" id="s4">
+<div class="st">Общие контракты — то, что нельзя менять в одностороннем порядке</div>
+<div class="co co-g"><b>Контракт — сущность, которую используют не менее двух слоёв.</b>Её изменение в одном слое ломает другие молча, без ошибки. Именно на таких сущностях возникли самые дорогие расхождения этой работы.</div>
+
+<table class="tb">
+<thead><tr><th style="width:20%">Контракт</th><th style="width:12%">Владелец</th><th style="width:26%">Кто зависит</th><th>Что происходит при одностороннем изменении</th></tr></thead>
+<tbody>
+<tr><td><b>Единица цены</b><br><span style="font-size:11px;color:var(--t3)">копейки целым числом</span></td><td>ПТК</td><td>UI, операционный, сервисный</td><td>Ошибка в сто раз, проходящая все проверки. Обнаруживается на выплате</td></tr>
+<tr><td><b>Предмет клиринга</b><br><span style="font-size:11px;color:var(--t3)">сделка, услуга, комиссия</span></td><td>сервисный</td><td>операционный, ПТК, селлеры</td><td>Меняется число получателей в расщеплении; инвариант сходимости перестаёт выполняться</td></tr>
+<tr><td><b>Глубина участия</b><br><span style="font-size:11px;color:var(--t3)">возрастающая, 2–7</span></td><td>сервисный</td><td>UI, операционный, селлеры</td><td>Храповик срабатывает наоборот: блокирует повышение и пропускает понижение</td></tr>
+<tr><td><b>Метка происхождения</b><br><span style="font-size:11px;color:var(--t3)">свой или сетевой</span></td><td>операционный</td><td>селлеры, системный, персональные данные</td><td>Меняется принадлежность покупателей и состав выгрузки при выходе</td></tr>
+<tr><td><b>Снимок конфигурации</b><br><span style="font-size:11px;color:var(--t3)">на момент создания заказа</span></td><td>операционный</td><td>сервисный, ПТК, UI</td><td>Правка настроек меняет прошлые заказы задним числом</td></tr>
+<tr><td><b>Инвариант сходимости</b><br><span style="font-size:11px;color:var(--t3)">сумма долей равна сумме сделки</span></td><td>операционный</td><td>ПТК, сервисный</td><td>Ошибка расщепления перестаёт обнаруживаться автоматически</td></tr>
+<tr><td><b>Контракт полей маршрутов</b><br><span style="font-size:11px;color:var(--t3)">имена, типы, обязательность</span></td><td>ПТК</td><td>UI</td><td>Формы шлют не то, что сервер принимает — шесть таких расхождений уже находили живым прогоном</td></tr>
+</tbody>
+</table>
+
+<div class="co co-a" style="margin-top:12px"><b>Правило изменения контракта.</b>Сущность из этой таблицы меняется только вместе со всеми зависимыми слоями и с явной сверкой. На практике это означает: правка проходит через документ решения, как это было со шкалой уровней и единицей цены, а не правкой в одном файле.</div>
+
+<div class="co co-p"><b>И наблюдение, ради которого стоило делать эту карту.</b>Из семи общих контрактов пять уже становились источником расхождения: единица цены, предмет клиринга, глубина участия, снимок конфигурации, контракт полей. Совпадение не случайное — <b>расхождения возникают именно на границах слоёв</b>, потому что внутри слоя у сущности один хозяин, а на границе их двое и оба считают себя правыми.</div>
+</div>
+
+</div>
+<script>
+(function(){
+  var L=[
+   {k:'sys',n:'Системный'},
+   {k:'srv',n:'Сервисный'},
+   {k:'ops',n:'Операционный'},
+   {k:'ptk',n:'ПТК'},
+   {k:'sel',n:'Селлеры'},
+   {k:'ui',n:'UI и витрина'}
+  ];
+  var I={
+   'sys>srv':{s:'ok',n:'Рамка условий и типов участия',what:'Типы участия, условия входа и пребывания, потолок удержания, запрет взноса долей оборота',own:'Системный слой',bond:'Условия участия по типам; статьи 4, 7, 8',state:'Работает: сервисный слой строит тарифы и уровни внутри этой рамки'},
+   'sys>ptk':{s:'no',n:'Требование реестра участников',what:'Роли, регионы, тарифы, сроки, рейтинг, гейт готовности роли',own:'Системный слой',bond:'Статья 4; спецификация реестра участников',state:'Разрыв: реестр описан как сервис комплекса, но не реализован. Пять из семи вопросов системного слоя упираются сюда'},
+   'sys>ops':{s:'ok',n:'Метка происхождения и два каталога',what:'Правило отнесения заказа к каналу продавца или к каналам Системы; различение каталога и рыночного среза',own:'Системный слой',bond:'Статья 10, пункт 10.6',state:'Работает: источник заказа определяется точкой входа и не зависит от настроек видимости'},
+   'sys>sel':{s:'ok',n:'Волны и группы источников',what:'Порядок разворачивания, гейт инфраструктуры перед привлечением, приоритет трафика второй группе',own:'Системный слой',bond:'Волновая модель; статья 11 о приоритете',state:'Работает как рамка планирования; проверяется пилотом'},
+   'sys>ui':{s:'part',n:'Два типа магазина — два пути в кабинете',what:'Магазин Системы и внешний магазин требуют разных экранов подключения и разного источника правды по товару',own:'Системный слой',bond:'Обзор сайта; статья 9',state:'Частично: путь первого типа собран, путь второго не детализирован — это волна первая'},
+
+   'srv>ops':{s:'no',n:'Состав ролей расщепления',what:'Перечень сервисов, вошедших в сделку, и получатель по каждому. Предмет клиринга после решения о едином расчёте всегда «сделка» — состав долей задаёт не он, а набор фактически оказанных сервисов',own:'Сервисный слой',bond:'Реестр сервисов; статья 6, пункт 6.11',state:'Разрыв: реестр существует документом, получатели зашиты в коде. Работают четыре роли из девяти — исполнение, логистика, сбор Организатора, остаток продавцу. Не работают удержание Системы, комиссия за приведённого, финансы, страхование, заморозка по спору'},
+   'srv>ui':{s:'part',n:'Оси конфигуратора',what:'Переключатели витрины, исполнения, каналов и их допустимые сочетания',own:'Сервисный слой',bond:'Форма сервиса; управление видимостью',state:'Частично: конфигуратор собран, но связи между осями не проверяются — можно собрать пустое сочетание'},
+   'srv>ptk':{s:'no',n:'Реестр сервисов как данные',what:'Таблица сервисов с тарифом, предметом, точкой потока, плательщиком; расчёт как проход по ней',own:'Сервисный слой',bond:'Архитектура реализации объектов',state:'Разрыв, корневой: пока реестр не станет данными, добавление роли требует правки кода'},
+   'srv>sel':{s:'ok',n:'Уровни и профили участия',what:'Четыре именованных варианта, шесть профилей, глубина участия от двух до семи',own:'Сервисный слой',bond:'Линейка уровней; решение по шкале',state:'Работает: продавцу предъявляется набор вариантов с удержанием и составом'},
+   'srv>sys':{s:'ok',n:'Обратная связь о востребованности',what:'Какие сервисы нужны какой доле продавцов; ряд доведения',own:'Сервисный слой',bond:'Полный разбор по фазам',state:'Работает как основание очереди работ'},
+
+   'ops>ptk':{s:'part',n:'Состояния, инварианты, правила пересчёта',what:'Пятнадцать состояний сделки, инвариант сходимости, изъятие доли виновного, снимок конфигурации',own:'Операционный слой',bond:'Спецификация расчётного ядра',state:'Частично: состояния описаны, доходит до входа в эскроу; снимок конфигурации не реализован'},
+   'ops>ui':{s:'part',n:'Формула выдачи и жизненные циклы',what:'Порядок товаров в каталоге, состояния магазина и товара, условия попадания в выдачу',own:'Операционный слой',bond:'Спецификация торгового сервиса',state:'Частично: три множителя из шести; свежесть и география не включены'},
+   'ops>sel':{s:'no',n:'Метка источника как основание прав',what:'Право на повторное обращение и состав выгрузки при выходе — по метке вместе с согласием',own:'Операционный слой',bond:'Статья 10 и статья 22',state:'Разрыв: метка проставляется, но реестра согласий, выгрузки и разграничения доступа нет'},
+   'ops>srv':{s:'ok',n:'Фактическое исполнение сервисов',what:'Что реально произошло в сделке: какие звенья сработали, какие доли начислены',own:'Операционный слой',bond:'Клиринг по заказу',state:'Работает: расщепление считается на каждом заказе, инвариант выполняется'},
+
+   'ptk>ui':{s:'ok',n:'Контракт маршрутов и полей',what:'Имена полей, типы, обязательность, коды ответов; фактический перечень задеплоенного сервера',own:'Слой ПТК',bond:'Справочник маршрутов',state:'Работает: формы приведены к фактическому контракту после живого прогона'},
+   'ptk>ops':{s:'part',n:'Техническая возможность',what:'Что комплекс умеет сегодня: расщепление на четыре роли, ожидание оплаты, ручной клиринг',own:'Слой ПТК',bond:'Аудит кода; модель ПТК',state:'Частично: половина операционных правил не имеет реализации'},
+   'ptk>srv':{s:'part',n:'Ограничения реализации',what:'Какие поля формы сервиса выразимы сегодня: тариф с датой есть, ступенчатый и периодический — нет',own:'Слой ПТК',bond:'Объектная модель',state:'Частично: три объекта из одиннадцати работают, три отсутствуют'},
+   'ptk>sel':{s:'part',n:'Маршруты подключения',what:'Создание участника, магазина, товаров; авторизация продавца',own:'Слой ПТК',bond:'Справочник маршрутов; врезка авторизации',state:'Частично: цепочка работает, идентификатор продавца берётся из пути, а не из токена'},
+
+   'sel>ui':{s:'ok',n:'Модель подключения',what:'Семь шагов, до сорока восьми часов; договор подписью кодом; модерация до четырёх часов',own:'Слой селлеров',bond:'Спецификация подключения; принятое решение',state:'Работает как задание на экраны: три формы кабинета собраны'},
+   'sel>sys':{s:'ok',n:'Востребованность вариантов участия',what:'Какие группы приходят, с чем, как быстро разгоняются; доля отказов',own:'Слой селлеров',bond:'Источники селлеров; воронка',state:'Работает как гипотеза; проверяется пилотом'},
+   'sel>srv':{s:'ok',n:'Запрос на состав сервисов',what:'Какие профили нужны какому типу продавца',own:'Слой селлеров',bond:'Шесть профилей',state:'Работает'},
+
+   'ui>ops':{s:'no',n:'Конфигурация, заданная продавцом',what:'Правила видимости и исполнения на уровне магазина, категории, товара',own:'UI и витрина',bond:'Конфигуратор каналов; резолвер приоритета',state:'Разрыв: конфигуратор пишет правила, выдача их не читает — фильтрует по признакам напрямую'},
+   'ui>ptk':{s:'ok',n:'Запросы форм и витрины',what:'Создание магазина и товаров, чтение каталога, оформление заказа',own:'UI и витрина',bond:'Справочник маршрутов',state:'Работает: пять шагов сквозного прогона проходят на живом сервере'},
+   'ui>sel':{s:'ok',n:'Фактическая воронка',what:'Где продавцы отсеиваются на самом деле: заявка, товары, договор',own:'UI и витрина',bond:'План тестирования; воронка подключения',state:'Работает как измерение — но данных пока нет, пилот не набрал продавцов'}
+  };
+
+  var mx=document.getElementById('mx'), det=document.getElementById('det');
+  var h='<thead><tr><th class="rowh">передаёт ↓ / принимает →</th>';
+  L.forEach(function(c){h+='<th>'+c.n+'</th>'});
+  h+='</tr></thead><tbody>';
+  L.forEach(function(r){
+    h+='<tr><td class="rowh">'+r.n+'</td>';
+    L.forEach(function(c){
+      if(r.k===c.k){h+='<td class="self"></td>';return}
+      var key=r.k+'>'+c.k, it=I[key];
+      if(!it){h+='<td><div class="cell none">—</div></td>';return}
+      var lbl=it.s==='ok'?'есть':it.s==='part'?'частично':'разрыв';
+      h+='<td><div class="cell '+it.s+'" data-key="'+key+'">'+lbl+'</div></td>';
+    });
+    h+='</tr>';
+  });
+  mx.innerHTML=h+'</tbody>';
+
+  function show(key){
+    var it=I[key]; if(!it)return;
+    var p=key.split('>'), from=L.filter(function(x){return x.k===p[0]})[0].n, to=L.filter(function(x){return x.k===p[1]})[0].n;
+    document.querySelectorAll('.cell').forEach(function(c){c.classList.toggle('sel',c.dataset.key===key)});
+    det.innerHTML='<h3>'+it.n+'</h3><div class="dir">'+from+' → '+to+'</div>'+
+      '<dl><dt>Что передаётся</dt><dd>'+it.what+'</dd>'+
+      '<dt>Владелец</dt><dd><b>'+it.own+'</b></dd>'+
+      '<dt>Чем скреплено</dt><dd>'+it.bond+'</dd>'+
+      '<dt>Состояние</dt><dd>'+it.state+'</dd></dl>';
+  }
+  mx.addEventListener('click',function(e){
+    var c=e.target.closest('.cell'); if(!c||!c.dataset.key)return; show(c.dataset.key);
+  });
+  show('srv>ptk');
+
+  document.querySelectorAll('#tabs .tab').forEach(function(t){t.addEventListener('click',function(){
+    document.querySelectorAll('#tabs .tab').forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.t)});
+    window.scrollTo({top:0,behavior:'smooth'});})});
+})();
+</script>
+</body>
+</html>

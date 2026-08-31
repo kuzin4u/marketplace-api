@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Матрица вариантов: параметры и описание в шапке</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.5;font-size:13px}
+.w{max-width:1600px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--ac);margin-bottom:16px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--ac);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:14px;overflow-x:auto}
+.tab{padding:7px 14px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;white-space:nowrap;background:none;font-family:inherit}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.tab:focus-visible{outline:2px solid var(--ac);outline-offset:-2px}
+.sec{display:none}.sec.on{display:block}
+.bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.fb{padding:4px 10px;font-size:11px;border:1px solid var(--bd);background:var(--card);border-radius:20px;cursor:pointer;color:var(--t2);font-family:inherit}
+.fb:hover{border-color:var(--ac);color:var(--t1)}.fb.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+.stat{font-size:11px;color:var(--t3);margin-left:auto}
+.scroll{overflow:auto;max-height:74vh;border:1px solid var(--bd);border-radius:8px;background:var(--card)}
+table.mx{border-collapse:separate;border-spacing:0;font-size:11px;width:max-content;min-width:100%}
+table.mx th{position:sticky;top:0;z-index:3;background:#f0efe9;padding:6px 7px;font-size:10px;font-weight:700;color:var(--t2);border-bottom:1px solid var(--bd);border-right:1px solid var(--bd);text-align:left;vertical-align:bottom;min-width:96px;max-width:112px;white-space:normal;line-height:1.25}
+table.mx th .g{display:block;font-weight:400;font-size:8.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.03em;margin-bottom:2px}
+table.mx th.rowh{left:0;z-index:6;background:#e6e3d9;min-width:196px;max-width:196px;vertical-align:bottom}
+table.mx td{padding:6px 7px;border-bottom:1px solid var(--bd);border-right:1px solid var(--bd);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;color:var(--t2);white-space:nowrap;vertical-align:middle}
+table.mx td.rowh{position:sticky;left:0;z-index:2;background:var(--card);font-family:-apple-system,sans-serif;font-size:12px;color:var(--t1);min-width:196px;max-width:196px;white-space:normal;border-right:2px solid var(--bd)}
+table.mx td.rowh b{font-weight:600;display:block}
+table.mx td.rowh .s{font-size:10.5px;color:var(--t3)}
+table.mx tr:hover td{background:#fbfaf7}
+table.mx tr:hover td.rowh{background:#f6f5f0}
+table.mx tr.fin td{background:var(--gn2);color:#084a38;font-weight:700;border-top:2px solid var(--gn)}
+table.mx tr.fin td.rowh{background:#cfe9df;color:#084a38}
+.no{color:#cbc8bf}
+.x{color:var(--rd);text-decoration:line-through}
+.code{color:var(--gn);font-weight:700}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.st{font-size:15px;font-weight:600;margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}.c ul{padding-left:16px;margin:4px 0}
+.lg{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--t2);margin:6px 0}
+a{color:#2a6cb6}
+@media print{.tabs,.bar{display:none}.sec{display:block!important}.scroll{max-height:none}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Матрица вариантов<br>Параметры и позиции описания в шапке, варианты в строках</h1>
+  <p>Та же информация, что в сводных таблицах, но развёрнутая: каждая строка — один вариант системы, каждый столбец — параметр или позиция описания. Последняя строка — рекомендуемый набор.</p>
+  <div class="meta">23 августа 2026 · 10 вариантов × 48 параметров и 10 × 34 позиции описания · Первый столбец и шапка закреплены при прокрутке</div>
+<div style="max-width:1600px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Развёрнутый вид <a href="19-svodnye-tablicy-iteracij.html" style="font-weight:600;">сводных таблиц итераций</a>. Варианты: <a href="service-registry-full-analysis.html" style="font-weight:600;">В-1</a> · <a href="pipeline-model-interactive.html" style="font-weight:600;">В-2</a> · <a href="9-ptk-marketplace-arch-part2.html" style="font-weight:600;">В-3</a> · <a href="10-mehanizm-sbora-bazy-i-sellerov.html" style="font-weight:600;">В-4</a> · <a href="11-arhitektura-realizacii-obektov.html" style="font-weight:600;">В-5</a> · <a href="12-opisanie-sistemy-i-pasport-parametrov.html" style="font-weight:600;">В-6</a> · <a href="13-pasport-rasshirenie-platelshchik-scenarii.html" style="font-weight:600;">В-7</a> · <a href="15-korrekciya-pasporta.html" style="font-weight:600;">В-8</a> · <a href="16-kak-rabotaet-sistema-polnoe.html" style="font-weight:600;">В-9</a> · <a href="17-analiz-iteracij-vybor-nabora.html" style="font-weight:600;">рекомендуемый</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="co co-a" style="margin-bottom:12px"><b>Реестр вариантов.</b>Ориентация каждого прохода, отличия и единый вектор изменений — <a href="22-reestr-variantov-vektor.html">«Реестр девяти вариантов»</a>.</div>
+<div class="co co-a" style="margin-bottom:12px"><b>Исполняемая версия.</b>Тот же заказ, посчитанный по каждому варианту, с проверкой полноты набора — <a href="21-iteracionnaya-model-po-variantam.html">«Итерационная модель по вариантам»</a>.</div>
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab">Шапка параметров · 48</button>
+  <button class="tab" data-t="s2" role="tab">Шапка описания · 34</button>
+  <button class="tab" data-t="s3" role="tab">Как читать</button>
+</div>
+
+<div class="sec on" id="s1">
+<div class="bar" id="g1"></div>
+<div class="lg"><span><b class="no">·</b> — вариант этого не задавал</span><span><b class="x">зачёркнуто</b> — отвергнуто</span><span><b class="code">зелёная строка</b> — рекомендуемый набор</span></div>
+<div class="scroll"><table class="mx" id="t1"></table></div>
+<div class="co co-a"><b>Как пользоваться.</b>Ведите взгляд по строке — увидите, что именно давал данный вариант. Ведите по столбцу — увидите историю одной величины и то, сколько раз к ней возвращались. Пустой столбец с одним значением означает, что вопрос решён однажды и не пересматривался.</div>
+</div>
+
+<div class="sec" id="s2">
+<div class="bar" id="g2"></div>
+<div class="lg"><span><b>в коде</b> — реализовано</span><span><b>описано</b> — проработано в документе</span><span><b>упом.</b> — названо без деталей</span><span><b class="no">·</b> — не касался</span></div>
+<div class="scroll"><table class="mx" id="t2"></table></div>
+<div class="co co-w"><b>Строка «рекомендуемый» здесь означает не решение, а состояние.</b>В таблице параметров последняя строка — то, что предлагается принять. В таблице описания она показывает, в каком состоянии функция находится сегодня: работает, описана, требует решения или не сделана.</div>
+</div>
+
+<div class="sec" id="s3">
+<div class="st">Как читать эти матрицы</div>
+<div class="c">
+<ul>
+<li><b>Строка — это вариант системы,</b> то есть один законченный проход по параметрам. Варианты не отменяли друг друга целиком: каждый следующий брал большую часть предыдущего и менял несколько позиций.</li>
+<li><b>Пустая клетка не значит «отсутствует».</b> Она значит, что данный вариант этого вопроса не касался. Судить о наличии величины следует по нижней строке.</li>
+<li><b>Столбец с одним заполненным значением</b> — вопрос решён однажды и не пересматривался. Таких большинство, и это хорошо.</li>
+<li><b>Столбец с четырьмя-пятью значениями</b> — предмет спора. Таких семь, и все они текстовые: удержание, база сравнения, сборка, доставка, число ролей, потолок, комиссия за приведённого.</li>
+</ul>
+</div>
+
+<div class="co co-g"><b>Главное, что видно в развёрнутом виде и не видно в свёрнутом.</b>Строки В-1 и В-2 заполнены почти целиком — это варианты замысла, они задавали всё сразу. Строки В-3 и В-5 заполнены редко, но именно их значения дошли до сегодняшнего дня: это варианты, сверенные с реальностью. Плотность заполнения обратно пропорциональна выживаемости — задать величину легко, удержать её трудно.</div>
+
+<div class="co co-a"><b>Практический вывод для дальнейшей работы.</b>Новый вариант параметров имеет смысл только тогда, когда он меняет столбцы, а не добавляет строку. Девять строк дали семь спорных столбцов и одиннадцать нерешённых величин; десятый проход по тем же данным не изменит ни того, ни другого. Изменит либо решение по спорным столбцам, либо измерение на пилоте — то есть новый источник, а не новый разбор.</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var VAR=[
+    {n:'В-1 · Реестр сервисов',s:'замысел, 28 сервисов по фазам'},
+    {n:'В-2 · Модель конвейера',s:'исполняемый расчёт в браузере'},
+    {n:'В-3 · Аудит кода',s:'сверка с работающей системой'},
+    {n:'В-4 · Механизм сбора базы',s:'параметры роста'},
+    {n:'В-5 · Архитектура реализации',s:'параметр как поле таблицы'},
+    {n:'В-6 · Паспорт P-01…50',s:'систематизация, статусы'},
+    {n:'В-7 · Расширение P-51…95',s:'плательщик, краевые правила'},
+    {n:'В-8 · Коррекция P-96…122',s:'пересмотр, цикл сделки'},
+    {n:'В-9 · Надзор P-123…135',s:'членство, реестры, границы'},
+    {n:'Рекомендуемый набор',s:'канальная лестница',fin:true}
+  ];
+  var D='·';
+  var PARAMS=[
+    {g:'Экономика',n:'Удержание Системы',v:['12,5 %',D,'0,2 %',D,D,'12,5 и 0,2',D,'разведены',D,'по каналу']},
+    {g:'Экономика',n:'Сбор Организатора',v:[D,D,'0,2 %',D,D,'0,2 %','0,2 %','0,2 %',D,'0,2 → 2,5 %']},
+    {g:'Экономика',n:'Фонд поддержки сети',v:['10 %',D,D,D,D,'10 %',D,'10 %',D,'сетевые заказы']},
+    {g:'Экономика',n:'Комиссия расчётного контура',v:[D,D,D,D,D,'0,175 %','0,175 %',D,D,'0,175 %']},
+    {g:'Экономика',n:'Потолок удержания',v:[D,D,D,D,D,'15 %','15 %','15 % Системы',D,'15 % Системы']},
+    {g:'Экономика',n:'Удержание площадки',v:['<s>40 %</s>','<s>40 %</s>',D,'<s>40 %</s>',D,'<s>40 %</s>','<s>40 %</s>','37,5 / 45 %',D,'симметрично']},
+    {g:'Экономика',n:'Комиссия за приведённого',v:['3–8 %','5 %',D,'3–8 %',D,'3–8 %',D,D,D,'5 %, 12 мес']},
+    {g:'Экономика',n:'Продвижение',v:['1–5 %','3 %',D,D,D,'1–5 %',D,D,D,'1–5 %']},
+    {g:'Экономика',n:'Страхование',v:['0,3–1 %','0,5 %',D,D,D,'0,3–1 %',D,D,D,'0,3–1 %']},
+    {g:'Экономика',n:'Кредит и рассрочка',v:[D,'2 %',D,D,D,'2 %',D,D,D,'2 %']},
+    {g:'Экономика',n:'Граница взноса',v:[D,D,D,D,D,'1–1,5 %',D,D,D,'1–1,5 %']},
+    {g:'Экономика',n:'Способ начисления взноса',v:[D,D,D,D,D,'не процент',D,'потребление',D,'не с оборота']},
+
+    {g:'Тарифы',n:'Сборка заказа',v:['20–50 ₽','62 ₽ пакет',D,D,D,'<s>200 ₽/ед</s>','<s>200 ₽/ед</s>','20–50 ₽',D,'20–50 ₽/заказ']},
+    {g:'Тарифы',n:'Хранение',v:['3–15 ₽','8 ₽',D,D,D,'3–15 ₽',D,D,D,'3–15 ₽']},
+    {g:'Тарифы',n:'Приёмка и фасовка',v:['8–25 ₽','12 ₽',D,D,D,'8–25 ₽',D,D,D,'8–25 ₽']},
+    {g:'Тарифы',n:'Упаковка',v:['15–40 ₽','12 ₽',D,D,D,'15–40 ₽',D,D,D,'15–40 ₽']},
+    {g:'Тарифы',n:'Доставка последней мили',v:['150–350 ₽','175–290 ₽',D,D,D,'350/500/800',D,'по оператору',D,'по оператору']},
+    {g:'Тарифы',n:'Выдача в пункте',v:['5–20 ₽','12 ₽',D,D,D,'5–20 ₽',D,D,D,'5–20 ₽']},
+    {g:'Тарифы',n:'Обработка возврата',v:['10–30 ₽','20 ₽',D,D,D,'10–30 ₽',D,D,D,'10–30 ₽']},
+    {g:'Тарифы',n:'Доля возвратов',v:[D,'8 %',D,D,D,'8 %','8 %',D,D,'8 %']},
+
+    {g:'Выдача',n:'Веса формулы',v:[D,D,'0,15·0,08·0,10',D,D,'то же',D,D,'то же','0,15·0,08·0,10']},
+    {g:'Выдача',n:'Подъём ушедшим с площадок',v:[D,D,'+30 % / 90 д',D,D,'то же',D,D,'то же','+30 % / 90 д']},
+    {g:'Выдача',n:'Подъём новым',v:[D,D,'+10 % / 30 д',D,D,'то же',D,D,'то же','+10 % / 30 д']},
+    {g:'Выдача',n:'Платное место',v:[D,D,'поля нет',D,D,'запрет',D,D,'запрет','запрещено']},
+    {g:'Выдача',n:'Старение карточки',v:[D,D,D,D,D,'−30 % / 30 д',D,D,'то же','−30 % / 30 д']},
+    {g:'Выдача',n:'Старение отзывов',v:[D,D,D,D,D,'180 дней',D,D,'то же','180 дней']},
+    {g:'Выдача',n:'Порог по покупателю',v:[D,D,D,D,D,'30 %',D,D,'30 %','30 %']},
+    {g:'Выдача',n:'Порог захвата выдачи',v:[D,D,D,D,D,'50 %',D,D,'50 %','50 %']},
+    {g:'Выдача',n:'Порог автопроверки',v:[D,D,D,D,D,'обрезан',D,D,D,'не задан']},
+    {g:'Выдача',n:'Множитель сетевого баланса',v:[D,D,D,'предложен',D,D,D,D,'описан','ввести']},
+
+    {g:'Сделка',n:'Минимальная сумма заказа',v:[D,D,D,D,D,D,'3× услуг',D,D,'3× услуг']},
+    {g:'Сделка',n:'Округление долей',v:[D,D,D,D,D,D,'вниз, остаток',D,D,'вниз, остаток']},
+    {g:'Сделка',n:'Приоритет при нехватке',v:[D,D,D,D,D,D,'опер→орг→прод',D,D,'опер→орг→прод']},
+    {g:'Сделка',n:'Автоподтверждение',v:[D,D,D,D,D,D,'7 дней','7 дней',D,'7 дней']},
+    {g:'Сделка',n:'Резерв в корзине',v:[D,D,D,D,D,D,'30 мин',D,D,'30 мин']},
+    {g:'Сделка',n:'Ожидание оплаты',v:[D,D,D,D,D,D,D,'30 мин',D,'30 мин']},
+    {g:'Сделка',n:'Срок сборки',v:[D,D,D,D,D,D,'24 ч','24 ч',D,'24 часа']},
+    {g:'Сделка',n:'Срок возврата товара',v:[D,D,D,D,D,D,'14 дней',D,D,'14 дней']},
+    {g:'Сделка',n:'Сроки спора',v:[D,D,D,D,D,D,'3 / 10 дней','3 / 5 / 10',D,'3 / 5 / 10 дней']},
+
+    {g:'Расчёт',n:'Число ролей расщепления',v:['9','7','4',D,'из реестра','9 против 4',D,'9 названы',D,'9, готово 4']},
+    {g:'Расчёт',n:'Инвариант сходимости',v:[D,'да','да',D,'да','да','да',D,D,'выполняется']},
+    {g:'Расчёт',n:'Версионность тарифа',v:[D,D,'по датам',D,'снимок','по датам',D,D,D,'по датам']},
+    {g:'Расчёт',n:'Срок выплаты',v:['1–3 дня',D,D,'1–3 дня',D,'1–3 дня',D,D,D,'1–3 дня']},
+    {g:'Расчёт',n:'Минимальная выплата',v:[D,D,D,D,D,D,'нет',D,D,'нет минимума']},
+
+    {g:'База',n:'Срок привязки покупателя',v:[D,D,D,D,D,D,D,'12 мес',D,'12 месяцев']},
+    {g:'База',n:'Окно атрибуции агента',v:[D,D,D,D,D,D,D,'30 дней',D,'30 дней']},
+    {g:'База',n:'Доля миграции базы',v:[D,D,D,'20–40 %',D,'20–40 %',D,D,D,'гипотеза']},
+    {g:'База',n:'Горизонт',v:[D,D,D,'3 года',D,'3 года',D,D,D,'3 года']},
+    {g:'База',n:'Срок подключения',v:[D,D,D,'48 ч',D,'48 ч',D,D,D,'48 часов']},
+
+    {g:'Надзор',n:'Порог нарушений оператора',v:[D,D,D,D,D,D,D,D,'3 за 30 д','3 за 30 дней']},
+    {g:'Надзор',n:'Лимиты мандата агента',v:[D,D,D,D,D,D,D,D,'не заданы','решение']},
+    {g:'Надзор',n:'Хранение журнала согласий',v:[D,D,D,D,D,D,D,D,'исковая давн.','норма']},
+    {g:'Надзор',n:'Изменение весов выдачи',v:[D,D,D,D,D,D,D,D,'только Правила','только Правила']},
+    {g:'Надзор',n:'Уведомление об изменении тарифа',v:[D,D,D,D,D,D,'14 дней',D,D,'14 дней']}
+  ];
+
+  var FUNC=[
+    {g:'Сервисы',n:'Форма сервиса',v:['описана','в коде',D,D,'как данные','в паспорте','+плательщик',D,D,'6 полей']},
+    {g:'Сервисы',n:'Плательщик услуги',v:[D,D,D,D,D,D,'введён',D,D,'по назначению']},
+    {g:'Сервисы',n:'Реестр как данные',v:[D,'упом.',D,D,'описан',D,D,D,D,'не сделан']},
+    {g:'Сервисы',n:'Расчёт-интерпретатор',v:[D,'в коде',D,D,'описан',D,D,D,D,'ключевой шаг']},
+    {g:'Сервисы',n:'Предметы расчёта',v:['описаны',D,'упом.',D,D,'в паспорте',D,D,D,'три предмета']},
+
+    {g:'Продавец',n:'Уровни вовлечения',v:['описаны','в коде','в коде',D,'упом.','в паспорте',D,'шкала',D,'6 уровней']},
+    {g:'Продавец',n:'Три области настройки',v:[D,D,'в коде',D,'описано','в паспорте',D,D,D,'работает']},
+    {g:'Продавец',n:'Храповик уровня',v:[D,D,'в коде',D,'упом.','в паспорте',D,D,D,'в данных']},
+    {g:'Продавец',n:'Профиль магазина',v:[D,'в коде',D,D,'описан',D,D,D,D,'не сделан']},
+    {g:'Продавец',n:'Выбор оператора',v:[D,'в коде',D,D,'описан',D,D,D,'гейт, рейтинг','не сделан']},
+    {g:'Продавец',n:'Три режима расчёта',v:[D,D,'упом.',D,D,D,'упом.','описаны',D,'1 из 3']},
+    {g:'Продавец',n:'Подключение',v:['описано',D,'упом.','описано',D,'в паспорте',D,D,D,'48 часов']},
+    {g:'Продавец',n:'Договоры с операторами',v:[D,D,D,D,D,D,D,'описано',D,'решение']},
+
+    {g:'Покупатель',n:'Витрина магазина',v:['упом.',D,'в коде',D,D,'в паспорте',D,D,'двухуровневая','работает']},
+    {g:'Покупатель',n:'Каталог и ранжирование',v:[D,D,'в коде',D,D,'в паспорте',D,D,'восстановлено','работает']},
+    {g:'Покупатель',n:'Публикация вперёд проверки',v:[D,D,'в коде',D,D,'в паспорте',D,D,D,'работает']},
+    {g:'Покупатель',n:'Агент покупателя',v:['упом.',D,'в коде','описан',D,'упом.',D,D,'мандат','прокси']},
+    {g:'Покупатель',n:'Каталог рынка и метка',v:[D,D,'в коде','описан',D,D,D,D,'описана','данные есть']},
+    {g:'Покупатель',n:'White-label, виджет, внешний',v:['упом.','в коде',D,D,D,D,D,'описаны','описаны','не сделаны']},
+
+    {g:'Заказ',n:'Заказ и позиции',v:[D,'в коде','в коде',D,'описан','в паспорте',D,D,D,'работает']},
+    {g:'Заказ',n:'Резерв в корзине',v:[D,D,'в коде',D,D,D,'описан',D,D,'работает']},
+    {g:'Заказ',n:'Мультиселлерный заказ',v:[D,D,D,D,D,D,D,'описан','описан','решение']},
+    {g:'Заказ',n:'Жизненный цикл сделки',v:['упом.',D,'упом.',D,D,D,D,'описан','описан','1 состояние']},
+    {g:'Заказ',n:'Снимок конфигурации',v:[D,D,D,D,'описан',D,D,D,D,'не сделан']},
+    {g:'Заказ',n:'Возвраты и отмены',v:['упом.','упом.',D,D,D,D,'описаны','описаны','описаны','правила есть']},
+
+    {g:'Деньги',n:'Расщепление · 4 роли',v:[D,'в коде','в коде',D,'описано','в паспорте','описано',D,D,'работает']},
+    {g:'Деньги',n:'Расщепление · 9 ролей',v:['описано',D,D,D,'описано','упом.',D,'названы',D,'4 из 9']},
+    {g:'Деньги',n:'Округление и приоритет',v:[D,D,D,D,D,D,'описано',D,D,'решение']},
+    {g:'Деньги',n:'Эскроу и выплата',v:['описано','в коде',D,D,D,'в паспорте',D,D,'описано','нужен банк']},
+    {g:'Деньги',n:'Свод за период',v:[D,'в коде',D,D,'описан',D,D,'упом.',D,'не сделан']},
+    {g:'Деньги',n:'Спор и арбитраж',v:[D,D,D,D,D,D,'упом.','описан','описан','описан']},
+    {g:'Деньги',n:'Акты и уведомления',v:[D,D,D,D,D,D,D,'описаны',D,'описаны']},
+
+    {g:'База и надзор',n:'Свой и сетевой покупатель',v:[D,D,'в коде','описан',D,'в паспорте',D,'описан',D,'работает']},
+    {g:'База и надзор',n:'Сетевой баланс',v:[D,D,D,'описан',D,D,D,D,'описан','не сделан']},
+    {g:'База и надзор',n:'Взнос на инфраструктуру',v:['упом.',D,D,D,D,'в паспорте',D,'описан',D,'не сделан']},
+    {g:'База и надзор',n:'Реестр агентов и мандат',v:[D,D,D,D,D,D,D,D,'описан','норма']},
+    {g:'База и надзор',n:'Приостановление и исключение',v:[D,D,D,D,D,D,D,D,'описано','норма']},
+    {g:'База и надзор',n:'Разделение полномочий',v:[D,D,D,D,D,D,D,D,'описано','норма']}
+  ];
+
+  function render(tableId,barId,DATA){
+    var groups=[]; DATA.forEach(function(c){if(groups.indexOf(c.g)<0)groups.push(c.g)});
+    var bar=document.getElementById(barId);
+    bar.innerHTML='<button class="fb on" data-g="all">Все</button>'+
+      groups.map(function(g){return '<button class="fb" data-g="'+g+'">'+g+'</button>'}).join('')+
+      '<span class="stat"></span>';
+    var tbl=document.getElementById(tableId);
+
+    function draw(flt){
+      var cols=DATA.filter(function(c){return flt==='all'||c.g===flt});
+      var h='<thead><tr><th class="rowh">Вариант</th>'+
+        cols.map(function(c){return '<th><span class="g">'+c.g+'</span>'+c.n+'</th>'}).join('')+'</tr></thead><tbody>';
+      VAR.forEach(function(v,i){
+        h+='<tr'+(v.fin?' class="fin"':'')+'><td class="rowh"><b>'+v.n+'</b><span class="s">'+v.s+'</span></td>'+
+          cols.map(function(c){
+            var val=c.v[i];
+            return '<td'+(val==='·'?' class="no"':'')+'>'+val+'</td>';
+          }).join('')+'</tr>';
+      });
+      tbl.innerHTML=h+'</tbody>';
+      bar.querySelector('.stat').textContent=cols.length+' столбцов';
+    }
+    bar.addEventListener('click',function(e){
+      var b=e.target.closest('.fb'); if(!b)return;
+      bar.querySelectorAll('.fb').forEach(function(x){x.classList.remove('on')});
+      b.classList.add('on'); draw(b.dataset.g);
+    });
+    draw('all');
+  }
+  render('t1','g1',PARAMS);
+  render('t2','g2',FUNC);
+
+  var tabs=document.querySelectorAll('#tabs .tab');
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.t)});
+    window.scrollTo({top:0,behavior:'smooth'});
+  })});
+})();
+</script>
+</body>
+</html>

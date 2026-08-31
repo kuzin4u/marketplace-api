@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Архитектура реализации: объекты реестра и модели в исполнительном механизме</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:28px 0 20px;border-bottom:2px solid var(--ac);margin-bottom:20px}
+.hdr h1{font-size:20px;font-weight:700;color:var(--ac);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:18px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:7px 14px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;white-space:nowrap;background:none;font-family:inherit;transition:.15s}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.tab:focus-visible{outline:2px solid var(--ac);outline-offset:-2px}
+.sec{display:none}.sec.on{display:block}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}
+.c ul{padding-left:16px;margin:4px 0 6px}.c li{margin-bottom:3px}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:11px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
+.b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:3px;vertical-align:middle}
+.b-n{background:var(--ac2);color:var(--ac)}.b-c{background:var(--wr2);color:var(--wr)}
+.b-k{background:var(--gn2);color:var(--gn)}.b-r{background:var(--rd2);color:var(--rd)}
+.b-g{background:#eeede8;color:var(--t3)}
+.st-ref{font-size:10px;color:var(--pr);background:var(--pr2);padding:1px 6px;border-radius:3px;font-weight:600;white-space:nowrap}
+.co{padding:12px 16px;border-radius:6px;margin-bottom:10px;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.st{font-size:15px;font-weight:600;margin-bottom:12px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px}
+@media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+.ab{border:1px solid var(--bd);border-radius:6px;padding:12px;background:var(--card)}
+.ab.hl{border-color:var(--ac);border-width:2px}
+.ab h4{font-size:12.5px;font-weight:600;margin-bottom:4px}
+.ab p{font-size:12px;color:var(--t2)}
+.code{background:#1c1c1a;color:#d8e8dd;padding:13px 15px;border-radius:6px;margin:8px 0;line-height:1.65;overflow-x:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;white-space:pre}
+.code .cm{color:#8a877d}.code .kw{color:#8fbdf0}.code .hl{color:#f2c27a}
+/* объектная карта */
+.obj{border:1px solid var(--bd);border-left-width:4px;border-radius:6px;background:var(--card);padding:11px 14px;margin-bottom:8px}
+.obj.ok{border-left-color:var(--gn)}.obj.part{border-left-color:var(--wr)}.obj.no{border-left-color:var(--rd)}
+.obj h4{font-size:13px;font-weight:600;margin-bottom:2px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.obj .src{font-size:10px;color:var(--pr);background:var(--pr2);padding:1px 6px;border-radius:3px;font-weight:600}
+.obj p{font-size:12.5px;color:var(--t2);margin-bottom:4px}
+.obj .impl{font-size:11.5px;background:var(--bg);border-radius:4px;padding:6px 9px;color:var(--t2)}
+.obj .impl b{color:var(--t1)}
+/* калькулятор */
+.calc{background:#1c1c1a;border-radius:8px;padding:16px;color:#e8e6df;margin-top:10px}
+.calc h4{font-size:13px;color:#fff;margin-bottom:2px}
+.calc .sub{font-size:11px;color:#9c998e;margin-bottom:12px}
+.cg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 14px}
+@media(max-width:760px){.cg{grid-template-columns:1fr}}
+.cf label{font-size:11px;color:#b8b5a9;display:block;margin-bottom:3px}
+.cf select,.cf input{width:100%;background:#2c2c29;color:#e8e6df;border:1px solid #45443f;border-radius:4px;padding:6px 8px;font-size:12px;font-family:inherit}
+.splits{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:12px;font-family:ui-monospace,monospace}
+.splits th{text-align:left;padding:5px 7px;color:#9c998e;font-size:10px;border-bottom:1px solid #45443f;font-weight:600}
+.splits td{padding:5px 7px;border-bottom:1px solid #333330}
+.splits tr:last-child td{border-bottom:none}
+.splits .role{color:#8fbdf0}
+.splits .amt{text-align:right;color:#e8e6df}
+.splits .seller td{color:#8fe3c6;font-weight:700;border-top:1px solid #45443f}
+.chk{display:flex;align-items:center;gap:5px;font-size:11px;color:#c9c6ba;margin:2px 0;cursor:pointer}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+@media(max-width:760px){.sum{grid-template-columns:1fr}}
+.sv{background:#2a2a27;border-radius:5px;padding:9px 11px}
+.sv .k{font-size:10px;color:#9c998e;display:block}
+.sv .v{font-size:15px;font-weight:700;color:#8fe3c6;font-family:ui-monospace,monospace}
+.sv .v.warn{color:#f2c27a}
+.inv{margin-top:10px;padding:9px 12px;border-radius:5px;font-size:11.5px;font-family:ui-monospace,monospace}
+.inv.ok{background:#0d3d30;color:#a8ecd2}.inv.no{background:#4a1b1b;color:#f3aeae}
+a{color:#2a6cb6}
+@media print{.tabs{display:none}.sec{display:block!important;page-break-inside:avoid}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Архитектура реализации<br>Объекты реестра и модели как исполнительный механизм</h1>
+  <p>Реестр сервисов задаёт форму объекта. Интерактивная модель показывает объекты в работе — но в памяти браузера. Этот документ описывает, чем каждый из них становится в исполняемой системе: таблицей, маршрутом, ролью в расчёте, экраном.</p>
+  <div class="meta">23 августа 2026 · Источники объектов: реестр сервисов (форма из 5 полей), полный разбор по фазам (7 фаз, 9 ролей расчёта), действующая модель конвейера (сервисы, операторы 3×3, профили, заказы) · Сверка состояния — по фактическому коду</div>
+<div style="max-width:1100px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Отправные документы: <a href="service-registry.html" style="font-weight:600;">Реестр сервисов</a> и <a href="pipeline-model-interactive.html" style="font-weight:600;">Действующая модель конвейера</a>. Развёртывание: <a href="service-registry-full-analysis.html" style="font-weight:600;">Полный разбор по фазам</a>, <a href="service-tiers.html" style="font-weight:600;">Линейка уровней</a>, <a href="model-vs-reality-service-tiers.html" style="font-weight:600;">Модель ↔ скелет</a>. Реализация: <a href="9-ptk-marketplace-arch-part2.html" style="font-weight:600;">Архитектура ПТК, Часть 2</a>, <a href="alpha-channels-dashboard.html" style="font-weight:600;">Конфигуратор каналов</a>, <a href="sku-visibility-seller.html" style="font-weight:600;">Видимость SKU</a>. Рост: <a href="10-mehanizm-sbora-bazy-i-sellerov.html" style="font-weight:600;">Механизм сбора базы и селлеров</a>. Нормы: <a href="pravila-sistemy-red3-edinyi.html" style="font-weight:600;">Правила ред. 3</a>. Полный перечень: <a href="index-pool.html" style="font-weight:600;">указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab">Главный вывод</button>
+  <button class="tab" data-t="s2" role="tab">Объекты и механизмы</button>
+  <button class="tab" data-t="s3" role="tab">Расчёт как интерпретатор</button>
+  <button class="tab" data-t="s4" role="tab">Спецификация расчёта</button>
+  <button class="tab" data-t="s5" role="tab">Схема данных</button>
+  <button class="tab" data-t="s6" role="tab">Порядок работ</button>
+  <button class="tab" data-t="s7" role="tab">Приёмка</button>
+</div>
+
+<!-- ═══ 1 ═══ -->
+<div class="sec on" id="s1">
+<div class="st">Что показало сопоставление двух документов с кодом</div>
+
+<div class="co co-a"><b>Наблюдение.</b>В интерактивной модели реестр сервисов — это <b>данные</b>: массив записей, у каждой есть фаза, тариф, обязательность, роль в расчёте и способ вычисления суммы. Расчёт клиринга там устроен как проход по этому массиву. В боевом коде реестра сервисов как данных <b>нет вовсе</b>: сервисы рассыпаны по трём непохожим механизмам, а расчёт перечисляет четыре роли жёстко, одну за другой.</div>
+
+<div class="g2">
+<div class="ab hl"><h4>Как в модели</h4><p>Один список объектов. Добавить сервис — добавить запись. Расчёт не меняется: он и так идёт циклом по активным сервисам заказа, спрашивая у каждого его тариф и роль.</p></div>
+<div class="ab"><h4>Как в коде</h4><p>Канал живёт в одной таблице, звено фулфилмента в другой, тариф в третьей, а роль в расчёте — строковой константой внутри функции. Добавить сервис — четыре правки в разных местах, включая ядро расчёта.</p></div>
+</div>
+
+<div class="co co-r"><b>Отсюда расхождение с обещанием реестра.</b>Реестр обещает: заполнил форму — сервис встал в конфигуратор, расчёт и кабинет, ядро не тронуто. Сегодня это верно только на бумаге: код не умеет читать форму, потому что формы в нём нет как структуры. Обещание открытого набора держится на дисциплине разработчика, а не на устройстве системы — а значит перестанет держаться на первом же новом сервисе, добавленном в спешке.</div>
+
+<div class="co co-g"><b>Решение — одно, и оно определяет всю архитектуру реализации.</b>Перенести реестр сервисов из документа в таблицу, а расчёт превратить из перечисления четырёх ролей в <b>интерпретатор этой таблицы</b>. Тогда объекты модели становятся исполнительным механизмом буквально: то, что в браузере лежит массивом, в системе лежит строками, и один и тот же алгоритм проходит по ним. Всё остальное в этом документе — следствия этого решения.</div>
+
+<div class="st" style="margin-top:18px">Три следствия</div>
+<div class="g3">
+<div class="ab"><h4>Новый сервис — строка</h4><p>Пока предмет расчёта попадает в известные, добавление сервиса не касается кода: строка в реестре, переключатель в профиле, тариф в тарифах. Ровно то, что обещано правилом включения.</p></div>
+<div class="ab"><h4>Профиль — набор ссылок</h4><p>Шесть профилей модели перестают быть красивой картинкой и становятся наборами включённых сервисов у конкретного магазина, редактируемыми селлером — как в модели, где карточку профиля можно переименовать и пересобрать.</p></div>
+<div class="ab"><h4>Модель становится проверкой</h4><p>Браузерная модель и сервер считают по одному алгоритму на одних данных. Расхождение результатов — ошибка, которую видно сразу. Это превращает модель из презентации в приёмочный тест.</p></div>
+</div>
+</div>
+
+<!-- ═══ 2 ═══ -->
+<div class="sec" id="s2">
+<div class="st">Одиннадцать объектов и чем каждый становится</div>
+<p style="font-size:12.5px;color:var(--t2)">Зелёная граница — механизм есть и работает. Жёлтая — есть частично. Красная — объект в модели живёт, в системе его нет.</p>
+
+<div class="obj no"><h4>Сервис <span class="src">реестр · модель</span> <span class="b b-r">нет механизма</span></h4>
+<p>Основной объект обоих документов: пять полей формы плюс фаза, обязательность и способ вычисления суммы. В модели — запись массива, в реестре — строка таблицы документа.</p>
+<div class="impl"><b>Становится:</b> таблицей реестра сервисов с полями формы, ссылкой на предмет расчёта и способом вычисления. Сегодня вместо неё — три разнородных таблицы и константы в коде расчёта.</div></div>
+
+<div class="obj part"><h4>Тариф сервиса <span class="src">реестр · модель</span> <span class="b b-c">частично</span></h4>
+<p>Сколько стоит и как считается: процент от суммы, фиксированная сумма за операцию, за единицу, за период.</p>
+<div class="impl"><b>Становится:</b> строкой в таблице тарифов участника с датами действия — механизм есть и работает правильно, старая сделка считается по своей строке. Не хватает способов начисления: работают процент и сумма за единицу, нет ступенчатого и периодического.</div></div>
+
+<div class="obj part"><h4>Предмет расчёта <span class="src">реестр</span> <span class="b b-c">частично</span></h4>
+<p>Сделка, услуга, комиссия — то, что определяет, как деньги проходят через расчётный контур. Ключевое поле формы: пока сервис попадает в известный предмет, ядро не трогается.</p>
+<div class="impl"><b>Становится:</b> справочником предметов и ролей расчёта. В коде из девяти ролей полного разбора живут четыре — исполнение, логистика, сбор организатора, остаток продавцу. Предмет «услуга» закрыт целиком, «сделка» и «комиссия» не представлены.</div></div>
+
+<div class="obj ok"><h4>Точка в потоке <span class="src">реестр</span> <span class="b b-k">есть частично</span></h4>
+<p>Когда сервис срабатывает: до оплаты, при сборке, при доставке, после выдачи, вне заказа.</p>
+<div class="impl"><b>Становится:</b> состоянием заказа, на котором начисляется услуга. Сегодня заказ знает одно состояние — ожидание, поэтому все начисления происходят в момент создания. Полный набор состояний — в расчётном ядре первой части.</div></div>
+
+<div class="obj part"><h4>Переключатель <span class="src">реестр · модель</span> <span class="b b-c">частично</span></h4>
+<p>Как селлер включает сервис: Система, свой, никак. В модели — чекбоксы тонкой настройки поверх профиля.</p>
+<div class="impl"><b>Становится:</b> правилами области с приоритетом «товар важнее категории, категория важнее магазина» и функциями действующей конфигурации. Написано и защищено владением, но выдача и расчёт этих правил не читают.</div></div>
+
+<div class="obj no"><h4>Профиль селлера <span class="src">модель</span> <span class="b b-r">нет</span></h4>
+<p>Шесть редактируемых пресетов модели: своя логистика, лёгкий старт, полный фулфилмент, трафик-максимум, white-label, финансовый. Каждый — набор сервисов и соответствие уровню линейки.</p>
+<div class="impl"><b>Становится:</b> таблицей профиля магазина — набором включённых сервисов, редактируемым селлером, с пресетами как заготовками. Сегодня у магазина есть только поле каналов в свободной форме.</div></div>
+
+<div class="obj part"><h4>Оператор исполнения <span class="src">модель</span> <span class="b b-c">частично</span></h4>
+<p>Три варианта в каждой роли с разными тарифами и свойствами: последняя миля, фулфилмент, магистраль. Выбор оператора меняет стоимость заказа.</p>
+<div class="impl"><b>Становится:</b> участником с ролью и тарифами плюс привязкой селлера к выбранному. Участники и тарифы есть, привязка есть — но выбор отсутствует: при создании магазина система молча цепляет первого активного оператора в роли. Это прямо противоречит гибкости.</div></div>
+
+<div class="obj ok"><h4>Уровень сервиса товара <span class="src">модель</span> <span class="b b-k">есть</span></h4>
+<p>Гибрид по заказу: базовый уровень задан профилем, отдельный товар идёт на своём — хлеб везу сам, премиум через полный фулфилмент.</p>
+<div class="impl"><b>Становится:</b> функцией уровня по товару и журналом повышений с запретом понижения на уровне таблицы. Работает, проверено; не хватает только связи с расчётом суммы.</div></div>
+
+<div class="obj ok"><h4>Заказ и позиция <span class="src">модель</span> <span class="b b-k">есть</span></h4>
+<p>Название, количество, сумма, уровень сервиса; отдельно — невыполненный заказ как случай для сравнения с площадкой.</p>
+<div class="impl"><b>Становится:</b> заказом и его позициями в одной транзакции с резервом стока и привязкой покупателя. Работает. Невыполненный заказ как отдельный исход не реализован — нет ни состояния, ни обработки возврата.</div></div>
+
+<div class="obj part"><h4>Клиринг за период <span class="src">модель</span> <span class="b b-c">частично</span></h4>
+<p>Свод по всем заказам месяца: сколько ушло каждой роли, сколько осталось селлеру, какова доля удержания.</p>
+<div class="impl"><b>Становится:</b> расщеплениями по заказу плюс периодическим сводом. Расщепления по заказу есть и сходятся в сумму заказа; свода за период нет — а именно он показывается селлеру и служит основанием выплаты.</div></div>
+
+<div class="obj no"><h4>Сравнение с площадкой <span class="src">модель</span> <span class="b b-r">нет</span></h4>
+<p>Те же заказы, посчитанные по удержаниям двух площадок: комиссия, логистика, хранение, эквайринг, обязательное продвижение, штрафы, платная обратная логистика.</p>
+<div class="impl"><b>Становится:</b> открытым калькулятором переноса — главным каналом привлечения селлеров. Живёт только в браузере одной страницы; наружу не выведено, расчёт не сохраняется, лид не фиксируется.</div></div>
+</div>
+
+<!-- ═══ 3 ═══ -->
+<div class="sec" id="s3">
+<div class="st">Расчёт заказа как проход по реестру</div>
+<p style="font-size:12.5px;color:var(--t2)">Сегодня расчёт перечисляет роли вручную: сначала фулфилмент, потом логистика, потом сбор организатора, потом остаток. Добавление роли — правка функции. Целевой расчёт не знает ролей вообще: он знает, что у заказа есть активные сервисы, у каждого сервиса есть тариф и роль, и складывает результат.</p>
+
+<div class="code"><span class="cm">// было: четыре роли перечислены в коде</span>
+if (binding.fulfillment_id) { …тариф сборки × количество… }
+if (binding.logistics_id)   { …тариф зоны… }
+if (orgTariff)              { …процент от суммы товаров… }
+seller = total_goods − операторы
+
+<span class="cm">// станет: цикл по активным сервисам заказа</span>
+<span class="kw">for</span> (service <span class="kw">of</span> <span class="hl">effectiveServices(order)</span>) {
+  amount = <span class="hl">applyTariff</span>(service.tariff, order, items)
+  splits.push({ role: service.role, service_id: service.id,
+                amount, calculation: <span class="hl">explain</span>(service.tariff, order) })
+}
+splits.push({ role: <span class="hl">'SELLER'</span>, amount: total_goods − Σ(из суммы товаров) })</div>
+
+<div class="g2">
+<div class="ab hl"><h4>Что даёт замена</h4><p>Новая роль расчёта — строка справочника, а не ветка функции. Продвижение, страхование, кредит, комиссия за приведённого, заморозка по спору входят одинаково: у каждого есть тариф и получатель, больше расчёту ничего не нужно.</p></div>
+<div class="ab"><h4>Что остаётся неизменным</h4><p>Инвариант сходимости: сумма всех расщеплений равна сумме заказа. Он не зависит от числа сервисов и проверяется одинаково при четырёх ролях и при двенадцати. Проверка уже написана в диагностике развёртывания.</p></div>
+</div>
+
+<div class="st" style="margin-top:18px">Три источника активных сервисов заказа</div>
+<table class="tb">
+<thead><tr><th style="width:22%">Источник</th><th style="width:30%">Что даёт</th><th>Приоритет</th></tr></thead>
+<tbody>
+<tr><td><b>Профиль магазина</b></td><td>Базовый набор: обязательное ядро плюс выбранные опции</td><td>низший — применяется, пока не задано конкретнее</td></tr>
+<tr><td><b>Правила области</b></td><td>Настройка по категории или отдельному товару</td><td>средний и высокий — товар важнее категории</td></tr>
+<tr><td><b>Уровень товара при сделке</b></td><td>Повышение в момент заказа: срочно отдать через фулфилмент Системы</td><td>высший, но только вверх — понижение отбивает таблица</td></tr>
+</tbody>
+</table>
+<div class="co co-a" style="margin-top:8px"><b>Всё это уже есть, кроме первого.</b>Функции действующей конфигурации написаны и умеют разрешать приоритет трёх областей. Уровень товара при сделке работает вместе с запретом понижения. Не хватает нижнего слоя — профиля магазина, — и связи результата с расчётом суммы. Это и есть тот самый разрыв, из-за которого настройки селлера сегодня ни на что не влияют.</div>
+
+<div class="st" style="margin-top:18px">Способы начисления и одно ограничение нормы</div>
+<table class="tb">
+<thead><tr><th style="width:18%">Способ</th><th style="width:26%">Где применяется</th><th>Состояние</th></tr></thead>
+<tbody>
+<tr><td><b>Процент от суммы</b></td><td>Удержание сделки, комиссия за приведённого, продвижение, страхование, кредит</td><td>Работает для сбора организатора; для остальных ролей не подключён</td></tr>
+<tr><td><b>За единицу</b></td><td>Сборка, приёмка, упаковка, хранение</td><td>Работает: тариф сборки умножается на количество единиц</td></tr>
+<tr><td><b>За операцию или заказ</b></td><td>Доставка по зоне, выдача в пункте, обработка возврата, магистраль</td><td>Работает для доставки; остальные звенья не разведены</td></tr>
+<tr><td><b>Ступенчатый</b></td><td>Скидка на объёме у оператора, взнос на инфраструктуру</td><td>Не реализован</td></tr>
+<tr><td><b>За период</b></td><td>Подписка white-label, премиальное хранение</td><td>Не реализован: все начисления привязаны к заказу</td></tr>
+</tbody>
+</table>
+<div class="co co-w" style="margin-top:8px"><b>Ограничение, которое нельзя потерять при обобщении.</b>Взнос на поддержание инфраструктуры не может начисляться процентом от оборота — иначе это переименованный налог, и устойчивость распределения рушится. Запрет уже стоит ограничением в таблице агентного слоя. При переводе расчёта на общий интерпретатор запрет должен переехать вместе с ним: способ начисления «процент» допустим для удержания сделки и комиссий, но закрыт для взноса.</div>
+</div>
+
+<!-- ═══ 4 ═══ -->
+<div class="sec" id="s4">
+<div class="st">Спецификация расчёта: то же, что в модели, но как алгоритм сервера</div>
+<div class="co co-a"><b>Как пользоваться.</b>Соберите заказ так же, как в модели конвейера: выберите профиль, доуточните сервисы, выберите операторов. Ниже — не картинка, а точный список расщеплений, который должен произвести серверный цикл: роль, сервис, способ начисления, формула, сумма. Это исполняемая спецификация: результат обязан совпасть с браузерной моделью на тех же входных данных.</div>
+
+<div class="calc">
+  <h4>Расщепление одного заказа</h4>
+  <div class="sub">Профиль задаёт набор, чекбоксы уточняют, операторы задают тарифы исполнения.</div>
+  <div class="cg">
+    <div class="cf"><label for="pf">Профиль селлера</label>
+      <select id="pf">
+        <option value="own">Своя логистика — пекарня, локальный</option>
+        <option value="light">Лёгкий старт — новый без склада</option>
+        <option value="full">Полный фулфилмент — ушедший с площадки</option>
+        <option value="traffic">Трафик-максимум — растущий в конкуренции</option>
+        <option value="wl">White-label — свой бренд</option>
+        <option value="fin">Финансовый — нужен оборотный капитал</option>
+      </select></div>
+    <div class="cf"><label for="sum">Сумма заказа, ₽</label><input type="number" id="sum" value="2400" min="100" step="100"></div>
+    <div class="cf"><label for="qty">Единиц в заказе</label><input type="number" id="qty" value="3" min="1" step="1"></div>
+    <div class="cf"><label for="olm">Последняя миля</label>
+      <select id="olm"><option value="210">СДЭК · 210 ₽</option><option value="175">Boxberry · 175 ₽</option><option value="290">Яндекс Доставка · 290 ₽</option></select></div>
+    <div class="cf"><label for="off">Фулфилмент</label>
+      <select id="off"><option value="85">CDEK Fulfilment · 85 ₽</option><option value="62" selected>СДТ Склад-Сервис · 62 ₽</option><option value="110">Бета Про · 110 ₽</option></select></div>
+    <div class="cf"><label for="otr">Магистраль</label>
+      <select id="otr"><option value="40">Деловые Линии · 40 ₽</option><option value="30" selected>ПЭК · 30 ₽</option><option value="35">КИТ · 35 ₽</option></select></div>
+  </div>
+  <div style="margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:2px 14px" id="opts"></div>
+
+  <table class="splits" id="sp"><thead><tr><th style="width:16%">Роль</th><th style="width:26%">Сервис</th><th style="width:14%">Начисление</th><th>Формула</th><th class="amt" style="width:14%">Сумма ₽</th></tr></thead><tbody></tbody></table>
+
+  <div class="sum">
+    <div class="sv"><span class="k">Удержано всего</span><span class="v" id="oHold">—</span></div>
+    <div class="sv"><span class="k">Доля удержания</span><span class="v" id="oPct">—</span></div>
+    <div class="sv"><span class="k">Продавцу</span><span class="v" id="oSel">—</span></div>
+  </div>
+  <div class="inv ok" id="inv"></div>
+</div>
+
+<div class="c" style="margin-top:12px">
+<h3>Что здесь является спецификацией, а не иллюстрацией</h3>
+<ul>
+<li><b>Состав расщеплений.</b> Каждая строка таблицы — запись, которую сервер обязан создать: роль, ссылка на сервис, сумма и человекочитаемая формула. Поле формулы уже есть в расщеплениях и заполняется — именно оно делает сплит объяснимым продавцу.</li>
+<li><b>Порядок вычисления.</b> Сначала начисления от суммы товаров, затем начисления за единицы и операции, в последнюю очередь — остаток продавцу. Порядок важен: остаток вычисляется как разность, а не считается отдельно.</li>
+<li><b>Инвариант.</b> Сумма расщеплений, взятых из суммы товаров, плюс остаток продавцу равна сумме товаров. Доставка и выдача оплачиваются покупателем поверх и в этот баланс не входят — так же, как в текущем коде.</li>
+<li><b>Что не проверяется здесь.</b> Момент начисления. В модели и в этом расчёте всё начисляется сразу; в системе часть услуг возникает позже, на своей точке потока, и это появится вместе с состояниями заказа.</li>
+</ul>
+</div>
+</div>
+
+<!-- ═══ 5 ═══ -->
+<div class="sec" id="s5">
+<div class="st">Схема данных: что добавляется</div>
+<p style="font-size:12.5px;color:var(--t2)">Три новые таблицы и одно поле в существующей. Ничего из работающего не переписывается — расчёт получает справочник вместо констант.</p>
+
+<table class="tb">
+<thead><tr><th style="width:20%">Таблица</th><th style="width:34%">Поля</th><th>Зачем</th></tr></thead>
+<tbody>
+<tr><td><b>Реестр сервисов</b></td><td>код, название, фаза, обязательность, роль в расчёте, способ начисления, ставка по умолчанию, предмет расчёта, точка в потоке, видимость</td><td>Форма сервиса как данные. Источник для конфигуратора, расчёта и кабинета одновременно — то, что сейчас продублировано в трёх местах</td></tr>
+<tr><td><b>Профиль магазина</b></td><td>магазин, сервис, режим (Система / свой / выключен), выбранный оператор</td><td>Нижний слой конфигурации, которого не хватает. Пресеты модели становятся заготовками для заполнения этой таблицы</td></tr>
+<tr><td><b>Сервисы заказа</b></td><td>заказ, сервис, оператор, применённый тариф, сумма</td><td>Снимок конфигурации на момент сделки. Без него пересчёт задним числом меняет историю: изменил настройку — изменились прошлые выплаты</td></tr>
+<tr><td><b>Расщепления</b> <span class="b b-n">правка</span></td><td>+ ссылка на сервис и на запись сервиса заказа</td><td>Сегодня расщепление знает роль, но не знает, за что именно начислено. Ссылка делает выплату объяснимой до строки</td></tr>
+</tbody>
+</table>
+
+<div class="co co-w" style="margin-top:12px"><b>Снимок конфигурации — не деталь.</b>Это то, что отличает справедливый расчёт от произвольного. Тариф уже версионируется датой, и старая сделка считается по своей строке. Набор сервисов пока не версионируется никак: если селлер завтра выключит упаковку, вчерашние заказы, посчитанные с упаковкой, потеряют основание. Таблица сервисов заказа закрывает это раз и навсегда — и по той же причине, по которой в расщеплении хранится ссылка на строку тарифа.</div>
+
+<div class="st" style="margin-top:18px">Что при этом не меняется</div>
+<div class="g3">
+<div class="ab"><h4>Участники и тарифы</h4><p>Операторы уже участники с ролями, тарифы уже версионируются. Добавляется только выбор оператора селлером вместо молчаливой привязки первого активного.</p></div>
+<div class="ab"><h4>Правила областей</h4><p>Три области с приоритетом и запрет понижения остаются как есть. Они получают нижний слой в виде профиля и наконец начинают влиять на выдачу и расчёт.</p></div>
+<div class="ab"><h4>Заказ</h4><p>Транзакция создания заказа не переписывается. Меняется одно: вместо вызова функции с четырьмя ветками вызывается цикл по сервисам.</p></div>
+</div>
+</div>
+
+<!-- ═══ 6 ═══ -->
+<div class="sec" id="s6">
+<div class="st">Порядок работ</div>
+<p style="font-size:12.5px;color:var(--t2)">Каждый шаг оставляет систему работающей: пока реестр не заполнен, расчёт продолжает работать по прежней логике.</p>
+<table class="tb">
+<thead><tr><th style="width:5%">№</th><th style="width:24%">Шаг</th><th style="width:14%">Объём</th><th>Результат и проверка</th></tr></thead>
+<tbody>
+<tr><td><b>1</b></td><td>Таблица реестра сервисов и заполнение её теми сервисами, что уже работают</td><td>небольшой</td><td>Реестр стал данными. Проверка: справочник отдаёт ровно те четыре роли, которые сегодня перечислены в расчёте</td></tr>
+<tr><td><b>2</b></td><td>Расчёт переписан циклом по реестру, старая логика удалена после сверки</td><td>средний</td><td>Ключевой шаг. Проверка: на существующих заказах новый расчёт даёт те же расщепления до копейки</td></tr>
+<tr><td><b>3</b></td><td>Профиль магазина и пресеты из модели как заготовки</td><td>средний</td><td>Нижний слой конфигурации появился. Проверка: выбор профиля меняет состав расщеплений следующего заказа</td></tr>
+<tr><td><b>4</b></td><td>Выбор оператора селлером вместо автопривязки</td><td>небольшой</td><td>Гибкость перестаёт быть декларацией. Проверка: смена оператора меняет сумму заказа, как в модели</td></tr>
+<tr><td><b>5</b></td><td>Снимок сервисов заказа и ссылка в расщеплении</td><td>небольшой</td><td>История перестаёт зависеть от текущих настроек. Проверка: изменение профиля не трогает прошлые заказы</td></tr>
+<tr><td><b>6</b></td><td>Недостающие роли: удержание сделки, комиссия, финансы, страхование, заморозка по спору</td><td>по одной</td><td>Каждая — строка справочника. Проверка: добавление роли не требует правки цикла расчёта</td></tr>
+<tr><td><b>7</b></td><td>Свод за период и выплата по своду</td><td>средний</td><td>Селлер видит основание выплаты. Дальше — банковский контур</td></tr>
+</tbody>
+</table>
+
+<div class="co co-g" style="margin-top:12px"><b>Почему второй шаг важнее остальных.</b>Он единственный необратимый и единственный, после которого обещание реестра становится правдой. До него каждый новый сервис — это правка ядра, сколько бы документов ни говорило обратное. После него сервисы добавляются строками, и вся очередь из механизма сбора базы — комиссия за приведённого, сетевой баланс, продвижение — перестаёт быть разработкой и становится настройкой.</div>
+
+<div class="co co-r"><b>Риск шага 2 и как его снять.</b>Переписывание расчёта — это переписывание того, как считаются чужие деньги. Снимается двойным счётом: новый цикл работает рядом со старой функцией, результаты сравниваются на каждом заказе, расхождение пишется в журнал. Переключение — только после периода без расхождений. Это дороже на неделю и дешевле любой ошибки в выплате.</div>
+</div>
+
+<!-- ═══ 7 ═══ -->
+<div class="sec" id="s7">
+<div class="st">Приёмка: модель как эталон</div>
+<div class="co co-a"><b>Главная возможность этой архитектуры.</b>Браузерная модель конвейера уже содержит полный расчёт: сервисы, операторы, профили, клиринг за период, сравнение с площадками. Как только сервер считает по тому же алгоритму на тех же данных, модель превращается в эталон приёмки — вместо того чтобы расходиться с реализацией, как это обычно бывает с презентационными моделями.</div>
+
+<table class="tb">
+<thead><tr><th style="width:26%">Сценарий</th><th style="width:34%">Что проверяет</th><th>Признак прохождения</th></tr></thead>
+<tbody>
+<tr><td><b>Пекарня, своя логистика</b></td><td>Минимальный набор: витрина, каталог, расчёт, гарантия. Удержание около 12,5 %</td><td>Сервер и модель дают одинаковый состав расщеплений и одинаковый остаток продавцу</td></tr>
+<tr><td><b>Полный фулфилмент</b></td><td>Все звенья исполнения плюс возвраты; смена оператора меняет сумму</td><td>Разница между тремя операторами воспроизводится сервером с точностью до рубля</td></tr>
+<tr><td><b>Гибрид по товару</b></td><td>Базовый уровень от профиля, отдельный товар на повышенном</td><td>Расщепления двух позиций одного заказа считаются по разным наборам сервисов</td></tr>
+<tr><td><b>Повышение при сделке</b></td><td>Уровень поднят в момент заказа; понижение отбито</td><td>Повышение отражено в расщеплении, понижение отклонено таблицей</td></tr>
+<tr><td><b>Свод за месяц</b></td><td>Сумма расщеплений за период по ролям</td><td>Свод сходится с суммой заказов; расхождение равно нулю</td></tr>
+<tr><td><b>Сравнение с площадкой</b></td><td>Те же заказы по удержаниям двух площадок</td><td>Калькулятор переноса на сервере повторяет браузерный расчёт — иначе его нельзя показывать селлеру</td></tr>
+</tbody>
+</table>
+
+<div class="co co-w" style="margin-top:12px"><b>Одно предупреждение о модели как эталоне.</b>Модель считает по допущениям, а не по измерениям: тарифы операторов взяты как реалистичные оценки, доля возвратов — как средняя, удержания площадок — как публично известные. Эталонность относится к <b>алгоритму</b>, а не к числам. Как только появятся договоры с операторами, числа заменяются фактическими, и модель обязана обновиться вместе с системой — иначе она из эталона превратится в источник расхождений.</div>
+
+<div class="c">
+<h3>Что становится возможным после приёмки</h3>
+<p>Селлер получает не обещание экономики, а её расчёт на своём заказе, произведённый той же машиной, которая потом сделает выплату. Это и есть доказательство драйвера в форме, которую нельзя оспорить: не презентация с процентами, а строка расщепления с формулой начисления и ссылкой на тариф оператора, который он выбрал сам.</p>
+</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var tabs=document.querySelectorAll('#tabs .tab');
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.remove('on')});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on')});
+    t.classList.add('on');
+    var el=document.getElementById(t.dataset.t); if(el) el.classList.add('on');
+    window.scrollTo({top:0,behavior:'smooth'});
+  })});
+
+  // реестр сервисов как данные — тот же массив, что в модели конвейера
+  var SERVICES=[
+    {id:'shop',   nm:'Витрина в Системе',   role:null,        basis:'—',        f:function(){return 0}},
+    {id:'catalog',nm:'Общий каталог',       role:null,        basis:'—',        f:function(){return 0}},
+    {id:'agent',  nm:'Агентный канал',      role:null,        basis:'—',        f:function(){return 0}},
+    {id:'wl',     nm:'White-label',         role:'ORGANIZER', basis:'за период',f:function(){return 0},note:'подписка вне заказа'},
+    {id:'promo',  nm:'Продвижение',         role:'REFERRAL',  basis:'% суммы',  f:function(o){return o.sum*0.03},fx:'3 % × сумма'},
+    {id:'referral',nm:'Комиссия за приведённого',role:'REFERRAL',basis:'% суммы',f:function(o){return o.sum*0.05},fx:'5 % × сумма'},
+    {id:'insurance',nm:'Страхование заказа',role:'INSURANCE', basis:'% суммы',  f:function(o){return o.sum*0.005},fx:'0,5 % × сумма'},
+    {id:'bnpl',   nm:'Кредит / BNPL',       role:'FINANCE',   basis:'% суммы',  f:function(o){return o.sum*0.02},fx:'2 % × сумма'},
+    {id:'ffpack', nm:'Фулфилмент (приёмка, хранение, сборка, упаковка)',role:'FULFILLMENT',basis:'за заказ',f:function(o){return o.ff},fx:'тариф оператора'},
+    {id:'returns',nm:'Возвраты',            role:'FULFILLMENT',basis:'за операцию',f:function(){return 20*0.08},fx:'20 ₽ × 8 % возвратов'},
+    {id:'delivery',nm:'Доставка (последняя миля)',role:'LOGISTICS',basis:'за заказ',f:function(o){return o.lm},fx:'тариф оператора',out:true},
+    {id:'pvz',    nm:'Выдача в пункте',     role:'LOGISTICS', basis:'за выдачу',f:function(){return 12},fx:'12 ₽',out:true},
+    {id:'trunk',  nm:'Магистраль (межрегион)',role:'LOGISTICS',basis:'за заказ', f:function(o){return o.tr},fx:'тариф оператора',out:true},
+    {id:'settle', nm:'Расчёт (удержание сделки)',role:'SYSTEM',basis:'% суммы', f:function(o){return o.sum*0.10},fx:'10 % × сумма · фонд сети'},
+    {id:'org',    nm:'Сбор Организатора',   role:'ORGANIZER', basis:'% суммы',  f:function(o){return o.sum*0.025},fx:'2,5 % × сумма'},
+    {id:'escrow', nm:'Гарантия расчёта',    role:null,        basis:'в удержании',f:function(){return 0}}
+  ];
+  var PRESETS={
+    own:    ['shop','catalog','settle','org','escrow'],
+    light:  ['shop','catalog','settle','org','escrow','delivery'],
+    full:   ['shop','catalog','settle','org','escrow','ffpack','returns','delivery'],
+    traffic:['shop','catalog','agent','settle','org','escrow','promo','referral','delivery'],
+    wl:     ['shop','wl','settle','org','escrow'],
+    fin:    ['shop','catalog','settle','org','escrow','bnpl','insurance','delivery']
+  };
+  var active=new Set(PRESETS.own);
+
+  var pf=document.getElementById('pf'),sum=document.getElementById('sum'),qty=document.getElementById('qty'),
+      olm=document.getElementById('olm'),off=document.getElementById('off'),otr=document.getElementById('otr');
+
+  function renderOpts(){
+    var box=document.getElementById('opts'); box.innerHTML='';
+    SERVICES.forEach(function(s){
+      if(s.id==='shop'||s.id==='settle'||s.id==='org'||s.id==='escrow') return;
+      var l=document.createElement('label'); l.className='chk';
+      l.innerHTML='<input type="checkbox" data-s="'+s.id+'"'+(active.has(s.id)?' checked':'')+'> '+s.nm;
+      box.appendChild(l);
+    });
+    box.querySelectorAll('input').forEach(function(i){
+      i.addEventListener('change',function(){ i.checked?active.add(i.dataset.s):active.delete(i.dataset.s); calc(); });
+    });
+  }
+  function fmt(n){return Math.round(n).toLocaleString('ru-RU')}
+
+  function calc(){
+    var o={sum:+sum.value||0, qty:+qty.value||1, lm:+olm.value, ff:+off.value*(+qty.value||1), tr:+otr.value};
+    var tb=document.querySelector('#sp tbody'); tb.innerHTML='';
+    var fromGoods=0, outside=0;
+    SERVICES.forEach(function(s){
+      if(!active.has(s.id)) return;
+      var a=s.f(o);
+      if(!a && !s.role) return;
+      if(s.out) outside+=a; else fromGoods+=a;
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td class="role">'+(s.role||'—')+'</td><td>'+s.nm+'</td><td>'+s.basis+'</td><td>'+
+        (s.fx||s.note||'—')+(s.id==='ffpack'?' × '+o.qty+' ед.':'')+'</td><td class="amt">'+fmt(a)+'</td>';
+      tb.appendChild(tr);
+    });
+    var seller=o.sum-fromGoods;
+    var tr=document.createElement('tr'); tr.className='seller';
+    tr.innerHTML='<td class="role">SELLER</td><td>Остаток продавцу</td><td>разность</td><td>сумма − удержания из суммы товаров</td><td class="amt">'+fmt(seller)+'</td>';
+    tb.appendChild(tr);
+
+    document.getElementById('oHold').textContent=fmt(fromGoods)+' ₽';
+    var pct=o.sum? fromGoods/o.sum*100 : 0;
+    var pe=document.getElementById('oPct');
+    pe.textContent=pct.toFixed(1).replace('.',',')+' %';
+    pe.className='v'+(pct<=15?'':' warn');
+    document.getElementById('oSel').textContent=fmt(seller)+' ₽';
+
+    var inv=document.getElementById('inv');
+    var ok=Math.abs((fromGoods+seller)-o.sum)<0.01 && seller>=0;
+    inv.className='inv '+(ok?'ok':'no');
+    inv.textContent= ok
+      ? 'инвариант выполнен: '+fmt(fromGoods)+' + '+fmt(seller)+' = '+fmt(o.sum)+' ₽ · оплачивается покупателем сверх: '+fmt(outside)+' ₽'
+      : 'инвариант нарушен: удержания превышают сумму заказа — при таком наборе сервисов заказ убыточен для продавца';
+  }
+
+  pf.addEventListener('change',function(){ active=new Set(PRESETS[pf.value]); renderOpts(); calc(); });
+  [sum,qty,olm,off,otr].forEach(function(e){e.addEventListener('input',calc)});
+  renderOpts(); calc();
+})();
+</script>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Этот документ вошёл в <a href="36-sistemnyi-sloy-opisanie.html" style="font-weight:600;">интегрированное описание системного слоя</a> (величины — в <a href="37-sistemnyi-sloy-parametry.html" style="font-weight:600;">наборе Y</a>) и в <a href="38-ptk-integrirovannaya-model.html" style="font-weight:600;">интегрированную модель ПТК</a>.</div>
+</body>
+</html>

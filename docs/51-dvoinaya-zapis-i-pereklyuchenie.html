@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Двойная запись, сверка и переключение</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--ac);margin-bottom:16px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--ac);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:16px;overflow-x:auto}
+.tab{padding:7px 13px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;white-space:nowrap;background:none;font-family:inherit}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.tab:focus-visible{outline:2px solid var(--ac);outline-offset:-2px}
+.sec{display:none}.sec.on{display:block}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}.c ul{padding-left:16px;margin:4px 0}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.co-p{background:var(--pr2);border-left:3px solid var(--pr);color:#2e2670}
+.st{font-size:15px;font-weight:600;margin:16px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:10.5px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.tb .num{text-align:right;font-family:ui-monospace,monospace}
+.mono{font-family:ui-monospace,monospace;font-size:11px}
+.b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:3px;white-space:nowrap}
+.b-ok{background:var(--gn2);color:var(--gn)}.b-no{background:var(--rd2);color:var(--rd)}
+.b-w{background:var(--wr2);color:var(--wr)}
+.ph{border:1px solid var(--bd);border-left:4px solid var(--ac);border-radius:6px;background:var(--card);padding:12px 16px;margin-bottom:9px}
+.ph h4{font-size:13px;font-weight:700;margin-bottom:3px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}
+.ph .d{font-family:ui-monospace,monospace;font-size:10.5px;color:#fff;background:var(--t2);padding:1px 7px;border-radius:3px}
+.ph p{font-size:12.5px;color:var(--t2);margin-bottom:4px}
+.ph ul{padding-left:16px;margin:4px 0;font-size:12.5px;color:var(--t2)}
+.ph.go{border-left-color:var(--gn)}.ph.stop{border-left-color:var(--rd)}
+.code{background:#1c1c1a;color:#d8e8dd;padding:12px 15px;border-radius:6px;margin:8px 0;font-family:ui-monospace,monospace;font-size:11.5px;line-height:1.75;overflow-x:auto;white-space:pre}
+.code .c1{color:#8a877d}.code .g{color:#8fe3c6}.code .r{color:#f3aeae}.code .y{color:#e8d9a0}
+.chk{display:grid;grid-template-columns:26px 1fr;gap:4px 10px;font-size:12.5px;color:var(--t2);margin-top:6px}
+.chk .box{width:16px;height:16px;border:1.5px solid var(--bd);border-radius:3px;margin-top:2px}
+a{color:#2a6cb6}
+@media print{.tabs{display:none}.sec{display:block!important;page-break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Двойная запись, сверка и переключение</h1>
+  <p>План перехода пилота с прежнего хранилища на базу без остановки работы. Две недели параллельной записи, ежедневная сверка по семи проверкам, переключение по семи критериям, откат за минуту на любом шаге.</p>
+  <div class="meta">23 августа 2026 · Задачи 0.7 и 0.8 спринта 0 · Пилот работает непрерывно · Ни один заказ не теряется и не задваивается</div>
+<div style="max-width:1180px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Часть <a href="50-plan-realizacii-red3.html" style="font-weight:600;">плана реализации, редакция 3</a>, спринт 0. Связано: <a href="1-volna0-massa-madre-synced.html" style="font-weight:600;">Волна 0</a>, <a href="e2e-walkthrough-map.html" style="font-weight:600;">сквозной прогон</a>, <a href="test-plan-seller-flow.html" style="font-weight:600;">план тестирования</a>, <a href="29-operacii-edinyi.html" style="font-weight:600;">операционный слой</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab">Фазы перехода</button>
+  <button class="tab" data-t="s2" role="tab">Сверка</button>
+  <button class="tab" data-t="s3" role="tab">Критерии переключения</button>
+  <button class="tab" data-t="s4" role="tab">Откат</button>
+</div>
+
+<!-- 1 -->
+<div class="sec on" id="s1">
+<div class="st">Пять фаз, две недели</div>
+<div class="co co-a"><b>Принцип.</b>Прежнее хранилище остаётся источником правды до самого переключения. База сначала только принимает копию, потом начинает отдавать чтение, и лишь в конце становится источником. На каждой фазе откат — это возврат к предыдущей, а не восстановление из резервной копии.</div>
+
+<div class="ph"><h4><span class="d">фаза 1</span>Перенос истории <span class="b b-w">день 1</span></h4>
+<p>Единовременный перенос всего, что накопилось: товары, заказы, покупатели. Прежнее хранилище работает как обычно, запись в базу ещё не включена.</p>
+<ul>
+<li>Цены проверяются на расхождение в сто раз — заведённые до исправления единицы могут отличаться.</li>
+<li>Заказы переносятся как родительские с одним подзаказом каждый: у пилота один продавец, но схема сразу правильная.</li>
+<li>Записей согласий у прошлых заказов нет и быть не может — они помечаются признаком «до введения согласий» и в выгрузку не попадают.</li>
+</ul></div>
+
+<div class="ph"><h4><span class="d">фаза 2</span>Двойная запись <span class="b b-w">дни 2–4</span></h4>
+<p>Каждое действие пишется в оба хранилища. Прежнее — по-прежнему источник правды: витрина, бот и кабинет читают из него.</p>
+<ul>
+<li>Порядок записи: сначала прежнее, потом база. Если база недоступна — операция всё равно проходит, расхождение фиксируется в журнале.</li>
+<li>Обратный порядок недопустим: отказ базы не должен ломать заказ покупателя.</li>
+<li>Каждая запись получает отметку времени и признак источника — по ним идёт сверка.</li>
+</ul></div>
+
+<div class="ph"><h4><span class="d">фаза 3</span>Чтение из базы в тени <span class="b b-w">дни 5–9</span></h4>
+<p>Витрина запрашивает данные из обоих хранилищ, показывает прежние, а ответ базы сравнивает и логирует расхождения. Покупатель ничего не замечает.</p>
+<ul>
+<li>Это главная фаза: она ловит различия, которых не видно при сверке таблиц — округления, порядок сортировки, обработку пустых значений.</li>
+<li>Расхождение по товару или сумме останавливает отсчёт чистых дней и требует исправления.</li>
+</ul></div>
+
+<div class="ph go"><h4><span class="d">фаза 4</span>Переключение <span class="b b-ok">день 10</span></h4>
+<p>База становится источником правды. Запись в прежнее хранилище продолжается ещё неделю — на случай отката.</p>
+<ul>
+<li>Проводится в спокойное время суток, не в час заказов.</li>
+<li>Первый заказ после переключения проверяется вручную от корзины до записи в базе.</li>
+</ul></div>
+
+<div class="ph"><h4><span class="d">фаза 5</span>Отключение прежнего <span class="b b-ok">дни 11–14</span></h4>
+<p>Неделя работы на базе без замечаний — и запись в прежнее хранилище прекращается. Само хранилище сохраняется в режиме чтения ещё месяц.</p></div>
+
+<div class="co co-w"><b>Почему две недели, а не три дня.</b>Сверка таблиц покажет совпадение уже на второй день. Но различия проявляются на редких путях: отмена заказа, изменение остатка вручную, повторная отправка формы, заказ в момент правки товара. Чтобы такой случай встретился, нужна не быстрота, а календарное время работы пилота.</div>
+</div>
+
+<!-- 2 -->
+<div class="sec" id="s2">
+<div class="st">Ежедневная сверка · семь проверок</div>
+<p style="font-size:12.5px;color:var(--t2)">Выполняется автоматически раз в сутки и вручную перед переключением. Любое расхождение обнуляет счётчик чистых дней.</p>
+
+<table class="tb">
+<thead><tr><th style="width:6%">№</th><th style="width:26%">Проверка</th><th style="width:30%">Как считается</th><th>Что означает расхождение</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><b>Число заказов</b></td><td>Количество за сутки в обоих хранилищах</td><td>Потеря записи или задвоение — самое опасное, останавливает переход</td></tr>
+<tr><td>2</td><td><b>Суммы заказов</b></td><td>Сумма по каждому заказу, в копейках целым числом</td><td>Ошибка преобразования единиц; проверить в сто раз</td></tr>
+<tr><td>3</td><td><b>Состав позиций</b></td><td>Товар, количество, цена по каждой позиции</td><td>Потеря позиции при записи или разный порядок обработки корзины</td></tr>
+<tr><td>4</td><td><b>Остатки товаров</b></td><td>Текущий остаток по каждому товару</td><td>Резервирование сработало в одном хранилище и не сработало в другом</td></tr>
+<tr><td>5</td><td><b>Покупатели</b></td><td>Число записей и уникальность контактов</td><td>Задвоение покупателя при повторном заказе</td></tr>
+<tr><td>6</td><td><b>Статусы заказов</b></td><td>Совпадение текущего статуса по каждому заказу</td><td>Изменение статуса прошло мимо базы</td></tr>
+<tr><td>7</td><td><b>Журнал отказов базы</b></td><td>Число операций, не записанных в базу</td><td>Каждая такая операция дописывается вручную; больше трёх за сутки — причина остановиться</td></tr>
+</tbody>
+</table>
+
+<div class="code"><span class="c1">результат сверки за сутки — пример</span>
+заказов          прежнее <span class="g">7</span>   база <span class="g">7</span>    <span class="g">совпало</span>
+суммы            расхождений <span class="g">0</span>            <span class="g">совпало</span>
+позиции          расхождений <span class="g">0</span>            <span class="g">совпало</span>
+остатки          расхождений <span class="r">1</span>            <span class="r">товар «Тартин»: 12 против 11</span>
+покупатели       прежнее <span class="g">4</span>   база <span class="g">4</span>    <span class="g">совпало</span>
+статусы          расхождений <span class="g">0</span>            <span class="g">совпало</span>
+отказы базы      <span class="g">0</span>                        <span class="g">чисто</span>
+
+<span class="y">чистых дней подряд: 0</span>  <span class="c1">(сброшено расхождением по остаткам)</span></div>
+
+<div class="co co-a"><b>Что делать при расхождении.</b>Не исправлять данные молча. Сначала найти причину — почти всегда это разный порядок операций или необработанный редкий путь. Исправить код, дописать недостающее вручную, обнулить счётчик и продолжить. Расхождение, исправленное без выяснения причины, вернётся после переключения, когда откатываться будет дороже.</div>
+</div>
+
+<!-- 3 -->
+<div class="sec" id="s3">
+<div class="st">Критерии переключения · все семь одновременно</div>
+<div class="co co-g"><b>Переключение — не событие календаря, а следствие выполнения условий.</b>Если к десятому дню критерии не выполнены, переключение сдвигается. Это дешевле, чем откатывать работающий пилот.</div>
+
+<div class="c">
+<div class="chk">
+<div class="box"></div><div><b>Пять чистых дней подряд</b> — сверка без расхождений по всем семи проверкам. Не пять из десяти, а пять подряд.</div>
+<div class="box"></div><div><b>Ноль отказов записи в базу</b> за последние трое суток.</div>
+<div class="box"></div><div><b>Теневое чтение совпадает</b> — витрина, каталог и бот дают одинаковый результат из обоих хранилищ, включая порядок сортировки.</div>
+<div class="box"></div><div><b>Редкие пути пройдены</b> — за период встретились и совпали: отмена заказа, изменение остатка вручную, повторная отправка формы, заказ в момент правки товара. Если какой-то не встретился — вызвать искусственно.</div>
+<div class="box"></div><div><b>Цены сверены</b> — ни одного расхождения в сто раз; выборочная ручная проверка десяти товаров.</div>
+<div class="box"></div><div><b>Откат проверен</b> — обратное переключение выполнено на тестовом контуре и заняло меньше минуты.</div>
+<div class="box"></div><div><b>Есть свежая копия</b> прежнего хранилища на момент переключения.</div>
+</div>
+</div>
+
+<div class="co co-w"><b>Четвёртый критерий обычно и есть узкое место.</b>Редкие пути редки — за две недели пилота отмена заказа может не случиться ни разу. Поэтому их вызывают намеренно: отменяют тестовый заказ, правят остаток вручную, отправляют форму дважды. Иначе первый такой случай произойдёт уже после переключения.</div>
+
+<div class="st" style="margin-top:16px">Порядок переключения</div>
+<table class="tb">
+<thead><tr><th style="width:8%">Шаг</th><th style="width:34%">Действие</th><th>Проверка</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Снять копию прежнего хранилища</td><td>Копия открывается и содержит сегодняшние заказы</td></tr>
+<tr><td>2</td><td>Перевести чтение на базу</td><td>Витрина, каталог и бот отвечают; данные те же</td></tr>
+<tr><td>3</td><td>Провести контрольный заказ</td><td>От корзины до записи: сумма верна, остаток списан, статус проставлен</td></tr>
+<tr><td>4</td><td>Наблюдать час</td><td>Ни одной ошибки в журнале; заказы покупателей проходят</td></tr>
+<tr><td>5</td><td>Сообщить о завершении</td><td>Запись в журнале перехода с отметкой времени</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- 4 -->
+<div class="sec" id="s4">
+<div class="st">Откат</div>
+<div class="co co-r"><b>Условие отката — не сбой, а сомнение.</b>Откатываемся при любом из трёх: потерян или задвоен заказ; расхождение суммы у реального покупателя; невозможность объяснить наблюдаемое поведение в течение получаса. Последнее важнее первых двух: непонятая ошибка опаснее понятной.</div>
+
+<div class="c">
+<h3>Процедура — меньше минуты</h3>
+<table class="tb">
+<thead><tr><th style="width:8%">Шаг</th><th style="width:40%">Действие</th><th>Время</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Переключить чтение обратно на прежнее хранилище</td><td>секунды</td></tr>
+<tr><td>2</td><td>Убедиться, что витрина и бот отвечают</td><td>полминуты</td></tr>
+<tr><td>3</td><td>Записать в журнал причину и время</td><td>—</td></tr>
+<tr><td>4</td><td>Дописать в прежнее хранилище заказы, прошедшие после переключения</td><td>по числу заказов</td></tr>
+</tbody>
+</table>
+<p style="margin-top:6px">Четвёртый шаг возможен только потому, что запись в прежнее хранилище продолжается неделю после переключения. Без этого откат означал бы потерю заказов, прошедших за время работы на базе.</p>
+</div>
+
+<div class="co co-a"><b>Что после отката.</b>Возврат к фазе три — теневое чтение — а не к началу. История уже перенесена, двойная запись работает, причина известна. Повторное переключение после исправления обычно занимает три-четыре дня, а не две недели.</div>
+
+<div class="st" style="margin-top:16px">Место в плане</div>
+<table class="tb">
+<thead><tr><th style="width:12%">Задача</th><th style="width:28%">Что</th><th style="width:14%">Трудоёмкость</th><th>Зависимость</th></tr></thead>
+<tbody>
+<tr><td class="mono"><b>0.7</b></td><td>Двойная запись и перенос истории</td><td>2 дня</td><td>0.1, 0.3 — схема и слой доступа</td></tr>
+<tr><td class="mono"><b>0.8</b></td><td>Сверка, теневое чтение, переключение</td><td>2 дня работы, растянутые на две недели календаря</td><td>0.7</td></tr>
+</tbody>
+</table>
+
+<div class="co co-p"><b>Как это влияет на срок спринта 0.</b>Трудоёмкость растёт на четыре дня, но календарь — на неделю: две недели наблюдения идут параллельно остальным задачам спринта, а не вместо них. Спринт 0 становится трёхнедельным, и переключение приходится на его конец. Общая оценка плана — восемьдесят пять человеко-дней.</div>
+</div>
+
+</div>
+<script>
+(function(){var t=document.querySelectorAll('#tabs .tab');t.forEach(function(x){x.addEventListener('click',function(){
+t.forEach(function(y){y.classList.toggle('on',y===x)});
+document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===x.dataset.t)});
+window.scrollTo({top:0,behavior:'smooth'});})});})();
+</script>
+</body>
+</html>

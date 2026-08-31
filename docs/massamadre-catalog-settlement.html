@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Масса Мадре в Системе: каталог и расчёты (детально)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141A21;--ink2:#3E4A57;--ink3:#6C7681;--paper:#F7F8F6;--paper2:#fff;--line:#DDE2DB;
+  --sheet:#0F7B4A;--sys:#2E5B3A;--cat:#1D5FBF;--money:#A62B2B;--direct:#7A5C1E;--r:8px;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',-apple-system,sans-serif;font-size:15px;line-height:1.55}
+.mono{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 90px}
+header.top{background:var(--paper2);border-bottom:1px solid var(--line)}
+.top-in{max-width:1080px;margin:0 auto;padding:26px 24px 20px}
+.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);font-weight:600}
+h1{font-family:'IBM Plex Serif',Georgia,serif;font-size:clamp(23px,3.5vw,32px);margin:8px 0 6px;letter-spacing:-.02em;line-height:1.15}
+.sub{color:var(--ink2);max-width:82ch;margin:0}
+.diagram{background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);padding:10px;margin:20px 0;overflow-x:auto}
+svg{display:block;margin:0 auto;min-width:940px}
+h2{font-family:'IBM Plex Serif',Georgia,serif;font-size:22px;margin:34px 0 8px;border-bottom:2px solid var(--line);padding-bottom:6px}
+h2 .n{display:inline-block;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;text-align:center;line-height:26px;font-size:14px;margin-right:8px;font-family:'IBM Plex Sans'}
+h3{font-size:16px;margin:20px 0 6px}
+p{margin:0 0 12px;max-width:84ch}
+table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--paper2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:10px 0 16px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);padding:9px 11px;border-bottom:1px solid var(--line);font-weight:600;background:var(--paper)}
+td{padding:10px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.mono{font-size:12px}
+.tbl-scroll{overflow-x:auto}
+.callout{border:1px solid var(--line);border-left:3px solid var(--sys);background:var(--paper2);padding:11px 14px;border-radius:var(--r);margin:14px 0;font-size:13.8px}
+.callout b{color:var(--sys)}
+.callout.money{border-left-color:var(--money)}.callout.money b{color:var(--money)}
+.callout.cat{border-left-color:var(--cat)}.callout.cat b{color:var(--cat)}
+.callout.direct{border-left-color:var(--direct)}.callout.direct b{color:var(--direct)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin:10px 0 0;font-size:12.5px}
+.lg{display:flex;align-items:center;gap:6px}.dot{width:12px;height:12px;border-radius:3px}
+footer{border-top:1px solid var(--line);margin-top:36px;padding-top:16px;font-size:12.5px;color:var(--ink3)}
+footer a{color:var(--sys)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="eyebrow">ПТК · Масса Мадре · Вариант 2 (своя витрина + расчёты в Системе)</div>
+    <h1>Масса Мадре в Системе: каталог и расчёты</h1>
+    <p class="sub">Детально по двум узлам для вашего реального магазина: как 4 SKU из Google Sheets попадают в общий каталог Системы, и как два потока заказов (прямой через ЮKassa и через эскроу Системы) расходятся по расчёту. Всё по фактическому контракту server.js.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ============ СХЕМА 1: КАТАЛОГ ============ -->
+<h2><span class="n">1</span>Схема каталога: из Google Sheets в каталог Системы</h2>
+<p>Ваш каталог остаётся в Google Sheets (источник правды, лист «Товары», 18 колонок). Коннектор синхронизирует его в каталог Системы как зеркало. Управляете товарами по-прежнему вы у себя.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 960 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Схема каталога Масса Мадре">
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#3E4A57"/></marker>
+    <marker id="arg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0F7B4A"/></marker>
+    <marker id="arb" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1D5FBF"/></marker>
+  </defs>
+
+  <!-- источник: google sheets -->
+  <rect x="34" y="60" width="210" height="140" rx="10" fill="#E7F5EE" stroke="#0F7B4A" stroke-width="1.4"/>
+  <text x="139" y="84" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0F7B4A" font-family="IBM Plex Sans">ВАШ ИСТОЧНИК</text>
+  <text x="139" y="104" text-anchor="middle" font-size="12.5" font-weight="600" fill="#141A21" font-family="IBM Plex Sans">Google Sheets</text>
+  <text x="139" y="120" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">лист «Товары», 18 колонок</text>
+  <line x1="52" y1="130" x2="226" y2="130" stroke="#B9DEC9"/>
+  <text x="139" y="148" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Mono">SKU-001 Тартин</text>
+  <text x="139" y="163" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Mono">SKU-002 Заварной</text>
+  <text x="139" y="178" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Mono">SKU-003 Тартин сырный</text>
+  <text x="139" y="193" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Mono">SKU-004 Бородинский</text>
+
+  <!-- коннектор -->
+  <rect x="330" y="95" width="170" height="70" rx="10" fill="#F3EAF6" stroke="#8A4B9A" stroke-width="1.4"/>
+  <text x="415" y="120" text-anchor="middle" font-size="12.5" font-weight="700" fill="#8A4B9A" font-family="IBM Plex Sans">Коннектор</text>
+  <text x="415" y="138" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Sans">Apps Script → API Системы</text>
+  <text x="415" y="153" text-anchor="middle" font-size="9.5" fill="#6C7681" font-family="IBM Plex Sans">push при изменении / периодически</text>
+  <path d="M244 130 H328" stroke="#0F7B4A" stroke-width="1.8" marker-end="url(#arg)"/>
+  <text x="286" y="122" text-anchor="middle" font-size="9.5" fill="#0F7B4A" font-family="IBM Plex Sans">товары →</text>
+
+  <!-- зеркало в skus -->
+  <rect x="590" y="60" width="330" height="105" rx="10" fill="#EAF1FB" stroke="#1D5FBF" stroke-width="1.4"/>
+  <text x="755" y="84" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1D5FBF" font-family="IBM Plex Sans">КАТАЛОГ СИСТЕМЫ (зеркало)</text>
+  <text x="755" y="104" text-anchor="middle" font-size="11" fill="#3E4A57" font-family="IBM Plex Mono">skus: source=EXTERNAL</text>
+  <text x="755" y="121" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">visible_catalog=TRUE · shop_id=massamadre</text>
+  <text x="755" y="138" text-anchor="middle" font-size="10" fill="#6C7681" font-family="IBM Plex Sans">цена/наличие обновляются коннектором</text>
+  <text x="755" y="154" text-anchor="middle" font-size="10" fill="#6C7681" font-family="IBM Plex Sans">управление остаётся в Sheets</text>
+  <path d="M500 130 H588" stroke="#8A4B9A" stroke-width="1.8" marker-end="url(#arb)"/>
+
+  <!-- pipeline: модерация → индексация → выдача -->
+  <text x="480" y="215" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1D5FBF" font-family="IBM Plex Sans">Дальше — общий pipeline каталога (ст. 11, ПТК 32), одинаковый для всех магазинов:</text>
+  <g font-family="IBM Plex Sans">
+    <rect x="120" y="235" width="160" height="54" rx="8" fill="#fff" stroke="#1D5FBF"/>
+    <text x="200" y="258" text-anchor="middle" font-size="12" font-weight="600" fill="#141A21">1. Модерация</text>
+    <text x="200" y="275" text-anchor="middle" font-size="10" fill="#6C7681">moderation_status</text>
+    <rect x="320" y="235" width="160" height="54" rx="8" fill="#fff" stroke="#1D5FBF"/>
+    <text x="400" y="258" text-anchor="middle" font-size="12" font-weight="600" fill="#141A21">2. Индексация</text>
+    <text x="400" y="275" text-anchor="middle" font-size="10" fill="#6C7681">Elasticsearch</text>
+    <rect x="520" y="235" width="160" height="54" rx="8" fill="#fff" stroke="#1D5FBF"/>
+    <text x="600" y="258" text-anchor="middle" font-size="12" font-weight="600" fill="#141A21">3. Ранжирование</text>
+    <text x="600" y="275" text-anchor="middle" font-size="10" fill="#6C7681">формула ст. 11</text>
+    <rect x="720" y="235" width="160" height="54" rx="8" fill="#EAF1FB" stroke="#1D5FBF"/>
+    <text x="800" y="258" text-anchor="middle" font-size="12" font-weight="600" fill="#1D5FBF">4. Выдача</text>
+    <text x="800" y="275" text-anchor="middle" font-size="10" fill="#3E4A57">/catalog · агент 🟢</text>
+  </g>
+  <path d="M280 262 H318" stroke="#3E4A57" stroke-width="1.4" marker-end="url(#ar)"/>
+  <path d="M480 262 H518" stroke="#3E4A57" stroke-width="1.4" marker-end="url(#ar)"/>
+  <path d="M680 262 H718" stroke="#3E4A57" stroke-width="1.4" marker-end="url(#ar)"/>
+  <path d="M755 165 V233" stroke="#1D5FBF" stroke-width="1.4" marker-end="url(#ar)" stroke-dasharray="4 3"/>
+
+  <!-- две точки, где виден товар -->
+  <rect x="120" y="330" width="360" height="90" rx="10" fill="#FCF6EA" stroke="#B0791F"/>
+  <text x="300" y="354" text-anchor="middle" font-size="12" font-weight="700" fill="#B0791F" font-family="IBM Plex Sans">Ваша витрина massamadre.ru</text>
+  <text x="300" y="374" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">читает НАПРЯМУЮ из Sheets (как сейчас)</text>
+  <text x="300" y="392" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">visible_shop — ваш дизайн, ваш домен</text>
+  <text x="300" y="410" text-anchor="middle" font-size="9.5" fill="#6C7681" font-family="IBM Plex Sans">Система сюда не вмешивается</text>
+
+  <rect x="520" y="330" width="360" height="90" rx="10" fill="#EAF1FB" stroke="#1D5FBF"/>
+  <text x="700" y="354" text-anchor="middle" font-size="12" font-weight="700" fill="#1D5FBF" font-family="IBM Plex Sans">Каталог Системы + агент 🟢</text>
+  <text x="700" y="374" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">читает ЗЕРКАЛО (visible_catalog)</text>
+  <text x="700" y="392" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">новый канал: покупатели Системы</text>
+  <text x="700" y="410" text-anchor="middle" font-size="9.5" fill="#6C7681" font-family="IBM Plex Sans">ваши 4 SKU рядом с товарами других</text>
+
+  <path d="M139 200 C 139 300, 200 320, 260 328" stroke="#B0791F" stroke-width="1.3" marker-end="url(#ar)" fill="none"/>
+  <text x="120" y="285" font-size="9" fill="#B0791F" font-family="IBM Plex Sans">Sheets→витрина</text>
+  <path d="M800 289 V328" stroke="#1D5FBF" stroke-width="1.3" marker-end="url(#ar)"/>
+</svg>
+</div>
+
+<div class="callout cat"><b>Две «видимости» одного товара.</b> Ваш Тартин существует один раз в Sheets, но виден в двух местах: на <b>вашей витрине</b> (massamadre.ru читает Sheets напрямую, как сейчас) и в <b>каталоге Системы</b> (через зеркало <span class="mono">visible_catalog=TRUE</span>). Это не два товара — один, показанный в двух окнах. Синхронизация держит зеркало в актуальном состоянии.</div>
+
+<h3>Что нужно построить для этой схемы</h3>
+<div class="tbl-scroll"><table>
+  <thead><tr><th>Компонент</th><th>Что делает</th><th>Статус</th></tr></thead>
+  <tbody>
+    <tr><td>Коннектор Sheets → API</td><td>шлёт 4 SKU в <span class="mono">skus</span> Системы, обновляет цену/наличие</td><td>надо построить (Apps Script у вас уже есть — расширить)</td></tr>
+    <tr><td>Признак <span class="mono">source=EXTERNAL</span> в skus</td><td>отличать зеркало от товаров Типа 1</td><td>надо добавить в схему сервера</td></tr>
+    <tr><td>Общий pipeline каталога</td><td>модерация → индексация → ранжирование → выдача</td><td>описан в ПТК 32, реализация Системы</td></tr>
+  </tbody>
+</table></div>
+
+<!-- ============ СХЕМА 2: РАСЧЁТЫ ============ -->
+<h2><span class="n">2</span>Схема расчётов: два потока заказов</h2>
+<p>Раз витрина ваша, а расчёты Системы — заказы приходят из двух мест и расходятся по денежному пути. Различает их поле <span class="mono">entry_point</span> в <span class="mono">POST /orders</span>: сервер по нему проставляет <span class="mono">source_type</span> (ст. 10.4).</p>
+
+<div class="legend">
+  <span class="lg"><span class="dot" style="background:#7A5C1E"></span> Поток А — прямая продажа (ваши деньги напрямую)</span>
+  <span class="lg"><span class="dot" style="background:#A62B2B"></span> Поток Б — через Систему (эскроу)</span>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 960 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Схема расчётов Масса Мадре">
+  <defs>
+    <marker id="ard" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#7A5C1E"/></marker>
+    <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#A62B2B"/></marker>
+    <marker id="ark" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#3E4A57"/></marker>
+  </defs>
+
+  <!-- ПОТОК А: прямой -->
+  <text x="235" y="30" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7A5C1E" font-family="IBM Plex Sans">ПОТОК А · Прямая продажа на massamadre.ru</text>
+  <rect x="40" y="46" width="150" height="52" rx="8" fill="#FBF6EA" stroke="#7A5C1E" font-family="IBM Plex Sans"/>
+  <text x="115" y="68" text-anchor="middle" font-size="11.5" font-weight="600" fill="#141A21" font-family="IBM Plex Sans">Покупатель</text>
+  <text x="115" y="84" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Sans">пришёл на ваш сайт</text>
+  <rect x="230" y="46" width="150" height="52" rx="8" fill="#FBF6EA" stroke="#7A5C1E"/>
+  <text x="305" y="68" text-anchor="middle" font-size="11.5" font-weight="600" fill="#141A21" font-family="IBM Plex Sans">Витрина + корзина</text>
+  <text x="305" y="84" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Sans">massamadre.ru</text>
+  <rect x="420" y="46" width="150" height="52" rx="8" fill="#FBF6EA" stroke="#7A5C1E"/>
+  <text x="495" y="68" text-anchor="middle" font-size="11.5" font-weight="600" fill="#141A21" font-family="IBM Plex Sans">ЮKassa</text>
+  <text x="495" y="84" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Sans">ваш эквайринг</text>
+  <rect x="610" y="46" width="170" height="52" rx="8" fill="#EFE6D0" stroke="#7A5C1E" stroke-width="1.4"/>
+  <text x="695" y="68" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7A5C1E" font-family="IBM Plex Sans">Деньги — вам напрямую</text>
+  <text x="695" y="84" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Sans">Система не участвует</text>
+  <path d="M190 72 H228" stroke="#7A5C1E" stroke-width="1.6" marker-end="url(#ard)"/>
+  <path d="M380 72 H418" stroke="#7A5C1E" stroke-width="1.6" marker-end="url(#ard)"/>
+  <path d="M570 72 H608" stroke="#7A5C1E" stroke-width="1.6" marker-end="url(#ard)"/>
+  <text x="835" y="66" text-anchor="middle" font-size="10.5" fill="#7A5C1E" font-family="IBM Plex Mono">entry_point</text>
+  <text x="835" y="82" text-anchor="middle" font-size="10.5" fill="#7A5C1E" font-family="IBM Plex Mono">= SHOP</text>
+
+  <!-- разделитель -->
+  <line x1="40" y1="120" x2="920" y2="120" stroke="#E3E7E1"/>
+
+  <!-- ПОТОК Б: через Систему -->
+  <text x="250" y="150" text-anchor="middle" font-size="12.5" font-weight="700" fill="#A62B2B" font-family="IBM Plex Sans">ПОТОК Б · Заказ из каталога/агента Системы</text>
+  <rect x="40" y="166" width="150" height="52" rx="8" fill="#FBECEC" stroke="#A62B2B"/>
+  <text x="115" y="188" text-anchor="middle" font-size="11.5" font-weight="600" fill="#141A21" font-family="IBM Plex Sans">Покупатель</text>
+  <text x="115" y="204" text-anchor="middle" font-size="10" fill="#3E4A57" font-family="IBM Plex Sans">нашёл в каталоге/агенте</text>
+  <rect x="230" y="166" width="150" height="52" rx="8" fill="#FBECEC" stroke="#A62B2B"/>
+  <text x="305" y="184" text-anchor="middle" font-size="11" font-weight="600" fill="#141A21" font-family="IBM Plex Sans">POST /orders</text>
+  <text x="305" y="200" text-anchor="middle" font-size="9.5" fill="#3E4A57" font-family="IBM Plex Mono">entry_point=CATALOG</text>
+  <text x="305" y="212" text-anchor="middle" font-size="9.5" fill="#A62B2B" font-family="IBM Plex Mono">→ source_type=NETWORK</text>
+
+  <!-- расчётный контур -->
+  <rect x="420" y="150" width="500" height="86" rx="10" fill="#FBECEC" stroke="#A62B2B" stroke-width="1.4"/>
+  <text x="670" y="170" text-anchor="middle" font-size="11.5" font-weight="700" fill="#A62B2B" font-family="IBM Plex Sans">РАСЧЁТНЫЙ КОНТУР СИСТЕМЫ</text>
+  <g font-family="IBM Plex Sans" font-size="9.5" fill="#3E4A57">
+    <rect x="435" y="182" width="105" height="44" rx="6" fill="#fff" stroke="#A62B2B"/>
+    <text x="487" y="200" text-anchor="middle" font-weight="600" fill="#A62B2B" font-size="10.5">Эскроу</text>
+    <text x="487" y="215" text-anchor="middle">холд денег</text>
+    <rect x="550" y="182" width="105" height="44" rx="6" fill="#fff" stroke="#A62B2B"/>
+    <text x="602" y="200" text-anchor="middle" font-weight="600" fill="#A62B2B" font-size="10.5">Клиринг</text>
+    <text x="602" y="215" text-anchor="middle">после выдачи</text>
+    <rect x="665" y="182" width="105" height="44" rx="6" fill="#fff" stroke="#A62B2B"/>
+    <text x="717" y="200" text-anchor="middle" font-weight="600" fill="#A62B2B" font-size="10.5">Сплит</text>
+    <text x="717" y="215" text-anchor="middle">take-rate ≤ пирог</text>
+    <rect x="780" y="182" width="125" height="44" rx="6" fill="#EFD9D9" stroke="#A62B2B"/>
+    <text x="842" y="200" text-anchor="middle" font-weight="700" fill="#A62B2B" font-size="10.5">Выплата ВАМ</text>
+    <text x="842" y="215" text-anchor="middle">за вычетом доли</text>
+  </g>
+  <path d="M190 192 H228" stroke="#A62B2B" stroke-width="1.6" marker-end="url(#arr)"/>
+  <path d="M380 192 H418" stroke="#A62B2B" stroke-width="1.6" marker-end="url(#arr)"/>
+  <path d="M540 204 H548" stroke="#A62B2B" stroke-width="1.3" marker-end="url(#arr)"/>
+  <path d="M655 204 H663" stroke="#A62B2B" stroke-width="1.3" marker-end="url(#arr)"/>
+  <path d="M770 204 H778" stroke="#A62B2B" stroke-width="1.3" marker-end="url(#arr)"/>
+
+  <!-- ОБА СХОДЯТСЯ В КАБИНЕТЕ -->
+  <rect x="300" y="300" width="360" height="86" rx="10" fill="#F1F4F0" stroke="#3E4A57" stroke-width="1.4"/>
+  <text x="480" y="324" text-anchor="middle" font-size="12.5" font-weight="700" fill="#141A21" font-family="IBM Plex Sans">cabinet-orders.html (ваш кабинет)</text>
+  <text x="480" y="344" text-anchor="middle" font-size="10.5" fill="#3E4A57" font-family="IBM Plex Sans">оба потока заказов видны для сборки и отправки хлеба</text>
+  <text x="480" y="362" text-anchor="middle" font-size="10" fill="#6C7681" font-family="IBM Plex Sans">поток А — уже сейчас; поток Б — добавить приём из API Системы</text>
+  <text x="480" y="378" text-anchor="middle" font-size="9.5" fill="#6C7681" font-family="IBM Plex Sans">метка источника: SHOP (прямой) / NETWORK (Система)</text>
+
+  <path d="M695 98 C 695 230, 600 280, 540 300" stroke="#7A5C1E" stroke-width="1.4" marker-end="url(#ark)" fill="none" stroke-dasharray="1 0"/>
+  <text x="640" y="270" font-size="9.5" fill="#7A5C1E" font-family="IBM Plex Sans">заказ А →</text>
+  <path d="M842 236 C 842 300, 700 320, 662 340" stroke="#A62B2B" stroke-width="1.4" marker-end="url(#ark)" fill="none" stroke-dasharray="4 3"/>
+  <text x="770" y="300" font-size="9.5" fill="#A62B2B" font-family="IBM Plex Sans">заказ Б →</text>
+
+  <!-- разница по деньгам -->
+  <rect x="120" y="420" width="720" height="56" rx="9" fill="#fff" stroke="#B9BEB6"/>
+  <text x="480" y="442" text-anchor="middle" font-size="11.5" font-weight="600" fill="#141A21" font-family="IBM Plex Serif">Разница только в деньгах, не в работе пекаря</text>
+  <text x="480" y="461" text-anchor="middle" font-size="11" fill="#3E4A57" font-family="IBM Plex Sans">Поток А: 100% выручки сразу, ваш риск. Поток Б: за вычетом take-rate, но с эскроу-гарантией и покупателями Системы.</text>
+</svg>
+</div>
+
+<div class="callout money"><b>Почему два разных денежных пути — это правильно.</b> Поток А — ваши прямые продажи: вы сами привели покупателя, сами несёте риск, получаете всё сразу. Поток Б — Система привела покупателя и гарантировала сделку эскроу: за это берётся take-rate, но вы получаете новый канал сбыта и защиту от неоплаты. Одна и та же булка, два экономических смысла — и сервер честно различает их по <span class="mono">entry_point</span>.</div>
+
+<div class="callout"><b>А если продать у себя, но расчёт через Систему?</b> Поток А выше — «свой сайт → свои деньги» — это только один вариант. Продавец может завести и прямую продажу в клиринг Системы (ради гарантии или fulfilment). Как именно — три механизма в отдельной схеме: <a href="massamadre-settlement-mechanisms.html">продажа со своей витрины через Систему</a>.</div>
+<div class="callout direct"><b>Что не меняется в вашей рутине.</b> Пекарь печёт одинаково для обоих потоков. Разница — только откуда пришёл заказ и как приходят деньги. Поэтому оба потока стоит свести в один <span class="mono">cabinet-orders.html</span>: собирать и отправлять удобнее из одного окна, а метка источника (SHOP/NETWORK) подскажет, по какому пути пойдут деньги.</div>
+
+<h3>Что нужно построить для расчётов</h3>
+<div class="tbl-scroll"><table>
+  <thead><tr><th>Компонент</th><th>Что делает</th><th>Статус</th></tr></thead>
+  <tbody>
+    <tr><td>Поток А (ЮKassa)</td><td>прямые продажи на вашем сайте</td><td>работает у вас сейчас</td></tr>
+    <tr><td>Поток Б — расчётный контур</td><td>эскроу → клиринг → сплит → выплата</td><td>ядро Системы (НСВР), <span class="mono">POST /orders</span> уже создаёт заказ</td></tr>
+    <tr><td>Приём заказов Системы в cabinet-orders</td><td>вебхук/поллинг из API Системы + метка источника</td><td>надо добавить в ваш кабинет</td></tr>
+    <tr><td>Реальная оплата в потоке Б</td><td>списание СБП/эквайринг в эскроу</td><td>требует банка-партнёра (R1-R14)</td></tr>
+  </tbody>
+</table></div>
+
+<footer>
+  Масса Мадре в Системе · Вариант 2 · часть пула. Модель: <a href="external-shop-integration.html">внешний магазин</a>. Каталог: <a href="32-katalog-formation-ranking-synced.html">формирование и ранжирование</a>. Общая картина: <a href="site-overview.html">как это выглядит на сайте</a>. Расчётный контур: <a href="full-cycle-seller-to-buyer-red2.html">полный цикл</a>. Нормы: <a href="pravila-sistemy-red3-edinyi.html">Правила ред. 3</a> (ст. 10.4 источник, 20 расчёты).
+</footer>
+</div>
+<div style="max-width:1080px;margin:16px auto;padding:10px 16px;border-left:3px solid #2E5B3A;background:#EEF3EF;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">⬆ Этот вариант — один из пресетов общей линейки: <a href="service-tiers.html" style="color:#2E5B3A;font-weight:600">6 уровней сервиса Системы</a></div>
+<div style="max-width:960px;margin:16px auto;padding:10px 16px;border-left:3px solid #2E5B3A;background:#EEF3EF;border-radius:4px;font-family:-apple-system,sans-serif;font-size:13px;color:#3E4A57">🔄 Сквозной прогон: <a href="e2e-walkthrough-map.html" style="color:#2E5B3A;font-weight:600">карта шагов E2E (магазин→сделка)</a></div>
+</body>
+</html>

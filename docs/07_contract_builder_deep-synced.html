@@ -1,0 +1,150 @@
+
+<div style="max-width:1100px;margin:0 auto 18px;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,'Segoe UI',sans-serif;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 2 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Модуль ПТК, реализующий нормы <b>Правил системы (ред. 2)</b>. Общая архитектура — «Архитектура ПТК» (26). При расхождении норма — Правила.</div>
+  <div><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 6.2 — расщепление платежа</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 3.2 — тарифы</span><span style="display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;background:#eaf1fa;border:1px solid #2a6cb6;border-radius:4px;font-size:11px;color:#233A52;font-family:monospace;">Ст. 2 — договор присоединения</span></div>
+</div><h2 class="sr-only">Contract Builder — deep spec · Template Engine, блоки, шаблоны, PDF, ЭДО · +4 шаблона маркетплейса</h2>
+<style>
+.at-btn{padding:6px 14px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text-secondary);transition:.15s;display:inline-block;margin:2px}
+.at-btn:hover{border-color:var(--border-strong)}.at-btn.on{border-color:var(--text-accent);color:var(--text-primary);background:var(--bg-accent)}
+.bl{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px}
+.bl.is-new{border-color:var(--border-accent);border-width:2px}
+.bl h3{font-size:15px;font-weight:500;margin-bottom:8px}.bl h4{font-size:13px;font-weight:500;margin:10px 0 4px;color:var(--text-secondary)}
+.bl p{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{padding:6px 8px;text-align:left;font-weight:500;font-size:11px;color:var(--text-muted);border-bottom:1px solid var(--border)}
+.tb td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:top}
+.tb tr.rn{background:var(--bg-accent)}
+.cb{font-family:var(--font-mono);font-size:11.5px;color:var(--text-secondary);background:var(--surface-0);border-radius:8px;padding:10px;margin-top:6px;line-height:1.7;white-space:pre-wrap;overflow-x:auto}
+.cb b{color:var(--text-accent);font-weight:500}
+.dn{font-size:12px;padding:10px 14px;border-radius:8px;background:var(--bg-accent);color:var(--text-accent);margin-bottom:12px;line-height:1.5}
+.bn{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;background:var(--bg-accent);color:var(--text-accent);margin-left:4px}
+.bk{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;background:var(--bg-success);color:var(--text-success);margin-left:4px}
+.sr{font-size:10px;color:var(--text-accent);background:var(--bg-accent);padding:1px 5px;border-radius:3px;font-weight:600}
+.ss{display:flex;gap:10px;margin-bottom:2px}.sn{width:28px;height:28px;border-radius:50%;background:var(--bg-accent);color:var(--text-accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}.sb{flex:1;font-size:12px;color:var(--text-secondary);line-height:1.6;padding:4px 0}.sb b{color:var(--text-primary);font-weight:500}.sa{color:var(--text-muted);font-size:14px;text-align:center;margin:2px 0 2px 9px}
+.wr{font-size:12px;padding:8px 12px;border-radius:6px;background:var(--bg-warning);color:var(--text-warning);margin-top:8px}
+</style>
+
+<div class="dn"><b>Contract Builder — deep spec.</b> Template Engine (Jinja2 + WeasyPrint) без изменений. +4 шаблона: договор присоединения (ст. 7), SLA-соглашение (ст. 2.4), оферта маркетплейса (ст. 8), выход участника (ст. 13). +2 блока Jinja2 (split_clearing, participants), +2 закрывающих (clearing_act, multi_party_act).</div>
+
+<div id="tabs" style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px"></div>
+<div id="ct"></div>
+
+<script>
+var tabs=[
+  {id:"engine",l:"Template Engine"},
+  {id:"blocks",l:"Блоки договора (14)"},
+  {id:"tmpl",l:"Шаблон: Услуги"},
+  {id:"tmpl2",l:"Шаблон: Займ"},
+  {id:"tmpl3",l:"Шаблон: B2B подряд"},
+  {id:"tmpl4",l:"Шаблон: Присоединение"},
+  {id:"tmpl5",l:"Шаблон: SLA"},
+  {id:"tmpl6",l:"Шаблон: Оферта МП"},
+  {id:"tmpl7",l:"Шаблон: Выход"},
+  {id:"cond",l:"Condition Parser"},
+  {id:"pdf",l:"PDF Generator"},
+  {id:"ver",l:"Версионирование"},
+  {id:"edo",l:"ЭДО: 1С / Диадок"},
+  {id:"npd",l:"Чек самозанятого"},
+  {id:"ks",l:"КС-2 / КС-3"},
+  {id:"api",l:"REST API"}
+];
+var cur="engine";
+function R(){
+  var h="";for(var i=0;i<tabs.length;i++){var t=tabs[i];h+='<button class="at-btn'+(t.id===cur?' on':'')+'" data-t="'+t.id+'">'+t.l+'</button>';}
+  document.getElementById("tabs").innerHTML=h;
+  document.querySelectorAll(".at-btn").forEach(function(b){b.onclick=function(){cur=this.getAttribute("data-t");R()}});
+  document.getElementById("ct").innerHTML=D[cur]||'';
+}
+var D={};
+
+D.engine='<div class="bl"><h3>Template Engine — как собирается договор <span class="bk">расширен</span></h3><p>Договор не хранится как монолитный файл. Собирается из блоков в момент создания сделки. Каждый блок — отдельный Jinja2-шаблон с переменными. Комбинация зависит от типа сделки и режима.</p>'+
+'<div class="cb"><b>Архитектура Template Engine:</b>\ntemplates/\n├── base/\n│   ├── header.j2             // шапка: реквизиты, дата, номер\n│   ├── subject.j2             // предмет договора\n│   ├── price.j2               // стоимость, порядок оплаты, эскроу\n│   ├── escrow.j2              // условия эскроу (заморозка, раскрытие)\n│   ├── obligations.j2         // обязанности сторон\n│   ├── acceptance.j2          // порядок приёмки\n│   ├── dispute.j2             // споры, арбитраж НСВР\n│   ├── liability.j2           // ответственность сторон\n│   ├── force_majeure.j2       // форс-мажор\n│   ├── personal_data.j2       // согласие ФЗ-152\n│   ├── final.j2               // заключительные положения\n│   ├── signatures.j2          // блоки подписей ПЭП/КЭП\n│   <b>├── split_clearing.j2</b>       // НОВЫЙ: условия расщепления (ст. 6)\n│   <b>└── participants.j2</b>         // НОВЫЙ: реквизиты N участников\n├── modes/\n│   ├── simple.j2, milestone.j2, deposit.j2, loan.j2, gap.j2, framework.j2\n│   <b>└── split_clearing.j2</b>       // НОВЫЙ: блок режима SPLIT_CLEARING\n├── closing/\n│   ├── act.j2                 // Акт выполненных работ\n│   ├── invoice.j2             // Счёт на оплату\n│   ├── upd.j2                 // УПД (для ЭДО)\n│   ├── receipt.j2             // Чек самозанятого\n│   ├── ks2.j2, ks3.j2         // КС-2, КС-3\n│   ├── refund_act.j2          // Акт возврата\n│   ├── dispute_resolution.j2  // Решение по спору\n│   <b>├── clearing_act.j2</b>         // НОВЫЙ: акт расщепления\n│   <b>└── multi_party_act.j2</b>      // НОВЫЙ: многосторонний акт\n├── marketplace/                // НОВАЯ папка\n│   ├── joining.j2             // Договор присоединения (ст. 7)\n│   ├── sla.j2                 // SLA-соглашение (ст. 2.4)\n│   ├── offer.j2               // Оферта маркетплейса (ст. 8)\n│   └── exit.j2                // Уведомление о выходе (ст. 13)\n└── css/\n    └── business_contract.css  // Times New Roman 12pt, A4, margins 20mm</div>'+
+'<div class="cb"><b>Стек (без изменений):</b>\nRuntime:       Python 3.11\nTemplating:    Jinja2 3.x\nPDF:           WeasyPrint 59+\nFonts:         Times New Roman, Courier New (для кода)\nPage format:   A4 (210×297mm), margins 20mm\nWatermark:     «ЧЕРНОВИК» (DRAFT) / «ПОДПИСАНО» (SIGNED)\nStorage:       MinIO (S3-compatible) → CDN</div></div>';
+
+D.blocks='<div class="bl"><h3>Блоки договора: 12 → 14 <span class="bk">расширены</span></h3>'+
+'<table class="tb"><thead><tr><th>#</th><th>Блок</th><th>Файл</th><th>Статус</th><th>Ключевые переменные</th></tr></thead><tbody>'+
+'<tr><td>1</td><td>Шапка</td><td>header.j2</td><td><span class="bk">сохр.</span></td><td>contract_number, date, party_a.*, party_b.*</td></tr>'+
+'<tr><td>2</td><td>Предмет</td><td>subject.j2</td><td><span class="bk">сохр.</span></td><td>description, deal_type, mode</td></tr>'+
+'<tr><td>3</td><td>Стоимость</td><td>price.j2</td><td><span class="bk">сохр.</span></td><td>amount, amount_words, currency, commission_rate</td></tr>'+
+'<tr><td>4</td><td>Эскроу</td><td>escrow.j2</td><td><span class="bk">сохр.</span></td><td>bank_name, escrow_conditions, release_trigger</td></tr>'+
+'<tr><td>5</td><td>Обязанности</td><td>obligations.j2</td><td><span class="bk">сохр.</span></td><td>obligations_a[], obligations_b[]</td></tr>'+
+'<tr><td>6</td><td>Приёмка</td><td>acceptance.j2</td><td><span class="bk">сохр.</span></td><td>acceptance_period_days, auto_accept</td></tr>'+
+'<tr><td>7</td><td>Споры</td><td>dispute.j2</td><td><span class="bk">сохр.</span></td><td>mediation_first, arbitrage_sla_days</td></tr>'+
+'<tr><td>8</td><td>Ответственность</td><td>liability.j2</td><td><span class="bk">сохр.</span></td><td>penalty_rate, max_penalty_pct</td></tr>'+
+'<tr><td>9</td><td>Форс-мажор</td><td>force_majeure.j2</td><td><span class="bk">сохр.</span></td><td>notification_days</td></tr>'+
+'<tr><td>10</td><td>Перс. данные</td><td>personal_data.j2</td><td><span class="bk">сохр.</span></td><td>consent_scope, retention_years</td></tr>'+
+'<tr><td>11</td><td>Заключительные</td><td>final.j2</td><td><span class="bk">сохр.</span></td><td>governing_law, copies_count</td></tr>'+
+'<tr><td>12</td><td>Подписи</td><td>signatures.j2</td><td><span class="bk">сохр.</span></td><td>sign_type (PEP/KEP), sign_hash, timestamp</td></tr>'+
+'<tr class="rn"><td><b>13</b></td><td><b>Расщепление</b></td><td><b>split_clearing.j2</b></td><td><span class="bn">● нов.</span></td><td>split_rules[], participants[], organizer_fee</td></tr>'+
+'<tr class="rn"><td><b>14</b></td><td><b>Участники</b></td><td><b>participants.j2</b></td><td><span class="bn">● нов.</span></td><td>participants[].name/inn/role/tariff</td></tr>'+
+'</tbody></table>'+
+'<h4>Блок 13: split_clearing.j2 <span class="bn">● новый</span></h4>'+
+'<div class="cb">// Включается только для mode=SPLIT_CLEARING\n{% if mode == "SPLIT_CLEARING" %}\n<h3>ПОРЯДОК РАСЩЕПЛЕНИЯ ПЛАТЕЖА</h3>\n<p>По завершении обязательств оплата Покупателя распределяется\nсогласно следующим долям:</p>\n<table>\n{% for rule in split_rules %}\n  <tr>\n    <td>{{ rule.participant_name }} ({{ rule.role }})</td>\n    <td>{{ rule.calculation_method }}</td>\n    <td>{{ rule.amount|number_format }} руб.</td>\n  </tr>\n{% endfor %}\n  <tr><td><b>Комиссия Организатора</b></td>\n      <td>{{ organizer_fee_rate * 100 }}% от суммы</td>\n      <td>{{ organizer_fee|number_format }} руб.</td></tr>\n</table>\n{% endif %}</div>'+
+'<h4>Закрывающий: clearing_act.j2 <span class="bn">● новый</span></h4>'+
+'<div class="cb">// Генерируется Clearing Engine при clearing.completed\nАКТ РАСЩЕПЛЕНИЯ ПЛАТЕЖА\nк заказу № {{ deal.id }} от {{ deal.created_at|date }}\n\nСумма заказа: {{ deal.amount|number_format }} руб.\nКомиссия НСВР: {{ deal.commission|number_format }} руб.\nК расщеплению: {{ clearing.total|number_format }} руб.\n\n{% for instruction in clearing.instructions %}\n{{ instruction.participant_name }} ({{ instruction.role }}):\n  Расчёт: {{ instruction.calculation }}\n  Сумма:  {{ instruction.amount|number_format }} руб.\n  Банк TX: {{ instruction.bank_tx_id }}\n  Статус:  {{ instruction.status }}\n{% endfor %}\n\nДата расщепления: {{ clearing.completed_at|datetime }}</div></div>';
+
+D.tmpl='<div class="bl"><h3>Шаблон: Договор оказания услуг (C2C) <span class="bk">без изменений</span></h3><p>Самый частый тип. Ремонт, IT-фриланс, репетиторство, красота, быт.</p>'+
+'<div class="cb" style="font-family:serif;font-size:13px;line-height:1.8"><b>ДОГОВОР ОКАЗАНИЯ УСЛУГ № {{contract_number}}</b>\n\nг. Москва      «{{date.day}}» {{date.month}} {{date.year}} г.\n\n{{party_a.full_name}}, паспорт {{party_a.passport_masked}},\nИНН {{party_a.inn}}, именуемый(-ая) «<b>Заказчик</b>», с одной стороны,\nи\n{{party_b.full_name}}, паспорт {{party_b.passport_masked}},\nИНН {{party_b.inn}}, именуемый(-ая) «<b>Исполнитель</b>», с другой стороны,\nзаключили настоящий Договор:\n\n<b>1. ПРЕДМЕТ ДОГОВОРА</b>\n1.1. Исполнитель обязуется: {{description}}\n1.2. Результат: {{deliverables}}\n1.3. Срок исполнения: до {{due_date|date}}\n\n<b>2. СТОИМОСТЬ И ПОРЯДОК ОПЛАТЫ</b>\n2.1. Стоимость: {{amount|number_format}} ({{amount_words}}) рублей.\n2.2. Оплата через эскроу-сервис НСВР...\n...\n\n<b>Блоки: header + subject + price + escrow + obligations +\n       acceptance + dispute + liability + force_majeure +\n       personal_data + final + signatures</b></div></div>';
+
+D.tmpl2='<div class="bl"><h3>Шаблон: Договор займа (C2C) <span class="bk">без изменений</span></h3>'+
+'<div class="cb" style="font-family:serif;font-size:13px;line-height:1.8"><b>ДОГОВОР ЗАЙМА № {{contract_number}}</b>\n\n{{party_a.full_name}}, ИНН {{party_a.inn}}, «<b>Заимодавец</b>»,\nи\n{{party_b.full_name}}, ИНН {{party_b.inn}}, «<b>Заёмщик</b>»,\n\n<b>1. ПРЕДМЕТ</b>\n1.1. Заимодавец передаёт Заёмщику {{amount|number_format}}\n     ({{amount_words}}) рублей.\n1.2. Срок возврата: до {{due_date|date}}.\n1.3. Процентная ставка: {{interest_rate}}% годовых\n     (или «беспроцентный», если rate = 0).\n\n<b>2. ПОРЯДОК ПЕРЕДАЧИ</b>\n2.1. Сумма займа депонируется на эскроу-счёт НСВР.\n2.2. Раскрытие Заёмщику после подписания обеими сторонами.\n\n<b>3. ПОРЯДОК ВОЗВРАТА</b>\n3.1. Заёмщик возвращает через НСВР (кнопка «Вернуть»).\n3.2. Проценты: {{amount * interest_rate / 100 / 365 * loan_days}} руб.\n3.3. Просрочка: пеня {{penalty_rate}}% в день.\n\n<b>4. ОБЕСПЕЧЕНИЕ</b>\n{% if collateral %}\n4.1. Залог: {{collateral.description}}\n{% endif %}\n\nБлоки: header + subject(loan) + price(loan) + escrow(loan) +\n       loan_terms + dispute + liability + final + signatures</div></div>';
+
+D.tmpl3='<div class="bl"><h3>Шаблон: Договор подряда B2B (GAP-эскроу) <span class="bk">без изменений</span></h3>'+
+'<div class="cb" style="font-family:serif;font-size:13px;line-height:1.8"><b>ДОГОВОР ПОДРЯДА № {{contract_number}}</b>\n\n{{party_a.org.short_name}} (ИНН {{party_a.org.inn}}, КПП {{party_a.org.kpp}}),\nв лице {{party_a.org.director_title}} {{party_a.full_name}},\nименуемое «<b>Заказчик</b>»,\nи\n{{party_b.org.short_name}} (ИНН {{party_b.org.inn}}, КПП {{party_b.org.kpp}}),\nименуемое «<b>Подрядчик</b>»,\n\n<b>1. ПРЕДМЕТ</b>\n1.1. Подрядчик выполняет: {{description}}.\n1.2. Объект: {{object_address}}.\n1.3. Сроки: начало {{start_date}}, окончание {{end_date}}.\n\n<b>2. СТОИМОСТЬ (GAP-эскроу)</b>\n2.1. Цена: {{amount|number_format}} руб. ({{amount_words}}).\n2.2. GAP: гарантийный авансовый платёж {{gap_amount}} руб.\n2.3. GAP депонирован на эскроу. Раскрывается при предъявлении\n     акта КС-2 и справки КС-3.\n\n<b>3. ПОРЯДОК ПРИЁМКИ</b>\n3.1. Подрядчик уведомляет о готовности.\n3.2. Заказчик: 5 дней на проверку.\n3.3. Акт КС-2 → подписание КЭП → GAP раскрывается.\n\nБлоки: header(b2b) + subject(podryad) + price(gap) +\n       escrow(gap) + ks2_ks3 + dispute + liability +\n       force_majeure + final + signatures(kep)</div></div>';
+
+D.tmpl4='<div class="bl is-new"><h3>Шаблон: Договор присоединения <span class="bn">● новый · ст. 7</span></h3><p>Подписывается каждым участником (селлер, оператор) при регистрации в Системе. Определяет права и обязанности, ссылается на Правила системы.</p>'+
+'<div class="cb" style="font-family:serif;font-size:13px;line-height:1.8"><b>ДОГОВОР ПРИСОЕДИНЕНИЯ К СИСТЕМЕ «НСВР»\n№ {{contract_number}}</b>\n\nОрганизатор Системы: {{organizer.org.name}}\n(ИНН {{organizer.org.inn}}, ОГРН {{organizer.org.ogrn}})\n\nУчастник: {{participant.name}}\n(ИНН {{participant.inn}}, тип: {{participant.role_label}})\n\n<b>1. ПРЕДМЕТ</b>\n1.1. Участник присоединяется к Системе «НСВР» и принимает\n     Правила системы (ред. 2) в полном объёме.\n1.2. Роль участника: {{participant.role_label}}.\n\n<b>2. ОБЯЗАТЕЛЬСТВА УЧАСТНИКА</b>\n2.1. Соблюдать SLA (Приложение 1 — SLA-соглашение).\n2.2. Поддерживать API-интеграцию (webhook, HMAC-SHA256).\n2.3. Предоставлять отчётность Организатору.\n2.4. Соблюдать тарифную политику (ст. 3.2 Правил).\n\n<b>3. ОБЯЗАТЕЛЬСТВА ОРГАНИЗАТОРА</b>\n3.1. Обеспечить клиринг в рамках SLA (ст. 6).\n3.2. Предоставить доступ к Admin Panel / API.\n3.3. Уведомлять об изменении Правил за 30 дней.\n\n<b>4. ПОРЯДОК ВЫХОДА</b>\n4.1. Участник вправе выйти с уведомлением за {{exit_notice_days}} дней (ст. 13.5).\n4.2. Организатор вправе исключить при систематических нарушениях SLA (ст. 13.7).\n\n<b>5. ТАРИФЫ</b>\n{% for tariff in participant.tariffs %}\n5.{{loop.index}}. {{tariff.name}}: {{tariff.amount|number_format}} руб.\n{% endfor %}\n\nПриложение 1: SLA-соглашение\nПриложение 2: Правила системы (ред. 2)\n\nБлоки: header(marketplace) + joining_terms + obligations_participant +\n       obligations_organizer + exit_rules + tariffs +\n       dispute(organizer_l1) + personal_data + final + signatures(kep)</div></div>';
+
+D.tmpl5='<div class="bl is-new"><h3>Шаблон: SLA-соглашение <span class="bn">● новый · ст. 2.4</span></h3><p>Приложение к договору присоединения. Определяет измеримые метрики для каждой роли.</p>'+
+'<div class="cb" style="font-family:serif;font-size:13px;line-height:1.8"><b>SLA-СОГЛАШЕНИЕ (Приложение 1)\nк Договору присоединения № {{contract_number}}</b>\n\nУчастник: {{participant.name}} (роль: {{participant.role_label}})\n\n<b>1. МЕТРИКИ</b>\n{% for sla in participant.sla_commitments %}\n1.{{loop.index}}. {{sla.metric_label}}:\n   Целевое значение: {{sla.target_value}} {{sla.unit}}\n   Метод измерения: {{sla.measurement_method}}\n   Период: {{sla.period}}\n{% endfor %}\n\n<b>2. ПОСЛЕДСТВИЯ НАРУШЕНИЯ</b>\n2.1. Compliance < 95%: предупреждение.\n2.2. Compliance < 90%: приостановка новых заданий.\n2.3. 3 нарушения подряд: инициирование выхода (ст. 13.5).\n\n<b>3. ПЕРЕСМОТР</b>\n3.1. SLA пересматривается раз в квартал.\n3.2. Изменения: уведомление за 14 дней.\n\nБлоки: sla_header + sla_metrics_table +\n       sla_consequences + sla_review + signatures</div>'+
+'<h4>Пример: SLA для фулфилмента</h4>'+
+'<div class="cb">Метрики:\n1. Время сборки:     24ч (от получения задания до передачи курьеру)\n2. Точность сборки:  99% (корректная комплектация)\n3. API uptime:       99.5%\n4. Время ответа API: 500ms (p95)</div></div>';
+
+D.tmpl6='<div class="bl is-new"><h3>Шаблон: Оферта маркетплейса <span class="bn">● новый · ст. 8</span></h3><p>Публичная оферта для покупателей. Акцепт = оформление заказа.</p>'+
+'<div class="cb" style="font-family:serif;font-size:13px;line-height:1.8"><b>ПУБЛИЧНАЯ ОФЕРТА\nна оказание услуг маркетплейса «НСВР»</b>\n\nОрганизатор: {{organizer.org.name}}\n\n<b>1. ОБЩИЕ ПОЛОЖЕНИЯ</b>\n1.1. Настоящая оферта определяет условия приобретения\n     товаров/услуг через маркетплейс НСВР.\n1.2. Акцепт: оформление заказа = принятие оферты.\n\n<b>2. ПОРЯДОК ПОКУПКИ</b>\n2.1. Покупатель выбирает товар в каталоге (ст. 9.3 Правил).\n2.2. Оплата депонируется на эскроу-счёт.\n2.3. Фулфилмент собирает и передаёт логистике.\n2.4. После подтверждения получения — расщепление оплаты.\n\n<b>3. ГАРАНТИИ</b>\n3.1. Все средства до подтверждения — на эскроу (ст. 6.1).\n3.2. Споры разрешаются Организатором (ст. 12).\n3.3. Маршрутизация с приоритетом гр. 2 (ст. 11).\n\n<b>4. ВОЗВРАТ</b>\n4.1. До отправки: полный возврат.\n4.2. После получения: спор через Арбитраж.\n\nБлоки: offer_header + offer_terms + escrow_guarantee +\n       dispute(marketplace) + returns + personal_data + final</div></div>';
+
+D.tmpl7='<div class="bl is-new"><h3>Шаблон: Уведомление о выходе <span class="bn">● новый · ст. 13</span></h3><p>Формируется при инициировании выхода участника из Системы.</p>'+
+'<div class="cb" style="font-family:serif;font-size:13px;line-height:1.8"><b>УВЕДОМЛЕНИЕ О ВЫХОДЕ ИЗ СИСТЕМЫ «НСВР»\n№ {{notification_number}}</b>\n\nУчастник: {{participant.name}} (ИНН {{participant.inn}})\nРоль: {{participant.role_label}}\nДата присоединения: {{participant.joined_at|date}}\n\n<b>1. ОСНОВАНИЕ ВЫХОДА</b>\n{% if exit_type == "VOLUNTARY" %}\n1.1. Добровольный выход (ст. 13.5).\n     Участник уведомляет за {{notice_days}} дней.\n{% elif exit_type == "FORCED" %}\n1.1. Исключение Организатором (ст. 13.7).\n     Основание: {{forced_reason}}\n{% endif %}\n\n<b>2. ПОРЯДОК ЗАВЕРШЕНИЯ</b>\n2.1. Дата прекращения: {{exit_date|date}}.\n2.2. Текущие заказы: завершить до даты прекращения.\n2.3. Незавершённые заказы: переназначить другому оператору.\n2.4. API-доступ: отзывается в дату прекращения.\n2.5. Финальный клиринг: в течение 3 дней после exit_date.\n\n<b>3. ОБЯЗАТЕЛЬСТВА ПОСЛЕ ВЫХОДА</b>\n3.1. Хранение документов: 5 лет.\n3.2. Возврат конфиденциальной информации.\n\nБлоки: exit_header + exit_basis + exit_procedure +\n       post_exit_obligations + final + signatures(kep)</div></div>';
+
+D.cond='<div class="bl"><h3>Condition Parser — разбор условий <span class="bk">расширен</span></h3><p>Пользователь задаёт условия через форму. Condition Parser преобразует в DealConditions для Template Engine.</p>'+
+'<div class="cb"><b>DealConditions</b> (результат парсинга формы)\n{\n  deal_type: "SERVICE",\n  mode: "MILESTONE",\n  description: "Разработка мобильного приложения для iOS",\n  amount: 450000,\n  amount_words: "четыреста пятьдесят тысяч",\n  currency: "RUB",\n  milestones: [\n    {title: "Дизайн", amount: 150000, due_date: "2027-07-15"},\n    {title: "Разработка", amount: 200000, due_date: "2027-08-30"},\n    {title: "Тестирование", amount: 100000, due_date: "2027-09-15"}\n  ],\n  party_a: {full_name, inn, passport_masked, phone, email},\n  party_b: {full_name, inn, passport_masked, phone, email},\n  commission: {rate: 0.00175, payer: "BUYER", amount: 787},\n  acceptance_period_days: 14,\n  auto_accept: true,\n  <b>// НОВОЕ для SPLIT_CLEARING:</b>\n  <b>participants: [</b>\n    <b>{name, inn, role: "SELLER", tariffs: [...]},</b>\n    <b>{name, inn, role: "FULFILLMENT", tariffs: [...]},</b>\n    <b>{name, inn, role: "LOGISTICS", tariffs: [...]}</b>\n  <b>],</b>\n  <b>split_rules: [</b>\n    <b>{role: "FULFILLMENT", calc: "per_unit", rate: 200, qty: 4},</b>\n    <b>{role: "LOGISTICS", calc: "zone", zone: 2, amount: 675},</b>\n    <b>{role: "ORGANIZER", calc: "percent", rate: 0.002}</b>\n  <b>]</b>\n}</div></div>';
+
+D.pdf='<div class="bl"><h3>PDF Generator <span class="bk">без изменений</span></h3><p>Jinja2 → HTML → WeasyPrint → PDF. Строгий деловой стиль.</p>'+
+'<div class="cb"><b>Pipeline:</b>\n1. Template Engine: Jinja2 render(template, conditions) → HTML string\n2. CSS: business_contract.css (Times New Roman 12pt, margins 20mm, A4)\n3. WeasyPrint: HTML → PDF (нумерация страниц, заголовки разделов)\n4. Post-processing:\n   - Водяной знак «ЧЕРНОВИК» (DRAFT) или «ПОДПИСАНО» (SIGNED)\n   - SHA-256 hash PDF → сохраняется для верификации\n5. Storage: MinIO → CDN URL\n\n<b>Размер типового PDF:</b>\n• Простой C2C (4 страницы): 80–120KB\n• B2B подряд (8 страниц): 150–250KB\n• С приложениями (KS-2/KS-3): 300–500KB\n• <b>Маркетплейс (split_clearing, 5–6 стр.): 120–180KB</b>\n\n<b>Генерация:</b> < 2 сек (WeasyPrint, single-threaded)\nQueue: RabbitMQ (для burst-нагрузки при массовых сделках)</div></div>';
+
+D.ver='<div class="bl"><h3>Версионирование документов <span class="bk">без изменений</span></h3>'+
+'<table class="tb"><thead><tr><th>Версия</th><th>Статус</th><th>Когда</th><th>Отличие</th></tr></thead><tbody>'+
+'<tr><td>v1</td><td>DRAFT</td><td>submit (DRAFT → PENDING_SIGN)</td><td>Первая генерация PDF. Водяной знак «ЧЕРНОВИК»</td></tr>'+
+'<tr><td>v2</td><td>PARTIALLY_SIGNED</td><td>Первая сторона подписала</td><td>+ блок подписи стороны A. Водяной знак убран</td></tr>'+
+'<tr><td>v3</td><td>SIGNED</td><td>Вторая сторона подписала</td><td>+ блок подписи стороны B. Финальный PDF</td></tr>'+
+'<tr><td>v3.1</td><td>AMENDED</td><td>Изменение условий</td><td>diff: что изменено. Обе стороны переподписывают</td></tr>'+
+'<tr><td>v4</td><td>CLOSING</td><td>Завершение сделки</td><td>+ Акт / clearing_act / refund_act (в зависимости от исхода)</td></tr>'+
+'</tbody></table>'+
+'<div class="cb"><b>Хранение версий:</b>\nMinIO: /contracts/{contract_id}/v{n}.pdf\nКаждая версия — immutable. SHA-256 hash в БД.\nAudit: version.created → audit_log (actor, timestamp, diff)</div></div>';
+
+D.edo='<div class="bl"><h3>ЭДО: интеграция с 1С / Диадок <span class="bk">без изменений</span></h3><p>Для C2B и B2B: закрывающие (УПД, счёт-фактура) через оператора ЭДО. Иначе контрагент не примет к учёту в 1С.</p>'+
+'<div class="ss"><div class="sn">1</div><div class="sb"><b>Deal Engine → Contract Builder:</b> event deal_completed. Contract Builder генерирует УПД в XML (ФНС-схема, приказ №820)</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">2</div><div class="sb"><b>Contract Builder → Диадок API:</b> POST /GenerateDocumentReceiveConfirmationXml. Подписание КЭП серверной стороной (КриптоПро JCP)</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">3</div><div class="sb"><b>Диадок → Контрагент:</b> уведомление в ЛК Диадок. Контрагент подписывает встречно в своём ЭДО-клиенте</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">4</div><div class="sb"><b>Диадок → Contract Builder (webhook):</b> document.signed → статус = BOTH_SIGNED. Документ доступен в 1С обеих сторон</div></div>'+
+'<div class="wr"><b>Стоимость:</b> Диадок — от 6₽/документ (тариф «Старт»). При 1000 сделок/мес B2B = ~6000₽/мес. Альтернатива: СБИС, Контур.Диадок.</div></div>';
+
+D.npd='<div class="bl"><h3>Чек самозанятого (API «Мой налог») <span class="bk">без изменений</span></h3><p>Когда исполнитель = самозанятый (НПД), НСВР формирует чек через API ФНС «Мой налог» при завершении.</p>'+
+'<div class="ss"><div class="sn">1</div><div class="sb"><b>Deal Engine:</b> сделка → COMPLETED. Исполнитель = SELF_EMPLOYED</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">2</div><div class="sb"><b>Contract Builder → API «Мой налог»:</b><br>POST /income {inn, amount, client_name, service_name, date}</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">3</div><div class="sb"><b>ФНС:</b> регистрирует доход, генерирует чек (receipt_url, receipt_id)</div></div><div class="sa">↓</div>'+
+'<div class="ss"><div class="sn">4</div><div class="sb"><b>Contract Builder:</b> прикрепляет чек к deal как closing_document (type=SELF_EMPLOYED_RECEIPT). Заказчик-ЮЛ: чек для учёта расходов</div></div>'+
+'<div class="wr"><b>Ограничение:</b> самозанятый должен сам авторизовать приложение «Мой налог» для формирования чеков через API. НСВР предлагает это при первой C2B-сделке.</div></div>';
+
+D.ks='<div class="bl"><h3>КС-2 / КС-3 — строительный документооборот <span class="bk">без изменений</span></h3><p>Для строительных подрядов (C2B/B2B) закрывающие — унифицированные формы.</p>'+
+'<h4>КС-2: Акт о приёмке выполненных работ</h4>'+
+'<div class="cb"><b>Содержание КС-2:</b>\n• Заказчик, Подрядчик, объект, договор №, период\n• Таблица работ:\n  ┌────┬──────────────────┬─────┬───────┬──────────────┐\n  │ №  │ Наименование     │ Ед. │ Кол-во│ Стоимость    │\n  ├────┼──────────────────┼─────┼───────┼──────────────┤\n  │ 1  │ Демонтаж плитки  │ м²  │  12   │   18 000     │\n  │ 2  │ Укладка плитки   │ м²  │  12   │   36 000     │\n  │ 3  │ Установка ванны  │ шт  │   1   │   15 000     │\n  └────┴──────────────────┴─────┴───────┴──────────────┘\n  ИТОГО: 69 000 руб. (с НДС / без НДС)\n\nJinja2 template: ks2.j2 → HTML → WeasyPrint → PDF\nВходные данные: milestones[] с разбивкой по работам</div>'+
+'<h4>КС-3: Справка о стоимости</h4>'+
+'<div class="cb"><b>Содержание КС-3:</b>\n• Стоимость с начала строительства\n• Стоимость за отчётный период\n• Номер и дата акта КС-2\n• Подписи: Заказчик (КЭП), Подрядчик (КЭП)\n\nFlow: КС-2 подписана → Contract Builder генерирует КС-3 →\n      обе стороны подписывают КЭП → GAP раскрывается</div></div>';
+
+D.api='<div class="bl"><h3>REST API Contract Builder <span class="bk">расширен</span></h3>'+
+'<div class="cb"><b>// Генерация документов</b>\nPOST /contracts/generate\n  Body: {deal_id, template_id, conditions: DealConditions}\n  Response: {contract_id, pdf_url, pdf_hash, version: 1}\n\nGET  /contracts/{id}\n  Response: {contract_id, deal_id, status, versions: [...]}\n\nGET  /contracts/{id}/pdf?version=3\n  Response: PDF file (binary)\n\nPOST /contracts/{id}/amend\n  Body: {changes: {amount: 500000, due_date: "2027-10-01"}}\n  Response: {version: 3.1, pdf_url, requires_re_sign: true}\n\n<b>// Подпись</b>\nPOST /contracts/{id}/sign\n  Body: {user_id, sign_type: "PEP", otp_code: "123456"}\n  Response: {version: 2, signed_by: "party_a", pdf_url}\n\n<b>// Закрывающие</b>\nPOST /contracts/{id}/closing\n  Body: {type: "ACT"|"INVOICE"|"UPD"|"RECEIPT"|"KS2"|"KS3"|"REFUND"|\n         <b>"CLEARING_ACT"|"MULTI_PARTY_ACT"</b>}\n  Response: {document_id, pdf_url}\n\n<b>// ЭДО</b>\nPOST /contracts/{id}/send-edo\n  Body: {document_id, operator: "DIADOC"}\n  Response: {edo_id, status: "SENT"}\n\n<b>// Маркетплейс (НОВОЕ)</b>\nPOST /contracts/marketplace/joining\n  Body: {participant_id, tariffs[], sla_commitments[]}\n  Response: {contract_id, pdf_url}\n\nPOST /contracts/marketplace/exit\n  Body: {participant_id, exit_type, reason?}\n  Response: {notification_id, pdf_url}\n\n<b>// Шаблоны</b>\nGET  /contracts/templates\n  Response: [{id, name, deal_type, mode, blocks[]}]\n\nGET  /contracts/templates/{id}/preview\n  Body: {conditions: DealConditions (partial)}\n  Response: {html_preview}</div></div>';
+
+R();
+</script>

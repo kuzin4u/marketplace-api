@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Реестр нерешённых вопросов · черта подведена</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1240px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--wr);margin-bottom:14px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--wr);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.ctl{position:sticky;top:0;z-index:20;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--bd);margin-bottom:12px}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.row input{flex:1;min-width:170px;padding:6px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12.5px;font-family:inherit;background:var(--card)}
+.fb{padding:4px 11px;font-size:11px;border:1px solid var(--bd);background:var(--card);border-radius:20px;cursor:pointer;color:var(--t2);font-family:inherit}
+.fb:hover{border-color:var(--wr);color:var(--t1)}.fb.on{background:var(--wr);border-color:var(--wr);color:#fff;font-weight:600}
+.fb:focus-visible{outline:2px solid var(--wr);outline-offset:2px}
+.stat{font-size:11px;color:var(--t3);margin-left:auto;font-family:ui-monospace,monospace}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;margin-top:8px}
+.tab{padding:5px 11px;font-size:11px;color:var(--t3);cursor:pointer;border:none;background:none;font-family:inherit;border-radius:5px}
+.tab:hover{color:var(--t1);background:var(--card)}.tab.on{background:var(--wr2);color:var(--wr);font-weight:600}
+.sec{display:none}.sec.on{display:block}
+.st{font-size:15px;font-weight:600;margin:15px 0 9px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}.c ul{padding-left:16px;margin:4px 0}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.co-p{background:var(--pr2);border-left:3px solid var(--pr);color:#2e2670}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:10.5px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.q{border:1px solid var(--bd);border-left:4px solid var(--wr);border-radius:6px;background:var(--card);padding:11px 15px;margin-bottom:8px}
+.q h4{font-size:12.5px;font-weight:600;margin-bottom:3px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.q .k{font-family:ui-monospace,monospace;font-size:10px;color:#fff;background:var(--t2);padding:1px 6px;border-radius:3px}
+.q p{font-size:12.5px;color:var(--t2);margin-bottom:3px}
+.q .when{font-size:11.5px;color:var(--t3);margin-top:4px}
+.q .when b{color:var(--wr)}
+.q.dogovor{border-left-color:var(--co)}.q.pilot{border-left-color:var(--ac)}
+.q.term{border-left-color:var(--t3)}.q.launch{border-left-color:var(--rd)}
+.b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:3px;white-space:nowrap}
+.b-d{background:var(--co2);color:var(--co)}.b-p{background:var(--ac2);color:var(--ac)}
+.b-t{background:#eeede8;color:var(--t3)}.b-l{background:var(--rd2);color:var(--rd)}
+.b-a{background:#EEEDFE;color:#3C3489}
+.b-done{background:var(--gn2);color:var(--gn)}
+.hit{background:#fff8e6!important}
+a{color:#2a6cb6}
+@media print{.ctl{position:static}.sec{display:block!important}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Реестр нерешённых вопросов · черта подведена</h1>
+  <p>Двадцать семь расхождений оставалось в четырёх слоях. Десять из них уже закрыты принятыми решениями и требуют только проведения по документам — это работа, а не вопрос. Восемнадцать остаются открытыми, и ни один из них не блокирует разработку сегодня. Восемнадцатый добавлен 30 августа: он архитектурный, затрагивает Правила, схему и клиринг одновременно, и станет блокирующим при первом реальном операторе логистики.</p>
+  <div class="meta">23 августа 2026, дополнено 30 августа · Закрыто решениями: 10 · Открыто: 18 · Критических: 0 · Обязательства перед выпуском: 3</div>
+<div style="max-width:1240px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Источники: наборы параметров <a href="25-servis-parametry.html" style="font-weight:600;">S</a>, <a href="27-operacii-parametry.html" style="font-weight:600;">O</a>, <a href="31-sellery-parametry.html" style="font-weight:600;">C</a>, <a href="34-ui-vitrina-parametry.html" style="font-weight:600;">U</a>, <a href="37-sistemnyi-sloy-parametry.html" style="font-weight:600;">Y</a>. Решения: <a href="39-protokol-i-pravki-v-pravila.html" style="font-weight:600;">протокол</a>, <a href="42-reestr-uchastiya-raschet-cherez-sistemu.html" style="font-weight:600;">расчёт через Систему</a>, <a href="44-shkala-urovnei-reshenie.html" style="font-weight:600;">шкала уровней</a>, <a href="43-personalnye-dannye-statya-i-kontur.html" style="font-weight:600;">персональные данные</a>, <a href="23-reviziya-13-dokumentov.html" style="font-weight:600;">ревизия тринадцати</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="co co-p" style="margin-bottom:10px"><b>Интерфейсы между слоями.</b>Что каждый слой передаёт соседям, кто владелец сущности и где связь объявлена, но не подключена — <a href="46-interfeisy-mezhdu-sloyami.html">карта интерфейсов</a>. Четыре разрыва и семь общих контрактов.</div>
+<div class="co co-w" style="margin-bottom:10px"><b>Реестр планов реализации.</b>Все планы пула сведены: четыре спринта, одиннадцать модулей, составляющие системы и семь мест, требующих правки после принятых решений — <a href="47-reestr-planov-realizacii.html">реестр планов</a>.</div>
+<div class="co co-g" style="margin-bottom:10px"><b>План скорректирован.</b>Пять спринтов, 38 задач, 13 недель, с приёмкой по каждой задаче — <a href="50-plan-realizacii-red3.html">план реализации, редакция 3</a>. Критический путь сместился с банка на перевод реестров в данные.</div>
+<div class="ctl">
+  <div class="row">
+    <input id="q" type="search" placeholder="Поиск по вопросу…" autocomplete="off">
+    <button class="fb on" data-f="all">Все 18</button>
+    <button class="fb" data-f="dogovor">Ждут договоров · 6</button>
+    <button class="fb" data-f="pilot">Ждут пилота · 3</button>
+    <button class="fb" data-f="term">Терминологические · 5</button>
+    <button class="fb" data-f="launch">Перед выпуском · 3</button>
+    <button class="fb" data-f="arch">Архитектурные · 1</button>
+    <span class="stat" id="stat"></span>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-t="s1">Открытые вопросы</button>
+    <button class="tab" data-t="s2">Закрыто решениями</button>
+    <button class="tab" data-t="s3">Черта</button>
+  </div>
+</div>
+
+<!-- 1 -->
+<div class="sec on" id="s1">
+<div class="st">Восемнадцать открытых вопросов</div>
+<div id="list"></div>
+</div>
+
+<!-- 2 -->
+<div class="sec" id="s2">
+<div class="st">Десять расхождений, закрытых решениями</div>
+<div class="co co-g"><b>Это не вопросы, а незавершённая проводка.</b>Решение принято, но в наборах параметров строки ещё помечены конфликтом. Каждая закрывается правкой значения и статуса — без обсуждения.</div>
+
+<table class="tb">
+<thead><tr><th style="width:8%">Код</th><th style="width:24%">Что было спорным</th><th style="width:30%">Каким решением закрыто</th><th>Что проставить</th></tr></thead>
+<tbody>
+<tr><td>S-26</td><td>Удержание 12,5 % как структура фонда и сбора</td><td>Протокол: тариф расчётов 0,5 %, удержание 12,5 %, состав — вариант А</td><td>0,5 % расчёты и 12,0 % фонд</td></tr>
+<tr><td>S-27</td><td>Четыре версии сбора Организатора</td><td>То же</td><td>0,5 %; прочие исторические</td></tr>
+<tr><td>C-52</td><td>Удержание как совокупная величина против раздельной</td><td>То же</td><td>12,5 % совокупно, из них 0,5 % расчёты</td></tr>
+<tr><td>U-43</td><td>Ставка 5 % в конфигураторе</td><td>То же</td><td>Заменить действующей ставкой</td></tr>
+<tr><td>U-44</td><td>Формула ранга конфигуратора</td><td>Решение по шкале: возрастающая, 2–7</td><td>Глубина участия по принятой формуле</td></tr>
+<tr><td>O-32</td><td>Расщепление примера: 817,16 против 417,16</td><td>Ревизия тринадцати документов</td><td>817,16 ₽ продавцу</td></tr>
+<tr><td>O-33</td><td>Итог расщепления: 1 770 против 1 370</td><td>То же</td><td>1 770,00 ₽</td></tr>
+<tr><td>O-17</td><td>Множители ранжирования: шесть против трёх</td><td>Протокол Y-3: две формы одной формулы</td><td>Пять общих плюс релевантность в поиске</td></tr>
+<tr><td>S-01</td><td>Форма сервиса: пять полей или шесть</td><td>Плательщик введён паспортом и подтверждён спецификацией расчёта</td><td>Шесть полей</td></tr>
+<tr><td>S-31</td><td>Страхование: услуга или комиссия</td><td>Получатель внешний — значит услуга</td><td>Предмет «услуга», роль страховщика</td></tr>
+</tbody>
+</table>
+
+<div class="co co-a"><b>Почему это накопилось.</b>Решения принимались в разговоре и фиксировались в документах решений, но обратная проводка в наборы параметров делалась выборочно — по системному слою полностью, по остальным нет. Это ровно та работа, которую вы назвали корректировками по результатам принятых решений.</div>
+</div>
+
+<!-- 3 -->
+<div class="sec" id="s3">
+<div class="st">Черта</div>
+
+<div class="co co-g"><b>Критических вопросов не осталось.</b>Четыре решения, которые я называл блокирующими разработку, приняты: шкала уровней, единица цены, модель подключения, мультиселлерная корзина. Пятое — срок привязки покупателя — закрыто статьёй 22, которая на него ссылается. Ничто из оставшегося не мешает начать работу.</div>
+
+<div class="c">
+<h3>Что стоит между чертой и запуском</h3>
+<table class="tb">
+<thead><tr><th style="width:26%">Что</th><th style="width:18%">Тип</th><th>Почему не критично сейчас</th></tr></thead>
+<tbody>
+<tr><td>Секрет подписи, авторизация записи, идентификатор из токена</td><td><b>обязательство</b></td><td>Не мешают разработке и пилоту на своём магазине. Обязательны до выпуска чужих продавцов</td></tr>
+<tr><td>Тарифы шести услуг исполнения</td><td><b>внешнее</b></td><td>Заменяются фактическими значениями при первом договоре с оператором. До этого любой набор — гипотеза</td></tr>
+<tr><td>Гипотезы рынка: миграция базы, средний чек, доля отказов</td><td><b>измерение</b></td><td>Проверяются наблюдением на пилоте, обсуждением не решаются</td></tr>
+<tr><td>Терминологические разведения</td><td><b>редакционное</b></td><td>Влияют на понимание документов, не на код и не на данные</td></tr>
+<tr><td>Налоговый режим, роль оператора данных</td><td><b>юридическое</b></td><td>Требуют внешней проработки; для пилота с одним магазином объём подъёмный</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="co co-w"><b>Одно предупреждение по разделу «ждут договоров».</b>Шесть тарифных вопросов выглядят однородно, но один из них — тариф сборки — уже показал, что цена ошибки высокая: на нём я дважды сделал неверный вывод, отвергнув канонический источник. Пока договора нет, любые расчёты экономики исполнения следует помечать как гипотезу прямо в документе, а не в примечании.</div>
+
+<div class="co co-p"><b>Что предлагаю следующим шагом.</b>Провести десять закрытых решений по наборам параметров — это правка значений и статусов, без обсуждения. После неё в четырёх слоях останется семнадцать помеченных строк, и все они будут честно отражать состояние: ждём договор, ждём пилот, требует редактуры, обязательство перед выпуском.</div>
+</div>
+
+</div>
+<script>
+(function(){
+  var Q=[
+   {k:'O-40',t:'arch',n:'Исполнение по конфигурации невозможно или несоразмерно дорого',d:'Состав сервисов задан на магазин, но для отдельного заказа звено может быть неисполнимо: курьер не обслуживает район, либо стоимость доставки туда кратно выше тарифа зоны. Сузить состав при создании сделки запрещено статьёй 9.13, и заказ либо не создаётся, либо создаётся с невыполнимым обязательством. Правило написано против удешевления задним числом и ослаблять его нельзя — значит решение лежит не в отмене запрета. Три подхода. ПЕРВЫЙ, отказ со стороны оператора: сузить состав может не тот, кто платит, а тот, кто оказывает услугу. Оператор объявляет зону обслуживания; адрес вне зоны — звено выпадает как факт, а не как решение продавца, и 9.13 не нарушается. ВТОРОЙ, зона как часть снимка: уровень сделки перестаёт быть одним числом на заказ и вычисляется с учётом адреса, снимок фиксирует и адресную зону — состав определяется сочетанием настройки и обстоятельств доставки, а не чьим-либо решением. ТРЕТИЙ, замещение вместо выпадения: звено не исчезает, а исполняется другим участником — самим продавцом или сторонним. Уровень сохраняется, меняется исполнитель, в расщеплении появляется строка на того, кто вёз фактически; по статье 6.11 это корректно, платится за использованное. Третий ближе всего к жизни: продавец не отказывается от доставки, он везёт сам в этот раз. Чего не хватает при любом подходе: зон обслуживания у операторов — у товара есть shipping_zones, у участников такого поля нет, и сопоставить требуемую зону с возможностями оператора нечем; и признака «звено не выполнено оператором» в подзаказе — он отличает запрещённое сужение состава продавцом от законной невозможности со стороны оператора.',w:'До первого договора с реальным оператором логистики и первого заказа за пределы зоны 1'},
+   {k:'S-16',t:'dogovor',n:'Тариф сборки заказа',d:'Двадцать–пятьдесят рублей за заказ по аналитическому разбору против двухсот за единицу по реестру тарифов участников. Разные базы начисления, а не разные оценки одной величины.',w:'При первом договоре с оператором исполнения'},
+   {k:'S-18',t:'dogovor',n:'Приёмка и фасовка',d:'Восемь–двадцать пять рублей за операцию против ста за паллету. Штучная обработка против паллетной — вероятно, две разные услуги в одной строке.',w:'При первом договоре со складом'},
+   {k:'S-20',t:'dogovor',n:'Доставка последней мили',d:'Три версии: оценка разбора, тарифы трёх операторов модели, зоны реестра. Скорее всего зоны — рамка, а операторские тарифы — наполнение внутри зоны.',w:'При договоре с курьерской службой'},
+   {k:'S-22',t:'dogovor',n:'Обработка возврата',d:'Десять–тридцать рублей за заказ против трёхсот за возврат. Десятикратная разница указывает на разные услуги: обработка на складе и полный цикл обратной логистики.',w:'При договоре с оператором исполнения'},
+   {k:'S-24',t:'dogovor',n:'Магистраль',d:'Тридцать–сорок рублей за заказ против полутора–двух тысяч за паллету. При сорока–семидесяти заказах на паллете величины сходятся — нужно правило пересчёта, а не выбор.',w:'При договоре с перевозчиком'},
+   {k:'S-10',t:'dogovor',n:'Состав реестра сервисов',d:'Тринадцать сервисов в базовом реестре против двадцати восьми в полном разборе. Первый задаёт форму, второй — состав по фазам пути. Свести в одну таблицу с пометкой происхождения строк.',w:'При переводе реестра сервисов в данные'},
+
+   {k:'C-06',t:'pilot',n:'Доля миграции клиентской базы',d:'Двадцать–сорок процентов за три месяца с ростом до шестидесяти–семидесяти против формулы с иным сроком достижения потолка. Обе записи — гипотезы.',w:'Первым продавцом первой группы'},
+   {k:'C-07',t:'pilot',n:'Средний чек покупателя',d:'Тысяча сто рублей в механике роста против рыночного ориентира в тысячу триста восемьдесят пять. Вероятно, чек — параметр категории, а не Системы: для хлеба и электроники он различается кратно.',w:'Первыми сотней заказов пилота'},
+   {k:'Y-53',t:'pilot',n:'Доли внутри удержания',d:'Общая величина 12,5 % закреплена, принцип — Организатору только тариф расчётов — тоже. Разбивка остатка между фондом и статьями расходов остаётся гипотезой.',w:'Фактическими данными о структуре расходов'},
+
+   {k:'U-02',t:'term',n:'Число каналов магазина',d:'Пять каналов витрины, три в конфигураторе, пять каналов продажи в управлении видимостью. Предложено развести каналы доставки контента и каналы продажи — решение не принято.',w:'При редактуре описаний слоя UI'},
+   {k:'U-42',t:'term',n:'Каналы в конфигураторе',d:'Три канала конфигуратора против пяти каналов витрины. Тот же вопрос с другой стороны.',w:'Вместе с предыдущим'},
+   {k:'O-12',t:'term',n:'Число состояний сделки',d:'Пятнадцать состояний в расчётном ядре против упрощённой семишаговой цепочки в описаниях. Предложено считать пятнадцать нормой, а семь — видимой частью для интерфейса.',w:'При редактуре операционного слоя'},
+   {k:'O-02',t:'term',n:'Один сервис или два',d:'Работающий код и первая редакция полного цикла: агент внутри торгового сервиса. Вторая редакция: два сервиса с раздельными ключами. Требуется решить, целевое это состояние или отменённое.',w:'При выделении агента в сервис'},
+   {k:'O-04',t:'term',n:'Источники сделки',d:'Два источника в первой редакции против трёх с агентным следом во второй. Зависит от предыдущего вопроса.',w:'Вместе с предыдущим'},
+
+   {k:'U-26',t:'launch',n:'Идентификатор продавца в маршруте',d:'Справочник фиксирует факт: идентификатор в пути запроса. Врезка авторизации требует брать его из токена. По существу верна врезка — вопрос в сроке перевода форм и справочника.',w:'До выпуска чужих продавцов'},
+   {k:'U-37',t:'launch',n:'Секрет подписи токенов',d:'Без заданного секрета в окружении модуль работает на ключе по умолчанию из открытого кода. Предложено запретить запуск без секрета — отказ при старте вместо тихой работы.',w:'До выпуска чужих продавцов'},
+   {k:'U-51',t:'launch',n:'Авторизация маршрутов записи',d:'Маршруты записи конфигуратора не требуют токена — конфигурацию может переключить кто угодно. Живая панель токен шлёт, сервер его не проверяет.',w:'До открытия записи наружу'}
+  ];
+  var TY={dogovor:['b-d','ждёт договора'],pilot:['b-p','ждёт пилота'],term:['b-t','терминологический'],launch:['b-l','перед выпуском'],arch:['b-a','архитектурный']};
+  var box=document.getElementById('list'), q=document.getElementById('q'), st=document.getElementById('stat'), flt='all';
+  function draw(){
+    var s=(q.value||'').trim().toLowerCase(), n=0, h='';
+    Q.forEach(function(x){
+      var okF=(flt==='all'||x.t===flt);
+      var okQ=!s||(x.n+' '+x.d+' '+x.k).toLowerCase().indexOf(s)>-1;
+      if(!(okF&&okQ)) return; n++;
+      h+='<div class="q '+x.t+(s&&okQ?' hit':'')+'"><h4><span class="k">'+x.k+'</span>'+x.n+
+         ' <span class="b '+TY[x.t][0]+'">'+TY[x.t][1]+'</span></h4><p>'+x.d+
+         '</p><div class="when">Решается: <b>'+x.w+'</b></div></div>';
+    });
+    box.innerHTML=h; st.textContent=n+' из '+Q.length;
+  }
+  q.addEventListener('input',draw);
+  document.querySelectorAll('.ctl .fb').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('.ctl .fb').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on'); flt=b.dataset.f; draw();})});
+  document.querySelectorAll('#tabs .tab').forEach(function(t){t.addEventListener('click',function(){
+    document.querySelectorAll('#tabs .tab').forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s2){s2.classList.toggle('on',s2.id===t.dataset.t)});
+    window.scrollTo({top:0,behavior:'smooth'});})});
+  draw();
+})();
+</script>
+</body>
+</html>

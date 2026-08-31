@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Шкала уровней участия · принятое решение</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--gn);margin-bottom:16px}
+.hdr h1{font-size:19px;font-weight:700;color:var(--gn);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:16px;overflow-x:auto}
+.tab{padding:7px 13px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;white-space:nowrap;background:none;font-family:inherit}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--gn);border-bottom-color:var(--gn)}
+.tab:focus-visible{outline:2px solid var(--gn);outline-offset:-2px}
+.sec{display:none}.sec.on{display:block}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}.c ul{padding-left:16px;margin:4px 0}
+.co{padding:11px 15px;border-radius:6px;margin:10px 0;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.co-p{background:var(--pr2);border-left:3px solid var(--pr);color:#2e2670}
+.st{font-size:15px;font-weight:600;margin:16px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:10.5px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.tb .num{text-align:right;font-family:ui-monospace,monospace;font-weight:700;color:var(--gn)}
+.mono{font-family:ui-monospace,monospace;font-size:11px}
+.code{background:#1c1c1a;color:#d8e8dd;padding:12px 15px;border-radius:6px;margin:8px 0;font-family:ui-monospace,monospace;font-size:11.5px;line-height:1.7;overflow-x:auto;white-space:pre}
+.code .c1{color:#8a877d}
+.code .g{color:#8fe3c6}.code .r{color:#f3aeae}
+.b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:3px;white-space:nowrap}
+.b-ok{background:var(--gn2);color:var(--gn)}.b-no{background:var(--rd2);color:var(--rd)}
+.b-new{background:var(--ac2);color:var(--ac)}
+.art{background:#fbfaf7;border:1px solid var(--bd);border-radius:6px;padding:13px 17px;margin-bottom:9px}
+.art h4{font-size:12.5px;font-weight:700;color:var(--pr);margin-bottom:6px;font-family:ui-monospace,monospace}
+.art .txt{font-size:12.5px;color:var(--t1);line-height:1.7}
+.art .txt p{margin-bottom:6px}
+.art .note{font-size:11.5px;color:var(--t3);margin-top:7px;font-style:italic}
+.step{display:flex;gap:12px;margin:10px 0;align-items:flex-start}
+.step .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--gn);color:#fff;text-align:center;line-height:24px;font-weight:600;font-size:12px}
+.step .b2{flex:1;font-size:12.5px;color:var(--t2)}
+.step .b2 b{color:var(--t1)}
+a{color:#2a6cb6}
+@media print{.tabs{display:none}.sec{display:block!important;page-break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Шкала уровней участия · принятое решение</h1>
+  <p>Принята возрастающая шкала: чем глубже участие, тем больше число. Ниже — определение, разграничение конфигурации и сделки, что меняется в данных и коде, порядок перевода накопленных записей и нормативная формулировка.</p>
+  <div class="meta">23 августа 2026 · Диапазон 2–7 · Прежние шкалы — линейка с убыванием и ранг конфигуратора от нуля — отменены</div>
+<div style="max-width:1180px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Применено в: <a href="42-reestr-uchastiya-raschet-cherez-sistemu.html" style="font-weight:600;">реестре участия</a>, <a href="40-reestr-variantov-uchastiya.html" style="font-weight:600;">реестре вариантов</a>, <a href="41-matrica-sochetanii-uchastiya.html" style="font-weight:600;">матрице сочетаний</a>. Затрагивает: <a href="service-tiers.html" style="font-weight:600;">линейку уровней</a>, <a href="sku-visibility-seller.html" style="font-weight:600;">управление видимостью</a>, <a href="alpha-channels-dashboard.html" style="font-weight:600;">конфигуратор каналов</a>, <a href="32-sellery-edinyi.html" style="font-weight:600;">слой селлеров</a>, <a href="38-ptk-integrirovannaya-model.html" style="font-weight:600;">модель ПТК</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab">Определение</button>
+  <button class="tab" data-t="s2" role="tab">Данные и код</button>
+  <button class="tab" data-t="s3" role="tab">Перевод записей</button>
+  <button class="tab" data-t="s4" role="tab">Норма</button>
+  <button class="tab" data-t="s5" role="tab">Приёмка</button>
+</div>
+
+<!-- 1 -->
+<div class="sec on" id="s1">
+<div class="st">Определение шкалы</div>
+<div class="co co-g"><b>Правило одно: чем глубже участие, тем больше число.</b>Шкала возрастающая, диапазон от двух до семи. Прежние две — линейка, где первый уровень означал полное участие, и ранг конфигуратора от нуля до пяти — отменяются.</div>
+
+<table class="tb">
+<thead><tr><th style="width:44%">Что взято у Системы</th><th class="num" style="width:16%">Прибавка</th><th>Пояснение</th></tr></thead>
+<tbody>
+<tr><td>Расчёт через Систему</td><td class="num">+2</td><td>После принятого решения — всегда; нижняя граница шкалы поэтому два, а не ноль</td></tr>
+<tr><td>Исполнение полностью Системы</td><td class="num">+2</td><td>Все звенья отданы операторам</td></tr>
+<tr><td>Исполнение частичное</td><td class="num">+1</td><td>Взята часть звеньев, каким бы ни был их набор</td></tr>
+<tr><td>Витрина в Системе</td><td class="num">+1</td><td>Витрина своя прибавки не даёт</td></tr>
+<tr><td>Каталог Системы</td><td class="num">+1</td><td>Товар виден в общем каталоге</td></tr>
+<tr><td>Агент</td><td class="num">+1</td><td>Требует включённого каталога</td></tr>
+</tbody>
+</table>
+
+<div class="co co-a" style="margin-top:10px"><b>Почему расчёт весит вдвое больше отдельного звена.</b>Он единственный, что нельзя взять частично, и единственный, что даёт покупателю гарантию. Если бы он весил единицу, продавец мог бы «повысить» глубину включением каталога и одновременно спрыгнуть с расчёта — проверка этого не заметила бы. После решения о едином расчёте опасность исчезла, но вес сохранён: он делает шкалу устойчивой к возврату оси.</div>
+
+<div class="st" style="margin-top:16px">Соответствие именованных вариантов</div>
+<table class="tb">
+<thead><tr><th style="width:26%">Вариант</th><th class="num" style="width:14%">Глубина</th><th style="width:26%">Прежняя линейка</th><th>Состав</th></tr></thead>
+<tbody>
+<tr><td>Базовое участие</td><td class="num">3–5</td><td>уровень 3 или 4</td><td>Витрина и расчёт Системы, исполнение своё; каталог и агент по желанию</td></tr>
+<tr><td>Внешний магазин</td><td class="num">2–6</td><td>уровень 2</td><td>Витрина своя, расчёт Системы, исполнение и каналы по выбору</td></tr>
+<tr><td>Полное участие</td><td class="num">5–7</td><td>уровень 1</td><td>Витрина, расчёт и исполнение Системы</td></tr>
+<tr><td>Белая марка</td><td class="num">5–7</td><td>уровень 5</td><td>То же плюс фасад; глубина совпадает с полным участием</td></tr>
+</tbody>
+</table>
+<div class="co co-w"><b>Диапазоны, а не точки.</b>Именованный вариант задаёт часть осей, остальные остаются свободными — отсюда разброс. Белая марка и полное участие совпадают по глубине намеренно: они берут одно и то же, различаясь лишь видимостью бренда. Делать марку отдельной ступенью означало бы запретить переход между ними.</div>
+
+<div class="st" style="margin-top:16px">Два состояния — конфигурация и сделка</div>
+<table class="tb">
+<thead><tr><th style="width:22%">Признак</th><th style="width:38%">Сконфигурированный уровень</th><th>Уровень сделки</th></tr></thead>
+<tbody>
+<tr><td>Кто меняет</td><td>Только конфигуратор, действием продавца</td><td>Определяется при оформлении заказа</td></tr>
+<tr><td>Понижение</td><td><b>Разрешено</b>, действует на будущие заказы</td><td><b>Запрещено</b> ниже сконфигурированного</td></tr>
+<tr><td>Повышение</td><td>Разрешено, постоянное</td><td>Разрешено, разовое, конфигурацию не меняет</td></tr>
+<tr><td>Последействие</td><td>До следующей правки</td><td>Никакого</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- 2 -->
+<div class="sec" id="s2">
+<div class="st">Что меняется в данных и коде</div>
+
+<div class="c">
+<h3>Три изменения</h3>
+<div class="step"><div class="n">1</div><div class="b2"><b>Два поля вместо одного.</b> Сконфигурированный уровень — в правилах магазина, категории и товара. Уровень сделки — в заказе, рядом со снимком конфигурации, действовавшей на момент создания.</div></div>
+<div class="step"><div class="n">2</div><div class="b2"><b>Проверка переезжает.</b> Сейчас ограничение стоит на журнале повышений и сравнивает новое значение с прежним. Должно сравнивать уровень сделки с конфигурацией на момент её создания — то есть проверка выполняется при создании заказа, а не при записи в журнал.</div></div>
+<div class="step"><div class="n">3</div><div class="b2"><b>Понижение в конфигураторе разблокируется.</b> Сегодня попытка понизить возвращает отказ. Это ошибка: понижение конфигурации законно. Отказ должен возникать только при попытке провести сделку ниже сконфигурированного уровня, а такой попытки в кабинете и нет — она возможна лишь прямым вызовом.</div></div>
+</div>
+
+<div class="code"><span class="c1">было — сравнение с прежним значением, проверка на журнале</span>
+<span class="r">новый_уровень &gt; прежний_уровень</span>   <span class="c1">// блокирует законное понижение настройки</span>
+
+<span class="c1">стало — сравнение сделки с конфигурацией, проверка при создании заказа</span>
+<span class="g">уровень_сделки &gt;= уровень_конфигурации_на_момент_заказа</span>
+<span class="c1">// конфигурация меняется свободно в обе стороны</span></div>
+
+<div class="co co-a"><b>Побочный эффект, который стоит отметить.</b>Снимок конфигурации в заказе перестаёт быть пожеланием и становится условием работы проверки: сравнивать уровень сделки не с чем, если конфигурация на момент её создания не сохранена. Тем самым решение по шкале закрывает и один из отсутствующих объектов реализации.</div>
+
+<div class="c">
+<h3>Что убрать из интерфейса</h3>
+<p>Число продавцу не показывается. В панели конфигуратора сейчас выводится «ранг 1» и «ранг 5» — именно там возникла путаница, когда хлеб и кондитерка получили одинаковый ранг при разных схемах. Достаточно названий схем: «своя витрина и каталог», «исполнение Системы», «полная система». Глубина остаётся служебной величиной для расчёта, проверки и учёта.</p>
+</div>
+</div>
+
+<!-- 3 -->
+<div class="sec" id="s3">
+<div class="st">Перевод накопленных записей</div>
+<div class="co co-w"><b>Почему это делается сейчас.</b>Записей единицы — миграция занимает вечер. Каждый день работы добавляет строки, и стоимость перевода растёт вместе с их количеством. После сотни продавцов с историей это уже разбор каждого случая вручную.</div>
+
+<div class="c">
+<div class="step"><div class="n">1</div><div class="b2"><b>Добавить полю версию шкалы.</b> Отдельное поле рядом с уровнем: по какой шкале записано значение. Без него через полгода невозможно понять, что означала цифра три.</div></div>
+<div class="step"><div class="n">2</div><div class="b2"><b>Пометить существующие записи прежней версией.</b> Пересчитывать их не нужно — достаточно, чтобы каждая знала своё происхождение.</div></div>
+<div class="step"><div class="n">3</div><div class="b2"><b>Новые писать по возрастающей шкале.</b> С момента правки все записи идут в новой версии.</div></div>
+<div class="step"><div class="n">4</div><div class="b2"><b>Перенумеровать конфигурации трёх категорий пилота.</b> Хлеб, кондитерка и выпечка получают глубину по формуле; подписи схем остаются прежними.</div></div>
+<div class="step"><div class="n">5</div><div class="b2"><b>Проверить направление.</b> Продавец, добирающий сервис, должен видеть рост числа. Если где-то остаётся движение вниз при углублении участия — одна из шкал не переведена.</div></div>
+</div>
+
+<div class="co co-g"><b>Страховка на будущее.</b>Поле версии шкалы стоит почти ничего и превращает следующую такую историю из миграции в фильтр. Это тот же принцип, что и снимок конфигурации: запись должна помнить, в каких координатах она сделана.</div>
+</div>
+
+<!-- 4 -->
+<div class="sec" id="s4">
+<div class="st">Нормативная формулировка</div>
+
+<div class="art"><h4>Статья 9 · Витрина и каналы <span class="b b-new">дополнение</span></h4>
+<div class="txt">
+<p><b>9.11.</b> Глубина участия определяется составом сервисов Системы, используемых участником, и выражается возрастающей величиной: большему объёму используемых сервисов соответствует большее значение.</p>
+<p><b>9.12.</b> Состав сервисов, установленный участником в настройках, применяется ко всем последующим сделкам и изменяется участником в любую сторону. Изменение не распространяется на сделки, созданные до его внесения.</p>
+<p><b>9.13.</b> При создании сделки состав используемых сервисов может быть расширен относительно установленного в настройках. Уменьшение состава при создании сделки не допускается. Расширение действует в отношении данной сделки и настроек участника не изменяет.</p>
+</div>
+<div class="note">Пункт 9.12 прямо закрепляет право продавца сокращать участие — то самое, которое нынешняя реализация ошибочно блокирует. Пункт 9.13 формулирует храповик так, как он должен работать: ограничение на сделку относительно настроек, а не на настройки относительно прошлого.</div></div>
+
+<div class="art"><h4>Статья 6 · Расчёты и клиринг <span class="b b-new">уточнение</span></h4>
+<div class="txt"><p><b>6.11.</b> Расщепление по сделке производится в соответствии с составом сервисов, фактически использованных в этой сделке, и по тарифам, действовавшим на момент её создания.</p></div>
+<div class="note">Связывает уровень сделки с расчётом: платится за то, что было в этом заказе, а не за то, что настроено вообще.</div></div>
+
+<div class="co co-p"><b>Что эти три пункта дают продавцу на деле.</b>Право отказаться от сервиса без потери чего-либо. Возможность разово усилить сделку, не принимая постоянного обязательства. Уверенность, что вчерашние заказы не пересчитаются после сегодняшней правки настроек. Ни одно из трёх не следовало из прежних формулировок, а два прямо противоречили реализации.</div>
+</div>
+
+<!-- 5 -->
+<div class="sec" id="s5">
+<div class="st">Проверка, что перевод выполнен</div>
+<table class="tb">
+<thead><tr><th style="width:34%">Что проверяется</th><th style="width:30%">Как</th><th>Ожидаемо</th></tr></thead>
+<tbody>
+<tr><td>Направление шкалы</td><td>Включить каталог у категории</td><td>Глубина растёт на единицу</td></tr>
+<tr><td>Понижение конфигурации</td><td>Выключить звено исполнения в кабинете</td><td>Проходит; отказа нет</td></tr>
+<tr><td>Действие на прошлые заказы</td><td>После понижения открыть вчерашний заказ</td><td>Состав и суммы не изменились</td></tr>
+<tr><td>Повышение при сделке</td><td>Провести один заказ с фулфилментом при своём исполнении</td><td>Проходит; конфигурация после заказа прежняя</td></tr>
+<tr><td>Понижение при сделке</td><td>Прямым вызовом создать заказ ниже конфигурации</td><td>Отказ</td></tr>
+<tr><td>Расщепление по факту</td><td>Сравнить доли повышенного заказа с обычным</td><td>Появилась строка оператора, доли пересчитаны</td></tr>
+<tr><td>Версия шкалы</td><td>Прочитать старую и новую записи журнала</td><td>У каждой указана своя версия</td></tr>
+</tbody>
+</table>
+
+<div class="co co-r" style="margin-top:10px"><b>Один тест важнее остальных.</b>Третий: после понижения конфигурации вчерашний заказ должен остаться неизменным. Если он пересчитался — значит снимка конфигурации нет, и все прочие проверки не имеют смысла: история переписывается настройками.</div>
+
+<div class="co co-g"><b>Состояние документов.</b>Реестры и матрица уже написаны в возрастающей шкале — править их не нужно. Требуют правки код, данные и подписи в панели конфигуратора.</div>
+</div>
+
+</div>
+<script>
+(function(){var t=document.querySelectorAll('#tabs .tab');t.forEach(function(x){x.addEventListener('click',function(){
+t.forEach(function(y){y.classList.toggle('on',y===x)});
+document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===x.dataset.t)});
+window.scrollTo({top:0,behavior:'smooth'});})});})();
+</script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Два контура Системы: нормативный и подбирающий</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#0d6650;--gn2:#e0f4ed;--wr:#a06b12;--wr2:#faf0da;
+--rd:#9b2c2c;--rd2:#fce9e9;--pr:#4a3faa;--pr2:#edecfe;--co:#c0521e;--co2:#faeae4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;font-size:13.5px}
+.w{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:26px 0 18px;border-bottom:2px solid var(--ac);margin-bottom:18px}
+.hdr h1{font-size:20px;font-weight:700;color:var(--ac);line-height:1.3}
+.hdr p{font-size:12px;color:var(--t2);margin-top:4px}
+.hdr .meta{font-size:11px;color:var(--t3);margin-top:6px}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:18px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:7px 13px;font-size:11.5px;font-weight:500;color:var(--t3);cursor:pointer;border:none;border-bottom:2px solid transparent;white-space:nowrap;background:none;font-family:inherit}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+.tab:focus-visible{outline:2px solid var(--ac);outline-offset:-2px}
+.sec{display:none}.sec.on{display:block}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.c h3{font-size:14px;font-weight:600;margin-bottom:6px}
+.c p,.c li{font-size:12.5px;color:var(--t2)}
+.c ul{padding-left:16px;margin:4px 0 6px}.c li{margin-bottom:3px}
+.tb{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tb th{text-align:left;padding:7px 8px;background:var(--bg);border-bottom:1px solid var(--bd);font-weight:600;color:var(--t2);font-size:11px}
+.tb td{padding:7px 8px;border-bottom:1px solid var(--bd);vertical-align:top}
+.tb tr:last-child td{border-bottom:none}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
+.b{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:3px;white-space:nowrap}
+.b-n{background:var(--pr2);color:var(--pr)}
+.b-s{background:var(--ac2);color:var(--ac)}
+.b-k{background:var(--gn2);color:var(--gn)}.b-c{background:var(--wr2);color:var(--wr)}.b-r{background:var(--rd2);color:var(--rd)}
+.co{padding:12px 16px;border-radius:6px;margin-bottom:10px;font-size:12.5px;line-height:1.5}
+.co b{display:block;margin-bottom:2px}
+.co-a{background:var(--ac2);border-left:3px solid var(--ac);color:#0a4070}
+.co-w{background:var(--wr2);border-left:3px solid var(--wr);color:#5e3e08}
+.co-g{background:var(--gn2);border-left:3px solid var(--gn);color:#084a38}
+.co-r{background:var(--rd2);border-left:3px solid var(--rd);color:#6e1e1e}
+.co-p{background:var(--pr2);border-left:3px solid var(--pr);color:#2e2670}
+.st{font-size:15px;font-weight:600;margin-bottom:12px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px}
+@media(max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+.ab{border:1px solid var(--bd);border-radius:6px;padding:13px 15px;background:var(--card)}
+.ab h4{font-size:13px;font-weight:600;margin-bottom:5px}
+.ab p,.ab li{font-size:12px;color:var(--t2)}
+.ab ul{padding-left:15px;margin:4px 0}
+.ab.norm{border-color:var(--pr);border-width:2px;background:linear-gradient(180deg,#f6f5ff 0,#fff 60px)}
+.ab.soft{border-color:var(--ac);border-width:2px;background:linear-gradient(180deg,#f2f7fd 0,#fff 60px)}
+.art{background:#fbfaf7;border:1px solid var(--bd);border-radius:6px;padding:12px 16px;margin-bottom:8px}
+.art h4{font-size:12.5px;font-weight:700;color:var(--pr);margin-bottom:4px;font-family:ui-monospace,monospace}
+.art p{font-size:12.5px;color:var(--t1);line-height:1.6}
+.art .why{font-size:11.5px;color:var(--t3);margin-top:5px;font-style:italic}
+/* тест */
+.rig{background:#1c1c1a;border-radius:8px;padding:16px;color:#e8e6df;margin-top:10px}
+.rig h4{font-size:13px;color:#fff}
+.rig .sub{font-size:11px;color:#9c998e;margin-bottom:12px}
+.q{margin-bottom:10px}
+.q .t{font-size:12.5px;color:#e8e6df;margin-bottom:5px}
+.q .opts{display:flex;gap:6px;flex-wrap:wrap}
+.qb{background:#2c2c29;color:#c9c6ba;border:1px solid #45443f;border-radius:20px;padding:5px 13px;font-size:11.5px;font-family:inherit;cursor:pointer}
+.qb:hover{background:#3a3a36}
+.qb.on{background:#1e5fa0;border-color:#1e5fa0;color:#fff;font-weight:600}
+.verd{margin-top:12px;padding:12px 14px;border-radius:6px;font-size:12.5px;line-height:1.5}
+.verd.norm{background:#2a2550;color:#cfcbfa}
+.verd.soft{background:#123a5c;color:#bcdcf7}
+.verd.none{background:#262623;color:#9c998e}
+.verd b{display:block;font-size:13px;margin-bottom:4px;color:#fff}
+a{color:#2a6cb6}
+@media print{.tabs{display:none}.sec{display:block!important;page-break-inside:avoid}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hdr">
+  <h1>Два контура Системы<br>Нормативный и подбирающий: граница и её закрепление</h1>
+  <p>Часть системы должна быть неизменной и объяснимой, потому что распределяет чужие деньги и определяет права. Другая часть может и должна вычисляться из данных, потому что подбирает, а не присуждает. Документ проводит границу и предлагает закрепить её нормой.</p>
+  <div class="meta">23 августа 2026 · Возникло из вопроса о применимости принципа обучаемых связей к архитектуре Системы · Проект статьи 22 Правил</div>
+<div style="max-width:1180px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;">Опирается на: <a href="pravila-sistemy-red3-edinyi.html" style="font-weight:600;">Правила ред. 3</a> (ст. 11, 16, 19), <a href="pravila-agentic-articles-14-21.html" style="font-weight:600;">статьи 14–21</a>, <a href="11-arhitektura-realizacii-obektov.html" style="font-weight:600;">архитектуру реализации</a>, <a href="15-korrekciya-pasporta.html" style="font-weight:600;">паспорт параметров</a>, <a href="16-kak-rabotaet-sistema-polnoe.html" style="font-weight:600;">полное описание</a>, <a href="17-analiz-iteracij-vybor-nabora.html" style="font-weight:600;">анализ итераций</a>, <a href="agentic-commerce-architecture.html" style="font-weight:600;">агентный слой</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+</div>
+</div>
+
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab">Документ и параметр</button>
+  <button class="tab" data-t="s2" role="tab">Два контура</button>
+  <button class="tab" data-t="s3" role="tab">Граница</button>
+  <button class="tab" data-t="s4" role="tab">Проект статьи 22</button>
+  <button class="tab" data-t="s5" role="tab">Что можно вычислять</button>
+  <button class="tab" data-t="s6" role="tab">Тест принадлежности</button>
+</div>
+
+<!-- ═══ 1 ═══ -->
+<div class="sec on" id="s1">
+<div class="st">Связь документа и параметра — двусторонняя</div>
+<div class="co co-a"><b>Уточнение к прежнему положению.</b>Раньше было сказано: описание первично, параметр вторичен. Это верно, но неполно. Документ действительно преобладает — он говорит, что в системе должно быть. Но в определённой своей части он <b>сам зависит от параметров и меняется вместе с ними</b> при конкретной постановке. Значит в каждом документе нужно различать две части, и различать явно.</div>
+
+<div class="g2">
+<div class="ab norm"><h4>Нормативная часть документа</h4>
+<p>Утверждения, которые верны при любых значениях параметров. Их нельзя изменить подстановкой числа — только изменением самого утверждения.</p>
+<ul>
+<li>Платного места в выдаче не существует</li>
+<li>Деньги раскрываются после подтверждённого исполнения</li>
+<li>Сумма долей равна сумме заказа</li>
+<li>Уровень вовлечения повышается, но не понижается</li>
+<li>Взнос не начисляется процентом с оборота</li>
+</ul>
+<p style="margin-top:6px"><b>Свойство:</b> параметр не может её отменить. Если некое значение делает утверждение ложным — неверно значение, а не утверждение.</p></div>
+
+<div class="ab soft"><h4>Постановочная часть документа</h4>
+<p>Утверждения, истинные при данных значениях и меняющиеся вместе с ними. Это не слабость документа, а его настройка под конкретную постановку.</p>
+<ul>
+<li>Удержание составляет столько-то процентов</li>
+<li>Продавцу остаётся такая-то сумма с заказа</li>
+<li>Подтверждение наступает через столько-то дней</li>
+<li>Минимальный заказ не ниже такой-то суммы</li>
+<li>Оператор подбирается из такого-то списка</li>
+</ul>
+<p style="margin-top:6px"><b>Свойство:</b> при смене постановки эта часть пересчитывается, а документ остаётся тем же документом.</p></div>
+</div>
+
+<div class="st" style="margin-top:18px">Постановка как именованный набор значений</div>
+<div class="c">
+<p>Отсюда следует практическая конструкция. Значения параметров группируются в <b>постановки</b> — именованные наборы, каждый под свою задачу. Один и тот же документ, прочитанный в разных постановках, даёт разные числа и одинаковые нормы.</p>
+<table class="tb">
+<thead><tr><th style="width:22%">Постановка</th><th style="width:32%">Чем отличается</th><th>Для чего</th></tr></thead>
+<tbody>
+<tr><td><b>Пилот</b></td><td>Действующий сбор 0,2 %, четыре роли расчёта, без эскроу, один продавец</td><td>То, что работает сегодня. Проверка на живых заказах</td></tr>
+<tr><td><b>Волна 1</b></td><td>Канальная лестница, эскроу, девять ролей, мультизаказ</td><td>Целевая постановка после банка и переписанного расчёта</td></tr>
+<tr><td><b>Локальная категория</b></td><td>Свои тарифы исполнения, свои зоны доставки, свой порог заказа</td><td>Хлеб и скоропорт живут по другой экономике, чем непрод</td></tr>
+<tr><td><b>Расчёт для продавца</b></td><td>Тарифы его операторов, его средний чек, его доля возвратов</td><td>Оффер на его числах вместо общей пропорции</td></tr>
+</tbody>
+</table>
+<p style="margin-top:8px">Последняя строка — самое ценное следствие. Калькулятор переноса перестаёт быть отдельным инструментом и становится <b>документом, прочитанным в постановке конкретного продавца</b>. Ему показывается не наша модель, а его собственная сделка, посчитанная нашим механизмом.</p>
+</div>
+
+<div class="co co-g"><b>Что это даёт связности пула.</b>Девять итераций мы вручную протягивали связи между документами. Когда параметры лежат отдельным слоем, а документы читают его, связность перестаёт быть работой: изменение значения расходится по всем представлениям само. Ручной остаётся только нормативная часть — но она и меняется редко, потому что это и есть определение нормы.</div>
+</div>
+
+<!-- ═══ 2 ═══ -->
+<div class="sec" id="s2">
+<div class="st">Нормативный и подбирающий</div>
+
+<div class="g2">
+<div class="ab norm"><h4><span class="b b-n">контур I</span> Нормативный</h4>
+<p><b>Что делает:</b> распределяет деньги, определяет права, устанавливает порядок в выдаче и членство в Системе.</p>
+<p style="margin-top:6px"><b>Свойства, обязательные для него:</b></p>
+<ul>
+<li><b>Детерминированность</b> — одинаковый вход даёт одинаковый выход всегда</li>
+<li><b>Объяснимость</b> — каждое решение сводимо к формуле и строке правила</li>
+<li><b>Воспроизводимость</b> — прошлое решение пересчитывается по тем же данным и даёт тот же результат</li>
+<li><b>Изменяемость только через норму</b> — не решением Организатора</li>
+</ul>
+<p style="margin-top:6px"><b>Входит:</b> расщепление и клиринг, эскроу и выплата, веса ранжирования, ставки удержания, права на клиентскую базу, храповик, допуск и исключение участников, разрешение споров.</p></div>
+
+<div class="ab soft"><h4><span class="b b-s">контур II</span> Подбирающий</h4>
+<p><b>Что делает:</b> предлагает, ранжирует варианты для человека, оценивает вероятность — но не присуждает и не распределяет.</p>
+<p style="margin-top:6px"><b>Свойства, допустимые для него:</b></p>
+<ul>
+<li><b>Вычисляемость связей</b> — соответствие определяется из содержания, а не проложено заранее</li>
+<li><b>Обучаемость</b> — веса уточняются по обратной связи</li>
+<li><b>Недетерминированность</b> — допустима, если решение проверяет человек</li>
+<li><b>Изменяемость решением Организатора</b> — с публикацией факта изменения</li>
+</ul>
+<p style="margin-top:6px"><b>Входит:</b> агент покупателя, подбор оператора исполнения, скоринг аномалий, рекомендации продавцу, автодополнение карточки, маршрутизация обращений в поддержку.</p></div>
+</div>
+
+<div class="co co-p" style="margin-top:12px"><b>Различие в одну строку.</b>Контур I отвечает на вопрос «кому сколько причитается». Контур II — на вопрос «что вам, вероятно, подойдёт». Первый ошибается деньгами других людей, второй — неудачным предложением, которое человек отклонит. Поэтому у первого цена ошибки необратима, а у второго нет, и требования к ним обязаны быть разными.</div>
+
+<div class="st" style="margin-top:18px">Почему это не техническая, а нормативная граница</div>
+<div class="c">
+<p>Правила уже содержат зародыш такого разделения: веса агентной выдачи и ставка взноса меняются изменением Правил, а не решением Организатора; допуск агентов и формирование выдачи ведут разные подразделения; рассмотрение агентных споров не подчинено ни тем ни другим.</p>
+<p style="margin-top:6px">Всё это — частные случаи одного принципа, который нигде не сформулирован целиком: <b>то, что распределяет, не может быть настраиваемым тем, кто от настройки выигрывает</b>. Проект статьи 22 доводит частные случаи до общего правила и заодно даёт легальное место обучаемым механизмам — сегодня их нет ни в разрешённом, ни в запрещённом.</p>
+</div>
+
+<div class="co co-r"><b>Риск, который снимается этой границей.</b>Без неё первое же полезное улучшение выдачи — «давайте учитывать конверсию, это же честно» — попадает в контур I незаметно для всех, включая автора. Через год выдача определяется обучаемой моделью, которую никто не может объяснить продавцу, и заявление о запрете платного места становится неверифицируемым: доказать, что деньги не влияют на веса, невозможно, если веса вообще необъяснимы.</div>
+</div>
+
+<!-- ═══ 3 ═══ -->
+<div class="sec" id="s3">
+<div class="st">Где именно проходит граница</div>
+<table class="tb">
+<thead><tr><th style="width:26%">Элемент системы</th><th style="width:12%">Контур</th><th style="width:24%">Кто вправе изменить</th><th>Почему так</th></tr></thead>
+<tbody>
+<tr><td>Ставка удержания по каналу</td><td><span class="b b-n">I</span></td><td>изменением Правил</td><td>Прямо распределяет доход между Системой и продавцом</td></tr>
+<tr><td>Веса формулы ранжирования</td><td><span class="b b-n">I</span></td><td>изменением Правил</td><td>Место в выдаче — это доступ к покупателю, то есть к деньгам</td></tr>
+<tr><td>Множитель сетевого баланса</td><td><span class="b b-n">I</span></td><td>изменением Правил</td><td>Часть той же формулы; обменивает вклад на видимость</td></tr>
+<tr><td>Расщепление и клиринг</td><td><span class="b b-n">I</span></td><td>изменением Правил</td><td>Определение долей участников</td></tr>
+<tr><td>Условия раскрытия эскроу</td><td><span class="b b-n">I</span></td><td>изменением Правил</td><td>Момент перехода денег</td></tr>
+<tr><td>Права на клиентскую базу и сроки привязки</td><td><span class="b b-n">I</span></td><td>изменением Правил</td><td>Определяет, чей покупатель — основа всей экономики</td></tr>
+<tr><td>Основания приостановления и исключения</td><td><span class="b b-n">I</span></td><td>изменением Правил</td><td>Лишение участника доступа к рынку</td></tr>
+<tr><td>Пороговые значения антифрода</td><td><span class="b b-n">I</span></td><td>изменением Правил</td><td>Порог влечёт понижение веса, то есть санкцию</td></tr>
+<tr style="background:var(--ac2)"><td><b>Оценка аномальности до порога</b></td><td><span class="b b-s">II</span></td><td>Организатор, с публикацией</td><td>Оценка ведёт к ручной проверке, а не к автоматической санкции</td></tr>
+<tr style="background:var(--ac2)"><td><b>Подбор оператора исполнения</b></td><td><span class="b b-s">II</span></td><td>Организатор, с публикацией</td><td>Продавец видит список и может переопределить выбор</td></tr>
+<tr style="background:var(--ac2)"><td><b>Выдача агента покупателю</b></td><td><span class="b b-s">II</span></td><td>Организатор, в пределах норм ст. 19</td><td>Агент работает на покупателя; его подбор не распределяет доход</td></tr>
+<tr style="background:var(--ac2)"><td><b>Рекомендации продавцу</b></td><td><span class="b b-s">II</span></td><td>Организатор</td><td>Совет, который можно не исполнять</td></tr>
+<tr style="background:var(--ac2)"><td><b>Автодополнение карточки товара</b></td><td><span class="b b-s">II</span></td><td>Организатор</td><td>Продавец подтверждает результат</td></tr>
+<tr style="background:var(--ac2)"><td><b>Маршрутизация обращений</b></td><td><span class="b b-s">II</span></td><td>Организатор</td><td>Внутренняя операция, прав не затрагивает</td></tr>
+</tbody>
+</table>
+
+<div class="co co-w" style="margin-top:12px"><b>Тонкий случай, на котором граница проверяется.</b>Выдача агента формально в контуре II — агент подбирает под запрос покупателя. Но если агентная выдача станет основным каналом продаж, подбор превратится в распределение доступа к покупателю, то есть в контур I по существу. Именно поэтому Правила и держат веса агентной выдачи в нормативном режиме: <b>подбор остаётся подбором, пока у покупателя есть другие пути к товару</b>. Признак перехода измерим — доля заказов, пришедших единственным каналом.</div>
+</div>
+
+<!-- ═══ 4 ═══ -->
+<div class="sec" id="s4">
+<div class="st">Проект статьи 22 · Разделение контуров</div>
+<p style="font-size:12.5px;color:var(--t2)">Формулировки предложены к обсуждению. Они обобщают частные нормы, уже содержащиеся в статьях 16 и 19, и дают легальное место вычисляемым механизмам.</p>
+
+<div class="art"><h4>22.1</h4><p>Функции Системы разделяются на нормативный и подбирающий контуры. К нормативному относятся функции, определяющие распределение средств, права участников, порядок в каталогах и выдаче, а также допуск, приостановление и исключение из реестра. К подбирающему относятся функции, предлагающие варианты участнику или покупателю и не влекущие распределения средств и лишения прав.</p></div>
+
+<div class="art"><h4>22.2</h4><p>Функции нормативного контура исполняются детерминированно. Результат должен быть воспроизводим по данным, действовавшим на момент операции, и объясним ссылкой на формулу и пункт настоящих Правил.</p>
+<div class="why">Отсюда следует запрет на обучаемые веса в расщеплении и ранжировании — не как техническое ограничение, а как требование объяснимости перед участником.</div></div>
+
+<div class="art"><h4>22.3</h4><p>Значения, применяемые в нормативном контуре, изменяются в порядке изменения настоящих Правил. Организатор не вправе изменять их собственным решением, в том числе путём переобучения, подстройки или автоматической адаптации.</p>
+<div class="why">Обобщает п. 16.5, распространяя его с весов агентной выдачи на все распределяющие величины.</div></div>
+
+<div class="art"><h4>22.4</h4><p>Функции подбирающего контура могут использовать вычисляемые и обучаемые механизмы при соблюдении условий: результат подбора не является единственным путём участника или покупателя к предмету подбора; участник вправе переопределить результат; факт применения обучаемого механизма и его назначение публикуются.</p>
+<div class="why">Три условия — альтернативность, переопределяемость, раскрытие — превращают допущение в проверяемое.</div></div>
+
+<div class="art"><h4>22.5</h4><p>Функция подбирающего контура переводится в нормативный, если её результат становится преобладающим способом получения заказов участниками либо влечёт лишение прав. Организатор публикует показатели, по которым определяется преобладание.</p>
+<div class="why">Механизм против незаметного перетекания: сегодня агент — один из каналов, завтра единственный. Норма должна следовать за фактической ролью, а не за первоначальным замыслом.</div></div>
+
+<div class="art"><h4>22.6</h4><p>Данные, полученные в подбирающем контуре, не могут использоваться для изменения значений нормативного контура иначе как в порядке п. 22.3.</p>
+<div class="why">Закрывает обходной путь: «модель показала, что так эффективнее» не является основанием изменить ставку или вес.</div></div>
+
+<div class="co co-g" style="margin-top:12px"><b>Что даёт такая статья практически.</b>Три вещи. Продавцу — возможность требовать объяснения любого решения, которое стоило ему денег. Организатору — легальное право применять обучаемые механизмы там, где они полезны, не рискуя обвинением в манипуляции. И самой Системе — защиту от собственной эволюции: механизм повышения удержания не находится в руках того, кто от повышения выигрывает, а механизм подкрутки выдачи не появляется как побочный эффект улучшения агента.</div>
+</div>
+
+<!-- ═══ 5 ═══ -->
+<div class="sec" id="s5">
+<div class="st">Что стоит вычислять, а не назначать</div>
+<p style="font-size:12.5px;color:var(--t2)">Порядок — по готовности: сверху то, где данные появятся раньше всего, а обратная связь однозначна.</p>
+
+<table class="tb">
+<thead><tr><th style="width:22%">Функция</th><th style="width:24%">Что заменяет</th><th style="width:20%">Обратная связь</th><th>Когда возможно</th></tr></thead>
+<tbody>
+<tr><td><b>Подбор оператора</b></td><td>Жёсткую привязку и назначение по рейтингу</td><td>Нарушение срока, отказ, фактическая стоимость</td><td>Первым: данные копятся с первой сделки, сигнал однозначен</td></tr>
+<tr><td><b>Оценка аномальности</b></td><td>Два фиксированных порога</td><td>Результат ручной проверки</td><td>После накопления размеченных случаев</td></tr>
+<tr><td><b>Подбор агентом</b></td><td>Промпт с двумя каталогами</td><td>Покупка, отказ, уточнение запроса</td><td>Как только агент станет сервисом, а не прокси</td></tr>
+<tr><td><b>Рекомендации продавцу</b></td><td>Общие советы</td><td>Применил или нет, и что вышло</td><td>После первой сотни продавцов</td></tr>
+<tr><td><b>Прогноз спроса для хранения</b></td><td>Оценку продавца на глаз</td><td>Фактические продажи</td><td>После сезона данных</td></tr>
+</tbody>
+</table>
+
+<div class="co co-w" style="margin-top:12px"><b>Общее условие для всех пяти.</b>Данных сейчас нет ни для одной. Вычисляемая связь без данных — это произвольная связь с наукообразным обоснованием, и она хуже честной константы, потому что константу можно оспорить, а модель — нет. Поэтому каждая из пяти функций начинается с простого правила и переходит к вычислению только тогда, когда накоплена обратная связь и есть с чем сравнить.</div>
+
+<div class="co co-a"><b>И оговорка о том, чего принцип не заменяет.</b>Наша сделка — автомат состояний, где порядок и есть содержание: нельзя раскрыть эскроу до подтверждения, нельзя понизить уровень после оформления. Вычисляемые связи хороши там, где важно соответствие, и бесполезны там, где важна последовательность. Контур I по природе последователен, и это ещё одна причина, по которой граница проходит именно здесь.</div>
+</div>
+
+<!-- ═══ 6 ═══ -->
+<div class="sec" id="s6">
+<div class="st">Тест принадлежности контуру</div>
+<p style="font-size:12.5px;color:var(--t2)">Четыре вопроса о любой новой функции. Отвечайте о том, что функция делает по факту, а не о том, как она называется.</p>
+
+<div class="rig">
+  <div class="q" data-k="money"><div class="t">1 · Влияет ли результат на то, кому и сколько причитается денег?</div>
+    <div class="opts"><button class="qb" data-v="1">Да</button><button class="qb" data-v="0">Нет</button></div></div>
+  <div class="q" data-k="rights"><div class="t">2 · Может ли результат лишить участника права — доступа, места в выдаче, участия в реестре?</div>
+    <div class="opts"><button class="qb" data-v="1">Да</button><button class="qb" data-v="0">Нет</button></div></div>
+  <div class="q" data-k="alt"><div class="t">3 · Есть ли у участника или покупателя другой путь к тому же результату, помимо этой функции?</div>
+    <div class="opts"><button class="qb" data-v="1">Да, альтернатива есть</button><button class="qb" data-v="0">Нет, путь единственный</button></div></div>
+  <div class="q" data-k="over"><div class="t">4 · Может ли человек переопределить результат вручную?</div>
+    <div class="opts"><button class="qb" data-v="1">Да</button><button class="qb" data-v="0">Нет</button></div></div>
+  <div class="verd none" id="v">Ответьте на четыре вопроса.</div>
+</div>
+
+<div class="c" style="margin-top:12px">
+<h3>Как пользоваться результатом</h3>
+<p>Тест не заменяет решения, но задаёт ту рамку, в которой решение принимается. Если функция попала в нормативный контур, дальше вопрос один: какой формулой она выражается и в каком пункте Правил записана. Если в подбирающий — вопрос другой: на каких данных она учится, кто проверяет её результат и где публикуется факт её применения.</p>
+<p style="margin-top:6px">Пограничный ответ — тоже ответ. Функция, у которой нет альтернативы и которую нельзя переопределить, принадлежит нормативному контуру, даже если формально она «только подбирает»: у того, кому она подбирает, выбора всё равно нет.</p>
+</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+  var tabs=document.querySelectorAll('#tabs .tab');
+  tabs.forEach(function(t){t.addEventListener('click',function(){
+    tabs.forEach(function(x){x.classList.toggle('on',x===t)});
+    document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===t.dataset.t)});
+    window.scrollTo({top:0,behavior:'smooth'});
+  })});
+
+  var ans={};
+  document.querySelectorAll('.q').forEach(function(q){
+    q.querySelectorAll('.qb').forEach(function(b){
+      b.addEventListener('click',function(){
+        q.querySelectorAll('.qb').forEach(function(x){x.classList.remove('on')});
+        b.classList.add('on'); ans[q.dataset.k]=b.dataset.v==='1'; verdict();
+      });
+    });
+  });
+
+  function verdict(){
+    var v=document.getElementById('v');
+    var keys=['money','rights','alt','over'];
+    if(keys.some(function(k){return !(k in ans)})){
+      v.className='verd none'; v.textContent='Ответьте на четыре вопроса.'; return;
+    }
+    if(ans.money||ans.rights){
+      v.className='verd norm';
+      v.innerHTML='<b>Нормативный контур</b>Функция распределяет средства или затрагивает права. Требуется: детерминированный алгоритм, объяснимость каждого решения ссылкой на формулу и пункт Правил, воспроизводимость по историческим данным. Значения изменяются только изменением Правил — не решением Организатора и не переобучением. Обучаемые механизмы здесь недопустимы.';
+      return;
+    }
+    if(!ans.alt||!ans.over){
+      v.className='verd norm';
+      v.innerHTML='<b>Нормативный контур · пограничный случай</b>Формально функция только подбирает, но '+
+        (!ans.alt?'иного пути к результату нет':'')+(!ans.alt&&!ans.over?' и ':'')+
+        (!ans.over?'результат нельзя переопределить вручную':'')+
+        '. Для того, кому она подбирает, выбора не остаётся — значит по существу она присуждает. Либо добавьте альтернативу и возможность переопределения, либо ведите функцию по правилам нормативного контура.';
+      return;
+    }
+    v.className='verd soft';
+    v.innerHTML='<b>Подбирающий контур</b>Вычисляемые и обучаемые механизмы допустимы. Условия: альтернативный путь сохранён, человек может переопределить результат, факт применения обучаемого механизма и его назначение публикуются. Начните с простого правила и переходите к обучению, когда накопится обратная связь — иначе получится произвольная связь с наукообразным обоснованием.';
+  }
+})();
+</script>
+</body>
+</html>

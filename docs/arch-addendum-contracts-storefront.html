@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Договорная модель и витрина · дополнение к архитектуре</title>
+<style>
+:root{--bg:#f8f7f4;--card:#fff;--text:#1a1a1a;--text2:#5a5a56;--text3:#8a8a84;--border:#e2e0d8;
+--accent:#2a6cb6;--accent-bg:#eaf1fa;--accent2:#0f6e56;--accent2-bg:#e1f5ee;--warn:#ba7517;--warn-bg:#faeeda;
+--danger:#a32d2d;--danger-bg:#fcebeb;--purple:#534ab7;--purple-bg:#eeedfe;--coral:#d85a30;--coral-bg:#faece7;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+.container{max-width:1100px;margin:0 auto;padding:24px 20px 60px;}
+.header{padding:40px 0 32px;border-bottom:2px solid var(--accent);margin-bottom:32px;}
+.header .kicker{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);}
+.header h1{font-size:26px;font-weight:600;color:var(--accent);margin:8px 0 6px;}
+.header .sub{font-size:15px;color:var(--text2);max-width:720px;}
+.header .meta{font-size:12px;color:var(--text3);margin-top:8px;}
+.qsec{margin-bottom:46px;}
+.qhead{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;}
+.qnum{font-size:13px;font-weight:700;color:var(--accent);background:var(--accent-bg);padding:3px 10px;border-radius:5px;}
+.qhead h2{font-size:20px;font-weight:600;}
+.qsub{font-size:14px;color:var(--text2);max-width:730px;margin-bottom:20px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px 24px;margin-bottom:16px;}
+.card h3{font-size:15px;font-weight:600;margin-bottom:10px;}
+.card p{font-size:13.5px;color:var(--text2);margin-bottom:8px;}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px;}
+.opt{border:1px solid var(--border);border-radius:8px;padding:14px 16px;background:var(--card);}
+.opt .ol{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;}
+.opt .on{font-size:14px;font-weight:600;margin-bottom:5px;}
+.opt .od{font-size:12.5px;color:var(--text2);line-height:1.5;}
+.opt.reject{opacity:.62;} .opt.reject .verdict{color:var(--danger);}
+.opt.pick{border-color:var(--accent2);border-width:2px;background:var(--accent2-bg);} .opt.pick .verdict{color:var(--accent2);}
+.verdict{font-size:11.5px;font-weight:700;margin-top:8px;text-transform:uppercase;letter-spacing:.03em;}
+.svg-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;overflow-x:auto;}
+.svg-cap{font-size:12px;color:var(--text3);text-align:center;margin-top:8px;}
+.pick-banner{background:var(--accent2-bg);border-left:4px solid var(--accent2);border-radius:6px;padding:14px 18px;margin-bottom:18px;font-size:13.5px;color:var(--text);line-height:1.6;}
+.pick-banner b{color:var(--accent2);}
+.legend{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;font-size:11.5px;color:var(--text2);margin-top:6px;}
+.legend span{display:flex;align-items:center;gap:6px;}
+.dot{width:11px;height:11px;border-radius:2px;}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px;}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--text3);padding:0 10px 8px 0;border-bottom:2px solid var(--border);}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top;}
+td b{color:var(--text);}
+.tie{background:var(--accent-bg);border-left:4px solid var(--accent);border-radius:6px;padding:14px 18px;margin-top:16px;font-size:13.5px;color:var(--text);line-height:1.6;}
+.tie b{color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="kicker">Дополнение к архитектурному документу v1.0</div>
+    <h1>Договорная модель и организация витрины</h1>
+    <p class="sub">Ответ на два ключевых вопроса поверх заложенной шестислойной архитектуры: как участники связаны договорами и как устроена витрина. Оба ответа двухуровневые — общая рамка сверху, индивидуальный участник снизу, связанные атомарной единицей.</p>
+    <div class="meta">Опирается на слои 2 (контрактная рамка) и 5–6 (маркетплейс-логика, UI) архитектуры</div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="qsec">
+    <div class="qhead"><span class="qnum">Вопрос 1</span><h2>Модель договорных отношений участников</h2></div>
+    <p class="qsub">Четыре кандидата не взаимоисключающие — правильный ответ гибридный: юридический слой по одной модели, расчётный по другой.</p>
+
+    <div class="opts">
+      <div class="opt reject">
+        <div class="ol">Вариант А</div><div class="on">Каждый с каждым (mesh)</div>
+        <div class="od">Прямой договор каждого с каждым. Для N участников — N² договоров. При тысячах селлеров юридически нереализуемо.</div>
+        <div class="verdict">✕ Отвергается как основа</div>
+      </div>
+      <div class="opt pick">
+        <div class="ol">Вариант Б</div><div class="on">Общая часть + договор присоединения</div>
+        <div class="od">Единая рамка (Правила Системы) + каждый подписывает договор присоединения к реестру своей роли. N участников = N договоров с Организатором. Это слой 2 архитектуры.</div>
+        <div class="verdict">✓ Договорный слой</div>
+      </div>
+      <div class="opt pick">
+        <div class="ol">Вариант В</div><div class="on">Модель платёжных систем (VISA/MC)</div>
+        <div class="od">Организатор в центре, участники присоединяются к своду правил, расчёты идут через процессинг оператора, оператор гарантирует расчёт и берёт комиссию. Участники не заключают денежных договоров друг с другом.</div>
+        <div class="verdict">✓ Расчётный слой</div>
+      </div>
+      <div class="opt reject">
+        <div class="ol">Вариант Г</div><div class="on">Модель WWW (открытые протоколы)</div>
+        <div class="od">Открытые стандарты, нет центрального договора — любой подключается, соблюдая технический протокол. Максимальная децентрализация, но нет гаранта расчётов — а эскроу-гарантия это ядро всех офферов.</div>
+        <div class="verdict">✕ Нет гаранта расчётов</div>
+      </div>
+    </div>
+
+    <div class="pick-banner"><b>Рекомендация — гибрид Б + В.</b> Юридически — договор присоединения (Б). Технологически и финансово — платёжная система (В). Они описывают разные слои одного решения и не конфликтуют: участник присоединяется к правилам (Б), а деньги внутри рамки ходят через единый процессинг с Организатором-гарантом (В). При этом сама услуга оказывается напрямую между участниками — точно по п.19 концепции.</div>
+
+    <div class="svg-wrap">
+      <svg viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:-apple-system,'Segoe UI',sans-serif;">
+        <!-- central organizer -->
+        <circle cx="450" cy="220" r="66" fill="#eaf1fa" stroke="#2a6cb6" stroke-width="2.5"/>
+        <text x="450" y="212" text-anchor="middle" font-size="15" font-weight="700" fill="#2a6cb6">Организатор</text>
+        <text x="450" y="230" text-anchor="middle" font-size="11" fill="#5a5a56">реестр + клиринг</text>
+        <text x="450" y="246" text-anchor="middle" font-size="10" fill="#8a8a84">гарант расчётов</text>
+
+        <!-- participant nodes around -->
+        <!-- positions -->
+        <g font-size="12" font-weight="600">
+          <!-- seller -->
+          <rect x="90" y="60" width="150" height="52" rx="9" fill="#fff" stroke="#0f6e56" stroke-width="2"/>
+          <text x="165" y="82" text-anchor="middle" fill="#0f6e56">Селлер</text>
+          <text x="165" y="99" text-anchor="middle" font-size="10" font-weight="400" fill="#8a8a84">договор присоединения</text>
+          <!-- fulfilment -->
+          <rect x="660" y="60" width="150" height="52" rx="9" fill="#fff" stroke="#534ab7" stroke-width="2"/>
+          <text x="735" y="82" text-anchor="middle" fill="#534ab7">Фулфилмент</text>
+          <text x="735" y="99" text-anchor="middle" font-size="10" font-weight="400" fill="#8a8a84">договор присоединения</text>
+          <!-- last mile -->
+          <rect x="660" y="330" width="150" height="52" rx="9" fill="#fff" stroke="#d85a30" stroke-width="2"/>
+          <text x="735" y="352" text-anchor="middle" fill="#d85a30">Последняя миля</text>
+          <text x="735" y="369" text-anchor="middle" font-size="10" font-weight="400" fill="#8a8a84">договор присоединения</text>
+          <!-- bank -->
+          <rect x="90" y="330" width="150" height="52" rx="9" fill="#fff" stroke="#ba7517" stroke-width="2"/>
+          <text x="165" y="352" text-anchor="middle" fill="#ba7517">Расчётный банк</text>
+          <text x="165" y="369" text-anchor="middle" font-size="10" font-weight="400" fill="#8a8a84">договор присоединения</text>
+        </g>
+
+        <!-- join lines (solid blue) = accession to rules -->
+        <g stroke="#2a6cb6" stroke-width="2" fill="none">
+          <line x1="240" y1="92" x2="392" y2="188"/>
+          <line x1="660" y1="92" x2="508" y2="188"/>
+          <line x1="660" y1="350" x2="508" y2="250"/>
+          <line x1="240" y1="350" x2="392" y2="250"/>
+        </g>
+        <!-- direct service line (dashed green) seller<->fulfilment, fulfilment<->lastmile -->
+        <g stroke="#0f6e56" stroke-width="1.6" fill="none" stroke-dasharray="6 4">
+          <line x1="240" y1="86" x2="660" y2="86"/>
+          <line x1="735" y1="112" x2="735" y2="330"/>
+        </g>
+        <text x="450" y="52" text-anchor="middle" font-size="10.5" fill="#0f6e56" font-weight="600">прямое оказание услуги (без Организатора)</text>
+
+        <text x="450" y="410" text-anchor="middle" font-size="11" fill="#2a6cb6" font-weight="600">— сплошное синее: присоединение к Правилам (Б) · расчёты через процессинг (В)</text>
+        <text x="450" y="428" text-anchor="middle" font-size="11" fill="#0f6e56" font-weight="600">- - - зелёное пунктирное: услуга оказывается напрямую между участниками</text>
+      </svg>
+      <div class="svg-cap">Договорная модель: звезда присоединения к Организатору (юридически и по расчётам) при прямом оказании услуг между участниками</div>
+    </div>
+
+    <div class="card">
+      <h3>Почему именно гибрид, а не чистый вариант</h3>
+      <table>
+        <thead><tr><th style="width:30%">Если бы взяли</th><th>Что ломается</th></tr></thead>
+        <tbody>
+          <tr><td><b>Только WWW (Г)</b></td><td>Нет гаранта расчётов — исчезает эскроу-гарантия, ядро всех трёх офферов селлерам</td></tr>
+          <tr><td><b>Только VISA/MC (В)</b></td><td>Недооценивает, что логистика/хранение оказываются напрямую как услуга, а не только как денежный поток — нужен договорный слой поверх</td></tr>
+          <tr><td><b>Только mesh (А)</b></td><td>N² договоров — юридический коллапс при масштабе</td></tr>
+          <tr><td><b>Гибрид Б+В</b></td><td>Присоединение к правилам (Б) + расчёты как в платёжной системе (В) при прямом оказании услуг — ровно п.19 концепции</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="qsec">
+    <div class="qhead"><span class="qnum">Вопрос 2</span><h2>Организация витрины</h2></div>
+    <p class="qsub">SKU, магазин и каталог — не альтернативы, а три проекции одних данных. Система даёт все три: SKU как атом, магазин и каталог как две витрины над ним.</p>
+
+    <div class="opts">
+      <div class="opt">
+        <div class="ol">Вариант А</div><div class="on">SKU (товарная позиция)</div>
+        <div class="od">Витрина вокруг карточек товара, как Ozon/WB. Привычно, легко сравнивать. Но обезличивает селлера, стирает бренд.</div>
+        <div class="verdict" style="color:var(--accent)">→ Становится атомом</div>
+      </div>
+      <div class="opt">
+        <div class="ol">Вариант Б</div><div class="on">Магазины (витрина селлера)</div>
+        <div class="od">Каждый селлер = витрина под своим брендом (5-канальный магазин). Сохраняет бренд (оффер гр.1). Но нет агрегации.</div>
+        <div class="verdict" style="color:var(--accent2)">✓ Нижний уровень</div>
+      </div>
+      <div class="opt">
+        <div class="ol">Вариант В</div><div class="on">Каталоги (агрегированные)</div>
+        <div class="od">Единый каталог Системы поверх всех селлеров. Сетевой эффект, общая база (п.9–11). Но обезличивает селлера.</div>
+        <div class="verdict" style="color:var(--accent2)">✓ Верхний уровень</div>
+      </div>
+      <div class="opt pick">
+        <div class="ol">Вариант Г</div><div class="on">Двухуровневая витрина</div>
+        <div class="od">Магазин селлера + каталог Системы как две проекции одних SKU. Магазин = база селлера (бренд сохранён). Каталог = сетевой приток (общее достояние).</div>
+        <div class="verdict">✓ Рекомендация</div>
+      </div>
+    </div>
+
+    <div class="pick-banner"><b>Рекомендация — двухуровневая витрина.</b> Она напрямую отражает разделение базы на мигрировавшую и сетевую (ст. 7.4 Правил, корректив К4). Магазин селлера обслуживает его собственную базу под его брендом; каталог Системы — сетевой приток как общее достояние. Одна витрина не может обслужить обе, потому что они принадлежат разным субъектам. SKU-атом позволяет одному товару жить в обеих, не дублируясь.</div>
+
+    <div class="svg-wrap">
+      <svg viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:-apple-system,'Segoe UI',sans-serif;">
+        <!-- top: Catalog (System) -->
+        <rect x="230" y="30" width="440" height="80" rx="12" fill="#eaf1fa" stroke="#2a6cb6" stroke-width="2.5"/>
+        <text x="450" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#2a6cb6">Каталог Системы (верхний уровень)</text>
+        <text x="450" y="82" text-anchor="middle" font-size="11.5" fill="#5a5a56">агрегирует все SKU · сетевой приток · общее достояние</text>
+        <text x="450" y="98" text-anchor="middle" font-size="10.5" fill="#8a8a84">маршрутизация покупателей (К4) · зонтичный бренд</text>
+
+        <!-- bottom: three seller shops -->
+        <g>
+          <rect x="60" y="340" width="220" height="90" rx="10" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+          <text x="170" y="368" text-anchor="middle" font-size="13" font-weight="700" fill="#0f6e56">Магазин селлера A</text>
+          <text x="170" y="386" text-anchor="middle" font-size="10.5" fill="#5a5a56">5 каналов · свой бренд</text>
+          <text x="170" y="402" text-anchor="middle" font-size="10" fill="#8a8a84">мигрировавшая база (ст.7.4)</text>
+
+          <rect x="340" y="340" width="220" height="90" rx="10" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+          <text x="450" y="368" text-anchor="middle" font-size="13" font-weight="700" fill="#0f6e56">Магазин селлера B</text>
+          <text x="450" y="386" text-anchor="middle" font-size="10.5" fill="#5a5a56">5 каналов · свой бренд</text>
+          <text x="450" y="402" text-anchor="middle" font-size="10" fill="#8a8a84">своя база сохранена</text>
+
+          <rect x="620" y="340" width="220" height="90" rx="10" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+          <text x="730" y="368" text-anchor="middle" font-size="13" font-weight="700" fill="#0f6e56">Магазин селлера C</text>
+          <text x="730" y="386" text-anchor="middle" font-size="10.5" fill="#5a5a56">5 каналов · свой бренд</text>
+          <text x="730" y="402" text-anchor="middle" font-size="10" fill="#8a8a84">нижний уровень</text>
+        </g>
+
+        <!-- middle: SKU atoms row -->
+        <text x="450" y="205" text-anchor="middle" font-size="12" font-weight="700" fill="#534ab7">SKU — атом витрины (один товар, одна карточка в стандарте Системы)</text>
+        <g>
+          <rect x="120" y="220" width="90" height="44" rx="7" fill="#eeedfe" stroke="#534ab7" stroke-width="1.6"/>
+          <text x="165" y="247" text-anchor="middle" font-size="12" font-weight="600" fill="#534ab7">SKU 1</text>
+          <rect x="270" y="220" width="90" height="44" rx="7" fill="#eeedfe" stroke="#534ab7" stroke-width="1.6"/>
+          <text x="315" y="247" text-anchor="middle" font-size="12" font-weight="600" fill="#534ab7">SKU 2</text>
+          <rect x="405" y="220" width="90" height="44" rx="7" fill="#eeedfe" stroke="#534ab7" stroke-width="1.6"/>
+          <text x="450" y="247" text-anchor="middle" font-size="12" font-weight="600" fill="#534ab7">SKU 3</text>
+          <rect x="540" y="220" width="90" height="44" rx="7" fill="#eeedfe" stroke="#534ab7" stroke-width="1.6"/>
+          <text x="585" y="247" text-anchor="middle" font-size="12" font-weight="600" fill="#534ab7">SKU 4</text>
+          <rect x="690" y="220" width="90" height="44" rx="7" fill="#eeedfe" stroke="#534ab7" stroke-width="1.6"/>
+          <text x="735" y="247" text-anchor="middle" font-size="12" font-weight="600" fill="#534ab7">SKU 5</text>
+        </g>
+
+        <!-- lines SKU -> catalog (up) -->
+        <g stroke="#2a6cb6" stroke-width="1.5" fill="none" opacity="0.75">
+          <line x1="165" y1="220" x2="360" y2="110"/>
+          <line x1="315" y1="220" x2="410" y2="110"/>
+          <line x1="450" y1="220" x2="450" y2="110"/>
+          <line x1="585" y1="220" x2="500" y2="110"/>
+          <line x1="735" y1="220" x2="540" y2="110"/>
+        </g>
+        <!-- lines SKU -> shops (down) -->
+        <g stroke="#0f6e56" stroke-width="1.5" fill="none" opacity="0.75" stroke-dasharray="5 3">
+          <line x1="165" y1="264" x2="170" y2="340"/>
+          <line x1="315" y1="264" x2="180" y2="340"/>
+          <line x1="450" y1="264" x2="450" y2="340"/>
+          <line x1="585" y1="264" x2="720" y2="340"/>
+          <line x1="735" y1="264" x2="730" y2="340"/>
+        </g>
+
+        <text x="450" y="455" text-anchor="middle" font-size="11" fill="#5a5a56">один SKU виден одновременно в магазине селлера (снизу, его бренд) и в каталоге Системы (сверху, общий поиск) — без дублирования</text>
+      </svg>
+      <div class="svg-cap">Двухуровневая витрина: SKU-атомы питают и магазин селлера (нижний уровень, свой бренд), и каталог Системы (верхний уровень, сетевой трафик)</div>
+      <div class="legend">
+        <span><span class="dot" style="background:#2a6cb6"></span>вверх: SKU → каталог Системы (сетевой приток)</span>
+        <span><span class="dot" style="background:#0f6e56"></span>вниз: SKU → магазин селлера (своя база)</span>
+        <span><span class="dot" style="background:#534ab7"></span>SKU — общий атом обеих витрин</span>
+      </div>
+    </div>
+
+    <div class="tie"><b>Как это решает конфликт офферов.</b> Группа 1 боится потерять бренд → её товар виден в её магазине под её именем. Система нуждается в агрегации → тот же товар виден в каталоге. SKU-атом соединяет оба, а маршрутизатор (слой 5) решает, чей трафик куда ведёт: мигрировавшая база остаётся в магазине селлера, сетевой приток идёт через каталог с приоритетом группе 2 (корректив К4).</div>
+  </div>
+
+  <!-- Unified principle -->
+  <div class="card" style="background:var(--accent-bg);border-color:var(--accent);">
+    <h3 style="color:var(--accent);">Единый принцип обоих ответов</h3>
+    <p style="color:var(--text);font-size:14px;">И в договорах, и в витрине Система работает <b>двухуровнево</b>: общая рамка / каталог сверху, индивидуальный участник / магазин снизу, связанные <b>атомарной единицей</b> — договор присоединения для участников, SKU для товаров. Это прямое следствие заложенной архитектуры (слои 2 и 5–6) и коррективов К4–К5: разделение мигрировавшей и сетевой базы получает и юридическое (присоединение), и витринное (магазин↔каталог) выражение.</p>
+  </div>
+
+</div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#5a5548;">Этот документ сведён с двадцатью другими в <a href="33-ui-vitrina-opisanie.html" style="font-weight:600;">интегрированное описание слоя UI и витрины</a>; выведенные величины — в <a href="34-ui-vitrina-parametry.html" style="font-weight:600;">наборе параметров U</a>.</div>
+</body>
+</html>

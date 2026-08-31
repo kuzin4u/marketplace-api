@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Агентная коммерция — архитектура платформы · пул документов Системы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E7EBF0;          /* синька-чертёж */
+  --paper-2:#F4F6F9;
+  --ink:#0F1720;
+  --ink-2:#42505F;
+  --rule:#A7B6C6;
+  --rule-2:#C8D3DE;
+  --escrow:#0B6E4F;         /* расчёт / доверие */
+  --agent:#2740C8;          /* агентный обмен */
+  --alarm:#9E241C;          /* риск / корректив */
+  --amber:#8A6A12;
+  --shadow:0 1px 0 rgba(15,23,32,.06), 0 12px 32px -22px rgba(15,23,32,.5);
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --serif:"IBM Plex Serif",Georgia,serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.6;
+  background-image:linear-gradient(rgba(167,182,198,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(167,182,198,.28) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 96px}
+/* ---------- шапка ---------- */
+header.masthead{padding:56px 0 28px;border-bottom:2px solid var(--ink)}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5.4vw,52px);line-height:1.06;letter-spacing:-.015em;margin:14px 0 10px}
+h1 .thin{color:var(--ink-2);font-weight:500}
+.dek{max-width:62ch;font-size:17.5px;color:var(--ink-2);margin:0}
+.sync{margin:22px 0 0;padding:12px 14px;background:var(--paper-2);border:1px solid var(--rule);border-left:3px solid var(--escrow);
+  font-family:var(--mono);font-size:12.5px;line-height:1.55;color:var(--ink-2)}
+.sync b{color:var(--ink);font-weight:600}
+/* ---------- навигация ---------- */
+nav.toc{position:sticky;top:0;z-index:40;background:rgba(231,235,240,.94);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--rule);margin:0 -20px 40px;padding:9px 20px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
+nav.toc a{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);
+  text-decoration:none;margin-right:18px;padding-bottom:2px;border-bottom:1px solid transparent}
+nav.toc a:hover,nav.toc a:focus-visible{color:var(--ink);border-bottom-color:var(--agent);outline:none}
+/* ---------- секции ---------- */
+section{margin:0 0 64px;scroll-margin-top:64px}
+.sec-head{display:flex;gap:16px;align-items:baseline;border-bottom:1px solid var(--rule);padding-bottom:8px;margin-bottom:22px}
+.sec-num{font-family:var(--mono);font-size:12px;color:var(--agent);letter-spacing:.1em;flex:none;padding-top:5px}
+h2{font-family:var(--serif);font-size:clamp(22px,3.2vw,30px);font-weight:600;letter-spacing:-.01em;margin:0}
+h3{font-family:var(--sans);font-size:16.5px;font-weight:600;margin:26px 0 8px;letter-spacing:-.005em}
+p{margin:0 0 14px}
+.lead{font-size:17.5px}
+small.note{display:block;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);letter-spacing:.02em;margin-top:8px}
+/* карточки */
+.card{background:var(--paper-2);border:1px solid var(--rule);box-shadow:var(--shadow);padding:20px 22px}
+.grid{display:grid;gap:14px}
+@media(min-width:760px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+.kv{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);margin-bottom:6px}
+.big{font-family:var(--serif);font-size:30px;font-weight:600;line-height:1.05;letter-spacing:-.02em}
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid var(--rule);padding:2px 7px;background:#fff;color:var(--ink-2);margin:0 4px 4px 0}
+.pill.esc{border-color:var(--escrow);color:var(--escrow)}
+.pill.ag{border-color:var(--agent);color:var(--agent)}
+.pill.al{border-color:var(--alarm);color:var(--alarm)}
+/* таблицы */
+table{width:100%;border-collapse:collapse;font-size:14.5px;background:var(--paper-2);border:1px solid var(--rule)}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--rule-2);vertical-align:top}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);background:#fff;border-bottom:1px solid var(--rule)}
+tr:last-child td{border-bottom:none}
+td code,p code,li code{font-family:var(--mono);font-size:12.5px;background:#fff;border:1px solid var(--rule-2);padding:1px 4px}
+.scroll{overflow-x:auto}
+/* слои архитектуры */
+.layer{display:grid;grid-template-columns:64px 1fr;border:1px solid var(--rule);background:var(--paper-2);margin-bottom:10px}
+.layer .tag{font-family:var(--mono);font-size:22px;font-weight:600;display:flex;align-items:center;justify-content:center;
+  background:var(--ink);color:var(--paper);letter-spacing:.02em}
+.layer.esc .tag{background:var(--escrow)}
+.layer.ag .tag{background:var(--agent)}
+.layer .body{padding:16px 18px}
+.layer h4{margin:0 0 4px;font-size:16.5px;font-weight:600}
+.layer .who{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px}
+/* трассировка — подпись документа */
+.trace{border:1px solid var(--ink);background:#0F1720;color:#DCE4EC;font-family:var(--mono);font-size:13px;line-height:1.5}
+.trace-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #2B3A4A;background:#141F2B}
+.trace-bar .ttl{letter-spacing:.1em;text-transform:uppercase;font-size:11px;color:#8FA3B6}
+.trace-body{padding:6px 0;min-height:330px}
+.step{display:grid;grid-template-columns:34px 1fr;gap:0;padding:8px 14px;border-left:3px solid transparent;opacity:.34;transition:opacity .18s,background .18s}
+.step.on{opacity:1;background:#16222F;border-left-color:#4E6FF0}
+.step.on.escrow{border-left-color:#28A57C}
+.step.on.broken{border-left-color:#D8564C;background:#231A1C}
+.step .n{color:#63788C}
+.step .msg{}
+.step .arrow{color:#9FB4C7}
+.step .who{color:#7FE0BC}
+.step .who.b{color:#8FA6F5}
+.step .name{color:#F2C36B}
+.step .ref{display:block;color:#7C90A3;font-size:11.5px;margin-top:2px;letter-spacing:.02em}
+.step.broken .ref{color:#E08E86}
+.btn{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
+  background:#fff;border:1px solid var(--ink);color:var(--ink);padding:7px 12px}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn.dark{background:#1E2C3A;border-color:#3D4F62;color:#DCE4EC}
+.btn.dark:hover{background:#2B3E51}
+.btn[aria-pressed="true"]{background:var(--agent);border-color:var(--agent);color:#fff}
+.switch{display:inline-flex;border:1px solid #3D4F62}
+.switch .btn{border:none;border-right:1px solid #3D4F62}
+.switch .btn:last-child{border-right:none}
+/* интерактив: ползунки */
+.ctrl{margin-bottom:16px}
+.ctrl label{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:11.5px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);margin-bottom:4px}
+.ctrl label b{font-family:var(--serif);font-size:19px;color:var(--ink);letter-spacing:0;text-transform:none}
+input[type=range]{width:100%;accent-color:var(--agent);height:24px}
+.out{display:grid;gap:10px}
+.out .box{border:1px solid var(--rule);background:#fff;padding:13px 15px}
+.out .box.ok{border-left:3px solid var(--escrow)}
+.out .box.warn{border-left:3px solid var(--amber)}
+.out .box.bad{border-left:3px solid var(--alarm)}
+.bar{height:9px;background:var(--rule-2);margin-top:8px;position:relative;overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--agent);transition:width .2s}
+.bar i.esc{background:var(--escrow)}
+.bar i.al{background:var(--alarm)}
+/* сценарии */
+.scen{display:grid;gap:12px}
+@media(min-width:820px){.scen{grid-template-columns:repeat(3,1fr)}}
+.scen .s{border:1px solid var(--rule);background:var(--paper-2);padding:16px 17px;cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.scen .s[aria-pressed="true"]{border-color:var(--ink);box-shadow:var(--shadow);background:#fff}
+.scen .s h4{margin:6px 0 6px;font-size:16px}
+.axes{margin-top:10px}
+.axis{display:grid;grid-template-columns:1fr 84px;gap:8px;align-items:center;font-size:13.5px;margin-bottom:5px}
+.axis .t{height:7px;background:var(--rule-2);position:relative}
+.axis .t i{position:absolute;inset:0 auto 0 0;background:var(--ink)}
+/* коррективы */
+.korr{border:1px solid var(--rule);border-left:3px solid var(--alarm);background:var(--paper-2);padding:14px 16px;margin-bottom:10px}
+.korr .id{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--alarm);text-transform:uppercase}
+.korr h4{margin:3px 0 5px;font-size:16px}
+.korr p{margin:0;font-size:14.5px;color:var(--ink-2)}
+/* дорожная карта */
+.road{border-top:1px solid var(--rule)}
+.stage{display:grid;grid-template-columns:88px 1fr;border-bottom:1px solid var(--rule);padding:16px 0}
+.stage .code{font-family:var(--mono);font-size:13px;letter-spacing:.08em;color:var(--agent)}
+.stage h4{margin:0 0 4px;font-size:16.5px}
+.stage p{margin:0 0 6px;font-size:14.5px;color:var(--ink-2)}
+ul.tight{margin:6px 0 0;padding-left:20px}
+ul.tight li{margin-bottom:5px}
+footer{border-top:2px solid var(--ink);padding-top:18px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);letter-spacing:.03em}
+
+/* --- оргструктура --- */
+.org{border:1px solid var(--rule);background:var(--paper-2);padding:18px}
+.org .top{border:1px solid var(--ink);background:#fff;padding:11px 14px;max-width:420px;margin:0 auto 6px}
+.org .top .kv{margin:0}
+.org .spine{height:16px;border-left:1px solid var(--rule);width:0;margin:0 auto}
+.orgrow{display:grid;gap:10px}
+@media(min-width:820px){.orgrow{grid-template-columns:repeat(4,1fr)}}
+.orgbox{border:1px solid var(--rule);background:#fff;padding:12px 13px}
+.orgbox h5{margin:4px 0 6px;font-size:14.5px;font-weight:600}
+.orgbox p{margin:0;font-size:13.5px;color:var(--ink-2)}
+.orgbox .stage{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--agent);display:block;padding:0;border:none}
+.orgbox.sep{border-color:var(--escrow);border-left-width:3px}
+.rules3{display:grid;gap:10px;margin-top:12px}
+@media(min-width:760px){.rules3{grid-template-columns:repeat(3,1fr)}}
+.rule-no{border:1px solid var(--rule);border-left:3px solid var(--alarm);background:#fff;padding:11px 13px;font-size:13.5px}
+.rule-no b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--alarm);margin-bottom:4px}
+/* --- первое касание --- */
+.touch{display:grid;gap:12px}
+@media(min-width:860px){.touch{grid-template-columns:repeat(4,1fr)}}
+.tch{border:1px solid var(--rule);background:var(--paper-2);padding:14px 15px}
+.tch.own{border-left:3px solid var(--escrow)}
+.tch.ext{border-left:3px solid var(--alarm)}
+.tch h5{margin:6px 0 6px;font-size:15px}
+.tch p{margin:0;font-size:13.5px;color:var(--ink-2)}
+.funnel{margin-top:4px}
+.fstep{display:grid;grid-template-columns:1fr;gap:2px;margin-bottom:9px}
+.fstep .lab{display:flex;justify-content:space-between;font-size:13.5px}
+.fstep .lab span:last-child{font-family:var(--mono);font-size:13px}
+.fstep .tr{height:11px;background:var(--rule-2);position:relative}
+.fstep .tr i{position:absolute;inset:0 auto 0 0;background:var(--agent);transition:width .2s}
+.fstep.own .tr i{background:var(--escrow)}
+.fstep.loss .tr i{background:var(--alarm)}
+/* --- бизнес-модель --- */
+.stack{display:flex;height:34px;border:1px solid var(--ink);background:#fff;overflow:hidden;font-family:var(--mono);font-size:11px}
+.stack span{display:flex;align-items:center;justify-content:center;color:#fff;white-space:nowrap;overflow:hidden;transition:width .2s}
+.s-sell{background:var(--escrow)}
+.s-infra{background:#4C6478}
+.s-tar{background:var(--agent)}
+.s-cop{background:var(--amber)}
+.s-mp{background:var(--alarm)}
+.legend{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);margin-top:7px;letter-spacing:.02em}
+.legend i{display:inline-block;width:9px;height:9px;margin:0 5px 0 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">Пул документов Системы · слой: технический + стратегический · ред. 2 от 17.08.2026</div>
+  <h1>Агентная коммерция<br><span class="thin">архитектура агентного слоя платформы</span></h1>
+  <p class="dek">Покупатель перестаёт быть тем, кто нажимает кнопку. Заказ приходит от программы, действующей от его имени. Документ описывает, из чего состоит агентный слой Системы: кто владеет первым касанием клиента, как устроены организационная, участническая и функциональная структуры слоя, откуда берётся доход, где деньги останавливаются в эскроу и что нужно сделать, чтобы новая точка входа не стала новым маркетплейсом.</p>
+  <div class="sync">
+    <b>Синхронизировано с Правилами системы ред. 2.</b><br>
+    Карта статей: витрина и каналы → ст. 9 · клиентская база и source_type → ст. 10 · формирование каталогов и ранжирование → ст. 4.3, ст. 11 · цикл сделки и клиринг-сплит → ст. 6, 6.2 · Пирог и co-payment → ст. 7.1–7.3 · устойчивость и граница ухода → ст. 8.3–8.5 · споры → ст. 12–13.<br>
+    Ред. 2 добавляет: первое касание и метрика T2I, организационная структура слоя, шестой тип участника (оператор агентной поверхности), функциональная матрица F1–F11, бизнес-модель и юнит-экономика сделки, коррективы К13–К14.<br>
+    Модули ПТК: <b>01</b> Deal Engine FSM · <b>02</b> Escrow + Contract · <b>03</b> Auth (ЕСИА/КЭП/KYC) · <b>05</b> Widget · <b>06</b> Admin/BI · <b>08</b> Arbitrage. Витрина: 29 / 30 / 32.<br>
+    При расхождении норма — Правила ред. 2; настоящий документ — реализация и обоснование.
+  </div>
+  <div class="sync" style="margin-top:8px">
+    <b>Связанные документы.</b>
+    <a href="pravila-sistemy-v2.html" style="color:#2740C8;font-weight:600;">Правила системы ред. 2</a> (базовые ст. 1–13) ·
+    <a href="pravila-sistemy-red3-edinyi.html" style="color:#2740C8;font-weight:600;">Правила ред. 3 (единый)</a> (ст. 1–21) ·
+    <a href="pravila-agentic-articles-14-21.html" style="color:#2740C8;font-weight:600;">Статьи 14–21: нормативное дополнение</a> ·
+    <a href="26-arhitektura-ptk-synced.html" style="color:#2740C8;font-weight:600;">Архитектура ПТК</a> ·
+    <a href="11_marketplace_service_deep.html" style="color:#2740C8;font-weight:600;">Marketplace Service (11)</a> ·
+    <a href="full-cycle-seller-to-buyer.html" style="color:#2740C8;font-weight:600;">Полный цикл: от селлера до покупателя</a> · <a href="full-cycle-seller-to-buyer-red2.html" style="color:#2740C8;font-weight:600;">Полный цикл (ред. 2 — два сервиса)</a> · <a href="ptk-realization-map.html" style="color:#2740C8;font-weight:600;">Карта ПТК ↔ Реализация</a> ·
+    <a href="38-realization-plan-corrected.html" style="color:#2740C8;font-weight:600;">План реализации</a>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Содержание">
+  <a href="#sdvig">01 Сдвиг</a>
+  <a href="#asimm">02 Асимметрия</a>
+  <a href="#touch">03 Первое касание</a>
+  <a href="#arch">04 Четыре слоя</a>
+  <a href="#roli">05 Роли агентов</a>
+  <a href="#org">06 Оргструктура</a>
+  <a href="#uchast">07 Участники</a>
+  <a href="#func">08 Функции</a>
+  <a href="#trace">09 Трассировка</a>
+  <a href="#mandat">10 Мандаты</a>
+  <a href="#raschet">11 Расчёты</a>
+  <a href="#bm">12 Бизнес-модель</a>
+  <a href="#korr">13 Коррективы</a>
+  <a href="#pozic">14 Позиционирование</a>
+  <a href="#calc">15 Калькулятор канала</a>
+  <a href="#road">16 Этапы A0–A3</a>
+  <a href="#open">17 На решение</a>
+</nav>
+
+<!-- 01 -->
+<section id="sdvig">
+  <div class="sec-head"><div class="sec-num">01</div><h2>Что изменилось за год</h2></div>
+  <p class="lead">Агентная коммерция перестала быть прогнозом: стек протоколов собрался, поверхности запущены, российский контур появился в июне 2026.</p>
+  <div class="grid g2">
+    <div class="card">
+      <div class="kv">Мировой стек — четыре слоя, не четыре конкурента</div>
+      <table>
+        <tr><th>Протокол</th><th>Что решает</th><th>Состояние</th></tr>
+        <tr><td><b>UCP</b> (Google, Shopify)</td><td>Обнаружение, корзина, весь жизненный цикл; манифест <code>/.well-known/ucp</code>, транспорт REST / MCP / A2A</td><td>Самообслуживание в Shopify с 17.06.2026</td></tr>
+        <tr><td><b>ACP</b> (OpenAI, Stripe)</td><td>Оформление и оплата внутри ИИ-поверхности через разделяемый платёжный токен</td><td>Beta; витрина Instant Checkout закрыта в марте 2026 — протокол жив, продукт нет</td></tr>
+        <tr><td><b>AP2</b> (Google → FIDO Alliance)</td><td>Согласие: подписанные мандаты Intent / Cart / Payment как верифицируемые credentials</td><td>v0.2, передан FIDO 28.04.2026</td></tr>
+        <tr><td><b>x402</b></td><td>Машинные микроплатежи между агентами и API (стейблкоины)</td><td>Для РФ неприменим — см. ст. 07</td></tr>
+      </table>
+      <small class="note">Плюс контур карточных сетей: Visa Trusted Agent Protocol (идентичность агента в HTTP-заголовках), Visa Intelligent Commerce Connect, Mastercard Agent Pay.</small>
+    </div>
+    <div class="card">
+      <div class="kv">Российский контур</div>
+      <p><b>Яндекс, 29.06.2026</b> — платформа для интеграции ИИ-агентов в Алису AI. Первые агенты: Такси и Лавка. Сторонним компаниям доступ обещан до конца 2026 года. Агенты планируют длинные цепочки действий и держат контекст пользователя.</p>
+      <p><b>Оценка INFOLine-Аналитика</b> — на горизонте нескольких лет через агентную коммерцию может проходить до <b>8%</b> российских онлайн-транзакций; это самый быстрорастущий сегмент цифровой экономики.</p>
+      <p><b>Маркетплейсы, апрель 2026</b> — Ozon включил ИИ-агента в кабинет селлера; аналогичные инструменты развивают Wildberries и Яндекс Маркет. Пока это агенты <i>для продавца</i>, не агенты <i>покупателя</i>: сторона спроса ещё не занята.</p>
+      <div style="margin-top:10px">
+        <span class="pill ag">окно ~12–18 мес</span><span class="pill">поверхность есть</span><span class="pill">стандарт РФ не зафиксирован</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 -->
+<section id="asimm">
+  <div class="sec-head"><div class="sec-num">02</div><h2>Асимметрия: угроза для маркетплейса, рычаг для Системы</h2></div>
+  <p>Маркетплейс живёт на внимании: карточка, поисковая выдача, реклама, буст. Агент отменяет внимание — он не смотрит баннер и не покупает место в выдаче. Доход от продвижения (у Ozon скрытые списания автоакций до 5–7% оборота) агентом не монетизируется, а комиссия 40% становится видимой машине как разница цены между каналами.</p>
+  <p>Система живёт не на внимании, а на <b>расчётах и доверии</b>: доход Организатора — тариф расчётов и финансовые потоки (ст. 7.1), а не изъятие с оборота селлера. Агенту нужно именно то, что у Системы уже спроектировано:</p>
+  <div class="grid g3" style="margin-top:12px">
+    <div class="card"><div class="kv">Машиночитаемое предложение</div><p style="margin:0">SKU-атом с ценой, стоком, сроком и условиями (ст. 9.4) — уже единица витрины, а не картинка для человека.</p></div>
+    <div class="card"><div class="kv">Проверяемое исполнение</div><p style="margin:0">Эскроу-hold и клиринг-сплит по вкладу (ст. 6.2) дают агенту то, чего нет ни у одного протокола: деньги не уходят, пока исполнение не подтверждено.</p></div>
+    <div class="card"><div class="kv">Фиксированные правила</div><p style="margin:0">Правила ред. 2 — уже написанный машиночитаемый контракт участия. Агент умеет читать правила и не умеет угадывать штрафы задним числом.</p></div>
+  </div>
+  <p style="margin-top:16px"><b>Вывод для стратегии.</b> Агентная коммерция — это ещё один аргумент в тезисе п. 0.1 (ритейл движется к модели, честнее распределяющей ценность), но с новой силой: агент безразличен к бренду платформы и чувствителен к цене и надёжности исполнения. Модель с удержанием 12,5% в агентном канале выигрывает у модели с 40% механически, без маркетинга. Одновременно появляется новая угроза централизации — см. К7 и К10.</p>
+</section>
+
+<!-- 03 -->
+<section id="touch">
+  <div class="sec-head"><div class="sec-num">03</div><h2>Первое касание: главный предмет спора</h2></div>
+  <p class="lead">Маркетплейс дошёл до удержания 40% не комиссией, а владением первым касанием. Пока покупатель начинает путь на его поверхности, любые правила пишет он. В агентной коммерции первое касание уходит ещё дальше от продавца — в чат с ассистентом. Это единственное, что в новом канале действительно меняет расстановку сил.</p>
+  <div class="card" style="border-left:3px solid var(--escrow);margin-bottom:16px">
+    <div class="kv">Правило Системы</div>
+    <p style="margin:0;font-size:17px"><b>Первое касание можно арендовать. Идентичность покупателя — нет.</b> Охват внешней поверхности покупается ассортиментом и надёжностью исполнения; покупатель, пришедший через неё, регистрируется в базе Системы (ст. 10.2, <code>source_type=AGENT</code>) и остаётся доступен для повторной покупки напрямую.</p>
+  </div>
+  <h3>Четыре канала первого касания</h3>
+  <div class="touch">
+    <div class="tch ext"><span class="pill al">чужое касание</span><h5>Внешняя агентная поверхность</h5><p>Алиса AI и следующие за ней. Максимальный охват, ноль контроля. Ценность появляется только после конверсии касания в идентичность (К7).</p></div>
+    <div class="tch own"><span class="pill esc">своё касание</span><h5>Агент Системы</h5><p>Витрина и 5 каналов магазина селлера. Полный контроль, но охват на старте создаётся своими руками.</p></div>
+    <div class="tch own"><span class="pill esc">своё касание</span><h5>Офлайн → агент</h5><p>QR на упаковке Масса Матере, ярмарка, ПВЗ. Самое дешёвое и самое лояльное касание; Волна 0 уже его производит — ни у одного маркетплейса такого входа нет.</p></div>
+    <div class="tch"><span class="pill ag">сетевое касание</span><h5>Агент другого участника</h5><p>Рекомендация внутри Системы, B2B-закупщик, кросс-магазин. Работает с Волны 2, когда база общая.</p></div>
+  </div>
+  <h3>Воронка первого касания и что в ней измеряется</h3>
+  <p>Метрика агентного канала — не показы и не CTR: агент не смотрит баннер. Считаются две величины. <b>T2I</b> (touch-to-identity) — доля агентных сделок, превратившихся в покупателя в базе Системы. <b>Доля вторых заказов напрямую</b> — проверка того, что идентичность оказалась не декоративной. Если T2I низкий, Система платит ассортиментом за чужую базу.</p>
+  <div class="grid g2">
+    <div class="card">
+      <div class="ctrl"><label>агентных касаний в месяц <b id="fT">20 000</b></label><input type="range" id="tT" min="1000" max="200000" step="1000" value="20000"></div>
+      <div class="ctrl"><label>Система попадает в ответ агента <b id="fV">25%</b></label><input type="range" id="tV" min="5" max="60" step="1" value="25"></div>
+      <div class="ctrl"><label>выдача → сделка <b id="fC">8%</b></label><input type="range" id="tC" min="1" max="25" step="1" value="8"></div>
+      <div class="ctrl" style="margin-bottom:0"><label>доля своих касаний (агент + офлайн) <b id="fO">30%</b></label><input type="range" id="tO" min="0" max="100" step="5" value="30"></div>
+      <small class="note">Гипотеза конверсии в идентичность: своё касание — 100%, внешняя поверхность — 65% при исполненном К7 (регистрация покупателя в момент сделки).</small>
+    </div>
+    <div class="card">
+      <div class="funnel" id="funnel"></div>
+      <div class="box" id="t2iBox" style="border:1px solid var(--rule);padding:12px 14px;margin-top:4px">
+        <div class="kv">T2I · доля сделок, ставших идентичностью</div>
+        <div class="big" id="fT2I">—</div>
+        <small class="note" id="fNote"></small>
+      </div>
+    </div>
+  </div>
+  <p style="margin-top:16px"><b>Цена отказа выросла.</b> В вебе отказ по стоку — потерянный заказ. В агентном канале агент запоминает несостоявшееся исполнение и в следующий раз ставит продавца ниже. Поэтому точность фида (сток, срок, тариф логиста) — не гигиена, а условие сохранения первого касания; это же требование пойдёт в критерий готовности A0.</p>
+</section>
+
+<!-- 04 -->
+<section id="arch">
+  <div class="sec-head"><div class="sec-num">04</div><h2>Архитектура: четыре слоя над ПТК</h2></div>
+  <p>Агентный слой не переписывает ПТК. Он добавляет к нему четыре контура: поверхность, где агент говорит; предложение, которое агент читает; полномочие, которое агент предъявляет; расчёт, который агент не может подделать.</p>
+
+  <div class="layer ag"><div class="tag">A</div><div class="body">
+    <h4>Поверхность агента</h4>
+    <div class="who">внешние ассистенты · собственный агент Системы · виджет (модуль 05)</div>
+    <p style="margin:0">Три входа: (1) чужие поверхности — платформа агентов Алисы AI и последующие; (2) собственный агент Системы в витрине, в чате и в 5 каналах магазина селлера (ст. 9); (3) прямой программный вход для агентов B2B-закупщиков. Каждая поверхность — канал, а не владелец: заказ и покупатель регистрируются в Системе (ст. 10.2, <code>source_type=AGENT</code>).</p>
+  </div></div>
+
+  <div class="layer"><div class="tag">B</div><div class="body">
+    <h4>Машиночитаемое предложение</h4>
+    <div class="who">манифест · фид каталога · ранжирование (ст. 4.3, 11.2) · витрина 29/30/32</div>
+    <p style="margin:0">Манифест Системы по адресу <code>/.well-known/agent-commerce</code> (совместимый по полям с UCP-манифестом): категории, регионы, правила участия, ссылки на нормы, точки входа. Фид над таблицей <code>skus</code> из Спринта 0: цена, остаток, срок сборки и доставки, условия возврата, тариф выбранного логиста, рейтинг магазина. Ответ на запрос агента формирует формула ранжирования ст. 11.2 — и она не должна сводиться к цене (К8).</p>
+  </div></div>
+
+  <div class="layer"><div class="tag">C</div><div class="body">
+    <h4>Полномочие и согласие</h4>
+    <div class="who">Auth Service (модуль 03) · ЕСИА / КЭП / KYC · журнал мандатов</div>
+    <p style="margin:0">Российская реализация логики AP2: три подписанных мандата — <b>намерение</b> (что и в каком лимите разрешено), <b>корзина</b> (что именно выбрано), <b>платёж</b> (сколько списано в эскроу). Подпись — существующие в РФ юридически значимые механизмы, а не собственный крипто-огород. Плюс идентичность самого агента: кто его выпустил, чей мандат он несёт, не отозван ли он.</p>
+  </div></div>
+
+  <div class="layer esc"><div class="tag">D</div><div class="body">
+    <h4>Исполнение и расчёт</h4>
+    <div class="who">Deal Engine FSM (модуль 01) · Escrow + Contract (модуль 02) · клиринг ст. 6.2 · Arbitrage (модуль 08)</div>
+    <p style="margin:0">Автомат сделки получает агентные состояния и события; эскроу держит средства 1–3 дня до подтверждения исполнения; клиринг расщепляет платёж по вкладу (селлер — выручка, инфраструктура — тариф из реестра, Организатор — расчётный тариф). Спор агентной сделки разбирается по аудит-следу мандатов — это и есть механизм ответственности, которого протоколам не хватает.</p>
+  </div></div>
+
+  <p style="margin-top:16px"><b>Что здесь новое, а что уже есть.</b> Слои B и D — на 80% существующая функциональность, которой нужен машинный интерфейс. Слой C — новый сервис (журнал мандатов и верификация агента). Слой A — продуктовая работа: собственный агент плюс подключение к чужим поверхностям.</p>
+</section>
+
+<!-- 04 -->
+<section id="roli">
+  <div class="sec-head"><div class="sec-num">05</div><h2>Пять ролей агентов и их привязка к модулям</h2></div>
+  <div class="scroll">
+  <table>
+    <tr><th>Роль</th><th>Кого представляет</th><th>Что делает</th><th>Модуль / статья</th></tr>
+    <tr><td><b>Покупательский агент</b></td><td>Покупателя (внешний или агент Системы)</td><td>Формулирует запрос, читает фид, собирает корзину, предъявляет мандат, принимает чек</td><td>Слой A/C · ст. 10, 2.4</td></tr>
+    <tr><td><b>Агент селлера</b></td><td>Селлера</td><td>Держит актуальными цену/сток/сроки, отвечает на уточнения, подтверждает возможность сборки</td><td>Витрина 29/32 · ст. 9</td></tr>
+    <tr><td><b>Агент Организатора (диспетчер)</b></td><td>Систему как казначея и регистратора</td><td>Проверяет мандат и идентичность агента, применяет ранжирование, маршрутизирует заказ, ведёт модерацию publish-first</td><td>Admin/BI 06 · ст. 4, 11</td></tr>
+    <tr><td><b>Агенты инфраструктуры</b></td><td>Фулфилмент, склад, последнюю милю, магистраль</td><td>Отдают слоты и тарифы, подтверждают приёмку и вручение — машинные <i>proof of delivery</i></td><td>Deal Engine 01 · ст. 3.2, 6</td></tr>
+    <tr><td><b>Расчётный агент</b></td><td>Эскроу и Расчётный Банк</td><td>Держит средства, исполняет сплит, инициирует возврат, отдаёт аудит-след</td><td>Escrow 02 · ст. 6.2, 7</td></tr>
+  </table>
+  </div>
+  <p style="margin-top:14px">Роль диспетчера — точка, где проверяется нейтральность (ст. 7, 8.5). Диспетчер маршрутизирует и проверяет, но не назначает доли и не получает преимущества для собственного товара: у Организатора товара нет.</p>
+</section>
+
+<!-- 06 -->
+<section id="org">
+  <div class="sec-head"><div class="sec-num">06</div><h2>Организационная структура агентного слоя</h2></div>
+  <p>Организатор в агентном канале получает три полномочия, которые нельзя держать в одних руках: <b>допуск</b> агентов и поверхностей, <b>выдачу</b> (ранжирование) и <b>деньги</b>. Их разделение — не бюрократия, а исполнение ст. 7 (казначей, а не бенефициар) и ст. 8.5 (доли и правила не назначаются сверху). Арбитраж выведен из подчинения блока партнёрств.</p>
+  <div class="org">
+    <div class="top"><div class="kv">Организатор · агентный слой</div><p style="margin:0;font-size:13.5px;color:var(--ink-2)">реестр, каталог, диспетчер, журнал мандатов, фонд co-payment</p></div>
+    <div class="spine"></div>
+    <div class="orgrow">
+      <div class="orgbox"><span class="stage">этап A1</span><h5>Реестр агентов и комплаенс мандатов</h5><p>Допуск агентов и поверхностей, ключи и отзыв, лимиты по умолчанию, журнал согласий. 1–2 роли, совмещение с модерацией реестра участников (ст. 4).</p></div>
+      <div class="orgbox"><span class="stage">этап A0</span><h5>Каталог и агентная выдача</h5><p>Контракт полей фида, манифест, веса формулы ст. 11.2 и их публикация, антиманипуляция. 1–2 роли, совмещение с витриной.</p></div>
+      <div class="orgbox"><span class="stage">этап A2</span><h5>Расчёты и клиринг</h5><p>Эскроу-hold и релиз, сплит по вкладу, биллинг co-payment, фонд инфраструктуры. 1–2 роли на базе НСВР плюс сторона Расчётного Банка.</p></div>
+      <div class="orgbox"><span class="stage">этап A1–A2</span><h5>Партнёрства поверхностей</h5><p>Подключение внешних агентных поверхностей, условия входа и выхода, поддержание минимум двух (К10, К14). 1 роль.</p></div>
+    </div>
+    <div class="spine"></div>
+    <div class="orgrow" style="grid-template-columns:1fr 1fr">
+      <div class="orgbox sep"><span class="stage">этап A2 · независимость от коммерции</span><h5>Арбитраж агентных споров</h5><p>Разбор по следу мандатов (модуль 08, ст. 12–13). Не подчинён каталогу и партнёрствам, иначе спор решается в пользу канала, а не нормы. 0,5 роли, совмещение с общим арбитражем.</p></div>
+      <div class="orgbox sep"><span class="stage">этап A0 · метрики раньше объёма</span><h5>Наблюдаемость (BI, модуль 06)</h5><p>T2I и доля вторых заказов напрямую, доля агентного GMV, отзывы мандатов, споры на 1000 агентных сделок, себестоимость слоя.</p></div>
+    </div>
+  </div>
+  <h3>Три «нельзя» в распределении полномочий</h3>
+  <div class="rules3">
+    <div class="rule-no"><b>нельзя №1</b>Один блок не может одновременно допускать агента и ранжировать его выдачу — иначе допуск продаётся.</div>
+    <div class="rule-no"><b>нельзя №2</b>Партнёрства не влияют на ранжирование. Поверхность приносит охват, а не место в выдаче (К8).</div>
+    <div class="rule-no"><b>нельзя №3</b>Расчёты не меняют правила сплита без изменения нормы. Веса выдачи и ставка co-payment меняются через Правила, а не приказом.</div>
+  </div>
+  <p style="margin-top:14px"><b>Сколько это людей.</b> На этапах A0–A2 — 5–8 ролей, из которых 3–4 совмещаются с существующими функциями Организатора (модерация реестра, витрина, арбитраж). Отдельный найм критичен только в двух местах: комплаенс мандатов и партнёрства поверхностей — обе роли новые по содержанию, а не по объёму.</p>
+</section>
+
+<!-- 07 -->
+<section id="uchast">
+  <div class="sec-head"><div class="sec-num">07</div><h2>Структура участников: пятеро прежних и один новый</h2></div>
+  <p>К четырём типам участников (селлер, инфраструктура, банк, Организатор) и покупателю агентный канал добавляет <b>шестой тип — оператора агентной поверхности</b>. Это не поставщик услуги и не рекламная площадка: он владеет первым касанием, то есть тем же активом, вокруг которого построена вся модель. Поэтому он входит в реестр на прописанных условиях, как и остальные.</p>
+  <div class="scroll">
+  <table>
+    <tr><th>Участник</th><th>Его агент</th><th>Что вносит</th><th>Что получает</th><th>Условия (единовременные / текущие)</th><th>Граница ухода</th></tr>
+    <tr><td><b>Покупатель</b></td><td>покупательский</td><td>намерение и подписанный мандат</td><td>эскроу-защиту, переносимую историю покупок</td><td>подпись ЕСИА/КЭП · платежей нет</td><td>цена или срок хуже, чем у прямого маркетплейса</td></tr>
+    <tr><td><b>Селлер</b></td><td>агент магазина</td><td>SKU-атом машиночитаемо: цена, сток, срок, условия</td><td>агентный спрос без комиссии с оборота, 100% выручки</td><td>публикация фида — бесплатно · расчётный тариф 0,25→0,5% + co-payment за сверх-базовое</td><td>удержание выше ~15% GMV или выдача только по цене</td></tr>
+    <tr><td><b>Инфраструктура</b><br><small>5 подтипов</small></td><td>агент подтверждений</td><td>слоты, тарифы из реестра, машинные proof-of-delivery</td><td>гарантию оплаты из эскроу, автоклиринг вместо сверки</td><td>подключение агента подтверждений · co-payment по вызовам, налога с оборота нет</td><td>подтверждения требуют ручной работы дороже выгоды</td></tr>
+    <tr><td><b>Расчётный Банк</b></td><td>расчётный</td><td>эскроу-API, лимиты, KYC</td><td>поток средств и кредитование (потоки 3–4)</td><td>интеграция API · доля в потоках 3–4</td><td>объём ниже порога рентабельности API</td></tr>
+    <tr><td><b>Организатор</b></td><td>диспетчер</td><td>реестр, каталог, журнал мандатов, арбитраж</td><td>расчётный тариф (поток 2)</td><td>затраты слоя · co-payment покрывает себестоимость, не доход</td><td>co-payment не покрывает себестоимость слоя</td></tr>
+    <tr style="background:#fff"><td><b>Оператор агентной поверхности</b><br><small>новый тип</small></td><td>поверхность целиком</td><td>охват и первое касание</td><td>ассортимент, готовый к машинной покупке, и подтверждаемое исполнение</td><td>договор с фиксированными условиями в реестре, правила выхода до подключения (К5), запрет на присвоение идентичности покупателя (К7) · фиксированная плата или ноль — никогда процент от GMV, назначаемый самой поверхностью</td><td>мало ассортимента или низкая надёжность исполнения</td></tr>
+  </table>
+  </div>
+  <p style="margin-top:14px"><b>Главный риск нового типа.</b> У оператора поверхности есть встроенный стимул наращивать долю — ровно так маркетплейс прошёл путь от 15% к 40%. Защита не в договоре, а в структуре: минимум две внешние поверхности с первого дня (К10), собственный агент как третий вход и T2I как измеряемое условие продолжения партнёрства.</p>
+</section>
+
+<!-- 08 -->
+<section id="func">
+  <div class="sec-head"><div class="sec-num">08</div><h2>Функциональная структура: что новое, а что уже построено</h2></div>
+  <p>Одиннадцать функций агентного слоя с исполнителем, модулем ПТК и нормой. Столбец «состояние» отвечает на вопрос об объёме работ: две функции есть, пять требуют доработки существующего, четыре создаются.</p>
+  <div class="scroll">
+  <table>
+    <tr><th>№</th><th>Функция</th><th>Блок-исполнитель</th><th>Модуль / документ</th><th>Норма</th><th>Состояние</th></tr>
+    <tr><td>F1</td><td>Обнаружение: манифест и точки входа</td><td>Каталог</td><td>витрина 30</td><td>ст. 4, 9</td><td>доработка</td></tr>
+    <tr><td>F2</td><td>Котировка и агентное ранжирование</td><td>Каталог</td><td>витрина 32</td><td>ст. 11.2</td><td>доработка · агентные веса</td></tr>
+    <tr><td>F3</td><td>Идентичность агента и допуск в реестр</td><td>Реестр</td><td>03 + реестр агентов</td><td>ст. 4</td><td><b>новое</b></td></tr>
+    <tr><td>F4</td><td>Мандаты и журнал согласий</td><td>Комплаенс</td><td>03 (ЕСИА/КЭП)</td><td>ст. 2.4</td><td><b>новое</b></td></tr>
+    <tr><td>F5</td><td>Приём и валидация агентного заказа</td><td>Диспетчер</td><td>01 · <code>AGENT_INTAKE</code></td><td>ст. 6</td><td>доработка FSM</td></tr>
+    <tr><td>F6</td><td>Маршрутизация инфраструктуры</td><td>Диспетчер</td><td>01</td><td>ст. 3.2, 6</td><td>доработка</td></tr>
+    <tr><td>F7</td><td>Эскроу-hold и релиз</td><td>Расчёты</td><td>02</td><td>ст. 6</td><td>есть</td></tr>
+    <tr><td>F8</td><td>Клиринг-сплит по вкладу</td><td>Расчёты</td><td>02 / 06</td><td>ст. 6.2, 7</td><td>есть</td></tr>
+    <tr><td>F9</td><td>Спор и арбитраж по следу мандатов</td><td>Арбитраж</td><td>08</td><td>ст. 12–13</td><td>доработка</td></tr>
+    <tr><td>F10</td><td>Биллинг co-payment и фонд слоя</td><td>Расчёты</td><td>06</td><td>ст. 7.2</td><td><b>новое</b></td></tr>
+    <tr><td>F11</td><td>Наблюдаемость первого касания (T2I)</td><td>BI</td><td>06</td><td>ст. 8</td><td><b>новое</b></td></tr>
+  </table>
+  </div>
+  <p style="margin-top:14px">Функции F1–F2 и F5–F6 — это интерфейс к тому, что уже исполняется в фундаменте Спринта 0 (схема <code>skus</code>, <code>orders</code>, <code>clearing_splits</code>). Настоящая новая инженерия — F3, F4, F10, F11, и все четыре компактны: реестр агентов, журнал согласий, счётчик потребления, набор метрик. Отсюда и оценка A0 в 2–4 недели.</p>
+</section>
+
+<!-- 09 -->
+<section id="trace">
+  <div class="sec-head"><div class="sec-num">09</div><h2>Трассировка агентной сделки</h2></div>
+  <p>Ниже — обмен сообщениями одной сделки: кто кому что подписывает и какая норма это держит. Переключатель <b>без эскроу</b> показывает, где именно связь рвётся, если агентный канал построен без расчётного контура — и почему тогда роль гаранта возвращается к чужой платформе.</p>
+  <div class="trace">
+    <div class="trace-bar">
+      <div class="ttl">Обмен сообщениями · сделка №1</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <div class="switch" role="group" aria-label="Режим расчёта">
+          <button class="btn dark" id="mEsc" aria-pressed="true">с эскроу</button>
+          <button class="btn dark" id="mNo" aria-pressed="false">без эскроу</button>
+        </div>
+        <button class="btn dark" id="tStep">шаг →</button>
+        <button class="btn dark" id="tAll">все</button>
+        <button class="btn dark" id="tReset">сброс</button>
+      </div>
+    </div>
+    <div class="trace-body" id="traceBody"></div>
+  </div>
+  <small class="note">Состояния добавляются к автомату сделки модуля 01: <code>AGENT_INTAKE</code> → <code>MANDATE_VERIFIED</code> → <code>AGENT_HELD</code> и терминальное <code>MANDATE_REJECTED</code>. Спор агентной сделки поступает в модуль 08 с полным следом подписей.</small>
+</section>
+
+<!-- 06 -->
+<section id="mandat">
+  <div class="sec-head"><div class="sec-num">10</div><h2>Мандаты: полномочие вместо доверия к трафику</h2></div>
+  <p>Мандат — это подписанное покупателем разрешение агенту: что купить, на какую сумму, до какого срока, у кого. Мировой стек решает этим вопрос ответственности (кто согласился и на что). Для Системы мандат решает ещё две задачи: он превращает агентный заказ в юридически значимое согласие и он же становится предметом разбора в споре.</p>
+  <div class="grid g2">
+    <div class="card">
+      <div class="kv">Три мандата и их содержание</div>
+      <table>
+        <tr><th>Мандат</th><th>Подписывает</th><th>Поля</th></tr>
+        <tr><td>Намерение</td><td>Покупатель</td><td>категория/запрос, лимит суммы, срок действия, скоуп продавцов, право на автопродление — нет</td></tr>
+        <tr><td>Корзина</td><td>Агент (в рамках намерения)</td><td>конкретные SKU, цена, срок доставки, выбранный логист, ссылка на мандат намерения</td></tr>
+        <tr><td>Платёж</td><td>Покупатель или агент по лимиту</td><td>сумма в эскроу, реквизит, идентификатор сделки, условие релиза</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="kv">Реализация в российском контуре</div>
+      <ul class="tight">
+        <li><b>Подпись</b> — ЕСИА и КЭП через Auth Service (модуль 03), уже заложенный в ПТК; отдельная схема подписи не создаётся.</li>
+        <li><b>Идентичность агента</b> — реестр агентов у Организатора (по образцу реестра участников, ст. 4): выпустивший, публичный ключ, статус, лимиты по умолчанию, отзыв.</li>
+        <li><b>Отзыв и лимиты</b> — покупатель отзывает мандат в один шаг; отозванный мандат блокирует создание сделки, но не рвёт уже открытую (средства в эскроу, возврат по ст. 12).</li>
+        <li><b>Журнал</b> — неизменяемый лог: мандат, версия правил, снимок цены и условий на момент согласия. Это доказательная база спора и одновременно защита селлера от «спора из воздуха».</li>
+        <li><b>Безмандатный трафик</b> — принимается как обычный веб-заказ с полной проверкой человека, но не получает агентных лимитов и приоритетов (К9).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 07 -->
+<section id="raschet">
+  <div class="sec-head"><div class="sec-num">11</div><h2>Расчёты агентного канала</h2></div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="kv">Покупатель → Система</div>
+      <p>Только существующие рельсы: эквайринг и СБП, средства в эскроу на 1–3 дня, релиз по подтверждению исполнения. Мандат платежа привязывается к сделке, а не к карте: агент никогда не держит платёжный реквизит — здесь логика ACP-токена реализуется через эскроу-счёт, что в РФ и юридически чище, и для селлера убедительнее.</p>
+      <p style="margin:0"><b>Стейблкоин-рельса x402 неприменима.</b> Криптовалюта в РФ не является средством платежа, банкам прямые операции запрещены; законопроект «О цифровой валюте и цифровых правах» сохраняет запрет на внутренние платежи. Машинные микроплатежи строим на СБП и внутреннем клиринге Системы.</p>
+    </div>
+    <div class="card">
+      <div class="kv">Агент ↔ агент внутри Системы</div>
+      <p>Расчёты за слот фулфилмента, хранение, милю — это уже клиринг ст. 6.2, только инициируемый машиной: агент инфраструктуры выставляет тариф из реестра (ст. 3.2), диспетчер собирает сплит, эскроу исполняет. Ручная сверка исчезает — это, по опросу мотивации инфраструктуры, второй по силе аргумент вступления после гарантии оплаты.</p>
+      <p style="margin:0"><b>Тариф самого агентного слоя — co-payment по потреблению</b> (ст. 7.2): за верификации мандатов и вызовы фида, ступенями, а не процентом с оборота. Процент превратил бы агентный слой в переименованный налог и сузил бы разрыв 12,5% против 40% — ровно та ошибка, которая была снята в решении по комиссии 1% (К11).</p>
+    </div>
+  </div>
+</section>
+
+<!-- 08 -->
+<!-- 12 -->
+<section id="bm">
+  <div class="sec-head"><div class="sec-num">12</div><h2>Бизнес-модель агентного канала</h2></div>
+  <p class="lead">Агентный канал не создаёт новую статью дохода. Он проходит через те же четыре потока Пирога (ст. 7) и добавляет одну позицию расходного характера — co-payment на себестоимость слоя. Это сознательное решение: любой процент с оборота, введённый «за агентность», сузил бы разрыв 12,5% против 40% и вернул бы модель к маркетплейсному полюсу (К11).</p>
+  <h3>Кто за что платит</h3>
+  <div class="scroll">
+  <table>
+    <tr><th>Плательщик</th><th>За что платит</th><th>Форма</th><th>Чего не платит</th></tr>
+    <tr><td>Покупатель</td><td>цену товара</td><td>эквайринг / СБП в эскроу</td><td>ничего за агентный слой</td></tr>
+    <tr><td>Селлер</td><td>расчёт сделки; сверх-базовые модули (расширенный фид, аналитика агентных запросов, повышенные лимиты API)</td><td>расчётный тариф 0,25%→0,5% + co-payment ступенями</td><td>комиссию с оборота; плату за наличие в фиде и приём агентных заказов</td></tr>
+    <tr><td>Инфраструктура</td><td>вызовы агента подтверждений сверх базового объёма</td><td>co-payment по потреблению</td><td>процент с оборота (решение по комиссии 1% остаётся снятым)</td></tr>
+    <tr><td>Оператор поверхности</td><td>верификации мандатов при большом объёме — либо ноль в обмен на охват</td><td>фиксированная или ступенчатая плата по договору</td><td>долю GMV, которую назначает себе сама</td></tr>
+    <tr><td>Расчётный Банк</td><td>—</td><td>делит с Организатором потоки 3–4</td><td>—</td></tr>
+  </table>
+  </div>
+  <p><b>Чего co-payment не покупает.</b> Место в агентной выдаче не продаётся ни за какие деньги. Как только приоритет в ответе агента становится товаром, формула ст. 11.2 теряет смысл, а покупательский агент — доверие к Системе (К8). Продаются инструменты, а не позиция.</p>
+
+  <h3>Юнит-экономика одной агентной сделки</h3>
+  <p>Куда расходится чек покупателя в Системе и в маркетплейсе при том же заказе. Ползунки — параметры сделки; сравнение снизу — тот же чек в маркетплейсе при удержании ~40%.</p>
+  <div class="grid g2">
+    <div class="card">
+      <div class="ctrl"><label>средний чек, ₽ <b id="uA">1 500</b></label><input type="range" id="rA" min="500" max="10000" step="100" value="1500"></div>
+      <div class="ctrl"><label>доля инфраструктуры в чеке <b id="uI">18%</b></label><input type="range" id="rI" min="5" max="35" step="1" value="18"></div>
+      <div class="ctrl"><label>расчётный тариф <b id="uT">0,25%</b></label><input type="range" id="rT" min="10" max="50" step="5" value="25"></div>
+      <div class="ctrl" style="margin-bottom:0"><label>co-payment слоя <b id="uC">0,30%</b></label><input type="range" id="rC" min="0" max="60" step="5" value="30"></div>
+      <small class="note">Co-payment — не доход Организатора, а фонд себестоимости слоя (ст. 7.2). Ставка задана в процентах только для сопоставимости картинки; в норме она ступенчатая, по потреблению.</small>
+    </div>
+    <div class="card">
+      <div class="kv">Система</div>
+      <div class="stack" id="stkSys"></div>
+      <div class="legend"><i class="s-sell" style="background:var(--escrow)"></i>селлер <i class="s-infra" style="background:#4C6478"></i>инфраструктура <i class="s-tar" style="background:var(--agent)"></i>расчёт <i class="s-cop" style="background:var(--amber)"></i>фонд слоя</div>
+      <div class="kv" style="margin-top:16px">Маркетплейс · тот же чек</div>
+      <div class="stack" id="stkMp"></div>
+      <div class="legend"><i class="s-sell" style="background:var(--escrow)"></i>селлер <i class="s-mp" style="background:var(--alarm)"></i>удержание платформы ~40%</div>
+      <div class="box" style="border:1px solid var(--rule);padding:12px 14px;margin-top:14px">
+        <div class="kv">Селлеру с одной сделки</div>
+        <div class="big" id="uDelta">—</div>
+        <small class="note" id="uNote"></small>
+      </div>
+    </div>
+  </div>
+
+  <h3>Честная оценка масштаба</h3>
+  <div class="grid g3">
+    <div class="card"><div class="kv">Год 1 · GMV ~88 млн</div><p style="margin:0">Агентная доля 5–10%. Прирост потока 2 — доли миллиона рублей. В деньгах незначим.</p></div>
+    <div class="card"><div class="kv">Год 2 · GMV ~605 млн</div><p style="margin:0">Агентная доля 15%. Поток 2 растёт примерно на 5% за счёт агентного прироста спроса — около 0,15 млн ₽ к ~3,0 млн ₽.</p></div>
+    <div class="card" style="border-left:3px solid var(--escrow)"><div class="kv">Зачем тогда</div><p style="margin:0">Агентный слой в первые два года — не источник дохода, а страховка от потери первого касания. Стоимость входа сейчас — недели работы; стоимость входа после того, как поверхности займут спрос, — переговоры с позиции просителя.</p></div>
+  </div>
+  <p style="margin-top:14px"><b>Условие масштабируемости.</b> Себестоимость агентной сделки (верификация мандата, вызовы фида, эскроу-операция, резерв на спор) должна укладываться в расчётный тариф плюс co-payment. Метрика для BI: себестоимость на 1000 агентных заказов и её динамика — по логике затрат на сеть она обязана падать в процентах от GMV, как и общие затраты инфраструктуры (с ~9,8% на старте до ~1% при 2000 участниках).</p>
+</section>
+
+<!-- 13 -->
+<section id="korr">
+  <div class="sec-head"><div class="sec-num">13</div><h2>Коррективы К7–К14</h2></div>
+  <p>Продолжение нумерации коррективов К1–К6. Каждый снимает риск, который в агентном канале проявляется сильнее, чем в обычном.</p>
+  <div class="korr"><div class="id">К7 · идентичность</div><h4>Покупатель агентного заказа регистрируется в Системе, а не остаётся у поверхности</h4><p>Иначе Алиса AI (или любая другая поверхность) становится владельцем клиентской базы, а Система — безымянным поставщиком, то есть воспроизводится болезнь маркетплейса на новом уровне. Технически: <code>source_type=AGENT</code> в ст. 10.2, привязка к магазину селлера, право на повторную покупку напрямую.</p></div>
+  <div class="korr"><div class="id">К8 · ценовой пол</div><h4>Ранжирование для агентов не сводится к цене</h4><p>Агент оптимизирует измеримое. Если фид отдаёт только цену, начинается гонка на дно, и она съест маржу селлера — то есть сломает сам смысл модели (100% выручки теряет ценность, если выручка обрушена). В формуле ст. 11.2 для агентного запроса вес исполнения (срок, точность, доля споров) должен быть не ниже веса цены, и этот вес публикуется.</p></div>
+  <div class="korr"><div class="id">К9 · мандат обязателен</div><h4>Ни одна агентная сделка не создаётся без проверенного мандата и идентичности агента</h4><p>Безмандатный агентный трафик — это либо скрейпинг, либо фрод. Он обслуживается как обычный веб-заказ, без агентных лимитов, приоритетов и упрощённых сценариев.</p></div>
+  <div class="korr"><div class="id">К10 · не одна поверхность</div><h4>Минимум две внешние агентные поверхности плюс собственный агент — с первого дня</h4><p>Прямая аналогия К2 (два фулфилмент-оператора ради переговорной позиции). Единственная внешняя поверхность через год начнёт брать долю — так же, как маркетплейс начал с 15% и пришёл к 40%.</p></div>
+  <div class="korr"><div class="id">К11 · тариф по потреблению</div><h4>Агентный слой финансируется co-payment по потреблению, не процентом с оборота</h4><p>Условия ст. 7.2 без исключений: покрытие себестоимости слоя, привязка к потреблению ресурса, прозрачный фонд. Базовый уровень (наличие в фиде, приём агентных заказов) остаётся бесплатным.</p></div>
+  <div class="korr"><div class="id">К12 · регуляторный контур</div><h4>Платёжная часть — только СБП и эквайринг; мандаты — юридически значимые согласия</h4><p>Крипто-рельсы исключены. Мандаты и журнал согласий проектируются с расчётом на требования готовящегося регулирования ИИ и на 152-ФЗ: хранение подписей, минимизация данных, срок и цель обработки в теле мандата.</p></div>
+  <div class="korr"><div class="id">К13 · касание как актив</div><h4>Первое касание учитывается и конвертируется, а не просто принимается</h4><p>Каждое агентное касание получает источник и владельца, T2I и доля вторых заказов напрямую попадают в BI (модуль 06) с этапа A0 — раньше, чем появится объём. Канал, у которого T2I не растёт, закрывается или пересматривается: он покупает чужую базу за наш ассортимент.</p></div>
+  <div class="korr"><div class="id">К14 · поверхность — участник</div><h4>Оператор агентной поверхности входит в реестр на прописанных условиях, а не арендует нам витрину</h4><p>Расширение К5 (правила выхода до запуска) на новый тип участника: фиксированные условия в реестре, судьба покупателей и незакрытых сделок при выходе, запрет присвоения идентичности (К7), никакой доли GMV, которую поверхность назначает себе сама.</p></div>
+</section>
+
+<!-- 09 -->
+<section id="pozic">
+  <div class="sec-head"><div class="sec-num">14</div><h2>Позиционирование: три варианта</h2></div>
+  <p>Выберите вариант — оценки по четырём осям обновятся. Оси те же, что в проверке устойчивости: скорость до первого агентного заказа, устойчивость по границе ухода, контроль идентичности покупателя, стоимость реализации (выше столбик — дороже).</p>
+  <div class="scen" id="scen">
+    <button class="s" data-i="0" aria-pressed="false"><span class="pill ag">вариант 1</span><h4>Только чужие поверхности</h4><p style="margin:0;font-size:14.5px;color:var(--ink-2)">Публикуем фид и подключаемся к платформе агентов; своего агента не строим.</p></button>
+    <button class="s" data-i="1" aria-pressed="false"><span class="pill ag">вариант 2</span><h4>Только свой агент</h4><p style="margin:0;font-size:14.5px;color:var(--ink-2)">Агент Системы в витрине и 5 каналах; наружу не публикуемся.</p></button>
+    <button class="s" data-i="2" aria-pressed="true"><span class="pill esc">вариант 3</span><h4>Гибрид: публикуемся наружу, владеем расчётом и идентичностью</h4><p style="margin:0;font-size:14.5px;color:var(--ink-2)">Фид и мандаты наружу, покупатель и расчёт — внутри (К7 + К10).</p></button>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="kv" id="scenTitle">Гибрид</div>
+    <div class="axes" id="axes"></div>
+    <p id="scenNote" style="margin:12px 0 0;font-size:14.5px"></p>
+  </div>
+</section>
+
+<!-- 10 -->
+<section id="calc">
+  <div class="sec-head"><div class="sec-num">15</div><h2>Калькулятор агентного канала</h2></div>
+  <p>Модель гипотез, а не прогноз: коэффициенты проверяются на пилоте. Базовые ориентиры взяты из пула — удержание с селлера в Системе 12,5% против ~40% у маркетплейса, расчётный тариф 0,5%, потолок устойчивости ~15% GMV (ст. 8.5).</p>
+  <div class="grid g2">
+    <div class="card">
+      <div class="ctrl"><label>GMV Системы, млн ₽ / мес <b id="vG">50</b></label><input type="range" id="sG" min="5" max="600" step="5" value="50"></div>
+      <div class="ctrl"><label>доля агентного GMV <b id="vS">15%</b></label><input type="range" id="sS" min="0" max="60" step="1" value="15"></div>
+      <div class="ctrl"><label>ценовое давление агентов <b id="vP">4%</b></label><input type="range" id="sP" min="0" max="12" step="1" value="4"></div>
+      <div class="ctrl" style="margin-bottom:0"><label>идентичность остаётся в Системе <b id="vI">60%</b></label><input type="range" id="sI" min="0" max="100" step="5" value="60"></div>
+      <small class="note">Допущения: базовая маржа селлера 25% от цены; агентный канал добавляет спрос с коэффициентом 0,35 от своей доли; co-payment агентного слоя 0,3% на агентной доле.</small>
+    </div>
+    <div class="out">
+      <div class="box ok"><div class="kv">Маржа селлера после ценового давления</div><div class="big" id="oM">24,4%</div><div class="bar"><i class="esc" id="bM" style="width:60%"></i></div><small class="note" id="nM"></small></div>
+      <div class="box" id="boxU"><div class="kv">Суммарное удержание с селлера · потолок 15%</div><div class="big" id="oU">12,5%</div><div class="bar"><i id="bU" style="width:83%"></i></div><small class="note" id="nU"></small></div>
+      <div class="box" id="boxR"><div class="kv">Покупатели вне контроля Системы · порог 20%</div><div class="big" id="oR">6,0%</div><div class="bar"><i class="al" id="bR" style="width:30%"></i></div><small class="note" id="nR"></small></div>
+      <div class="box"><div class="kv">Поток 2 Организатора · расчётный тариф</div><div class="big" id="oD">0,26 млн ₽/мес</div><small class="note" id="nD"></small></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section id="road">
+  <div class="sec-head"><div class="sec-num">16</div><h2>Этапы A0–A3 в существующих треках</h2></div>
+  <p>Агентный слой не новый проект и не отдельный бюджет. A0 и A1 идут в Треке A (витрина, не зависит от банка), A2 — в Треке B (эскроу, зависит от API Расчётного Банка), A3 — после Волны 1.</p>
+  <div class="road">
+    <div class="stage"><div class="code">A0</div><div>
+      <h4>Машиночитаемый каталог</h4>
+      <p>Спринт 2, Трек A · 2–4 недели · без внешних зависимостей</p>
+      <ul class="tight">
+        <li>Манифест <code>/.well-known/agent-commerce</code> и фид над таблицей <code>skus</code> из фундамента Спринта 0 — API уже есть (<code>GET /shop/{slug}/products</code>), нужен агентный контракт полей и лимиты.</li>
+        <li>Пилот на massamadre.ru: 8 SKU хлеба и выпечки как первый агентно-читаемый ассортимент Системы.</li>
+        <li><b>Критерий готовности:</b> внешний ассистент собирает корзину из каталога и получает корректную цену, сток и срок — без участия человека и без скрейпинга.</li>
+      </ul>
+    </div></div>
+    <div class="stage"><div class="code">A1</div><div>
+      <h4>Собственный агент Системы</h4>
+      <p>Спринт 3, Трек A · параллельно полному циклу Волны 1</p>
+      <ul class="tight">
+        <li>Агент в витрине и в 5 каналах магазина селлера (ст. 9): подбор, корзина, статус заказа.</li>
+        <li><code>source_type=AGENT</code> в базе покупателей (ст. 10.2) — исполнение К7 с первого агентного заказа.</li>
+        <li>Реестр агентов и первая версия журнала мандатов без платёжного плеча (согласие + лимит, оплата обычная).</li>
+      </ul>
+    </div></div>
+    <div class="stage"><div class="code">A2</div><div>
+      <h4>Мандаты и эскроу как механизм исполнения</h4>
+      <p>Трек B · после подключения Расчётного Банка (критический путь Волны −1)</p>
+      <ul class="tight">
+        <li>Полный цикл: мандат платежа → hold в эскроу → подтверждение исполнения → сплит (ст. 6.2).</li>
+        <li>Агентные состояния в FSM модуля 01, разбор агентных споров в модуле 08 по следу подписей.</li>
+        <li>Внешние поверхности: подключение к платформе агентов Алисы AI при открытии доступа сторонним, минимум две поверхности (К10).</li>
+      </ul>
+    </div></div>
+    <div class="stage"><div class="code">A3</div><div>
+      <h4>Агент-агентские расчёты с инфраструктурой</h4>
+      <p>После Волны 1 · когда в каждой роли ≥2 участника</p>
+      <ul class="tight">
+        <li>Слоты, тарифы и подтверждения между агентами селлера, фулфилмента и мили — без ручной сверки.</li>
+        <li>Co-payment агентного слоя по потреблению (К11), прозрачный фонд.</li>
+        <li>BI-контур в модуле 06: доля агентного GMV, доля мандатов с отзывом, споры на 1000 агентных сделок.</li>
+      </ul>
+    </div></div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section id="open">
+  <div class="sec-head"><div class="sec-num">17</div><h2>На решение</h2></div>
+  <p>Четыре вопроса, которые нельзя вывести из документа — они требуют вашего выбора и определят объём следующего шага.</p>
+  <div class="grid g2">
+    <div class="card"><div class="kv">1 · внешняя поверхность</div><p style="margin:0">Заявляться на платформу агентов Алисы AI сейчас (пока доступ у сервисов Яндекса, но открытие обещано до конца 2026) или ждать открытия и потратить это время на A0–A1?</p></div>
+    <div class="card"><div class="kv">2 · держатель мандата</div><p style="margin:0">Журнал мандатов ведёт Организатор или Расчётный Банк? Это вопрос нейтральности (ст. 7): держатель согласий получает сильную позицию.</p></div>
+    <div class="card"><div class="kv">3 · модель для своего агента</div><p style="margin:0">Собственный агент на внешней модели (YandexGPT / GigaChat) или на локальной? Определяет стоимость слоя A и допустимость co-payment.</p></div>
+    <div class="card"><div class="kv">4 · аргумент инвесторам</div><p style="margin:0">Включать ли агентный слой отдельным разделом в предложения Альфе и АРБ? Для Альфы это усиление линии «архитектор инфраструктуры», для АРБ — довод о новом канале для банков-членов.</p></div>
+  </div>
+</section>
+
+<footer>
+  Агентная коммерция · архитектура агентного слоя · ред. 2 · 17.08.2026 · пул документов Системы, ядро — Правила системы ред. 2 (преамбула п. 0.5–0.7)<br>
+  Фактура внешних источников по состоянию на август 2026; протоколы в бете, детали меняются.
+</footer>
+</div>
+
+<script>
+/* ---------- 05 · трассировка ---------- */
+const STEPS=[
+ {a:"buyer.agent",b:"system.registry",m:"discover",r:"манифест /.well-known/agent-commerce · ст. 4, 9",k:"ag"},
+ {a:"system.catalog",b:"buyer.agent",m:"quote",r:"SKU-атом: цена, сток, срок, условия · ст. 9.4, ранжирование ст. 11.2",k:"ag"},
+ {a:"buyer",b:"buyer.agent",m:"mandate.intent",r:"подпись ЕСИА/КЭП, лимит и срок · Auth Service, модуль 03",k:"ag"},
+ {a:"buyer.agent",b:"system.deal",m:"cart.commit + mandate.cart",r:"Deal Engine: AGENT_INTAKE → MANDATE_VERIFIED · модуль 01",k:"ag"},
+ {a:"system.deal",b:"escrow",m:"hold",r:"средства в эскроу по mandate.payment · модуль 02, ст. 6",k:"esc",
+  broken:"без эскроу: агент отдаёт платёж напрямую и теряет рычаг — гарантом становится чужая поверхность"},
+ {a:"system.deal",b:"seller.agent · infra.agent",m:"order.dispatch",r:"слот и тариф из реестра · ст. 3.2, 6",k:"ag"},
+ {a:"infra.agent",b:"system.deal",m:"proof.delivery",r:"машинное подтверждение вручения · ст. 6",k:"ag",
+  broken:"без эскроу: подтверждение ничего не переключает — деньги уже ушли"},
+ {a:"escrow",b:"clearing",m:"split",r:"селлер — выручка, инфраструктура — тариф, Организатор — расчётный тариф · ст. 6.2, 7",k:"esc",
+  broken:"без эскроу: расщепление по вкладу невозможно, возврат к удержанию с оборота"},
+ {a:"system.deal",b:"buyer.agent",m:"receipt + audit",r:"след мандатов; спор → Arbitrage, модуль 08 · ст. 12–13",k:"esc",
+  broken:"без эскроу: спор без предмета и без арбитра"}
+];
+let shown=0, noEscrow=false;
+const body=document.getElementById('traceBody');
+function renderTrace(){
+  body.innerHTML=STEPS.map((s,i)=>{
+    const on=i<shown, brk=noEscrow&&s.broken&&on;
+    const cls='step'+(on?' on':'')+(s.k==='esc'?' escrow':'')+(brk?' broken':'');
+    const ref=brk?s.broken:s.r;
+    return `<div class="${cls}"><div class="n">${String(i+1).padStart(2,'0')}</div><div class="msg">`+
+      `<span class="who b">${s.a}</span> <span class="arrow">→</span> <span class="who">${s.b}</span> · <span class="name">${brk?'✕ '+s.m:s.m}</span>`+
+      `<span class="ref">${ref}</span></div></div>`;
+  }).join('');
+}
+document.getElementById('tStep').onclick=()=>{shown=Math.min(shown+1,STEPS.length);renderTrace();};
+document.getElementById('tAll').onclick=()=>{shown=STEPS.length;renderTrace();};
+document.getElementById('tReset').onclick=()=>{shown=0;renderTrace();};
+const mE=document.getElementById('mEsc'), mN=document.getElementById('mNo');
+mE.onclick=()=>{noEscrow=false;mE.setAttribute('aria-pressed','true');mN.setAttribute('aria-pressed','false');if(shown===0)shown=STEPS.length;renderTrace();};
+mN.onclick=()=>{noEscrow=true;mN.setAttribute('aria-pressed','true');mE.setAttribute('aria-pressed','false');shown=STEPS.length;renderTrace();};
+shown=4;renderTrace();
+
+/* ---------- 09 · позиционирование ---------- */
+const SCEN=[
+ {t:"Только чужие поверхности",ax:[9,3,2,3],
+  n:"Быстро и дёшево, но идентичность покупателя остаётся у поверхности, а тариф поверхности со временем растёт — воспроизводится захват ценности, от которого Система уходит. Ломает К7 и К10."},
+ {t:"Только свой агент",ax:[4,7,10,7],
+  n:"Полный контроль базы и правил, но агентный спрос приходит туда, где уже стоит покупатель. Своя поверхность без внешнего входа даёт мало объёма на старте — то же ограничение, что у модели Stand Alone."},
+ {t:"Гибрид: наружу — фид и мандаты, внутрь — покупатель и расчёт",ax:[7,9,8,6],
+  n:"Внешние поверхности используются как каналы охвата, а идентичность, мандат и расчёт остаются в Системе. Совпадает с логикой К2/К10 (не одна точка зависимости) и с ролью Организатора как казначея, а не бенефициара."}
+];
+const AX=["скорость до первого заказа","устойчивость (граница ухода)","контроль идентичности","стоимость реализации"];
+function drawScen(i){
+  const s=SCEN[i];
+  document.getElementById('scenTitle').textContent=s.t;
+  document.getElementById('axes').innerHTML=s.ax.map((v,j)=>
+    `<div class="axis"><div><span style="font-size:13px">${AX[j]}</span><div class="t"><i style="width:${v*10}%"></i></div></div><div style="font-family:var(--mono);font-size:12.5px">${v}/10</div></div>`).join('');
+  document.getElementById('scenNote').textContent=s.n;
+  document.querySelectorAll('#scen .s').forEach(b=>b.setAttribute('aria-pressed', b.dataset.i==String(i)));
+}
+document.querySelectorAll('#scen .s').forEach(b=>b.onclick=()=>drawScen(+b.dataset.i));
+drawScen(2);
+
+/* ---------- 10 · калькулятор ---------- */
+const el=id=>document.getElementById(id);
+function calc(){
+  const G=+el('sG').value, S=+el('sS').value/100, P=+el('sP').value/100, I=+el('sI').value/100;
+  el('vG').textContent=G; el('vS').textContent=(S*100).toFixed(0)+'%';
+  el('vP').textContent=(P*100).toFixed(0)+'%'; el('vI').textContent=(I*100).toFixed(0)+'%';
+  // маржа селлера: базовая 25%, давление действует на агентной доле
+  const marg=25-(P*100)*S;
+  el('oM').textContent=marg.toFixed(1).replace('.',',')+'%';
+  el('bM').style.width=Math.max(0,Math.min(100,marg/25*100))+'%';
+  el('nM').textContent=`Базовая маржа 25% минус давление на агентной доле. У маркетплейса удержание ~40% превышает маржу — агентную цену там оплачивает селлер.`;
+  // удержание: 12,5% + co-payment 0,3% на агентной доле
+  const holdTot=12.5+0.3*S;
+  el('oU').textContent=holdTot.toFixed(2).replace('.',',')+'%';
+  el('bU').style.width=Math.min(100,holdTot/15*100)+'%';
+  const boxU=el('boxU'); boxU.className='box '+(holdTot>15?'bad':holdTot>13.5?'warn':'ok');
+  el('nU').textContent=holdTot>15?'Потолок устойчивости ст. 8.5 пробит — агентный слой нужно финансировать иначе (К11).':'В пределах потолка ст. 8.5; против ~40% у маркетплейса.';
+  // риск базы
+  const risk=S*(1-I)*100;
+  el('oR').textContent=risk.toFixed(1).replace('.',',')+'%';
+  el('bR').style.width=Math.min(100,risk/20*100)+'%';
+  const boxR=el('boxR'); boxR.className='box '+(risk>20?'bad':risk>10?'warn':'ok');
+  el('nR').textContent=risk>20?'Порог К7 пройден: поверхность становится владельцем базы, Система — поставщиком.':'К7 удерживается: агентный покупатель остаётся в базе Системы (source_type=AGENT).';
+  // доход Организатора: 0,5% от GMV с учётом прироста спроса
+  const uplift=1+S*0.35, rev=G*uplift*0.005;
+  el('oD').textContent=rev.toFixed(2).replace('.',',')+' млн ₽/мес';
+  el('nD').textContent=`GMV с учётом агентного прироста ${(G*uplift).toFixed(0)} млн ₽/мес; co-payment слоя ${(G*S*0.003).toFixed(2).replace('.',',')} млн ₽/мес идёт в фонд инфраструктуры, а не в доход Организатора.`;
+}
+['sG','sS','sP','sI'].forEach(id=>el(id).addEventListener('input',calc));
+calc();
+/* ---------- 03 · воронка первого касания ---------- */
+const FQ=['агентных касаний','Система в ответе агента','сделок','из своих каналов','из внешних поверхностей','стало покупателями в базе'];
+function fmt(n){return Math.round(n).toLocaleString('ru-RU');}
+function funnel(){
+  const T=+el('tT').value, V=+el('tV').value/100, C=+el('tC').value/100, O=+el('tO').value/100;
+  el('fT').textContent=fmt(T); el('fV').textContent=(V*100).toFixed(0)+'%';
+  el('fC').textContent=(C*100).toFixed(0)+'%'; el('fO').textContent=(O*100).toFixed(0)+'%';
+  const reach=T*V, deals=reach*C, own=deals*O, ext=deals*(1-O);
+  const ident=own*1.0+ext*0.65;
+  const vals=[T,reach,deals,own,ext,ident];
+  const kinds=['','','','own','loss','own'];
+  el('funnel').innerHTML=vals.map((v,i)=>
+    `<div class="fstep ${kinds[i]}"><div class="lab"><span>${FQ[i]}</span><span>${fmt(v)}</span></div><div class="tr"><i style="width:${Math.max(1,v/T*100)}%"></i></div></div>`).join('');
+  const t2i=deals>0?ident/deals*100:0;
+  el('fT2I').textContent=t2i.toFixed(0)+'%';
+  const lost=deals-ident;
+  el('fNote').textContent=`Вне базы Системы остаётся ${fmt(lost)} сделок в месяц — это покупатели, чьё повторное обращение придётся выкупать у поверхности заново. Второй заказ напрямую (гипотеза 35% от идентичностей): ${fmt(ident*0.35)}.`;
+  const b=el('t2iBox');
+  b.style.borderLeft='3px solid '+(t2i>=85?'var(--escrow)':t2i>=70?'var(--amber)':'var(--alarm)');
+}
+['tT','tV','tC','tO'].forEach(id=>el(id).addEventListener('input',funnel));
+funnel();
+
+/* ---------- 12 · юнит-экономика сделки ---------- */
+function unit(){
+  const A=+el('rA').value, I=+el('rI').value, T=+el('rT').value/100, C=+el('rC').value/100;
+  el('uA').textContent=A.toLocaleString('ru-RU'); el('uI').textContent=I+'%';
+  el('uT').textContent=T.toFixed(2).replace('.',',')+'%'; el('uC').textContent=C.toFixed(2).replace('.',',')+'%';
+  const sell=100-I-T-C;
+  const seg=[['s-sell','var(--escrow)',sell,'селлер'],['s-infra','#4C6478',I,'инфра'],['s-tar','var(--agent)',T,'расчёт'],['s-cop','var(--amber)',C,'фонд']];
+  el('stkSys').innerHTML=seg.map(([c,bg,v,l])=>
+    `<span class="${c}" style="background:${bg};width:${v}%">${v>=8?l+' '+v.toFixed(v<1?2:1).replace('.',','):''}</span>`).join('');
+  el('stkMp').innerHTML=`<span class="s-sell" style="background:var(--escrow);width:60%">селлер 60</span><span class="s-mp" style="background:var(--alarm);width:40%">удержание 40</span>`;
+  const sysRub=A*sell/100, mpRub=A*0.60;
+  el('uDelta').textContent=fmt(sysRub)+' ₽ · против '+fmt(mpRub)+' ₽';
+  el('uNote').textContent=`Разница на одну сделку ${fmt(sysRub-mpRub)} ₽. В Системе логистика оплачивается напрямую участнику по его тарифу из реестра, у маркетплейса она внутри удержания вместе с комиссией, рекламой и штрафами — поэтому доля селлера там не меняется от того, что он экономит.`;
+}
+['rA','rI','rT','rC'].forEach(id=>el(id).addEventListener('input',unit));
+unit();
+
+</script>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#EDECFE;border-left:4px solid #4a3faa;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#2e2670;">Граница между тем, что в агентном слое может обучаться, и тем, что меняется только изменением Правил — <a href="18-dva-kontura-sistemy.html" style="font-weight:600;">«Два контура Системы»</a>.</div>
+<div style="max-width:1100px;margin:20px auto;padding:12px 18px;background:#EDECFE;border-left:4px solid #4a3faa;border-radius:6px;font-family:-apple-system,sans-serif;font-size:13px;color:#2e2670;">Расхождения с этим документом закрыты <a href="39-protokol-i-pravki-v-pravila.html" style="font-weight:600;">протоколом согласования</a>; формулировки внесены в проект правок Правил.</div>
+</body>
+</html>

@@ -42,7 +42,7 @@ async function dbOne(sql, params = []) {
 function genId(prefix) {
   return `${prefix}-${crypto.randomBytes(4).toString('hex')}`;
 }
-const { requireSeller } = require('./auth-seller')(app, { db, dbOne, genId });
+const { requireSeller, hasAdmission } = require('./auth-seller')(app, { db, dbOne, genId });
 
 // Маршруты продавца исторически принимают seller_id в адресе. Убрать его
 // сразу нельзя — на него могут быть завязаны внешние вызовы. Поэтому:
@@ -791,19 +791,48 @@ app.get(['/api/v1/seller/stats', '/api/v1/seller/:seller_id/stats'], requireSell
 
 // ──── Создать участника (форма /join, задача 2.1) ────
 
+// Роли, которые через API не создаются вовсе. Организатор — казначей
+// Системы, банк — расчётный контур; они заводятся миграцией, под присмотром,
+// а не запросом снаружи. Список задан запретом, а не разрешением: когда
+// в CHECK роли добавится новая, она не откроется наружу сама собой.
+// FINANCE в схеме пока нет — внесена заранее, чтобы не вспоминать потом.
+const ROLES_NEVER_VIA_API = ['ORGANIZER', 'BANK', 'FINANCE'];
+
+// Что вообще принимает маршрут. Роль вне списка — опечатка или новая роль,
+// про которую здесь ещё не решили; и то и другое лучше отбить.
+const ROLES_VIA_API = ['SELLER', 'FULFILLMENT', 'LOGISTICS', 'TRUNK', 'WAREHOUSE'];
+
 app.post('/api/v1/participants', async (req, res) => {
   try {
     const { inn, name, legal_type, role = 'SELLER', seller_group, region = 'MSK', contact_phone } = req.body;
     if (!inn || !name) return res.status(400).json({ error: 'inn and name required' });
 
+    if (ROLES_NEVER_VIA_API.includes(role))
+      return res.status(403).json({ error: 'role_forbidden',
+        detail: `Роль ${role} через API не создаётся` });
+    if (!ROLES_VIA_API.includes(role))
+      return res.status(400).json({ error: 'unknown_role', detail: `Неизвестная роль ${role}` });
+
+    // Допуск — функция Организатора (ст. 16). Оператор инфраструктуры
+    // сам себя в реестр не вписывает.
+    const admitted = hasAdmission(req);
+    if (role !== 'SELLER' && !admitted)
+      return res.status(403).json({ error: 'admission_required',
+        detail: `Роль ${role} требует ключа допуска` });
+
+    // Статус не берётся из тела. Публичная форма подаёт ЗАЯВКУ, а не
+    // заводит участника: KYC в /join проверяется браузером и доверия не
+    // заслуживает. В ACTIVE переводит тот, у кого есть ключ.
+    const status = admitted ? 'ACTIVE' : 'PENDING';
+
     const id = genId('PTR');
     await db(`
       INSERT INTO participants (id, inn, name, legal_type, role, seller_group, region, status, contact_phone)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, 'ACTIVE', $8)
-    `, [id, inn, name, legal_type || 'IP', role, seller_group, region, contact_phone]);
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    `, [id, inn, name, legal_type || 'IP', role, seller_group, region, status, contact_phone]);
 
-    console.log(`[Participant] Created ${id}: ${name} (${role}, group ${seller_group})`);
-    res.status(201).json({ id, name, role, seller_group, status: 'ACTIVE' });
+    console.log(`[Participant] Created ${id}: ${name} (${role}, group ${seller_group}, ${status})`);
+    res.status(201).json({ id, name, role, seller_group, status });
   } catch (err) {
     // Раньше клиенту уходил текст ошибки PostgreSQL целиком,
     // с именами таблиц и ограничений.

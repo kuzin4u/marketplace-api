@@ -12,6 +12,12 @@
 #
 # Без логина прогонит только проверки, не требующие входа.
 #
+# Контур допуска (ст. 16):
+#   ADMISSION_KEY=...   тот же ключ, что в окружении сервера. Без него
+#                       проверяется только отказ, положительный путь пропускается.
+#   TEST_WRITES=1       разрешить проверки, которые ПИШУТ в базу. По умолчанию
+#                       выключены: они оставляют строку в participants.
+#
 # Код возврата 0 — всё прошло, 1 — есть падения.
 #
 set -uo pipefail
@@ -20,25 +26,28 @@ export LC_ALL="${LC_ALL:-C.UTF-8}"
 BASE="${1:-http://localhost:3000}"
 SELLER_ID="${SELLER_ID:-PTR-12345}"
 FOREIGN_ID="${FOREIGN_ID:-PTR-00000}"
+ADMISSION_KEY="${ADMISSION_KEY:-}"
+TEST_WRITES="${TEST_WRITES:-0}"
 
 PASS=0; FAIL=0; SKIP=0
 ok=$'\033[32m'; bad=$'\033[31m'; dim=$'\033[2m'; warn=$'\033[33m'; off=$'\033[0m'
 
 pad() { local s="$1" w="${2:-40}" n; n=$(( w - ${#s} )); (( n < 0 )) && n=0; printf '%s%*s' "$s" "$n" ""; }
 
-# code METHOD PATH [TOKEN] [BODY] → печатает HTTP-код
+# code METHOD PATH [TOKEN] [BODY] [HEADER] → печатает HTTP-код
 code() {
-  local m="$1" p="$2" tok="${3:-}" body="${4:-}"
+  local m="$1" p="$2" tok="${3:-}" body="${4:-}" hdr="${5:-}"
   local args=(-s -o /dev/null -w '%{http_code}' -m 20 -X "$m" -H 'Content-Type: application/json')
   [[ -n "$tok"  ]] && args+=(-H "Authorization: Bearer $tok")
+  [[ -n "$hdr"  ]] && args+=(-H "$hdr")
   [[ -n "$body" ]] && args+=(-d "$body")
   curl "${args[@]}" "${BASE}${p}" 2>/dev/null
 }
 
-# expect ОПИСАНИЕ ОЖИДАЕМЫЙ_КОД МЕТОД ПУТЬ [TOKEN] [BODY]
+# expect ОПИСАНИЕ ОЖИДАЕМЫЙ_КОД МЕТОД ПУТЬ [TOKEN] [BODY] [HEADER]
 expect() {
-  local name="$1" want="$2" m="$3" p="$4" tok="${5:-}" body="${6:-}"
-  local got; got="$(code "$m" "$p" "$tok" "$body")"
+  local name="$1" want="$2" m="$3" p="$4" tok="${5:-}" body="${6:-}" hdr="${7:-}"
+  local got; got="$(code "$m" "$p" "$tok" "$body" "$hdr")"
   if [[ "$got" == "$want" ]]; then
     printf '  %sok%s      %s %sожидался %s%s\n' "$ok" "$off" "$(pad "$name")" "$dim" "$want" "$off"
     PASS=$((PASS+1))
@@ -54,6 +63,24 @@ expect() {
 skip() {
   printf '  %sпропуск%s %s %s\n' "$warn" "$off" "$(pad "$1")" "$2"
   SKIP=$((SKIP+1))
+}
+
+# expect_field ОПИСАНИЕ ПОДСТРОКА МЕТОД ПУТЬ [BODY] [HEADER]
+# Там, где важен не код ответа, а его содержимое: заявка обязана вернуться
+# со статусом PENDING, и 201 сам по себе этого не доказывает.
+expect_field() {
+  local name="$1" want="$2" m="$3" p="$4" body="${5:-}" hdr="${6:-}"
+  local args=(-s -m 20 -X "$m" -H 'Content-Type: application/json')
+  [[ -n "$hdr"  ]] && args+=(-H "$hdr")
+  [[ -n "$body" ]] && args+=(-d "$body")
+  local out; out="$(curl "${args[@]}" "${BASE}${p}" 2>/dev/null)"
+  if [[ "$out" == *"$want"* ]]; then
+    printf '  %sok%s      %s %sсодержит %s%s\n' "$ok" "$off" "$(pad "$name")" "$dim" "$want" "$off"
+    PASS=$((PASS+1))
+  else
+    printf '  %sПАДЕНИЕ%s %s нет %s в ответе: %s\n' "$bad" "$off" "$(pad "$name")" "$want" "${out:0:120}"
+    FAIL=$((FAIL+1))
+  fi
 }
 
 echo
@@ -93,7 +120,72 @@ expect "мусор вместо токена"            401 GET /api/v1/seller/
 FORGED='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZWxsZXJfaWQiOiJQVFItMTIzNDUiLCJyb2xlIjoiU0VMTEVSIn0.ZmFrZQ'
 expect "подпись чужим ключом"           401 GET /api/v1/seller/products "$FORGED"
 
-# ── 5. С токеном ─────────────────────────────────────────────
+# ── 5. Контур допуска: выдача учётки ─────────────────────────
+# Цепочка захвата аккаунта: seller_id публичен (витрина и каталог отдают его
+# в каждом товаре) -> register был открыт -> учётка на чужого продавца.
+# Рвём второе звено: без ключа допуска учётку не выдать.
+echo
+echo "Допуск: выдача учётки (POST /auth/register)"
+
+# Тело заведомо не приводит к записи: пароль короткий отвергается позже,
+# а участника FOREIGN_ID не существует. Проверяется только, кого пускают.
+REG_SELF='{"seller_id":"'"${SELLER_ID}"'","login":"probe-login","password":"probe-password-123"}'
+REG_NONE='{"seller_id":"'"${FOREIGN_ID}"'","login":"probe-login","password":"probe-password-123"}'
+
+if [[ -z "$ADMISSION_KEY" ]]; then
+  # Ключа нет в окружении проверяющего. Если сервер отвечает 501 — на нём
+  # ключа тоже нет, и это правильное поведение: контур отключён целиком.
+  # Если 403 — ключ на сервере есть, задайте его и здесь.
+  GOT="$(code POST /api/v1/auth/register "" "$REG_SELF")"
+  if [[ "$GOT" == "501" ]]; then
+    printf '  %sok%s      %s %sконтур допуска отключён (501)%s\n' "$ok" "$off" "$(pad "ключ не задан на сервере")" "$dim" "$off"
+    PASS=$((PASS+1))
+  elif [[ "$GOT" == "403" ]]; then
+    printf '  %sok%s      %s %sключ на сервере есть%s\n' "$ok" "$off" "$(pad "без заголовка отбито")" "$dim" "$off"
+    PASS=$((PASS+1))
+  else
+    printf '  %sПАДЕНИЕ%s %s получен %s, ожидался 501 или 403\n' "$bad" "$off" "$(pad "выдача учётки без ключа")" "$GOT"
+    FAIL=$((FAIL+1))
+  fi
+  skip "верный ключ пропускает"  "задайте ADMISSION_KEY"
+  skip "неверный ключ отбивается" "задайте ADMISSION_KEY"
+else
+  expect "без заголовка"                403 POST /api/v1/auth/register "" "$REG_SELF"
+  expect "неверный ключ"                403 POST /api/v1/auth/register "" "$REG_SELF" "X-Admission-Key: zavedomo-ne-tot-kluch"
+  # Верный ключ на несуществующего участника: 404 доказывает, что ключ
+  # приняли и дошли до сути. Ничего при этом не записывается.
+  expect "верный ключ, участника нет"   404 POST /api/v1/auth/register "" "$REG_NONE" "X-Admission-Key: ${ADMISSION_KEY}"
+fi
+
+# ── 6. Контур допуска: реестр участников ─────────────────────
+# Роли ORGANIZER, BANK, FINANCE через API не создаются вовсе (ст. 16:
+# допуск — функция Организатора). Роли операторов — только с ключом.
+# Все проверки отбиваются ДО вставки, база не меняется.
+echo
+echo "Допуск: реестр участников (POST /participants)"
+
+pbody() { printf '{"inn":"7700000099","name":"Проверка допуска","role":"%s"}' "$1"; }
+
+expect "роль ORGANIZER"               403 POST /api/v1/participants "" "$(pbody ORGANIZER)"
+expect "роль BANK"                    403 POST /api/v1/participants "" "$(pbody BANK)"
+expect "роль FINANCE"                 403 POST /api/v1/participants "" "$(pbody FINANCE)"
+expect "роль FULFILLMENT без ключа"   403 POST /api/v1/participants "" "$(pbody FULFILLMENT)"
+expect "роль LOGISTICS без ключа"     403 POST /api/v1/participants "" "$(pbody LOGISTICS)"
+expect "несуществующая роль"          400 POST /api/v1/participants "" "$(pbody WIZARD)"
+
+# Положительный путь пишет строку в реестр, поэтому по умолчанию выключен.
+echo
+echo "Допуск: публичная заявка (пишет в базу)"
+if [[ "$TEST_WRITES" != "1" ]]; then
+  skip "заявка создаётся как PENDING" "нужен TEST_WRITES=1"
+else
+  RAND_INN="7707$(printf '%08d' $(( (RANDOM * 32768 + RANDOM) % 100000000 )))"
+  P_NEW="$(printf '{"inn":"%s","name":"Проверка допуска","role":"SELLER","seller_group":1}' "$RAND_INN")"
+  expect_field "заявка создаётся как PENDING" '"status":"PENDING"' POST /api/v1/participants "$P_NEW"
+  printf '  %sв participants осталась строка: ИНН %s — удалить вручную%s\n' "$warn" "$RAND_INN" "$off"
+fi
+
+# ── 7. С токеном ─────────────────────────────────────────────
 echo
 echo "Маршруты продавца с токеном"
 
@@ -127,6 +219,16 @@ else
   expect "статистика"                   200 GET /api/v1/seller/stats "$TOKEN"
   # правка несуществующего товара: 404, а не «updated: true»
   expect "правка чужого товара"         404 PATCH /api/v1/seller/products/SKU-NOPE "$TOKEN" '{"price":100}'
+
+  # Вход только что удался — значит учётка у этого продавца есть.
+  # Повторная выдача обязана упереться в 409 и НЕ создать вторую:
+  # второй вход к тому же seller_id владелец первого не увидит.
+  # Проверка write-free: до INSERT дело не доходит.
+  if [[ -n "$ADMISSION_KEY" ]]; then
+    expect "вторая учётка тому же продавцу" 409 POST /api/v1/auth/register "" "$REG_SELF" "X-Admission-Key: ${ADMISSION_KEY}"
+  else
+    skip "вторая учётка тому же продавцу" "задайте ADMISSION_KEY"
+  fi
 fi
 
 # ── Итог ─────────────────────────────────────────────────────
@@ -151,6 +253,23 @@ if [[ "$FAIL" -gt 0 ]]; then
 
   Чужой id в адресе даёт 200
       Нет сверки токена с адресом — в файле отсутствует assertSelf.
+
+  Выдача учётки без ключа даёт 201 или 404
+      requireAdmission не навешен на POST /auth/register. Это и есть
+      второе звено цепочки захвата аккаунта — выкладывайте коммит.
+
+  Роль ORGANIZER или BANK даёт 201
+      В POST /participants нет списка ROLES_NEVER_VIA_API. Проверьте,
+      что созданного участника удалили из реестра.
+
+  Заявка возвращает status ACTIVE
+      Статус по-прежнему берётся из тела или зашит. Публичная форма
+      обязана создавать PENDING: KYC в /join проверяется браузером.
+
+  Вторая учётка тому же продавцу даёт 201
+      Нет ни проверки в коде, ни индекса. Прогоните
+      schema/07_seller_auth.sql и проверьте, что лишнюю учётку удалили:
+      она даёт полный доступ к магазину мимо владельца.
 HINT
 fi
 

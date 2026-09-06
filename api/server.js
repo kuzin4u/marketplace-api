@@ -74,7 +74,7 @@ function assertSelf(req, res) {
   return true;
 }
 require('./channels-api')(app, { db, dbOne, requireSeller });
-require('./customers-api')(app, { db, dbOne, genId });   // ← новая строка
+require('./customers-api')(app, { db, dbOne, genId, requireSeller, fromDbError });
 // ============================================================
 // PUBLIC API (покупатель, без auth для browsing)
 // ============================================================
@@ -653,9 +653,23 @@ async function calculateClearing(client, order_id, seller_id, total_goods, items
 
 // ──── Получить заказ ────
 
-app.get('/api/v1/orders/:id', async (req, res) => {
+// Маршрут был открыт: по идентификатору отдавался весь заказ, включая
+// shipping_address покупателя и расщепление по участникам. Теперь заказ
+// виден только своему продавцу.
+//
+// Владение проверяется прямо в условии выборки, а не отдельным запросом
+// после: чужой заказ не находится, и отвечать на него нечем. Чужой и
+// несуществующий дают одинаковый 404 — разница ответов подтверждала бы
+// существование ORD-<hex8>.
+//
+// Покупателю его собственный заказ этот маршрут больше не отдаёт.
+// Аутентификации покупателя в Системе нет; когда появится страница
+// статуса заказа, ей нужен будет свой механизм — одноразовый признак
+// заказа в ответе POST /orders, а не общий доступ по идентификатору.
+app.get('/api/v1/orders/:id', requireSeller, async (req, res) => {
   try {
-    const order = await dbOne('SELECT * FROM orders WHERE id = $1', [req.params.id]);
+    const order = await dbOne('SELECT * FROM orders WHERE id = $1 AND seller_id = $2',
+      [req.params.id, req.seller_id]);
     if (!order) return res.status(404).json({ error: 'Order not found' });
 
     const items = await db('SELECT oi.*, sk.title FROM order_items oi JOIN skus sk ON oi.sku_id = sk.id WHERE oi.order_id = $1', [req.params.id]);

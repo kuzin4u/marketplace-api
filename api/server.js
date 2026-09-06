@@ -1038,10 +1038,26 @@ app.get('/api/health', async (req, res) => {
 });
 
 // Seller config (задача 0.3 — для рендеринга витрины)
+// Отдавал seller_id по одному лишь слагу витрины — первое звено цепочки
+// захвата аккаунта. Витрина его не читает: vitrina-live.html берёт отсюда
+// только brand.* и seller_rating, остальные страницы получают seller_id
+// из токена или из ответа своего же запроса.
+//
+// ЭТО ГИГИЕНА, А НЕ ЗАКРЫТИЕ ДЫРЫ. seller_id по-прежнему уходит наружу
+// из GET /shop/:slug, /shop/:slug/products, /sku/:id и /catalog/search —
+// там он приезжает внутри SELECT sk.* и SELECT s.*. Пока эти выборки
+// не разобраны на явные колонки, скрытым он не станет. Защита стоит
+// на выдаче учётки (requireAdmission), и держится она там.
+//
+// Колонки перечислены поимённо намеренно: при SELECT sh.* строка снова
+// содержала бы seller_id, и вернуть его в ответ можно было бы опечаткой.
 app.get('/api/v1/config/:slug', async (req, res) => {
   try {
     const shop = await dbOne(`
-      SELECT sh.*, p.seller_group, p.rating as seller_rating
+      SELECT sh.slug, sh.brand_name, sh.brand_tagline, sh.brand_logo_url,
+             sh.brand_cover_url, sh.brand_accent, sh.brand_description,
+             sh.channels, sh.custom_domain,
+             p.rating as seller_rating
       FROM shops sh JOIN participants p ON sh.seller_id = p.id
       WHERE sh.slug = $1
     `, [req.params.slug]);
@@ -1049,7 +1065,6 @@ app.get('/api/v1/config/:slug', async (req, res) => {
     if (!shop) return res.status(404).json({ error: 'Config not found' });
 
     res.json({
-      seller_id: shop.seller_id,
       slug: shop.slug,
       brand: {
         name: shop.brand_name,
@@ -1061,7 +1076,6 @@ app.get('/api/v1/config/:slug', async (req, res) => {
       },
       channels: shop.channels,
       custom_domain: shop.custom_domain,
-      seller_group: shop.seller_group,
       seller_rating: shop.seller_rating
     });
   } catch (err) {

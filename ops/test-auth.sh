@@ -83,6 +83,20 @@ expect_field() {
   fi
 }
 
+# expect_absent ОПИСАНИЕ ПОДСТРОКА МЕТОД ПУТЬ
+# Обратная expect_field: поля в ответе быть НЕ должно.
+expect_absent() {
+  local name="$1" bad_s="$2" m="$3" p="$4"
+  local out; out="$(curl -s -m 20 -X "$m" "${BASE}${p}" 2>/dev/null)"
+  if [[ "$out" != *"$bad_s"* ]]; then
+    printf '  %sok%s      %s %sнет %s%s\n' "$ok" "$off" "$(pad "$name")" "$dim" "$bad_s" "$off"
+    PASS=$((PASS+1))
+  else
+    printf '  %sПАДЕНИЕ%s %s в ответе есть %s: %s\n' "$bad" "$off" "$(pad "$name")" "$bad_s" "${out:0:120}"
+    FAIL=$((FAIL+1))
+  fi
+}
+
 echo
 echo "Контур:   ${BASE}"
 echo "Продавец: ${SELLER_ID}"
@@ -101,6 +115,12 @@ expect "магазин"                        200 GET "/api/v1/shop/massamadre"
 expect "товары магазина"                200 GET "/api/v1/shop/massamadre/products"
 expect "каталог магазинов"              200 GET /api/v1/catalog/shops
 expect "категории"                      200 GET /api/v1/catalog/categories
+expect "конфиг витрины"                 200 GET "/api/v1/config/massamadre"
+
+# Конфиг витрины отдавал seller_id по одному слагу. Витрине он не нужен:
+# она читает отсюда только brand.* и seller_rating.
+expect_absent "конфиг без seller_id"    '"seller_id"'    GET "/api/v1/config/massamadre"
+expect_absent "конфиг без seller_group" '"seller_group"' GET "/api/v1/config/massamadre"
 
 # ── 3. Защита без токена ─────────────────────────────────────
 # Это и есть закрытая дыра. До первого коммита здесь было 200.
@@ -294,6 +314,11 @@ if [[ "$FAIL" -gt 0 ]]; then
   Чужой заказ с токеном даёт 200
       Есть requireSeller, но нет предиката владения. Проверьте, что
       в выборке стоит AND seller_id = $2, а не отдельная проверка после.
+
+  Конфиг витрины содержит seller_id
+      Вернулась первая ступень цепочки захвата: по слагу витрины
+      получается идентификатор продавца. Проверьте, что в выборке
+      перечислены колонки, а не sh.*.
 
   Карточка покупателя даёт 501
       requireSeller не передан в customers-api при монтировании

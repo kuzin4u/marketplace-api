@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Задание на разработку и развёртывание ПТК</title>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--t1:#1a1a1a;--t2:#55554f;--t3:#8a8a82;--bd:#dddcd6;
+--ac:#1e5fa0;--ac2:#eaf1fa;--gn:#2E5B3A;--gn2:#DCE6DD;--rd:#a62b2b;--rd2:#f7e9e9;
+--wr:#9a6a12;--wr2:#fdf3e0;--pr:#4a3faa;--pr2:#edecfe;--co:#c9c8c2}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);line-height:1.5;font-size:13px}
+.w{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+.hdr{padding:24px 0 16px;border-bottom:2px solid var(--ac);margin-bottom:16px}
+.hdr h1{font-size:21px;font-weight:700;color:var(--ac)}
+.hdr p{font-size:13px;color:var(--t2);margin-top:6px;max-width:900px}
+.meta{font-size:11.5px;color:var(--t3);margin-top:8px;font-family:ui-monospace,monospace}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0 14px;border-bottom:1px solid var(--bd);padding-bottom:10px}
+.tab{padding:6px 13px;font-size:12.5px;border:1px solid var(--bd);background:var(--card);border-radius:20px;cursor:pointer;color:var(--t2);font-family:inherit}
+.tab:hover{border-color:var(--ac);color:var(--t1)}
+.tab.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+.sec{display:none}.sec.on{display:block}
+.st{font-size:14px;font-weight:700;color:var(--ac);margin:22px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.st:first-child{margin-top:4px}
+.co{border:1px solid var(--bd);border-left:3px solid var(--ac);background:var(--card);padding:12px 15px;border-radius:6px;margin:10px 0;font-size:13px;color:var(--t2)}
+.co b{color:var(--t1)}
+.co-r{border-left-color:var(--rd)}.co-r b{color:var(--rd)}
+.co-w{border-left-color:var(--wr)}.co-w b{color:var(--wr)}
+.co-g{border-left-color:var(--gn)}.co-g b{color:var(--gn)}
+.pk{border:1px solid var(--bd);border-left:4px solid var(--co);border-radius:6px;background:var(--card);padding:13px 16px;margin-bottom:10px}
+.pk.sec-crit{border-left-color:var(--rd)}
+.pk.sec-arch{border-left-color:var(--pr)}
+.pk.sec-prep{border-left-color:var(--t3)}
+.pk.sec-fin{border-left-color:var(--gn)}
+.pk h4{font-size:13.5px;font-weight:600;margin-bottom:5px;display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}
+.pk .k{font-family:ui-monospace,monospace;font-size:10px;color:#fff;background:var(--t2);padding:2px 7px;border-radius:3px}
+.pk .why{font-size:12.5px;color:var(--t2);margin-bottom:8px}
+.pr{background:#1c1c1a;color:#e8e6df;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;
+  line-height:1.6;padding:11px 13px;border-radius:5px;white-space:pre-wrap;margin:8px 0;position:relative}
+.cp{position:absolute;top:7px;right:7px;font-size:10px;padding:2px 8px;border-radius:3px;border:1px solid #55534c;
+  background:#2b2a27;color:#b5b2a9;cursor:pointer;font-family:inherit}
+.cp:hover{background:#3a3934;color:#fff}
+.pk dl{display:grid;grid-template-columns:130px 1fr;gap:4px 12px;font-size:12px;color:var(--t2);margin-top:8px}
+.pk dt{color:var(--t3);font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;padding-top:1px}
+.bd{display:inline-block;font-size:10.5px;font-weight:600;border-radius:3px;padding:1px 7px;font-family:ui-monospace,monospace}
+.b-block{background:var(--rd2);color:var(--rd)}
+.b-wait{background:var(--wr2);color:var(--wr)}
+.b-go{background:var(--gn2);color:var(--gn)}
+.chip{display:inline-block;font-family:ui-monospace,monospace;font-size:10.5px;background:var(--ac2);color:#14508f;
+  padding:2px 7px;border-radius:3px;margin:2px 3px 2px 0;text-decoration:none;white-space:nowrap;border:1px solid #c5d9ef}
+.chip:hover{background:#d7e6f7}
+button.chip{cursor:pointer;font-family:ui-monospace,monospace}
+button.chip.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:600}
+tr.hit td{background:#fff8e6!important;box-shadow:inset 3px 0 0 var(--wr)}
+.scroll{overflow-x:auto;border:1px solid var(--bd);border-radius:8px;background:var(--card);margin:10px 0 16px}
+.scroll table{margin:0;border:none;min-width:880px}
+code{word-break:break-word;font-family:ui-monospace,monospace;font-size:11.5px;background:#f2f1ec;padding:1px 4px;border-radius:3px}
+th.mech{width:28%}
+.fn{margin-top:3px}
+.fn a{font-family:ui-monospace,monospace;font-size:10.5px;color:#14508f;text-decoration:none;border-bottom:1px dotted #9dbde0}
+.fn a:hover{border-bottom-style:solid}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--bd);border-radius:8px;overflow:hidden;margin:10px 0 16px;font-size:12.5px}
+th{text-align:left;padding:8px 10px;background:var(--bg);border-bottom:1px solid var(--bd);font-size:10.5px;
+  font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.03em}
+td{padding:9px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fbfaf7}
+a{color:var(--ac)}
+.dep{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;line-height:1.75;background:var(--card);
+  border:1px solid var(--bd);border-radius:6px;padding:14px 16px;white-space:pre;overflow-x:auto;color:var(--t2)}
+footer{border-top:1px solid var(--bd);margin-top:40px;padding-top:18px;font-size:12px;color:var(--t3)}
+@media(max-width:720px){.pk dl{grid-template-columns:1fr}.pk dt{padding-top:6px}}
+@media print{.tabs{display:none}.sec{display:block!important}.cp{display:none}}
+</style></head><body><div class="w">
+
+<div class="hdr">
+  <h1>Задание на разработку и развёртывание ПТК</h1>
+  <p>Очередь работ для агента разработки по репозиторию <code>marketplace-api</code>. Десять пакетов, каждый с готовым промптом, критерием приёмки и правкой в пул. Отдельно вынесены три блокера, которые не закрываются кодом, и три решения, которых пакеты ждут от Организатора.</p>
+  <div class="meta">3 сентября 2026 · 10 пакетов · 3 блокера · 3 открытых решения · Трек A доводится до боевого состояния, Трек B ждёт Расчётный Банк</div>
+
+<div style="max-width:1200px;margin:14px auto 0;padding:14px 20px;background:#DCE6DD;border-left:4px solid #2E5B3A;border-radius:6px;">
+  <div style="font-size:12px;font-weight:700;color:#2E5B3A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-family:monospace;">Синхронизировано с Правилами системы · редакция 3 · пул документов Системы</div>
+  <div style="font-size:13px;color:#5a5548;line-height:1.6;margin-bottom:8px;">Исполняет: <a href="9-ptk-marketplace-arch-part2.html" style="font-weight:600;">архитектура ПТК, Часть 2</a> (раздел расхождений Р1–Р8), <a href="test-plan-seller-flow.html" style="font-weight:600;">план тестирования пути селлера</a> (уровни L2 и L4). Опирается на: <a href="26-arhitektura-ptk-synced.html" style="font-weight:600;">архитектуру ПТК</a>, <a href="ptk-realization-map.html" style="font-weight:600;">карту ПТК ↔ реализация</a>, <a href="47-reestr-planov-realizacii.html" style="font-weight:600;">реестр планов</a>, <a href="45-reestr-nereshennyh-voprosov.html" style="font-weight:600;">реестр нерешённых вопросов</a>. <a href="index-pool.html" style="font-weight:600;">Указатель пула</a>.</div>
+  <div id="arts">
+    <button class="chip" data-art="9">Ст. 9 — магазин и витрина</button>
+    <button class="chip" data-art="10">Ст. 10 — клиентская база</button>
+    <button class="chip" data-art="11">Ст. 11 — ранжирование</button>
+    <button class="chip" data-art="15">Ст. 15 — мандаты</button>
+    <button class="chip" data-art="16">Ст. 16 — разделение полномочий</button>
+    <button class="chip" data-art="19">Ст. 19 — агентная выдача</button>
+    <button class="chip" data-art="20">Ст. 20 — расчёты и взнос</button>
+    <span style="font-size:11.5px;color:#5a5548;margin-left:4px">— клик открывает норму в разделе «Связи с пулом»</span>
+  </div>
+</div>
+</div>
+
+<div class="tabs" id="tabs" role="tablist">
+  <button class="tab on" data-t="s1" role="tab">Рамка</button>
+  <button class="tab" data-t="s2" role="tab">Пакеты · 10</button>
+  <button class="tab" data-t="s3" role="tab">Блокеры ⚑ 3</button>
+  <button class="tab" data-t="s4" role="tab">Очередь</button>
+  <button class="tab" data-t="s5" role="tab">Связи с пулом</button>
+</div>
+
+<!-- ═══ 1 РАМКА ═══ -->
+<div class="sec on" id="s1">
+
+<div class="co co-g"><b>Что задание закрывает.</b> Трек A — витрина и расчёты без банковского эскроу — доводится до боевого состояния: закрываются восемь расхождений аудита кода от 23 августа, включается защита персональных данных, устраняется раздвоение источников истины между конфигуратором каналов и полями видимости SKU.</div>
+
+<div class="st">Что уже построено</div>
+<p style="font-size:13px;color:var(--t2);margin-bottom:10px">Схема PostgreSQL с привязкой таблиц к статьям Правил. <code>server.js</code> ~1100 строк, 26 маршрутов на префиксе <code>/api/v1/*</code>. Три смонтированных модуля: <code>auth-seller</code>, <code>channels-api</code>, <code>customers-api</code>. Агентный слой — 13 таблиц и 5 view, нормы вшиты в CHECK и триггеры. Конфигуратор каналов с храповиком. Формы пути селлера и живая витрина, читающая реальный API. Сквозная цепочка селлер → магазин → товар → витрина проверена вживую.</p>
+
+<div class="st">Правила работы для агента</div>
+<table>
+<tr><th style="width:30px">№</th><th>Правило</th><th style="width:38%">Почему</th></tr>
+<tr><td>1</td><td>Гипотезу о схеме проверять запросом к базе, а не по документу</td><td>Живой прогон трижды вскрывал расхождения: <code>seller_group</code>, <code>category_id</code>, <code>total_amount</code></td></tr>
+<tr><td>2</td><td>Не создавать модуль, дублирующий существующий маршрут — сначала прочитать <code>server.js</code> целиком</td><td>Диагноз «маршрутов нет» однажды уже оказался неверным, лишний модуль писал в несуществующие колонки</td></tr>
+<tr><td>3</td><td>CHECK и триггеры, реализующие нормы, не снимать. Если задача требует обойти — остановиться и сказать</td><td>Четыре нормы ред.3 держатся именно на них, см. вкладку «Связи с пулом»</td></tr>
+<tr><td>4</td><td>После каждого пакета обновлять документы пула и проверять двусторонние ссылки</td><td>Ноль битых ссылок — поддерживаемый инвариант пула</td></tr>
+<tr><td>5</td><td>Деплой не выполнять самостоятельно: готовить диф, выкладку делает человек</td><td><code>git push</code> в <code>main</code> = автодеплой Render сразу в бой</td></tr>
+</table>
+
+<div class="co co-w"><b>Почему очередь, а не один промпт.</b> ПТК построен наполовину и наполовину расходится сам с собой: конфигуратор каналов не влияет на выдачу, ставка канала не доходит до клиринга, режим расчёта пишется, но не читается. Агент, получивший задачу «разработай всю Систему», начнёт переписывать работающее. Пакеты идут строго по порядку, каждый опирается на закрытый предыдущий.</div>
+
+</div>
+
+<!-- ═══ 2 ПАКЕТЫ ═══ -->
+<div class="sec" id="s2">
+
+<div class="st">Подготовка</div>
+
+<div class="pk sec-prep">
+<h4><span class="k">П0</span> Инвентаризация <span class="bd b-go">можно начинать</span></h4>
+<div class="why">Аудит кода датирован 23 августа. Часть расхождений могла закрыться. Пакет не правит ни строки — он даёт фактическую карту по живому коду.</div>
+<div class="pr"><button class="cp">копировать</button>Прочитай server.js, auth-seller.js, channels-api.js, customers-api.js и схему в schema/. Построй таблицу: маршрут → метод → есть ли requireSeller → откуда берётся seller_id → какие таблицы читает и пишет. Отдельно перечисли места, где код расходится с CLAUDE.md. Ничего не меняй, только отчёт.</div>
+<dl>
+<dt>Приёмка</dt><dd>Таблица покрывает все 26 маршрутов. Расхождения Р1–Р8 подтверждены или опровергнуты по коду, а не по памяти. Найдены расхождения сверх списка, если они есть.</dd>
+<dt>В пул</dt><dd><a href="9-ptk-marketplace-arch-part2.html">Часть 2</a>, раздел расхождений — фактическая сверка. <a href="code-map.html">Карта кода</a> — актуализация.</dd>
+</dl>
+</div>
+
+<div class="pk sec-prep">
+<h4><span class="k">П0.5</span> Восстановление схемы <span class="bd b-go">можно начинать</span></h4>
+<div class="why">В <code>schema/</code> лежат 01, 03, 04, 05, 06. Нет описаний <code>seller_auth</code>, агентного слоя и таблиц конфигуратора — при том что все три модуля работают в бою. Из репозитория боевое окружение с нуля не воспроизводится, а пакеты П4 и П5 просят опереться на отсутствующие файлы.</div>
+<div class="pr"><button class="cp">копировать</button>Сверь фактическую схему боевой базы с файлами в schema/. Найди таблицы, которые есть в базе, но не описаны ни одной миграцией — как минимум seller_auth, таблицы агентного слоя и таблицы конфигуратора каналов (channels, fulfilment_services, visibility_rules, fulfilment_rules, settlement_rules, ratchet_log). Восстанови недостающие миграции: идемпотентные, с теми же CHECK и триггерами, что стоят в боевой базе. Проверь на чистой базе, что порядок применения даёт схему, идентичную боевой.</div>
+<dl>
+<dt>Приёмка</dt><dd>Чистая база после прогона всех миграций совпадает с боевой по составу таблиц, колонок и ограничений. Расхождений нет.</dd>
+<dt>В пул</dt><dd><a href="11-arhitektura-realizacii-obektov.html">Архитектура реализации объектов</a> — состав схемы. <a href="alpha-deploy-guide.html">Гайд развёртывания</a> — порядок миграций.</dd>
+</dl>
+</div>
+
+<div class="st">Безопасность · закрывать первыми</div>
+
+<div class="pk sec-crit">
+<h4><span class="k">П1</span> Р2 — секрет JWT <span class="bd b-go">можно начинать</span></h4>
+<div class="why">Дефолт <code>DEV-ONLY-CHANGE-ME</code>. Если переменная не задана в окружении, авторизация обнуляется молча, без ошибки.</div>
+<div class="pr"><button class="cp">копировать</button>JWT_SECRET в auth-seller.js имеет дефолт 'DEV-ONLY-CHANGE-ME'. Если переменная не задана в окружении, авторизация обнуляется молча. Сделай проверку при старте: сервер падает с внятной ошибкой, если JWT_SECRET не задан или равен дефолту. Добавь то же в /api/health отдельным полем без раскрытия значения.</div>
+<dl>
+<dt>Приёмка</dt><dd>Запуск без переменной падает. Значение секрета не попадает ни в лог, ни в ответ health-check.</dd>
+<dt>В пул</dt><dd><a href="auth-seller-integration.html">Врезка авторизации</a> — переменная переводится из «не забыть» в обязательное условие запуска.</dd>
+</dl>
+</div>
+
+<div class="pk sec-crit">
+<h4><span class="k">П2</span> Р1 — кабинет селлера закрыт <span class="bd b-go">можно начинать</span></h4>
+<div class="why">Маршруты товаров и статистики работают без <code>requireSeller</code>, <code>seller_id</code> берётся из URL. Подмена продавца и чтение чужой выручки. В финтехе с эскроу это выплата не тому.</div>
+<div class="pr"><button class="cp">копировать</button>Маршруты /seller/:seller_id/products (GET, POST, PATCH) и /seller/:seller_id/stats работают без requireSeller, seller_id берётся из URL. Врежь requireSeller, seller_id бери из req.seller_id, убери :seller_id из пути. Проверь, что формы sku-crud и shop-form уже шлют Authorization: Bearer и не шлют seller_id в теле. Напиши негативный тест: Alice с токеном пытается писать товар под seller_id Bob — запись должна уйти на Alice.</div>
+<dl>
+<dt>Приёмка</dt><dd>Негативный тест проходит. Без токена 401, чужой магазин 403. Набор L1 остаётся зелёным.</dd>
+<dt>В пул</dt><dd><a href="api-routes-seller.html">Справочник маршрутов</a> — колонка доступа, смена пути. <a href="9-ptk-marketplace-arch-part2.html">Часть 2</a> — Р1 закрыт.</dd>
+</dl>
+</div>
+
+<div class="pk sec-crit">
+<h4><span class="k">П3</span> Р6 — smoke-test чинится <span class="bd b-go">можно начинать</span></h4>
+<div class="why">Эндпоинт читает <code>o.total</code>, колонка называется <code>total_amount</code> — внешнему монитору всегда отдаётся 500.</div>
+<div class="pr"><button class="cp">копировать</button>Эндпоинт /api/v1/smoke-test читает o.total, а колонка называется total_amount — эндпоинт всегда отдаёт 500 внешнему монитору. Почини. Проверь остальные 11 проверок на реальных именах колонок. Сохрани логику: проверки изолированы, WARN не равен FAIL, 500 если хоть один FAIL.</div>
+<dl>
+<dt>Приёмка</dt><dd>200 на здоровой базе, 500 на искусственно сломанной проверке, в ответе видно какая упала.</dd>
+<dt>В пул</dt><dd><a href="e2e-walkthrough-map.html">Карта сквозного прогона</a> — раздел мониторинга.</dd>
+</dl>
+</div>
+
+<div class="pk sec-crit">
+<h4><span class="k">П4</span> Персональные данные — RLS <span class="bd b-go">можно начинать</span></h4>
+<div class="why">RLS на базовых таблицах не включён, таблицы <code>public</code> видны через PostgREST по anon-ключу. В <code>customers</code> лежат данные покупателей.</div>
+<div class="pr"><button class="cp">копировать</button>RLS на базовых таблицах не включён, таблицы public видны через PostgREST по anon-ключу, в customers лежат данные покупателей. Возьми за образец RLS FORCE из агентного слоя. Напиши миграцию: RLS на customers, customer_bindings, orders, order_items, seller_auth; политики — сервисная роль полный доступ, anon доступа нет. Миграция идемпотентна. Приложи негативные тесты: anon не читает customers, сервисная роль читает.</div>
+<dl>
+<dt>Приёмка</dt><dd>Негативные тесты проходят. Существующие маршруты работают — сервер ходит под сервисной ролью.</dd>
+<dt>В пул</dt><dd><a href="43-personalnye-dannye-statya-i-kontur.html">Персональные данные: статья и контур</a> — техническая часть контура.</dd>
+</dl>
+</div>
+
+<div class="st">Архитектура · порядок нарушать нельзя</div>
+
+<div class="pk sec-arch">
+<h4><span class="k">П5</span> Р3 — один источник истины видимости <span class="bd b-go">решение принято</span></h4>
+<div class="why">Витрина фильтрует по <code>visible_shop</code> и <code>visible_catalog</code>, конфигуратор ведёт <code>visibility_rules</code> с приоритетом SKU &gt; CATEGORY &gt; SHOP, а <code>effective_channels</code> не вызывается в <code>server.js</code> ни разу. Два источника истины — тумблеры дашборда сейчас декорация. <b>Решение от 3 сентября: источник — резолвер конфигуратора.</b></div>
+<div class="pr"><button class="cp">копировать</button>Витрина и каталог фильтруют товары по skus.visible_shop / visible_catalog, а конфигуратор каналов ведёт visibility_rules с приоритетом SKU > CATEGORY > SHOP, и функция effective_channels не вызывается в server.js ни разу. Два источника истины. Решение принято: источник истины — резолвер конфигуратора.
+
+Маршруты витрины и каталога спрашивают effective_channels. Поля visible_shop и visible_catalog становятся производной и пересчитываются синхронно при изменении любого правила. Записывает их только резолвер: ручное редактирование видимости в форме SKU закрывается, поле становится read-only с отсылкой к конфигуратору.
+
+Не ломай существующие ответы API — контракт для фронта остаётся прежним. Не делай флаг режима и две реализации: резолвер вызывается всегда, ветвления в коде быть не должно.</div>
+<dl>
+<dt>Приёмка</dt><dd>Тумблер в дашборде каналов меняет реальную выдачу витрины. Тест-кейс Масса Мадре — три схемы на трёх категориях — отрабатывает. Храповик по-прежнему запрещает понижение. Поля <code>visible_shop</code> и <code>visible_catalog</code> поддерживаются в актуальном состоянии; таблицы правил не удаляются.</dd>
+<dt>В пул</dt><dd><a href="sku-visibility-seller.html">Видимость SKU глазами селлера</a>, <a href="alpha-channels-dashboard.html">дашборд каналов</a>, <a href="vitrina-creation-components.html">составные витрины</a> — снять пометки «читает, не пишет».</dd>
+</dl>
+</div>
+
+<div class="pk sec-arch">
+<h4><span class="k">П6</span> Р4 — take_rate доходит до клиринга <span class="bd b-block">после П5</span></h4>
+<div class="why">Сплит берёт единый <code>ORGANIZER_FEE</code>, ставка канала из конфигуратора до клиринга не доходит.</div>
+<div class="pr"><button class="cp">копировать</button>Сплит в POST /orders берёт единый ORGANIZER_FEE, а take_rate канала из конфигуратора до клиринга не доходит. Проведи ставку канала в расчёт сплита. Сохрани инварианты: ставка берётся строкой из participant_tariffs с проверкой срока, а не константой в коде; сумма сплитов равна total_amount; структура формулы FULFILLMENT / LOGISTICS / ORGANIZER / SELLER не меняется. Прогони эталон ORD-00001: SELLER 817.16, FULFILLMENT 600, LOGISTICS 350, ORGANIZER 2.84.</div>
+<dl>
+<dt>Приёмка</dt><dd>Эталон сходится. Заказ через канал с иной ставкой даёт иной сплит, сумма по-прежнему равна <code>total_amount</code>. Смена ставки — вставка строки, кода не касается.</dd>
+<dt>В пул</dt><dd><a href="09_clearing_engine_deep.html">Clearing Engine</a>, <a href="17-split-mode-peretok-doli-synced.html">переток доли</a>.</dd>
+</dl>
+</div>
+
+<div class="pk sec-arch">
+<h4><span class="k">П7</span> Р5 — режим расчёта в заказе <span class="bd b-go">решение принято</span></h4>
+<div class="why"><code>settlement mode</code> пишется в <code>settlement_rules</code>, но <code>POST /orders</code> его не читает. <b>Решение от 6 сентября: режим задаётся правилом, покупатель его не выбирает.</b> Стартовая конфигурация Масса Мадре — <code>SYSTEM</code> на весь ассортимент.</div>
+<div class="pr"><button class="cp">копировать</button>settlement mode (OWN / SYSTEM / PER_ORDER) пишется в settlement_rules, но POST /orders его не читает. Решение принято: режим расчёта определяется правилом, покупатель его не выбирает.
+
+Заказ при создании спрашивает резолвер settlement_rules и записывает полученный режим в orders. Стартовая конфигурация Масса Мадре — SYSTEM на весь ассортимент. Эскроу обязателен для режима SYSTEM. Цифровая валюта не поддерживается ни в каком режиме (ст. 20).
+
+Выбор способа расчёта на чекауте не делай — контракт API для фронта не меняется, дополнительных полей в теле запроса не появляется. Флага режима и двух реализаций быть не должно: резолвер вызывается всегда.
+
+Ставку удержания в код не зашивай — она берётся строкой из participant_tariffs с проверкой срока.</div>
+<dl>
+<dt>Приёмка</dt><dd>Заказ несёт режим расчёта. SYSTEM идёт в эскроу-контур, OWN не попадает в клиринг Системы. Переключение не ломает существующие заказы.</dd>
+<dt>В пул</dt><dd><a href="massamadre-settlement-mechanisms.html">Механизмы расчёта Масса Мадре</a> — выбранный помечается принятым, два других остаются рассмотренными.</dd>
+</dl>
+</div>
+
+<div class="st">Периметр и завершение</div>
+
+<div class="pk sec-fin">
+<h4><span class="k">П8</span> Р7 и Р8 — периметр и агентный контур <span class="bd b-block">после П7</span></h4>
+<div class="why">CORS открыт всем. Агент в бою — прокси внутри <code>server.js</code>, написанный <code>agent-service</code> с тремя контурами по ст.16 не смонтирован.</div>
+<div class="pr"><button class="cp">копировать</button>Две задачи. Первая: CORS открыт всем — сузь до доменов витрин и кабинета, список из конфигурации, не из кода. Вторая: агент в бою работает прокси /agent/chat внутри server.js, а написанный agent-service с тремя контурами (RUNTIME / ADMISSION / READONLY, ст.16) не смонтирован. Смонтируй его по образцу auth-seller. Уровень агента берётся из реестра по заголовку X-Agent-Code, не из тела запроса. Агент селлера со статусом MIGRATED каталог рынка не получает.</div>
+<dl>
+<dt>Приёмка</dt><dd>Запрос с чужого домена отбивается. Десять негативных тестов агентного слоя отбиваются с указанием статьи. Ключ READONLY не пишет.</dd>
+<dt>В пул</dt><dd><a href="agentic-commerce-architecture.html">Архитектура агентного слоя</a>, <a href="pravila-agentic-articles-14-21.html">статьи 14–21</a>.</dd>
+</dl>
+</div>
+
+<div class="pk sec-fin">
+<h4><span class="k">П9</span> Тесты L2/L4 и процедура развёртывания <span class="bd b-block">ждёт площадки</span></h4>
+<div class="why">Уровни L1 закрыты, L2 браузерный и L4 сквозной — нет. Процедура развёртывания пишется под конкретную площадку, а она не зафиксирована.</div>
+<div class="pr"><button class="cp">копировать</button>Собери браузерный чек-лист L2 и сквозной сценарий L4 по плану тестирования пути селлера: вход селлера, магазин, товар, витрина, корзина, заказ, клиринг — со ссылками на ID кейсов плана. Отдельно напиши процедуру развёртывания на ПЛОЩАДКА: миграции по порядку, переменные окружения с обязательными проверками, порядок первого запуска, smoke-test как приёмочный шаг, откат.</div>
+<dl>
+<dt>Приёмка</dt><dd>Сценарий проходится на живом стенде целиком. Процедура воспроизводится с нуля на чистой базе.</dd>
+<dt>В пул</dt><dd><a href="test-plan-seller-flow.html">План тестирования</a> — отметка по L2 и L4. <a href="alpha-deploy-guide.html">Гайд развёртывания</a> — новая площадка.</dd>
+</dl>
+</div>
+
+</div>
+
+<!-- ═══ 3 БЛОКЕРЫ ═══ -->
+<div class="sec" id="s3">
+
+<div class="co co-r"><b>Ни один из трёх не закрывается кодом.</b> Это решения Организатора. Пока они не приняты, соответствующие работы нельзя ни поставить агенту, ни принять у него — он либо выберет за вас, либо остановится.</div>
+
+<div class="st">Блокеры</div>
+<table>
+<tr><th style="width:60px">Код</th><th style="width:26%">Суть</th><th>Что именно требуется</th><th style="width:22%">Что стоит без него</th></tr>
+<tr><td><b>Б1</b></td><td>Норма</td><td>В Правилах ред.3 статьи 1–13 стоят слотами «перенос из ред.2», текст не перенесён. Заголовок ст.5 неизвестен. Не решены порог T2I и держатель журнала согласий — Организатор или Расчётный Банк</td><td>Сверка кода со статьями 1–13. Агент упирается в пустоту там, где начинает сверяться</td></tr>
+<tr><td><b>Б2</b></td><td>Площадка</td><td>Боевая база должна быть в юрисдикции РФ. Yandex Cloud принят предварительно, фиксация назначалась на конец второй недели. Открыт тип юрлица для биллинг-аккаунта — решение необратимо в части гранта</td><td>Пакет П9. Процедура развёртывания пишется под конкретную площадку</td></tr>
+<tr><td><b>Б3</b></td><td>Банк</td><td>Расчётный Банк R1–R14 не выбран</td><td>Реальная оплата. Сделка останавливается на PENDING, полный цикл не разворачивается ни при каком качестве кода</td></tr>
+</table>
+
+<div class="st">Решения, которых ждут пакеты</div>
+<table>
+<tr><th style="width:60px">Пакет</th><th style="width:28%">Вопрос</th><th>Варианты</th><th style="width:24%">Рекомендация</th></tr>
+<tr style="opacity:.62"><td><b>П5</b></td><td>Источник истины видимости <span class="bd b-go">решено</span></td><td>Резолвер конфигуратора либо поля <code>visible_*</code> в <code>skus</code></td><td><b>Принят резолвер</b>, 3 сентября. Поля — его производная. Возврат к флагам возможен остановкой резолвера, но это аварийный выход, а не второй режим: ветвления в коде нет</td></tr>
+<tr style="opacity:.62"><td><b>П7</b></td><td>Механизм расчёта Масса Мадре <span class="bd b-go">решено</span></td><td>1 — всегда через Систему; 2 — выбор на каждый заказ; 3 — fulfilment отдельно, деньги свои</td><td><b>Принят режим по правилу</b>, 6 сентября: стартово SYSTEM на весь ассортимент. Механизм 2 отклонён — при равной цене покупатель всегда выберет гарантию, выбора нет. Механизм 3 отклонён — логистику первые два не исключают</td></tr>
+<tr><td><b>П9</b></td><td>Кабинет заказов</td><td>Свести поток прямых продаж и поток Системы в один <code>cabinet-orders</code> либо развести</td><td>Свести с меткой источника: пекарь печёт одинаково</td></tr>
+</table>
+
+<div class="co co-w"><b>Реестр нерешённых вопросов.</b> Полный перечень открытых развилок ведётся отдельно — см. <a href="45-reestr-nereshennyh-voprosov.html">реестр нерешённых вопросов</a>. Настоящее задание вытаскивает из него только те, что блокируют конкретные пакеты.</div>
+
+</div>
+
+<!-- ═══ 4 ОЧЕРЕДЬ ═══ -->
+<div class="sec" id="s4">
+
+<div class="st">Порядок и зависимости</div>
+<div class="dep">П0  инвентаризация
+ └─ П0.5 восстановление схемы
+     ├─ П1  секрет JWT      ─┐
+     ├─ П2  кабинет селлера  ├─ безопасность, идут подряд
+     ├─ П4  RLS             ─┘
+     └─ П3  smoke-test  (независим, можно параллельно)
+         └─ П5  источник истины      ✓ решено 3 сентября
+             └─ П6  take_rate
+                 └─ П7  режим расчёта      ✓ решено 6 сентября
+                     └─ П8  периметр и агент
+                         └─ П9  тесты и развёртывание ← требует площадки
+
+Б1 норма  ─┐
+Б3 банк   ─┴─ лежат вне очереди: начинаются с решения, а не с сессии агента</div>
+
+<div class="co"><b>Почему П0.5 стоит сразу после инвентаризации.</b> Пакет П4 просит взять за образец RLS из агентного слоя, пакет П5 работает с <code>visibility_rules</code> — а описаний этих таблиц в <code>schema/</code> нет, при том что в боевой базе они есть. Всё, что будет написано поверх без восстановления схемы, обопрётся на догадки о структуре.</div>
+
+<div class="st">Оценка объёма</div>
+<table>
+<tr><th style="width:70px">Пакет</th><th style="width:26%">Тип работы</th><th>Риск</th></tr>
+<tr><td>П0, П0.5</td><td>Чтение и сверка</td><td>Низкий. Правок кода нет либо они восстановительные</td></tr>
+<tr><td>П1, П3</td><td>Точечная правка</td><td>Низкий. Изменения локальны и проверяются немедленно</td></tr>
+<tr><td>П2, П4</td><td>Правка контура доступа</td><td>Средний. Затрагивает авторизацию и права в базе — нужен прогон негативных тестов</td></tr>
+<tr><td>П5, П6, П7</td><td>Архитектурная</td><td>Высокий. Меняется источник истины и расчёт денег. Каждый пакет принимать отдельно, не сливать в одну сессию</td></tr>
+<tr><td>П8, П9</td><td>Периметр и приёмка</td><td>Средний. Много поверхности, но каждая часть проверяема</td></tr>
+</table>
+
+</div>
+
+<!-- ═══ 5 СВЯЗИ ═══ -->
+<div class="sec" id="s5">
+
+<div class="st">Статьи, на которые опирается задание</div>
+<div class="scroll"><table>
+<tr><th style="width:70px">Статья</th><th style="width:34%">Название</th><th style="width:26%">Где текст</th><th>Состояние</th></tr>
+<tr data-art="9"><td><b>ст. 9</b></td><td>Магазин селлера и витрина. Агентный канал добавлен новым пунктом</td><td><a href="pravila-sistemy-red3-edinyi.html">Правила ред. 3</a></td><td>Текст 1–13 переносится из ред. 2 — блокер Б1</td></tr>
+<tr data-art="10"><td><b>ст. 10</b></td><td>Клиентская база. Пп. 10.6–10.7 — отнесение сделки к каналу по точке входа</td><td><a href="pravila-sistemy-red3-edinyi.html">Правила ред. 3</a>, уточнения — <a href="43-personalnye-dannye-statya-i-kontur.html">персональные данные</a></td><td>Текст 1–13 переносится из ред. 2 — блокер Б1</td></tr>
+<tr data-art="11"><td><b>ст. 11</b></td><td>Маршрутизация и ранжирование. Формула — п. 11.2, антиманипуляция — п. 11.5</td><td><a href="pravila-sistemy-red3-edinyi.html">Правила ред. 3</a>, механика — <a href="32-katalog-formation-ranking-synced.html">формирование каталогов</a></td><td>Текст 1–13 переносится из ред. 2 — блокер Б1</td></tr>
+<tr data-art="15"><td><b>ст. 15</b></td><td>Мандаты. П. 15.7 — неизменяемый журнал согласий</td><td><a href="pravila-agentic-articles-14-21.html#st15">Статьи 14–21</a></td><td>Текст написан</td></tr>
+<tr data-art="16"><td><b>ст. 16</b></td><td>Реестр агентов. Допуск и разделение полномочий</td><td><a href="pravila-agentic-articles-14-21.html#st16">Статьи 14–21</a></td><td>Текст написан</td></tr>
+<tr data-art="19"><td><b>ст. 19</b></td><td>Агентная выдача и точность предложения</td><td><a href="pravila-agentic-articles-14-21.html#st19">Статьи 14–21</a></td><td>Текст написан</td></tr>
+<tr data-art="20"><td><b>ст. 20</b></td><td>Расчёты агентной сделки и взнос на поддержание агентного слоя</td><td><a href="pravila-agentic-articles-14-21.html#st20">Статьи 14–21</a></td><td>Текст написан</td></tr>
+</table></div>
+
+<div class="co co-w"><b>Разделение блоков.</b> Ст. 9, 10, 11 — базовый блок 1–13, в ред. 3 они стоят слотами «перенос из ред. 2». Ст. 15, 16, 19, 20 — агентный блок 14–21, написан полностью. Пакеты, опирающиеся на первый блок, упрутся в блокер Б1; опирающиеся на второй — исполнимы уже сейчас.</div>
+
+<div class="st">Нормы, которые пакеты обязаны сохранить</div>
+<div class="scroll"><table>
+<tr><th style="width:26%">Норма</th><th style="width:78px">Статья</th><th class="mech">Механизм в коде</th><th>Документ пула, где норма разобрана</th></tr>
+
+<tr data-art="19"><td>Место в выдаче не продаётся</td><td>п. 19.3</td><td><code>paid_placement = FALSE</code>; поля платного места в схеме нет вообще</td>
+<td>Агентная коммерция: архитектура агентного слоя, §12 бизнес-модель<div class="fn"><a href="agentic-commerce-architecture.html">agentic-commerce-architecture.html</a></div></td></tr>
+
+<tr data-art="19"><td>Вес исполнения не ниже веса цены</td><td>п. 19.2</td><td><code>CHECK w_execution &gt;= w_price</code></td>
+<td>Правила системы: статьи 14–21, агентный слой<div class="fn"><a href="pravila-agentic-articles-14-21.html#st19">pravila-agentic-articles-14-21.html</a></div></td></tr>
+
+<tr data-art="11"><td>Цена не участвует в ранжировании</td><td>п. 11.2</td><td>Формула живёт в SQL, цены в ней нет. Норма держится отсутствием механизма</td>
+<td>Механизмы формирования каталогов и ранжирования<div class="fn"><a href="32-katalog-formation-ranking-synced.html">32-katalog-formation-ranking-synced.html</a></div></td></tr>
+
+<tr data-art="10"><td>Источник сделки определяется точкой входа, а не настройками видимости</td><td>пп. 10.6, 18.2</td><td><code>source_type</code> — MIGRATED, NETWORK, AGENT. Определяет, чей это клиент и как делится доля</td>
+<td>Персональные данные: статья и контур<div class="fn"><a href="43-personalnye-dannye-statya-i-kontur.html">43-personalnye-dannye-statya-i-kontur.html</a></div></td></tr>
+
+<tr data-art="20"><td>Доход не берётся процентом с оборота</td><td>п. 20.5</td><td><code>basis IN (FIXED, TIERED, PER_UNIT)</code> — процент невыразим</td>
+<td>Модель co-payment на себестоимость инфраструктуры<div class="fn"><a href="infra-cost-copay-model.html">infra-cost-copay-model.html</a></div></td></tr>
+
+<tr data-art="15"><td>Журнал согласий неизменяем</td><td>п. 15.7</td><td>Запрет UPDATE и DELETE плюс хэш-цепочка</td>
+<td>Персональные данные: статья и контур, реестр согласий<div class="fn"><a href="43-personalnye-dannye-statya-i-kontur.html">43-personalnye-dannye-statya-i-kontur.html</a></div></td></tr>
+
+<tr data-art="9"><td>Храповик только вверх</td><td>ст. 9</td><td><code>CHECK to_level &gt; from_level</code> на журнале сделок; понижение конфигурации магазина свободно</td>
+<td>Реестр участия: расчёт через Систему<div class="fn"><a href="42-reestr-uchastiya-raschet-cherez-sistemu.html">42-reestr-uchastiya-raschet-cherez-sistemu.html</a></div><div class="fn"><a href="44-shkala-urovnei-reshenie.html">44-shkala-urovnei-reshenie.html</a></div></td></tr>
+
+<tr data-art="16"><td>Разделение полномочий агентов</td><td>п. 16.4</td><td>Три ключа RUNTIME / ADMISSION / READONLY, уровень из реестра по <code>X-Agent-Code</code></td>
+<td>Агентная коммерция, §06 оргструктура и три «нельзя»<div class="fn"><a href="agentic-commerce-architecture.html">agentic-commerce-architecture.html</a></div></td></tr>
+
+<tr data-art="20"><td>Расчёты только через контур Системы</td><td>пп. 20.6, 20.8</td><td>СБП, эквайринг, эскроу. Цифровая валюта запрещена в любой юрисдикции</td>
+<td>Ревизия модели после платёжного слоя<div class="fn"><a href="model-revision-after-payment-layer.html">model-revision-after-payment-layer.html</a></div><div class="fn"><a href="payment-platform-requirements.html">payment-platform-requirements.html</a></div></td></tr>
+
+</table></div>
+
+<div class="st">Документы, которые обновляются по ходу</div>
+<table>
+<tr><th style="width:34%">Документ</th><th style="width:80px">Пакет</th><th>Что меняется</th></tr>
+<tr><td><a href="9-ptk-marketplace-arch-part2.html">Архитектура ПТК, Часть 2</a></td><td>П0, П2</td><td>Раздел расхождений Р1–Р8: фактическая сверка, затем отметки о закрытии</td></tr>
+<tr><td><a href="code-map.html">Карта кода</a></td><td>П0</td><td>Актуализация состава модулей и маршрутов</td></tr>
+<tr><td><a href="11-arhitektura-realizacii-obektov.html">Архитектура реализации объектов</a></td><td>П0.5</td><td>Полный состав схемы после восстановления миграций</td></tr>
+<tr><td><a href="auth-seller-integration.html">Врезка авторизации продавца</a></td><td>П1</td><td>Переменная окружения — обязательное условие запуска</td></tr>
+<tr><td><a href="api-routes-seller.html">Справочник маршрутов селлера</a></td><td>П2</td><td>Колонка доступа, смена пути маршрута товаров</td></tr>
+<tr><td><a href="e2e-walkthrough-map.html">Карта сквозного прогона</a></td><td>П3</td><td>Раздел мониторинга</td></tr>
+<tr><td><a href="43-personalnye-dannye-statya-i-kontur.html">Персональные данные</a></td><td>П4</td><td>Техническая часть контура: RLS и политики</td></tr>
+<tr><td><a href="sku-visibility-seller.html">Видимость SKU</a>, <a href="alpha-channels-dashboard.html">дашборд каналов</a></td><td>П5</td><td>Снятие пометок «читает, не пишет»</td></tr>
+<tr><td><a href="09_clearing_engine_deep.html">Clearing Engine</a></td><td>П6</td><td>Ставка канала в формуле сплита</td></tr>
+<tr><td><a href="massamadre-settlement-mechanisms.html">Механизмы расчёта</a></td><td>П7</td><td>Выбранный механизм помечается принятым</td></tr>
+<tr><td><a href="agentic-commerce-architecture.html">Архитектура агентного слоя</a></td><td>П8</td><td>Монтирование agent-service, три контура</td></tr>
+<tr><td><a href="test-plan-seller-flow.html">План тестирования</a>, <a href="alpha-deploy-guide.html">гайд развёртывания</a></td><td>П9</td><td>Отметки по L2 и L4; процедура под новую площадку</td></tr>
+</table>
+
+<div class="co co-w"><b>Обратные ссылки.</b> Чтобы связь была двусторонней, в четыре документа нужно врезать ссылку на настоящее задание: <a href="9-ptk-marketplace-arch-part2.html">Часть 2</a> — в раздел расхождений, <a href="test-plan-seller-flow.html">план тестирования</a> — к уровням L2 и L4, <a href="47-reestr-planov-realizacii.html">реестр планов</a> — как ещё один план, <a href="45-reestr-nereshennyh-voprosov.html">реестр нерешённых вопросов</a> — к трём развилкам, которые блокируют пакеты. Врезки не сделаны.</div>
+
+</div>
+
+<footer>
+Задание на разработку и развёртывание ПТК · пул документов Системы · 3 сентября 2026<br>
+Читается вместе с <code>CLAUDE.md</code> и <code>.claude/settings.json</code> в корне репозитория <code>marketplace-api</code>. При расхождении настоящего задания с <a href="pravila-sistemy-red3-edinyi.html">Правилами системы ред. 3</a> норма — Правила. Решения, принятые в рабочей сессии, старше документа.
+</footer>
+
+</div>
+<script>
+document.getElementById('tabs').addEventListener('click',function(e){
+  var b=e.target.closest('.tab'); if(!b) return;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t===b)});
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id===b.dataset.t)});
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+document.getElementById('arts').addEventListener('click',function(e){
+  var c=e.target.closest('button.chip'); if(!c) return;
+  var art=c.dataset.art, was=c.classList.contains('on');
+  document.querySelectorAll('button.chip').forEach(function(x){x.classList.remove('on')});
+  document.querySelectorAll('tr[data-art]').forEach(function(r){r.classList.remove('hit')});
+  if(was) return;
+  c.classList.add('on');
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.t==='s5')});
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.toggle('on',s.id==='s5')});
+  var rows=document.querySelectorAll('tr[data-art="'+art+'"]');
+  rows.forEach(function(r){r.classList.add('hit')});
+  if(rows.length) rows[0].scrollIntoView({behavior:'smooth',block:'center'});
+});
+document.querySelectorAll('.cp').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var txt=btn.parentNode.textContent.replace(/^копировать/,'').trim();
+    navigator.clipboard.writeText(txt).then(function(){
+      btn.textContent='скопировано'; setTimeout(function(){btn.textContent='копировать'},1500);
+    }).catch(function(){ btn.textContent='не вышло'; setTimeout(function(){btn.textContent='копировать'},1500); });
+  });
+});
+</script>
+</body></html>
